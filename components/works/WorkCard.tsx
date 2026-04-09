@@ -1,15 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Work } from "@/types/work";
 import styles from "./WorkCard.module.css";
-
-const TIER_GRADIENTS: Record<string, string> = {
-  S: "linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)",
-  A: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)",
-  B: "linear-gradient(135deg, #1a1a1a 0%, #252525 100%)",
-};
 
 interface WorkCardProps {
   work: Work;
@@ -27,15 +22,15 @@ export default function WorkCard({ work }: WorkCardProps) {
     >
       <Link href={`/works/${work.slug}`} className={styles.card}>
         <div className={styles.thumbnail}>
-          <div
-            className={styles.thumbnailInner}
-            style={{
-              background: TIER_GRADIENTS[work.tier] || TIER_GRADIENTS.B,
-            }}
-          >
-            <span className={styles.tierBadge}>{work.tier}</span>
-            <span className={styles.thumbnailLabel}>{work.title}</span>
-          </div>
+          <Image
+            src={work.thumbnail}
+            alt={work.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={styles.thumbnailImage}
+            style={{ objectFit: 'cover' }}
+          />
+          <span className={styles.tierBadge}>{work.tier}</span>
         </div>
         <div className={styles.cardBody}>
           <h3 className={styles.cardTitle}>{work.title}</h3>

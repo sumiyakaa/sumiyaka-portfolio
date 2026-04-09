@@ -1,15 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Work } from "@/types/work";
 import styles from "./page.module.css";
-
-const TIER_GRADIENTS: Record<string, string> = {
-  S: "linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)",
-  A: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)",
-  B: "linear-gradient(135deg, #1a1a1a 0%, #252525 100%)",
-};
 
 interface WorkDetailClientProps {
   work: Work;
@@ -54,16 +49,14 @@ export default function WorkDetailClient({ work }: WorkDetailClientProps) {
               onClick={() => openLightbox(i)}
               type="button"
             >
-              <div
-                className={styles.galleryPlaceholder}
-                style={{
-                  background: TIER_GRADIENTS[work.tier] || TIER_GRADIENTS.B,
-                }}
-              >
-                <span className={styles.galleryPlaceholderText}>
-                  {work.title} — {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
+              <Image
+                src={img}
+                alt={`${work.title} — ${String(i + 1).padStart(2, "0")}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 80vw"
+                className={styles.galleryImage}
+                style={{ objectFit: 'cover' }}
+              />
             </button>
           ))}
         </div>
@@ -108,18 +101,14 @@ export default function WorkDetailClient({ work }: WorkDetailClientProps) {
               transition={{ duration: 0.25 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div
-                className={styles.lightboxPlaceholder}
-                style={{
-                  background:
-                    TIER_GRADIENTS[work.tier] || TIER_GRADIENTS.B,
-                }}
-              >
-                <span className={styles.lightboxPlaceholderText}>
-                  {work.title} —{" "}
-                  {String(lightboxIndex + 1).padStart(2, "0")}
-                </span>
-              </div>
+              <Image
+                src={work.images[lightboxIndex]}
+                alt={`${work.title} — ${String(lightboxIndex + 1).padStart(2, "0")}`}
+                fill
+                sizes="90vw"
+                className={styles.lightboxImage}
+                style={{ objectFit: 'contain' }}
+              />
             </motion.div>
 
             <button

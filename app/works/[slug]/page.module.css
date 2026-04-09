@@ -108,7 +108,9 @@
 
 /* 1st image: full width, rest: 2 columns */
 .galleryItem {
+  position: relative;
   width: 100%;
+  aspect-ratio: 16 / 10;
   cursor: pointer;
   border: 1px solid var(--color-border);
   overflow: hidden;
@@ -129,26 +131,12 @@
   grid-template-columns: repeat(2, 1fr);
 }
 
-.galleryPlaceholder {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.galleryImage {
   transition: transform 300ms ease;
 }
 
-.galleryItem:hover .galleryPlaceholder {
+.galleryItem:hover .galleryImage {
   transform: scale(1.03);
-}
-
-.galleryPlaceholderText {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  color: var(--color-foreground);
-  opacity: 0.5;
 }
 
 /* =============================================
@@ -209,26 +197,14 @@
 }
 
 .lightboxContent {
-  max-width: 85vw;
-  max-height: 80vh;
-}
-
-.lightboxPlaceholder {
-  width: 70vw;
-  max-width: 1000px;
+  position: relative;
+  width: 90vw;
+  max-width: 1200px;
   aspect-ratio: 16 / 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.lightboxPlaceholderText {
-  font-family: var(--font-heading);
-  font-size: 18px;
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  color: var(--color-foreground);
-  opacity: 0.6;
+.lightboxImage {
+  pointer-events: none;
 }
 
 .lightboxCounter {
@@ -460,10 +436,6 @@
   .navAll {
     align-self: center;
     order: -1;
-  }
-
-  .lightboxPlaceholder {
-    width: 90vw;
   }
 
   .lightboxNav {
