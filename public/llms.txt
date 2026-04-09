@@ -1,0 +1,34 @@
+# AKASHIKI — 灯敷
+> Web Design & Development Portfolio
+
+## Overview
+AKASHIKI（灯敷）は、Webデザイン・フロントエンド開発を手がけるポートフォリオサイトです。LP制作・WordPress構築を中心に、構成からデザイン、コーディング、公開までワンストップで対応しています。
+
+## Services
+- LP制作（¥150,000〜）: 静的コーディング / レスポンシブ対応 / 5ページまで
+- WordPress構築（¥200,000〜）: テーマ構築 / カスタマイズ / 管理画面設計
+- オプション: JS高度演出（GSAP / パララックス / 3D）、セクション追加、保守・運用サポート
+
+## Technical Skills
+- HTML / CSS: セマンティック構造設計、レスポンシブ、CSS Grid/Flexbox、アニメーション
+- JavaScript: GSAP / ScrollTrigger、DOM操作、検索・絞り込み、スライダー実装
+- WordPress: テーマカスタマイズ、静的サイトのWP化、Swell構築
+- Figma / XD: デザインデータからの忠実なコーディング
+- SEO / AIO: 構造化データ（JSON-LD）、セマンティックHTML、AI検索最適化設計
+
+## Pages
+- Home: https://akashiki.com/
+- About: https://akashiki.com/about
+- Service: https://akashiki.com/service
+- Works: https://akashiki.com/works
+- Contact: https://akashiki.com/contact
+
+## Workflow
+1. ヒアリング — ご要望・ターゲット層・競合・ご予算・納期をお伺い
+2. ラフ提案 — デザインラフを複数パターンご提案（費用発生なし）
+3. デザイン・コーディング — 途中経過は随時共有
+4. 確認・修正 — 修正2回まで標準対応
+5. 公開・納品 — 公開後1週間以内の軽微な修正は無償対応
+
+## Contact
+お問い合わせ: https://akashiki.com/contact

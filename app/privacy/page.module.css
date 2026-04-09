@@ -1,0 +1,132 @@
+/* =============================================
+   Privacy — Hero FV
+   ============================================= */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-background);
+  padding: 160px 40px 80px;
+}
+
+.heroContent {
+  text-align: center;
+}
+
+.heroTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-foreground);
+  margin-bottom: 16px;
+}
+
+.heroSub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary-light);
+}
+
+/* =============================================
+   Content
+   ============================================= */
+.content {
+  padding: 80px 40px 120px;
+  border-top: 1px solid var(--color-border);
+}
+
+.inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.intro {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 2;
+  color: var(--color-secondary-light);
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* =============================================
+   Sections
+   ============================================= */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.section {
+  padding: 36px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sectionTitle {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  margin-bottom: 16px;
+}
+
+.sectionBody {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 2;
+  color: var(--color-secondary-light);
+}
+
+.date {
+  margin-top: 48px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--color-foreground-muted);
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+  .hero {
+    padding: 120px 20px 60px;
+    min-height: auto;
+  }
+
+  .heroTitle {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .content {
+    padding: 60px 20px 80px;
+  }
+
+  .section {
+    padding: 28px 0;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1279px) {
+  .hero {
+    padding: 140px 40px 60px;
+  }
+
+  .content {
+    padding: 60px 40px 100px;
+  }
+}

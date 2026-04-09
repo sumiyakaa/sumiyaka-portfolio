@@ -1,0 +1,125 @@
+/* =============================================
+   Tier Section
+   ============================================= */
+.tierSection {
+  margin-bottom: 64px;
+}
+
+.tierSection:last-child {
+  margin-bottom: 0;
+}
+
+/* =============================================
+   Tier Header
+   ============================================= */
+.tierHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.tierBadge {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+  padding: 4px 12px;
+  border: 1px solid rgba(200, 169, 110, 0.3);
+}
+
+.tierLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--color-secondary);
+}
+
+.tierCount {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-foreground-muted);
+  margin-left: -4px;
+}
+
+.tierLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* =============================================
+   Grid
+   ============================================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+/* =============================================
+   Empty State
+   ============================================= */
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.emptyText {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-foreground-muted);
+  margin-bottom: 20px;
+}
+
+.emptyReset {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground-muted);
+  padding: 10px 20px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 300ms ease,
+    border-color 300ms ease;
+}
+
+.emptyReset:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+  .tierSection {
+    margin-bottom: 48px;
+  }
+
+  .tierHeader {
+    margin-bottom: 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .empty {
+    padding: 60px 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1279px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}

@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+/* =============================================
+   CSS Variables — Design Tokens
+   ============================================= */
+:root {
+  /* Colors — Monotone */
+  --color-primary: #0a0a0a;
+  --color-primary-light: #1a1a1a;
+  --color-secondary: #888888;
+  --color-secondary-light: #aaaaaa;
+  --color-accent: #c8a96e;
+  --color-background: #0a0a0a;
+  --color-background-light: #111111;
+  --color-foreground: #f0f0f0;
+  --color-foreground-muted: #999999;
+  --color-border: #222222;
+  --color-border-light: #333333;
+
+  /* Fonts */
+  --font-heading: var(--font-barlow), "Helvetica Neue", sans-serif;
+  --font-body: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), "Consolas", monospace;
+  --font-display: var(--font-anton), Impact, sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+  --space-2xl: 8rem;
+  --space-3xl: 12rem;
+
+  /* Transitions */
+  --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 600ms;
+}
+
+/* =============================================
+   Tailwind v4 Theme Extension
+   ============================================= */
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-light: var(--color-secondary-light);
+  --color-accent: var(--color-accent);
+  --color-background: var(--color-background);
+  --color-background-light: var(--color-background-light);
+  --color-foreground: var(--color-foreground);
+  --color-foreground-muted: var(--color-foreground-muted);
+  --color-border: var(--color-border);
+  --color-border-light: var(--color-border-light);
+
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.6s var(--ease-out-expo) forwards;
+  --animate-fade-in-up: fade-in-up 0.6s var(--ease-out-expo) forwards;
+  --animate-fade-in-down: fade-in-down 0.6s var(--ease-out-expo) forwards;
+  --animate-fade-in-left: fade-in-left 0.6s var(--ease-out-expo) forwards;
+  --animate-fade-in-right: fade-in-right 0.6s var(--ease-out-expo) forwards;
+  --animate-scale-in: scale-in 0.6s var(--ease-out-expo) forwards;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 30s linear infinite;
+  --animate-pulse-slow: pulse-slow 4s ease-in-out infinite;
+  --animate-grain: grain 0.5s steps(6) infinite;
+}
+
+/* =============================================
+   Keyframes
+   ============================================= */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-left {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-right {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* =============================================
+   Reset & Base Styles
+   ============================================= */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* Body lock — SP menu open */
+body.is-locked {
+  overflow: hidden;
+}

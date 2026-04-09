@@ -1,0 +1,163 @@
+/* =============================================
+   Works Page — Hero
+   ============================================= */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 40px 80px;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 40%,
+      rgba(200, 169, 110, 0.03) 0%,
+      transparent 70%
+    );
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.heroLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-secondary);
+  margin-bottom: 24px;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 15vw, 14rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  color: var(--color-foreground);
+  margin-bottom: 32px;
+}
+
+.heroSub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  line-height: 2;
+  color: var(--color-secondary);
+}
+
+.heroCount {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--color-foreground);
+  margin-top: 8px;
+}
+
+.heroCountLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--color-secondary);
+}
+
+/* =============================================
+   Corner Labels
+   ============================================= */
+.heroCornerLeft {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-secondary);
+  opacity: 0.5;
+  writing-mode: vertical-rl;
+}
+
+.heroCornerRight {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-secondary);
+  opacity: 0.5;
+  writing-mode: vertical-rl;
+}
+
+/* =============================================
+   Content
+   ============================================= */
+.content {
+  padding: 0 40px 120px;
+}
+
+.contentInner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 80vh;
+    padding: 100px 20px 60px;
+  }
+
+  .heroTitle {
+    font-size: clamp(3.5rem, 20vw, 7rem);
+  }
+
+  .heroCount {
+    font-size: 28px;
+  }
+
+  .heroCornerLeft,
+  .heroCornerRight {
+    bottom: 20px;
+  }
+
+  .heroCornerLeft {
+    left: 20px;
+  }
+
+  .heroCornerRight {
+    right: 20px;
+  }
+
+  .content {
+    padding: 0 20px 80px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1279px) {
+  .hero {
+    padding: 120px 30px 80px;
+  }
+
+  .content {
+    padding: 0 30px 100px;
+  }
+}

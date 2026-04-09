@@ -1,0 +1,76 @@
+/* =============================================
+   Marquee — Infinite Scroll Band
+   ============================================= */
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  padding: 20px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-primary);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 40s linear infinite;
+}
+
+.track.reverse {
+  animation: marqueeScrollReverse 40s linear infinite;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  padding-right: 32px;
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 3vw, 2.4rem);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.separator {
+  font-size: 6px;
+  color: var(--color-accent);
+  opacity: 0.6;
+}
+
+/* =============================================
+   Keyframes
+   ============================================= */
+@keyframes marqueeScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeScrollReverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+  .marquee {
+    padding: 16px 0;
+  }
+
+  .item {
+    gap: 20px;
+    padding-right: 20px;
+  }
+}

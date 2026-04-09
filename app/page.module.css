@@ -1,0 +1,338 @@
+/* =============================================
+   About Teaser — Asymmetric Split
+   ============================================= */
+.aboutTeaser {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 80vh;
+  border-top: 1px solid var(--color-border);
+}
+
+.aboutLeft {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  border-right: 1px solid var(--color-border);
+}
+
+.aboutLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-secondary);
+  margin-bottom: 32px;
+}
+
+.aboutLargeType {
+  display: flex;
+  flex-direction: column;
+}
+
+.aboutLargeType span {
+  font-family: var(--font-heading);
+  font-size: clamp(2.8rem, 5.5vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-foreground);
+}
+
+.aboutLargeType span:nth-child(3) {
+  font-weight: 200;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  color: var(--color-secondary);
+  margin: 8px 0;
+}
+
+.aboutRight {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  gap: 24px;
+}
+
+.aboutRight p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 2;
+  color: var(--color-secondary-light);
+}
+
+.aboutLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground);
+  margin-top: 16px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+  transition: border-color 300ms ease, color 300ms ease;
+  width: fit-content;
+}
+
+.aboutLink:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.aboutLink span {
+  transition: transform 300ms ease;
+}
+
+.aboutLink:hover span {
+  transform: translateX(4px);
+}
+
+/* =============================================
+   Price Digest — Symmetric Cards
+   ============================================= */
+.priceSection {
+  padding: 120px 40px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-primary-light);
+}
+
+.priceInner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.priceHeader {
+  margin-bottom: 56px;
+}
+
+.priceLabel {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+}
+
+.priceLabelSub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-secondary);
+  margin-left: 16px;
+}
+
+.priceCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.priceCard {
+  padding: 48px 40px;
+  border: 1px solid var(--color-border);
+  background: var(--color-primary);
+  transition: border-color 300ms ease, transform 300ms ease;
+}
+
+.priceCard:hover {
+  border-color: var(--color-border-light);
+  transform: translateY(-4px);
+}
+
+.priceCardLabel {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  margin-bottom: 12px;
+}
+
+.priceCardDesc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.priceCardAmount {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 200;
+  letter-spacing: -0.01em;
+  color: var(--color-foreground);
+}
+
+.priceCta {
+  margin-top: 48px;
+  text-align: right;
+}
+
+.priceCtaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: border-color 300ms ease, color 300ms ease;
+}
+
+.priceCtaLink:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.priceCtaLink span {
+  transition: transform 300ms ease;
+}
+
+.priceCtaLink:hover span {
+  transform: translateX(6px);
+}
+
+/* =============================================
+   Lantern WebGL Placeholder
+   ============================================= */
+.lanternSection {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+
+/* =============================================
+   Contact CTA
+   ============================================= */
+.contactSection {
+  padding: 120px 40px;
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.contactInner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contactHeading {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+  margin-bottom: 16px;
+}
+
+.contactText {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-secondary);
+  margin-bottom: 40px;
+}
+
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: var(--color-foreground);
+  padding: 16px 48px;
+  border: 1px solid var(--color-border-light);
+  transition: border-color 300ms ease, background 300ms ease, color 300ms ease;
+}
+
+.contactLink:hover {
+  border-color: var(--color-accent);
+  background: rgba(200, 169, 110, 0.06);
+  color: var(--color-accent);
+}
+
+.contactLink span {
+  transition: transform 300ms ease;
+}
+
+.contactLink:hover span {
+  transform: translateX(4px);
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+  .aboutTeaser {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .aboutLeft {
+    padding: 60px 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .aboutRight {
+    padding: 48px 20px 60px;
+  }
+
+  .priceSection {
+    padding: 80px 20px;
+  }
+
+  .priceCards {
+    grid-template-columns: 1fr;
+  }
+
+  .priceCard {
+    padding: 36px 24px;
+  }
+
+  .priceCta {
+    text-align: center;
+  }
+
+  .lanternSection {
+    height: 40vh;
+    min-height: 280px;
+  }
+
+  .contactSection {
+    padding: 80px 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1279px) {
+  .aboutLeft {
+    padding: 60px 40px;
+  }
+
+  .aboutRight {
+    padding: 60px 40px;
+  }
+
+  .priceSection {
+    padding: 100px 30px;
+  }
+
+  .contactSection {
+    padding: 100px 30px;
+  }
+}
