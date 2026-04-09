@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
+import FVCircuitPattern from "@/components/animation/FVCircuitPattern";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -28,15 +30,6 @@ const HOW_I_WORK = [
     num: "04",
     title: "QUALITY ASSURANCE",
     desc: "納品前にLighthouseスコア、レスポンシブ表示、ブラウザ互換性、リンク切れ、画像最適化を全チェック。公開してから「あれ？」がない状態を作る。納期厳守、進捗は随時共有。",
-  },
-];
-
-const AIO_STATS = [
-  { value: "4,200%+", label: "AI検索セッション増加率\n(2024年4月起点)" },
-  { value: "8億人", label: "ChatGPT 週間アクティブユーザー\n(2025年4月時点)" },
-  {
-    value: "3,175万人",
-    label: "国内AI利用者数予測\n(2026年末 / ICT総研)",
   },
 ];
 
@@ -93,26 +86,18 @@ const PROCESS = [
   },
 ];
 
-const FAQ = [
+const FAQ_JSONLD = [
   {
-    q: "制作期間はどのくらいですか？",
-    a: "LP制作で約2〜3週間、コーポレートサイトで4〜6週間が目安です。ページ数や機能の複雑さによって前後しますので、ヒアリング時に正確なスケジュールをご提示します。",
+    q: "LP制作の料金はいくらですか？",
+    a: "LP制作（静的コーディング）は15万円〜、WordPress構築は20万円〜です。ページ数・機能により変動します。",
   },
   {
-    q: "デザインの修正は何回まで可能ですか？",
-    a: "確認・修正フェーズで2回まで標準対応しています。大幅な方向転換が必要な場合は別途ご相談となりますが、ラフ提案の段階で方向性を固めるため、通常は2回以内で完了します。",
+    q: "制作の流れを教えてください",
+    a: "ヒアリング→ラフ提案→デザイン・コーディング→確認・修正→公開の5ステップで進行します。",
   },
   {
-    q: "素材（写真・テキスト）の用意が必要ですか？",
-    a: "基本的にはご用意いただきますが、素材選定のサポートやストックフォトの提案も可能です。テキストについても、ヒアリング内容をもとにたたき台を作成することができます。",
-  },
-  {
-    q: "納品後のサポートはありますか？",
-    a: "公開後1週間以内の軽微な修正は無償対応いたします。継続的なサポートが必要な場合は、月額の保守・運用プラン（¥15,000〜）をご用意しています。",
-  },
-  {
-    q: "WordPress以外のCMSにも対応していますか？",
-    a: "現在はWordPressを中心に対応しています。Swell等の国産テーマを使った構築に強みがあります。その他のCMSについてはご相談ください。",
+    q: "AI検索最適化（AIO）とは何ですか？",
+    a: "ChatGPTやPerplexity等のAIアシスタントがサイト情報を正確に読み取れるよう、構造化データやセマンティックHTMLを実装する最適化手法です。",
   },
 ];
 
@@ -120,7 +105,7 @@ export default function ServicePage() {
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQ.map((item) => ({
+    mainEntity: FAQ_JSONLD.map((item) => ({
       "@type": "Question",
       name: item.q,
       acceptedAnswer: {
@@ -136,149 +121,180 @@ export default function ServicePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      {/* Hero FV */}
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>SERVICE</h1>
-          <p className={styles.heroSub}>
-            提供するサービスと制作の進め方
-          </p>
+
+      {/* ========== FV — 100vh ========== */}
+      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.25em">
+        <div className={styles.fvBg}>
+          <div className={styles.fvGrain} aria-hidden="true" />
+          <div className={styles.fvScanline} aria-hidden="true" />
         </div>
-        <span className={styles.heroCornerLeft}>SERVICE</span>
-        <span className={styles.heroCornerRight}>SCROLL</span>
+
+        <FVCircuitPattern />
+
+        <div className={styles.fvContent}>
+          <h1 data-fv-title className={styles.fvTitle}>SERVICE</h1>
+          <p data-fv-sub className={styles.fvSub}>提供するサービスと制作の進め方</p>
+          <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
+        </div>
+
+        <div className={styles.fvEdgeBl}>
+          <span data-fv-edge className={styles.fvEdgeText}>SERVICE</span>
+        </div>
+        <div className={styles.fvEdgeBr}>
+          <span data-fv-edge className={styles.fvEdgeText}>SCROLL</span>
+        </div>
+      </SubPageFVAnim>
+
+      {/* ========== 制作スタイル（黒背景） ========== */}
+      <section className={styles.style} aria-label="制作スタイル">
+        <div className={styles.styleInner}>
+          <div className={styles.styleLeft}>
+            <ScrollReveal>
+              <h2 className={styles.styleTitle}>HOW<br />I<br />WORK</h2>
+            </ScrollReveal>
+          </div>
+          <div className={styles.styleRight}>
+            {HOW_I_WORK.map((item, i) => (
+              <div key={item.num}>
+                <ScrollReveal delay={i * 0.1}>
+                  <article className={styles.styleItem}>
+                    <span className={styles.styleNum}>{item.num}</span>
+                    <h3 className={styles.styleName}>{item.title}</h3>
+                    <p className={styles.styleText}>{item.desc}</p>
+                  </article>
+                </ScrollReveal>
+                {i < HOW_I_WORK.length - 1 && (
+                  <div className={styles.styleDivider} aria-hidden="true" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* How I Work */}
-      <section className={styles.howIWork}>
-        <div className={styles.howInner}>
-          <ScrollReveal>
-            <span className={styles.howLabel}>HOW I WORK</span>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.1}>
-            <div className={styles.howGrid}>
-              {HOW_I_WORK.map((item) => (
-                <div key={item.num} className={styles.howItem}>
-                  <span className={styles.howItemNum}>{item.num}</span>
-                  <h3 className={styles.howItemTitle}>{item.title}</h3>
-                  <p className={styles.howItemDesc}>{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* AIO Section */}
-      <section className={styles.aio} id="aio">
+      {/* ========== AIO説明（白背景） ========== */}
+      <section className={styles.aio} id="aio" aria-label="AI検索最適化">
         <div className={styles.aioInner}>
           <ScrollReveal>
-            <div className={styles.aioOpening}>
-              <p className={styles.aioLeadLarge}>
-                検索の7割が、サイトを訪問せずに完結する時代。
-              </p>
-              <p className={styles.aioLeadBody}>
-                Google検索の約69%がゼロクリックで終了。AI
-                Overviewsが表示されるクエリでは、検索1位のクリック率が34.5%低下しています。
-              </p>
-            </div>
+            <h2 className={styles.aioTitle}>AI SEARCH OPTIMIZATION</h2>
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <div className={styles.aioStats}>
-              {AIO_STATS.map((stat) => (
-                <div key={stat.value} className={styles.aioStat}>
-                  <span className={styles.aioStatValue}>{stat.value}</span>
-                  <span className={styles.aioStatLabel}>
-                    {stat.label.split("\n").map((line, i) => (
-                      <span key={i}>
-                        {line}
-                        {i === 0 && <br />}
-                      </span>
-                    ))}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <p className={styles.aioLead}>
+              <mark className={styles.marker}>検索の7割が、サイトを訪問せずに完結する時代。</mark>
+            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.15}>
-            <div className={styles.aioInsight}>
-              <h3 className={styles.aioInsightTitle}>
-                SEOだけでは、もう届かない。
-              </h3>
-              <p className={styles.aioInsightBody}>
-                従来のSEO対策で検索1位を取っても、AIが回答を直接生成するため、サイトへの流入が激減する構造に変わりつつあります。これからは「AIに引用される側」に立つ必要があります。
-              </p>
-            </div>
+            <p className={styles.aioText}>
+              Google検索の約69%がゼロクリックで終了。AI Overviewsが表示されるクエリでは、検索1位のクリック率が34.5%低下しています。
+            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
-            <div className={styles.aioSolution}>
-              <h3 className={styles.aioSolutionTitle}>
-                AI検索に対応した設計を、標準で組み込んでいます。
-              </h3>
-              <div className={styles.aioList}>
-                {AIO_SOLUTIONS.map((item) => (
-                  <div key={item.label} className={styles.aioListItem}>
-                    <span className={styles.aioListLabel}>{item.label}</span>
-                    <span className={styles.aioListDesc}>{item.desc}</span>
-                  </div>
-                ))}
+            <div className={styles.aioStats}>
+              <div className={styles.aioStat}>
+                <span className={styles.aioStatNum}>4,200<span className={styles.aioStatUnit}>%+</span></span>
+                <span className={styles.aioStatLabel}>AI検索セッション増加率<br /><small>2024年4月起点</small></span>
               </div>
-              <p className={styles.aioClosing}>
-                まだ対応しているWeb制作者が少ない今こそ、差別化の武器になります。
-              </p>
+              <div className={styles.aioStat}>
+                <span className={styles.aioStatNum}>8<span className={styles.aioStatUnit}>億人</span></span>
+                <span className={styles.aioStatLabel}>ChatGPT 週間アクティブユーザー<br /><small>2025年4月時点</small></span>
+              </div>
+              <div className={styles.aioStat}>
+                <span className={styles.aioStatNum}>3,175<span className={styles.aioStatUnit}>万人</span></span>
+                <span className={styles.aioStatLabel}>国内AI利用者数予測<br /><small>2026年末 / ICT総研</small></span>
+              </div>
             </div>
           </ScrollReveal>
+
+          <div className={styles.aioBody}>
+            <ScrollReveal delay={0.1}>
+              <p className={styles.aioText}>
+                <mark className={styles.marker}>SEOだけでは、もう届かない。</mark>
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.15}>
+              <p className={styles.aioText}>
+                従来のSEO対策で検索1位を取っても、AIが回答を直接生成するため、サイトへの流入が激減する構造に変わりつつあります。これからは「AIに引用される側」に立つ必要があります。
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.2}>
+              <p className={styles.aioLead}>
+                <mark className={styles.marker}>AI検索に対応した設計を、標準で組み込んでいます。</mark>
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.25}>
+              <ul className={styles.aioList}>
+                {AIO_SOLUTIONS.map((item) => (
+                  <li key={item.label} className={styles.aioListItem}>
+                    <strong>{item.label}</strong> — {item.desc}
+                  </li>
+                ))}
+              </ul>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.3}>
+              <p className={styles.aioText}>
+                <mark className={styles.marker}>まだ対応しているWeb制作者が少ない今こそ、差別化の武器になります。</mark>
+              </p>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
-      {/* Price */}
-      <section className={styles.price}>
+      {/* ========== 料金詳細 + オプション（黒背景） ========== */}
+      <section className={styles.price} aria-label="料金">
         <div className={styles.priceInner}>
-          <ScrollReveal>
-            <h2 className={styles.priceHeading}>PRICE</h2>
-          </ScrollReveal>
+          <div className={styles.priceHead}>
+            <ScrollReveal>
+              <h2 className={styles.priceTitle}>PRICE</h2>
+            </ScrollReveal>
+            <div className={styles.priceHr} aria-hidden="true" />
+          </div>
 
-          <ScrollReveal delay={0.1}>
-            <div className={styles.pricePackages}>
-              <div className={styles.priceCard}>
-                <span className={styles.priceCardName}>LP DESIGN</span>
-                <p className={styles.priceCardDesc}>
-                  静的コーディング / レスポンシブ対応 / 5ページまで
-                </p>
-                <span className={styles.priceCardAmount}>¥150,000〜</span>
+          <div className={styles.priceList}>
+            <ScrollReveal delay={0.1}>
+              <div className={styles.priceItem}>
+                <div className={styles.priceItemTop}>
+                  <span className={styles.priceNum}>01</span>
+                  <h3 className={styles.priceName}>LP DESIGN</h3>
+                  <span className={styles.priceAmount}>¥150,000〜</span>
+                </div>
+                <p className={styles.priceDesc}>静的コーディング / レスポンシブ対応 / 5ページまで</p>
               </div>
-              <div className={styles.priceCard}>
-                <span className={styles.priceCardName}>WORDPRESS</span>
-                <p className={styles.priceCardDesc}>
-                  テーマ構築 / カスタマイズ / 管理画面設計
-                </p>
-                <span className={styles.priceCardAmount}>¥200,000〜</span>
-              </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
-          <ScrollReveal delay={0.15}>
-            <div className={styles.priceOptions}>
-              <span className={styles.priceOptionsLabel}>OPTIONS</span>
-              <div className={styles.priceOptionsList}>
-                {PRICE_OPTIONS.map((option) => (
-                  <div key={option.name} className={styles.priceOptionItem}>
-                    <span className={styles.priceOptionName}>
-                      {option.name}
-                    </span>
-                    <span className={styles.priceOptionAmount}>
-                      {option.amount}
-                    </span>
+            <ScrollReveal delay={0.15}>
+              <div className={styles.priceItem}>
+                <div className={styles.priceItemTop}>
+                  <span className={styles.priceNum}>02</span>
+                  <h3 className={styles.priceName}>WORDPRESS</h3>
+                  <span className={styles.priceAmount}>¥200,000〜</span>
+                </div>
+                <p className={styles.priceDesc}>テーマ構築 / カスタマイズ / 管理画面設計</p>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <ScrollReveal delay={0.2}>
+            <div className={styles.priceOption}>
+              <p className={styles.priceOptionLabel}>OPTION</p>
+              <div className={styles.priceOptionList}>
+                {PRICE_OPTIONS.map((opt) => (
+                  <div key={opt.name} className={styles.priceOptionItem}>
+                    <span className={styles.priceOptionPrefix}>+</span>
+                    <span className={styles.priceOptionName}>{opt.name}</span>
+                    <span className={styles.priceOptionAmount}>{opt.amount}</span>
                   </div>
                 ))}
               </div>
             </div>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.2}>
+          <ScrollReveal delay={0.25}>
             <p className={styles.priceNote}>
               上記は目安です。ページ数・機能・素材の有無により変動します。お気軽にご相談ください。
             </p>
@@ -286,43 +302,25 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* Process */}
-      <section className={styles.process}>
+      {/* ========== 制作の流れ（白背景） ========== */}
+      <section className={styles.process} aria-label="制作の流れ">
         <div className={styles.processInner}>
-          <ScrollReveal>
-            <h2 className={styles.processHeading}>PROCESS</h2>
-          </ScrollReveal>
-
-          <div className={styles.processSteps}>
-            {PROCESS.map((step, i) => (
-              <ScrollReveal key={step.num} delay={i * 0.08}>
-                <div className={styles.processStep}>
-                  <div className={styles.processStepLeft}>
-                    <span className={styles.processStepNum}>{step.num}</span>
-                    <h3 className={styles.processStepTitle}>{step.title}</h3>
-                  </div>
-                  <p className={styles.processStepDesc}>{step.desc}</p>
-                </div>
-              </ScrollReveal>
-            ))}
+          <div className={styles.processHead}>
+            <ScrollReveal>
+              <h2 className={styles.processTitle}>PROCESS</h2>
+            </ScrollReveal>
+            <div className={styles.processHr} aria-hidden="true" />
           </div>
-        </div>
-      </section>
 
-      {/* FAQ */}
-      <section className={styles.faq}>
-        <div className={styles.faqInner}>
-          <ScrollReveal>
-            <h2 className={styles.faqHeading}>FAQ</h2>
-          </ScrollReveal>
-
-          <div className={styles.faqList}>
-            {FAQ.map((item, i) => (
-              <ScrollReveal key={i} delay={i * 0.06}>
-                <details className={styles.faqItem}>
-                  <summary>{item.q}</summary>
-                  <p className={styles.faqAnswer}>{item.a}</p>
-                </details>
+          <div className={styles.processFlow}>
+            <div className={styles.processLine} aria-hidden="true" />
+            {PROCESS.map((step, i) => (
+              <ScrollReveal key={step.num} delay={i * 0.1}>
+                <article className={styles.processStep}>
+                  <span className={styles.processStepNum}>{step.num}</span>
+                  <h3 className={styles.processStepName}>{step.title}</h3>
+                  <p className={styles.processStepText}>{step.desc}</p>
+                </article>
               </ScrollReveal>
             ))}
           </div>

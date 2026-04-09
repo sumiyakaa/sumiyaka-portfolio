@@ -14,7 +14,7 @@ export default function Footer() {
       <div className={styles.inner}>
         <div className={styles.brand}>
           <div className={styles.logo}>AKASHIKI</div>
-          <div className={styles.sub}>灯敷</div>
+          <div className={styles.sub}>SUMIYAKA — 墨家</div>
         </div>
 
         <div className={styles.right}>
@@ -67,7 +67,7 @@ export default function Footer() {
 
       <div className={styles.bottom}>
         <small className={styles.copy}>
-          © 2026 AKASHIKI. All rights reserved.
+          © 2026 AKASHIKI
         </small>
         <Link href="/privacy" className={styles.privacy}>
           PRIVACY POLICY

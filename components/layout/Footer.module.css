@@ -1,23 +1,21 @@
 /* =============================================
-   Footer
+   Footer — 旧サイト忠実再現
    ============================================= */
 .footer {
-  background: var(--color-primary);
+  background: var(--color-background);
+  padding: 80px;
   border-top: 1px solid var(--color-border);
-  padding: 80px 40px;
 }
 
 .inner {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* =============================================
-   Brand
-   ============================================= */
+/* ---- Left: Brand ---- */
 .brand {
   display: flex;
   flex-direction: column;
@@ -26,24 +24,21 @@
 
 .logo {
   font-family: var(--font-heading);
-  font-size: 36px;
   font-weight: 200;
+  font-size: 36px;
   letter-spacing: 0.15em;
   color: var(--color-foreground);
 }
 
 .sub {
   font-family: var(--font-body);
-  font-size: 11px;
   font-weight: 300;
-  letter-spacing: 0.2em;
+  font-size: 11px;
   color: var(--color-foreground);
-  opacity: 0.7;
+  letter-spacing: 0.02em;
 }
 
-/* =============================================
-   Right Section
-   ============================================= */
+/* ---- Right: Nav + SNS ---- */
 .right {
   display: flex;
   flex-direction: column;
@@ -60,72 +55,70 @@
 
 .navLink {
   font-family: var(--font-heading);
-  font-size: 12px;
   font-weight: 400;
+  font-size: 12px;
   letter-spacing: 0.12em;
   color: var(--color-foreground);
-  transition: color 300ms ease;
+  transition: color 0.3s;
 }
 
 .navLink:hover {
   color: #fff;
 }
 
-/* =============================================
-   SNS
-   ============================================= */
 .sns {
   display: flex;
   gap: 20px;
 }
 
 .snsLink {
+  display: flex;
+  align-items: center;
   color: var(--color-foreground);
-  opacity: 0.8;
-  transition: opacity 300ms ease;
+  transition: opacity 0.3s;
+}
+
+.snsLink svg {
+  display: block;
 }
 
 .snsLink:hover {
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
-/* =============================================
-   Bottom
-   ============================================= */
+/* ---- Bottom ---- */
 .bottom {
-  max-width: 1200px;
-  margin: 60px auto 0;
-  border-top: 1px solid var(--color-border);
-  padding-top: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1200px;
+  margin: 60px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
 }
 
 .copy {
   font-family: var(--font-mono);
-  font-size: 10px;
   font-weight: 300;
+  font-size: 10px;
+  color: var(--color-foreground);
   letter-spacing: 0.05em;
-  color: var(--color-foreground-muted);
 }
 
 .privacy {
   font-family: var(--font-heading);
-  font-size: 10px;
   font-weight: 400;
+  font-size: 10px;
   letter-spacing: 0.1em;
-  color: var(--color-foreground-muted);
-  transition: color 300ms ease;
+  color: var(--color-foreground);
+  transition: color 0.3s;
 }
 
 .privacy:hover {
   color: #fff;
 }
 
-/* =============================================
-   Responsive
-   ============================================= */
+/* ---- Responsive ---- */
 @media (max-width: 768px) {
   .footer {
     padding: 60px 20px;
@@ -136,10 +129,6 @@
     gap: 40px;
   }
 
-  .logo {
-    font-size: 28px;
-  }
-
   .right {
     align-items: flex-start;
   }
@@ -148,10 +137,15 @@
     align-items: flex-start;
   }
 
+  .logo {
+    font-size: 28px;
+  }
+
   .bottom {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+    margin-top: 40px;
   }
 }
 

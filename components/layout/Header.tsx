@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,28 +20,44 @@ export default function Header() {
   const lenis = useLenis();
   const [isVisible, setIsVisible] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const lastScrollY = useRef(0);
   const isHome = pathname === "/";
 
-  // スクロール時のヘッダー表示制御
+  // Smart Header: ヒステリシスバッファ付きスクロール検知（旧common.js移植）
   useEffect(() => {
-    const threshold = isHome ? window.innerHeight : 300;
+    const BUFFER = 50;
+    let ticking = false;
 
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      if (currentY > threshold) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-      lastScrollY.current = currentY;
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        // サブページ: FV要素があればその高さ、なければ viewportHeight
+        const threshold = isHome
+          ? window.innerHeight
+          : (() => {
+              const subFv = document.querySelector<HTMLElement>(
+                '[class*="-fv"], [class*="Fv"], [class*="hero"]'
+              );
+              return subFv ? subFv.offsetHeight : window.innerHeight;
+            })();
+
+        if (!isVisible && currentY > threshold + BUFFER) {
+          setIsVisible(true);
+        } else if (isVisible && currentY < threshold - BUFFER) {
+          setIsVisible(false);
+        }
+
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHome]);
+  }, [isHome, isVisible]);
 
   // メニュー開閉時の body ロック
   useEffect(() => {

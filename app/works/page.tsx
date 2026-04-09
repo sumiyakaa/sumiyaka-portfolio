@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
 import WorksGrid from "@/components/works/WorksGrid";
 import { getAllWorks, getAllCategories, getAllTechnologies } from "@/lib/works";
 import styles from "./page.module.css";
@@ -18,29 +19,23 @@ export default function WorksPage() {
   return (
     <main>
       {/* Hero */}
-      <section className={styles.hero}>
+      <SubPageFVAnim className={styles.hero}>
         <div className={styles.heroContent}>
-          <ScrollReveal>
-            <span className={styles.heroLabel}>All Projects</span>
-          </ScrollReveal>
-          <ScrollReveal delay={0.1}>
-            <h1 className={styles.heroTitle}>WORKS</h1>
-          </ScrollReveal>
-          <ScrollReveal delay={0.2}>
-            <p className={styles.heroSub}>
-              LP / CORPORATE / WORDPRESS / MULTI-LANG
-              <br />
-              <span className={styles.heroCount}>
-                {works.length}
-                <span className={styles.heroCountLabel}> PROJECTS</span>
-              </span>
-            </p>
-          </ScrollReveal>
+          <span data-fv-sub className={styles.heroLabel}>All Projects</span>
+          <h1 data-fv-title className={styles.heroTitle}>WORKS</h1>
+          <p data-fv-sub className={styles.heroSub}>
+            LP / CORPORATE / WORDPRESS / MULTI-LANG
+            <br />
+            <span className={styles.heroCount}>
+              {works.length}
+              <span className={styles.heroCountLabel}> PROJECTS</span>
+            </span>
+          </p>
         </div>
 
-        <span className={styles.heroCornerLeft}>WORKS</span>
-        <span className={styles.heroCornerRight}>SCROLL</span>
-      </section>
+        <span data-fv-edge className={styles.heroCornerLeft}>WORKS</span>
+        <span data-fv-edge className={styles.heroCornerRight}>SCROLL</span>
+      </SubPageFVAnim>
 
       {/* Works Content */}
       <section className={styles.content}>

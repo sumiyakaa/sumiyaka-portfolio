@@ -1,342 +1,426 @@
-/* =============================================
-   About — Hero FV
-   ============================================= */
-.hero {
+/* ========================================
+   about page — AKASHIKI Portfolio (旧サイト忠実再現)
+   ======================================== */
+
+/* ========================================
+   FV — 100vh 全画面
+   ======================================== */
+.fv {
   position: relative;
-  width: 100%;
   height: 100vh;
-  min-height: 600px;
+  background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
+/* ---- Background Layers ---- */
+.fvBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 
-.heroContent {
+.fvGrain {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  animation: aboutGrain 0.5s steps(5) infinite;
+}
+
+@keyframes aboutGrain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  30% { transform: translate(3%, -15%); }
+  50% { transform: translate(12%, 9%); }
+  70% { transform: translate(9%, 4%); }
+  90% { transform: translate(-1%, 7%); }
+}
+
+.fvScanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.015) 2px,
+    rgba(255,255,255,0.015) 4px
+  );
+  pointer-events: none;
+  opacity: 0.02;
+}
+
+/* ---- Content ---- */
+.fvContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
 }
 
-.heroTitle {
+.fvTitle {
   font-family: var(--font-heading);
-  font-size: clamp(4rem, 12vw, 10rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
-  color: var(--color-foreground);
-  margin-bottom: 20px;
-}
-
-.heroSub {
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 300;
-  letter-spacing: 0.3em;
-  color: var(--color-secondary-light);
-}
-
-.heroCornerLeft,
-.heroCornerRight {
-  position: absolute;
-  bottom: 48px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground-muted);
-  opacity: 0.6;
-  z-index: 1;
-}
-
-.heroCornerLeft {
-  left: 40px;
-}
-
-.heroCornerRight {
-  right: 40px;
-}
-
-/* =============================================
-   Career Story
-   ============================================= */
-.career {
-  padding: 120px 40px;
-  border-top: 1px solid var(--color-border);
-}
-
-.careerInner {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.careerLead {
-  font-family: var(--font-heading);
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.4;
-  color: var(--color-foreground);
-  margin-bottom: 48px;
-}
-
-.careerBody {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.careerBody p {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 2.1;
-  color: var(--color-secondary-light);
-}
-
-.careerHighlight {
-  font-family: var(--font-heading);
-  font-size: clamp(1.4rem, 3vw, 2.2rem);
-  font-weight: 600;
-  letter-spacing: 0;
-  line-height: 1.5;
-  color: var(--color-foreground);
-  padding: 32px 0;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-}
-
-/* =============================================
-   Beliefs / Philosophy
-   ============================================= */
-.beliefs {
-  padding: 120px 40px;
-  background: var(--color-foreground);
-  color: var(--color-primary);
-  border-top: 1px solid var(--color-border);
-}
-
-.beliefsInner {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.beliefsLabel {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 400;
+  font-weight: 200;
+  font-size: clamp(36px, 5vw, 64px);
   letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  margin-bottom: 48px;
+  color: var(--color-foreground);
+  opacity: 0;
 }
 
-.beliefsGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
+.fvSub {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground);
+  margin-top: 16px;
+  opacity: 0;
+}
+
+.fvHr {
+  width: 60px;
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 24px auto 0;
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+/* ---- Edge Text ---- */
+.fvEdgeBl,
+.fvEdgeBr {
+  position: absolute;
+  z-index: 2;
+}
+
+.fvEdgeText {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground);
+}
+
+.fvEdgeBl {
+  bottom: 40px;
+  left: 40px;
+  opacity: 0;
+}
+
+.fvEdgeBr {
+  bottom: 40px;
+  right: 40px;
+  opacity: 0;
+}
+
+/* ========================================
+   経歴ストーリーセクション（黒背景）
+   ======================================== */
+.story {
+  background: var(--color-primary);
+  padding: 160px 80px;
+}
+
+.storyInner {
+  max-width: 640px;
+  margin: 0 auto 0 calc((100% - 640px) / 3);
+}
+
+.storyLead {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 21.6px;
+  line-height: 2.0;
+  color: var(--color-foreground);
+}
+
+.storyBody {
+  margin-top: 48px;
+}
+
+.storyParagraph {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 2.2;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  margin-bottom: 32px;
+}
+
+.storyParagraph:last-child {
+  margin-bottom: 0;
+}
+
+.storyHighlight {
+  font-family: var(--font-heading);
+  font-weight: 200;
+  font-size: 28.8px;
+  letter-spacing: 0.1em;
+  color: #fff;
+  padding: 40px 0;
+}
+
+/* ========================================
+   信条・こだわりセクション（白背景）
+   ======================================== */
+.belief {
+  background: #fff;
+  padding: 160px 80px;
+}
+
+.beliefInner {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .beliefItem {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 48px 0;
 }
 
-.beliefNum {
-  font-family: var(--font-heading);
-  font-size: 48px;
-  font-weight: 200;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--color-primary);
-  opacity: 0.15;
+.beliefItem:first-child {
+  padding-top: 0;
 }
 
-.beliefTitle {
+.beliefHeading {
   font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: var(--color-primary);
+  font-weight: 500;
+  font-size: 28.8px;
+  color: #111;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
 }
 
-.beliefDesc {
+.beliefText {
   font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 2;
-  color: #555;
+  font-weight: 300;
+  font-size: 16.8px;
+  line-height: 2.0;
+  color: #111;
+  margin-top: 16px;
+  letter-spacing: 0.04em;
 }
 
-/* =============================================
-   Skill Set
-   ============================================= */
-.skills {
-  padding: 120px 40px;
-  border-top: 1px solid var(--color-border);
+.beliefDivider {
+  width: 100%;
+  height: 1px;
+  background: #e0e0e0;
 }
 
-.skillsInner {
-  max-width: 1200px;
-  margin: 0 auto;
+/* ========================================
+   スキルセット Terminal Index（黒背景）
+   ======================================== */
+.skill {
+  background: var(--color-primary);
+  padding: 160px 80px 0;
 }
 
-.skillsHeading {
-  font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-foreground);
+.skillInner {
+  max-width: 700px;
+  margin: 0 auto 0 calc((100% - 700px) / 3);
+}
+
+.skillHead {
   margin-bottom: 64px;
 }
 
-.skillsGrid {
+.skillTitle {
+  font-family: var(--font-heading);
+  font-weight: 200;
+  font-size: 48px;
+  letter-spacing: 0.2em;
+  color: var(--color-foreground);
+  transition: font-weight 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skillHr {
+  width: 40px;
+  height: 1px;
+  background: var(--color-border-light);
+  margin-top: 24px;
+}
+
+/* ---- Skill Grid ---- */
+.skillList {
+  display: flex;
+  flex-direction: column;
+}
+
+.skillRow {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1px;
-  background: var(--color-border);
-  border: 1px solid var(--color-border);
+  grid-template-columns: 60px 180px 1fr;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.skillItem {
-  padding: 36px 28px;
-  background: var(--color-primary);
-  transition: background 300ms ease;
+.skillRow:first-child {
+  border-top: 1px solid var(--color-border);
 }
 
-.skillItem:hover {
-  background: var(--color-primary-light);
+.skillNum {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 13.2px;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground);
+  align-self: center;
 }
 
 .skillName {
   font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
+  font-size: 16.9px;
   letter-spacing: 0.06em;
   color: var(--color-foreground);
-  margin-bottom: 12px;
+  align-self: center;
 }
 
 .skillDesc {
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.8;
-  color: var(--color-secondary);
-}
-
-/* =============================================
-   Social
-   ============================================= */
-.social {
-  padding: 80px 40px;
-  border-top: 1px solid var(--color-border);
-  text-align: center;
-}
-
-.socialLabel {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10px;
   font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  margin-bottom: 24px;
-}
-
-.socialLinks {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-}
-
-.socialLink {
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.1em;
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
   color: var(--color-foreground);
-  padding-bottom: 4px;
-  border-bottom: 1px solid transparent;
-  transition: border-color 300ms ease, color 300ms ease;
+  align-self: center;
+  line-height: 1.8;
 }
 
-.socialLink:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+/* ========================================
+   SNSセクション（スキルセットと連続）
+   ======================================== */
+.sns {
+  padding: 80px 0 160px;
 }
 
-/* =============================================
-   Responsive
-   ============================================= */
-@media (max-width: 768px) {
-  .heroTitle {
-    font-size: clamp(3rem, 14vw, 5rem);
-  }
-
-  .heroCornerLeft,
-  .heroCornerRight {
-    bottom: 100px;
-  }
-
-  .heroCornerLeft {
-    left: 20px;
-  }
-
-  .heroCornerRight {
-    right: 20px;
-  }
-
-  .career {
-    padding: 80px 20px;
-  }
-
-  .beliefs {
-    padding: 80px 20px;
-  }
-
-  .beliefsGrid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .skills {
-    padding: 80px 20px;
-  }
-
-  .skillsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .skillItem {
-    padding: 28px 20px;
-  }
-
-  .social {
-    padding: 60px 20px;
-  }
+.snsInner {
+  max-width: 700px;
+  margin: 0 auto 0 calc((100% - 700px) / 3);
 }
 
-@media (min-width: 769px) and (max-width: 1279px) {
-  .career {
-    padding: 100px 40px;
+.snsDivider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  margin-bottom: 32px;
+}
+
+.snsLabel {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--color-foreground);
+  margin-bottom: 20px;
+}
+
+.snsLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.snsLink {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--color-foreground);
+  transition: opacity 0.3s;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.snsLink svg {
+  flex-shrink: 0;
+}
+
+.snsLink:hover {
+  opacity: 0.7;
+}
+
+/* ========================================
+   Responsive — Tablet (768–1279)
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .fvEdgeBl { left: 24px; bottom: 24px; }
+  .fvEdgeBr { right: 24px; bottom: 24px; }
+
+  .story { padding: 120px 40px; }
+  .storyInner { margin: 0 auto 0 40px; }
+
+  .belief { padding: 120px 40px; }
+
+  .skill { padding: 120px 40px 0; }
+  .skillInner { margin: 0 auto 0 40px; }
+
+  .sns { padding: 60px 0 120px; }
+  .snsInner { margin: 0 auto 0 40px; }
+}
+
+/* ========================================
+   Responsive — SP (–767)
+   ======================================== */
+@media (max-width: 767px) {
+  /* FV */
+  .fvTitle {
+    font-size: clamp(24px, 7vw, 40px);
+    letter-spacing: 0.12em;
+  }
+  .fvSub { font-size: 11px; }
+  .fvEdgeBl { left: 16px; bottom: 20px; }
+  .fvEdgeBr { right: 16px; bottom: 20px; }
+
+  /* Story */
+  .story {
+    padding: 80px 20px;
+  }
+  .storyInner {
+    margin: 0;
+    max-width: 100%;
+  }
+  .storyLead { font-size: 16px; }
+  .storyParagraph { font-size: 14px; }
+  .storyHighlight { font-size: 18px; }
+
+  /* Belief */
+  .belief {
+    padding: 80px 20px;
+  }
+  .beliefHeading { font-size: 18px; }
+  .beliefText { font-size: 13px; }
+  .beliefItem { padding: 32px 0; }
+
+  /* Skill */
+  .skill {
+    padding: 80px 20px 0;
+  }
+  .skillInner {
+    margin: 0;
+    max-width: 100%;
+  }
+  .skillTitle { font-size: 36px; }
+  .skillRow {
+    grid-template-columns: 40px 1fr;
+    gap: 4px;
+  }
+  .skillDesc {
+    grid-column: 1 / -1;
+    padding-left: 40px;
+    margin-top: 4px;
   }
 
-  .beliefs {
-    padding: 100px 40px;
+  /* SNS */
+  .sns {
+    padding: 60px 0 80px;
   }
-
-  .beliefsGrid {
-    gap: 32px;
-  }
-
-  .skills {
-    padding: 100px 40px;
-  }
-
-  .skillsGrid {
-    grid-template-columns: repeat(3, 1fr);
+  .snsInner {
+    margin: 0;
+    padding: 0 20px;
+    max-width: 100%;
   }
 }

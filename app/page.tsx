@@ -2,6 +2,7 @@ import Link from "next/link";
 import HomeClient from "@/components/home/HomeClient";
 import Marquee from "@/components/home/Marquee";
 import PickUpWorks from "@/components/home/PickUpWorks";
+import PriceAnim from "@/components/home/PriceAnim";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import DynamicLantern from "@/components/webgl/DynamicLantern";
 import { getPickUpWorks } from "@/lib/works";
@@ -69,47 +70,40 @@ export default function Home() {
           reverse
         />
 
-        {/* 6. Price Digest */}
-        <section className={styles.priceSection}>
+        {/* 6. Price Digest — 旧サイト忠実再現（白背景・リスト型） */}
+        <PriceAnim className={styles.priceSection}>
           <div className={styles.priceInner}>
-            <ScrollReveal>
-              <div className={styles.priceHeader}>
-                <span className={styles.priceLabel}>
-                  PRICE<span className={styles.priceLabelSub}>料金</span>
-                </span>
-              </div>
-            </ScrollReveal>
-
-            <div className={styles.priceCards}>
-              <ScrollReveal delay={0.1}>
-                <div className={styles.priceCard}>
-                  <span className={styles.priceCardLabel}>LP DESIGN</span>
-                  <p className={styles.priceCardDesc}>
-                    静的コーディング / レスポンシブ対応
-                  </p>
-                  <span className={styles.priceCardAmount}>¥150,000〜</span>
-                </div>
-              </ScrollReveal>
-              <ScrollReveal delay={0.2}>
-                <div className={styles.priceCard}>
-                  <span className={styles.priceCardLabel}>WORDPRESS</span>
-                  <p className={styles.priceCardDesc}>
-                    テーマ構築 / カスタマイズ
-                  </p>
-                  <span className={styles.priceCardAmount}>¥200,000〜</span>
-                </div>
-              </ScrollReveal>
+            <div data-price-header className={styles.priceHead}>
+              <h2 className={styles.priceTitle}>
+                PRICE — <span className={styles.priceTitleJp}>料金</span>
+              </h2>
+              <div className={styles.priceHr} />
             </div>
 
-            <ScrollReveal delay={0.3}>
-              <div className={styles.priceCta}>
-                <Link href="/service" className={styles.priceCtaLink}>
-                  VIEW DETAILS <span>→</span>
-                </Link>
+            <div className={styles.priceList}>
+              <div data-price-card className={styles.priceItem}>
+                <div className={styles.priceItemLeft}>
+                  <h3 className={styles.priceName}>LP DESIGN</h3>
+                  <p className={styles.priceDesc}>静的コーディング / レスポンシブ対応</p>
+                </div>
+                <span className={styles.priceAmount}>¥150,000〜</span>
               </div>
-            </ScrollReveal>
+              <div data-price-card className={styles.priceItem}>
+                <div className={styles.priceItemLeft}>
+                  <h3 className={styles.priceName}>WORDPRESS</h3>
+                  <p className={styles.priceDesc}>テーマ構築 / カスタマイズ</p>
+                </div>
+                <span className={styles.priceAmount}>¥200,000〜</span>
+              </div>
+            </div>
           </div>
-        </section>
+
+          <div data-price-cta className={styles.priceCta}>
+            <Link href="/service" className={styles.priceCtaLink}>
+              <span className={styles.priceCtaLinkText}>VIEW DETAILS →</span>
+            </Link>
+          </div>
+        </PriceAnim>
 
         {/* 7. Lantern WebGL */}
         <section className={styles.lanternSection}>

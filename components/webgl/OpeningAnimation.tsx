@@ -200,8 +200,9 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    // Lights
-    const ambLight = new THREE.AmbientLight(0x100800, 0.008);
+    // Lights — intensity values scaled for Three.js r155+ physically-based lighting
+    const L = Math.PI * 1.5;
+    const ambLight = new THREE.AmbientLight(0x100800, 0.008 * L);
     scene.add(ambLight);
     const topLight = new THREE.DirectionalLight(0xffffff, 0);
     topLight.position.set(0, 10, -3);
@@ -223,9 +224,9 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
     let rafId: number | null = null;
     let inkRafId: number | null = null;
 
-    // Light proxy
+    // Light proxy — values pre-scaled by PI for physically-based lighting (Three.js r155+)
     const lightState = {
-      ambient: 0.008,
+      ambient: 0.008 * L,
       topIntensity: 0,
       rimIntensity: 0,
       fillIntensity: 0,
@@ -451,7 +452,7 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
       const master = gsap.timeline();
 
       // Phase 1: Darkness
-      master.to(lightState, { ambient: 0.015, duration: 0.4, ease: "power2.out" }, 0.2);
+      master.to(lightState, { ambient: 0.015 * L, duration: 0.4, ease: "power2.out" }, 0.2);
 
       // Phase 2: Characters appear + ink splats
       const CHAR_DELAY = 0.25;
@@ -485,11 +486,11 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
       master.to(
         lightState,
         {
-          ambient: 0.06,
-          topIntensity: 0.5,
-          fillIntensity: 0.1,
-          frontIntensity: 0.04,
-          topSurfIntensity: 0.3,
+          ambient: 0.06 * L,
+          topIntensity: 0.5 * L,
+          fillIntensity: 0.1 * L,
+          frontIntensity: 0.04 * L,
+          topSurfIntensity: 0.3 * L,
           duration: CHAR_TOTAL,
           ease: "power1.out",
         },
@@ -501,12 +502,12 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
       master.to(
         lightState,
         {
-          topIntensity: 2.8,
-          rimIntensity: 0.5,
-          fillIntensity: 0.4,
-          frontIntensity: 0.18,
-          topSurfIntensity: 1.8,
-          ambient: 0.12,
+          topIntensity: 2.8 * L,
+          rimIntensity: 0.5 * L,
+          fillIntensity: 0.4 * L,
+          frontIntensity: 0.18 * L,
+          topSurfIntensity: 1.8 * L,
+          ambient: 0.12 * L,
           duration: 1.8,
           ease: "power2.inOut",
         },
@@ -519,12 +520,12 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
       master.to(
         lightState,
         {
-          ambient: 0.14,
-          topIntensity: 3.2,
-          rimIntensity: 0.6,
-          fillIntensity: 0.45,
-          frontIntensity: 0.2,
-          topSurfIntensity: 2.0,
+          ambient: 0.14 * L,
+          topIntensity: 3.2 * L,
+          rimIntensity: 0.6 * L,
+          fillIntensity: 0.45 * L,
+          frontIntensity: 0.2 * L,
+          topSurfIntensity: 2.0 * L,
           duration: 0.6,
           ease: "power2.out",
         },

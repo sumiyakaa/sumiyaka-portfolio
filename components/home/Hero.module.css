@@ -1,8 +1,17 @@
 /* =============================================
-   Hero — Full Viewport
+   Scroll Area — 140vh for sticky parallax
+   ============================================= */
+.scrollArea {
+  position: relative;
+  height: 140vh;
+}
+
+/* =============================================
+   Hero — Full Viewport (Sticky)
    ============================================= */
 .hero {
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
   height: 100vh;
   min-height: 600px;
@@ -10,6 +19,16 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: var(--color-background);
+}
+
+.stickyInner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
 }
 
 /* =============================================
@@ -20,238 +39,317 @@
   left: 24px;
   top: 18px;
   z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-heading);
   font-size: 13px;
-  font-weight: 300;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground);
+  letter-spacing: 0.2em;
+  color: #fff;
   pointer-events: none;
+  white-space: nowrap;
+  line-height: 1;
+  will-change: transform, opacity;
 }
 
 .floatingLogoEn {
+  font-family: var(--font-heading);
   font-weight: 300;
 }
 
 .floatingLogoSep {
-  opacity: 0.4;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  margin: 0 0.1em;
 }
 
 .floatingLogoJp {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 12px;
 }
 
 /* =============================================
-   Copy
+   Background Layers
    ============================================= */
-.copy {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.lineWrap {
+.bg {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 
-.heading {
-  display: flex;
-  flex-direction: column;
+.radial {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
 }
 
-.line {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(3.2rem, 10vw, 8.5rem);
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  line-height: 1.05;
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orb1 {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.02);
+  filter: blur(80px);
+}
+
+.orb2 {
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.015);
+  filter: blur(80px);
+}
+
+.orb3 {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.01);
+  filter: blur(80px);
+}
+
+/* =============================================
+   3D Container
+   ============================================= */
+.container {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+/* =============================================
+   Main Text
+   ============================================= */
+.mainText {
+  font-family: var(--font-heading);
+  font-weight: 100;
+  font-size: clamp(48px, 8vw, 120px);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
   color: var(--color-foreground);
 }
 
-.sub {
-  margin-top: 28px;
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 300;
-  letter-spacing: 0.35em;
-  color: var(--color-secondary-light);
+.fvLetter {
+  display: inline-block;
+}
+
+.fvSpace {
+  display: inline-block;
+  width: 0.3em;
+}
+
+.fvLine {
+  display: block;
+}
+
+.fvLineAmp {
+  font-size: 0.6em;
 }
 
 /* =============================================
-   AIO Badge
+   Sub Copy
    ============================================= */
-.aio {
-  margin-top: 36px;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 24px;
-  border: 1px solid var(--color-border-light);
-  transition: border-color 300ms ease, background 300ms ease;
-}
-
-.aio:hover {
-  border-color: var(--color-accent);
-  background: rgba(200, 169, 110, 0.04);
-}
-
-.aioLabel {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
+.sub {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 19px;
   letter-spacing: 0.15em;
-  color: var(--color-accent);
+  color: var(--color-foreground);
+  margin-top: 24px;
 }
 
-.aioDivider {
-  width: 1px;
-  height: 14px;
-  background: var(--color-border-light);
-}
-
+/* =============================================
+   AIO Tagline + Link
+   ============================================= */
 .aioText {
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--color-secondary-light);
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 14px;
 }
 
-.aioArrow {
+.aioLink {
+  display: inline-block;
+  margin-top: 16px;
   font-family: var(--font-heading);
-  font-size: 14px;
-  color: var(--color-secondary-light);
-  transition: transform 300ms ease, color 300ms ease;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
 }
 
-.aio:hover .aioArrow {
-  transform: translateX(4px);
-  color: var(--color-accent);
+.aioLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.12);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aioLink:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.aioLink:hover::after {
+  transform: scaleX(1);
+}
+
+.aioLink span {
+  position: relative;
+  z-index: 1;
 }
 
 /* =============================================
-   Corner Elements
+   Horizontal Rule
    ============================================= */
-.cornerLeft,
-.cornerRight {
-  position: absolute;
-  bottom: 48px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground-muted);
-  opacity: 0.6;
+.hr {
+  width: 200px;
+  height: 1px;
+  background: #333;
+  margin: 32px auto 0;
 }
 
-.cornerLeft {
+/* =============================================
+   Edge Text
+   ============================================= */
+.edgeBl,
+.edgeBr {
+  position: absolute;
+  z-index: 2;
+}
+
+.edgeText {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground);
+}
+
+.edgeBl {
+  bottom: 40px;
   left: 40px;
 }
 
-.cornerRight {
+.edgeBr {
+  bottom: 40px;
   right: 40px;
 }
 
 /* =============================================
-   Scroll Indicator
+   Corner Frames SVG
    ============================================= */
-.scrollIndicator {
+.corners {
   position: absolute;
-  bottom: 48px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.scrollText {
-  font-family: var(--font-heading);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.25em;
-  color: var(--color-foreground-muted);
-  opacity: 0.6;
+.corner {
+  fill: none;
+  stroke: var(--color-foreground);
+  stroke-width: 1;
+  stroke-dasharray: 80;
 }
 
-.scrollLine {
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(
-    to bottom,
-    var(--color-foreground-muted) 0%,
-    transparent 100%
+/* =============================================
+   Scanline Overlay
+   ============================================= */
+.scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.015) 2px,
+    rgba(255,255,255,0.015) 4px
   );
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; transform: scaleY(1); }
-  50% { opacity: 1; transform: scaleY(1); }
+  pointer-events: none;
+  z-index: 3;
 }
 
 /* =============================================
    Responsive
    ============================================= */
 @media (max-width: 768px) {
-  .line {
-    font-size: clamp(2.4rem, 13vw, 4.5rem);
+  .scrollArea {
+    height: 110vh;
+  }
+
+  .mainText {
+    font-size: clamp(32px, 10vw, 56px);
   }
 
   .sub {
-    font-size: 11px;
-    letter-spacing: 0.2em;
+    font-size: 16px;
+    margin-top: 40px;
+  }
+
+  .aioText {
+    font-size: 13px;
     margin-top: 20px;
   }
 
-  .aio {
-    flex-direction: column;
-    gap: 6px;
-    padding: 10px 18px;
+  .aioLink {
+    font-size: 11px;
+    margin-top: 12px;
+    padding: 6px 18px;
+  }
+
+  .hr {
+    width: 120px;
     margin-top: 28px;
   }
 
-  .aioDivider {
+  .edgeBl {
+    left: 16px;
+    bottom: -40px;
+  }
+
+  .edgeBr {
+    right: 16px;
+    bottom: -40px;
+  }
+
+  .floatingLogo {
     display: none;
   }
 
-  .cornerLeft,
-  .cornerRight {
-    bottom: 110px;
-    font-size: 8px;
+  .orb {
+    display: none;
   }
 
-  .cornerLeft {
-    left: 20px;
-  }
-
-  .cornerRight {
-    right: 20px;
-  }
-
-  .scrollIndicator {
-    bottom: 32px;
+  .corners {
+    display: none;
   }
 }
 
+
 @media (min-width: 769px) and (max-width: 1279px) {
-  .line {
-    font-size: clamp(3rem, 8vw, 6rem);
+  .mainText {
+    font-size: clamp(48px, 7vw, 96px);
   }
 
-  .cornerLeft {
-    left: 30px;
+  .edgeBl {
+    left: 24px;
+    bottom: 24px;
   }
 
-  .cornerRight {
-    right: 30px;
+  .edgeBr {
+    right: 24px;
+    bottom: 24px;
   }
 }

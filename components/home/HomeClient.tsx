@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import Hero from "./Hero";
 
@@ -16,8 +17,10 @@ interface HomeClientProps {
 export default function HomeClient({ children }: HomeClientProps) {
   const [openingDone, setOpeningDone] = useState(false);
   const [showOverlay, setShowOverlay] = useState(true);
+  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
+    setPortalRoot(document.body);
     if (sessionStorage.getItem("akashiki-splash") === "done") {
       setOpeningDone(true);
       setShowOverlay(false);
@@ -31,7 +34,11 @@ export default function HomeClient({ children }: HomeClientProps) {
 
   return (
     <>
-      {showOverlay && <OpeningAnimation onComplete={handleComplete} />}
+      {showOverlay && portalRoot &&
+        createPortal(
+          <OpeningAnimation onComplete={handleComplete} />,
+          portalRoot
+        )}
       <Hero openingDone={openingDone} />
       {children}
     </>

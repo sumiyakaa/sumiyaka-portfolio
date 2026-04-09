@@ -92,115 +92,142 @@
 }
 
 /* =============================================
-   Price Digest — Symmetric Cards
+   Price Digest — 旧サイト忠実再現（白背景・リスト型）
    ============================================= */
 .priceSection {
-  padding: 120px 40px;
-  border-top: 1px solid var(--color-border);
-  background: var(--color-primary-light);
+  background: #f5f5f5;
+  padding: 160px 80px;
 }
 
 .priceInner {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
-.priceHeader {
-  margin-bottom: 56px;
+.priceHead {
+  margin-bottom: 64px;
 }
 
-.priceLabel {
+.priceTitle {
   font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-foreground);
-}
-
-.priceLabelSub {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--color-secondary);
-  margin-left: 16px;
-}
-
-.priceCards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.priceCard {
-  padding: 48px 40px;
-  border: 1px solid var(--color-border);
-  background: var(--color-primary);
-  transition: border-color 300ms ease, transform 300ms ease;
-}
-
-.priceCard:hover {
-  border-color: var(--color-border-light);
-  transform: translateY(-4px);
-}
-
-.priceCardLabel {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-foreground);
-  margin-bottom: 12px;
-}
-
-.priceCardDesc {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--color-secondary);
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
-
-.priceCardAmount {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 200;
-  letter-spacing: -0.01em;
-  color: var(--color-foreground);
+  font-size: 48px;
+  letter-spacing: 0.2em;
+  color: #111;
+  line-height: 1.4;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
 }
 
+.priceTitleJp {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 24px;
+  color: #111;
+}
+
+.priceHr {
+  width: 40px;
+  height: 1px;
+  background: #e0e0e0;
+  margin-top: 24px;
+}
+
+/* ---- Price Items (List) ---- */
+.priceList {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 32px 0;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+}
+
+.priceItem:first-child {
+  border-top: 1px solid #e0e0e0;
+}
+
+.priceItemLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceName {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 0.1em;
+  color: #111;
+  line-height: 1.4;
+}
+
+.priceDesc {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 12px;
+  color: #111;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+.priceAmount {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  color: #111;
+  white-space: nowrap;
+}
+
+/* ---- View Details Link (Fill Hover) ---- */
 .priceCta {
-  margin-top: 48px;
+  max-width: 800px;
+  margin: 48px auto 0;
   text-align: right;
 }
 
 .priceCtaLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
   font-family: var(--font-heading);
-  font-size: 13px;
   font-weight: 400;
-  letter-spacing: 0.12em;
-  color: var(--color-foreground);
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border);
-  transition: border-color 300ms ease, color 300ms ease;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: #111;
+  position: relative;
+  display: inline-block;
+  padding: 16px 48px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+}
+
+.priceCtaLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #111;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .priceCtaLink:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  color: #fff;
+  border-color: #111;
 }
 
-.priceCtaLink span {
-  transition: transform 300ms ease;
+.priceCtaLink:hover::after {
+  transform: scaleX(1);
 }
 
-.priceCtaLink:hover span {
-  transform: translateX(6px);
+.priceCtaLinkText {
+  position: relative;
+  z-index: 1;
 }
 
 /* =============================================
@@ -297,16 +324,26 @@
     padding: 80px 20px;
   }
 
-  .priceCards {
-    grid-template-columns: 1fr;
+  .priceTitle {
+    font-size: 36px;
   }
 
-  .priceCard {
-    padding: 36px 24px;
+  .priceItem {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .priceAmount {
+    font-size: 20px;
   }
 
   .priceCta {
     text-align: center;
+  }
+
+  .priceCtaLink {
+    font-size: 14px;
+    padding: 14px 36px;
   }
 
   .lanternSection {
@@ -329,7 +366,7 @@
   }
 
   .priceSection {
-    padding: 100px 30px;
+    padding: 120px 40px;
   }
 
   .contactSection {

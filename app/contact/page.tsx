@@ -1,69 +1,46 @@
 import type { Metadata } from "next";
-import ScrollReveal from "@/components/animation/ScrollReveal";
+import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
+import FVTypewriter from "@/components/animation/FVTypewriter";
+import FVPulseRings from "@/components/animation/FVPulseRings";
 import ContactForm from "@/components/contact/ContactForm";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "CONTACT — AKASHIKI | お問い合わせ",
   description:
-    "AKASHIKI（灯敷）へのお問い合わせ。LP制作・WordPress構築・コーディングのご相談はこちらから。ヒアリングシートに沿ったご相談で、方向性をスムーズに固められます。",
+    "AKASHIKI（灯敷）へのお問い合わせ。LP制作・WordPress構築・Webデザインのご相談はお気軽にどうぞ。",
   robots: { index: true, follow: true },
 };
 
 export default function ContactPage() {
   return (
     <main>
-      {/* Hero FV */}
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>CONTACT</h1>
-          <p className={styles.heroSub}>お問い合わせ・ご相談</p>
+      {/* ========== FV — 100vh ========== */}
+      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.25em">
+        <div className={styles.fvBg}>
+          <div className={styles.fvGrain} aria-hidden="true" />
+          <div className={styles.fvScanline} aria-hidden="true" />
         </div>
-        <span className={styles.heroCornerLeft}>CONTACT</span>
-        <span className={styles.heroCornerRight}>FORM</span>
-      </section>
 
-      {/* Lead */}
-      <section className={styles.lead}>
-        <div className={styles.leadInner}>
-          <ScrollReveal>
-            <p className={styles.leadText}>
-              LP制作・WordPress構築・コーディングなど、Webサイト制作に関するご相談をお受けしています。
-              <br />
-              まずはお気軽にお問い合わせください。内容を確認のうえ、折り返しご連絡いたします。
-            </p>
-          </ScrollReveal>
+        <FVPulseRings />
+
+        <div className={styles.fvContent}>
+          <FVTypewriter text="CONTACT" className={styles.fvTitle} />
+          <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
         </div>
-      </section>
 
-      {/* Form */}
-      <section className={styles.formSection}>
+        <div className={styles.fvEdgeBl}>
+          <span data-fv-edge className={styles.fvEdgeText}>CONTACT</span>
+        </div>
+        <div className={styles.fvEdgeBr}>
+          <span data-fv-edge className={styles.fvEdgeText}>SCROLL</span>
+        </div>
+      </SubPageFVAnim>
+
+      {/* ========== フォームセクション（白背景） ========== */}
+      <section className={styles.formSection} aria-label="お問い合わせフォーム">
         <div className={styles.formInner}>
-          <ScrollReveal delay={0.1}>
-            <ContactForm />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Info */}
-      <section className={styles.info}>
-        <div className={styles.infoInner}>
-          <ScrollReveal>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>RESPONSE TIME</span>
-                <p className={styles.infoValue}>
-                  通常1〜2営業日以内にご返信いたします
-                </p>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>FREE CONSULTATION</span>
-                <p className={styles.infoValue}>
-                  ラフ提案まで費用は発生しません
-                </p>
-              </div>
-            </div>
-          </ScrollReveal>
+          <ContactForm />
         </div>
       </section>
     </main>

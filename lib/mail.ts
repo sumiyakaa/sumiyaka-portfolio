@@ -12,14 +12,16 @@ function getResend(): Resend {
 interface ContactMailParams {
   name: string;
   email: string;
-  type: string;
+  budget: string;
+  deadline: string;
   message: string;
 }
 
 export async function sendContactMail({
   name,
   email,
-  type,
+  budget,
+  deadline,
   message,
 }: ContactMailParams) {
   const to = process.env.CONTACT_EMAIL_TO;
@@ -29,13 +31,14 @@ export async function sendContactMail({
     from: "AKASHIKI Contact <onboarding@resend.dev>",
     to,
     replyTo: email,
-    subject: `【お問い合わせ】${type} — ${name}`,
+    subject: `【お問い合わせ】${name}`,
     text: [
       `氏名: ${name}`,
       `メールアドレス: ${email}`,
-      `お問い合わせ種別: ${type}`,
+      `ご予算: ${budget || "未選択"}`,
+      `ご希望納期: ${deadline || "未選択"}`,
       ``,
-      `--- 本文 ---`,
+      `--- ご相談内容 ---`,
       message,
     ].join("\n"),
   });

@@ -1,71 +1,109 @@
 /* =============================================
-   Pick Up Works Section
+   Pick Up Works — Option D (Type + Scroll)
    ============================================= */
 .section {
-  padding: 120px 40px 100px;
+  position: relative;
+  background: var(--color-primary);
+  padding: 120px 80px;
 }
 
-.header {
-  max-width: 1200px;
-  margin: 0 auto 64px;
+.inner {
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  color: var(--color-secondary);
-  margin-bottom: 16px;
+/* ---- Pickup Title — Wave Lift ---- */
+.pickupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin-bottom: 24px;
+  cursor: default;
 }
 
-.heading {
+.pickupEn {
   font-family: var(--font-heading);
-  font-size: clamp(3rem, 7vw, 6.5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  font-weight: 200;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: 0.2em;
   color: var(--color-foreground);
 }
 
-/* =============================================
-   Cards Grid
-   ============================================= */
-.grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+.pickupJp {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(14px, 2vw, 24px);
+  color: var(--color-foreground);
 }
 
-/* =============================================
-   Card
-   ============================================= */
+.pickupChar {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pickupTitle:hover .pickupChar {
+  transform: translateY(-4px);
+}
+
+/* ---- Section Heading ---- */
+.heading {
+  font-family: var(--font-heading);
+  font-weight: 100;
+  font-size: clamp(48px, 6vw, 96px);
+  letter-spacing: 0.15em;
+  color: var(--color-foreground);
+  line-height: 1.2;
+  margin-bottom: 56px;
+}
+
+/* ---- Grid 3x2 ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+/* ---- Card Slot ---- */
+.cardSlot {
+  position: relative;
+  z-index: 1;
+}
+
+.slotActive {
+  z-index: 10;
+}
+
+/* ---- Card ---- */
 .card {
-  display: block;
-  transition: transform 300ms ease, box-shadow 300ms ease;
+  position: relative;
+  border: 1px solid var(--color-border);
+  background: var(--color-primary);
+  box-sizing: border-box;
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* NO overflow: hidden — typed panel extends below */
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  border-color: var(--color-border-light);
 }
 
+.cardLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- Thumbnail ---- */
 .thumbnail {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border: 1px solid var(--color-border);
 }
 
 .thumbnailImage {
-  transition: transform 300ms ease;
-}
-
-.card:hover .thumbnailImage {
-  transform: scale(1.06);
+  /* object-fit / object-position via inline style */
+  /* GSAP animates objectPosition on hover */
 }
 
 .tierBadge {
@@ -80,13 +118,19 @@
   color: var(--color-accent);
   padding: 3px 10px;
   border: 1px solid rgba(200, 169, 110, 0.3);
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(4px);
 }
 
-/* =============================================
-   Card Body
-   ============================================= */
+/* ---- Card Info (body + typed panel wrapper) ---- */
+.cardInfo {
+  position: relative;
+}
+
+/* ---- Card Body (normal state) ---- */
 .cardBody {
-  padding: 16px 4px 0;
+  padding: 16px 16px 20px;
+  background: var(--color-primary);
 }
 
 .cardTitle {
@@ -101,6 +145,7 @@
 .cardMeta {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .cardTag {
@@ -113,77 +158,148 @@
   border: 1px solid var(--color-border);
 }
 
-/* =============================================
-   CTA
-   ============================================= */
+/* ---- Typed Panel (overlays cardBody, extends below on hover) ---- */
+.typedPanel {
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  padding: 24px 16px 32px;
+  background: var(--color-primary);
+  border-left: 1px solid var(--color-border-light);
+  border-right: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.typedNameWrap {
+  display: flex;
+  align-items: center;
+  min-height: 1.4em;
+}
+
+.typedName {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  line-height: 1.4;
+}
+
+.typedCursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.9em;
+  background: var(--color-foreground);
+  margin-left: 4px;
+  animation: cursorBlink 1s step-end infinite;
+}
+
+@keyframes cursorBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.typedSub {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--color-secondary);
+  opacity: 0;
+}
+
+/* ---- CTA ---- */
 .cta {
-  max-width: 1200px;
-  margin: 64px auto 0;
+  max-width: 1400px;
+  margin: 48px auto 0;
   text-align: right;
 }
 
 .ctaLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
   font-family: var(--font-heading);
-  font-size: 13px;
   font-weight: 400;
-  letter-spacing: 0.12em;
+  font-size: 18px;
+  letter-spacing: 0.1em;
   color: var(--color-foreground);
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border);
-  transition: border-color 300ms ease, color 300ms ease;
+  position: relative;
+  display: inline-block;
+  padding: 16px 48px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s;
+}
+
+.ctaLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-foreground);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ctaLink:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  color: var(--color-primary);
+  border-color: var(--color-foreground);
 }
 
-.ctaArrow {
-  font-size: 16px;
-  transition: transform 300ms ease;
+.ctaLink:hover::after {
+  transform: scaleX(1);
 }
 
-.ctaLink:hover .ctaArrow {
-  transform: translateX(6px);
+.ctaLinkText {
+  position: relative;
+  z-index: 1;
 }
 
-/* =============================================
-   Responsive
-   ============================================= */
+/* ---- Responsive ---- */
 @media (max-width: 768px) {
   .section {
     padding: 80px 20px 60px;
   }
-
-  .header {
-    margin-bottom: 40px;
+  .pickupEn {
+    font-size: 24px;
   }
-
+  .pickupJp {
+    font-size: 14px;
+  }
   .heading {
-    font-size: clamp(2.5rem, 12vw, 4rem);
+    font-size: clamp(36px, 10vw, 56px);
+    margin-bottom: 32px;
   }
-
   .grid {
     grid-template-columns: 1fr;
-    gap: 24px;
   }
-
   .cta {
-    margin-top: 40px;
+    margin-top: 32px;
     text-align: center;
+  }
+  .ctaLink {
+    font-size: 14px;
+    padding: 14px 36px;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1279px) {
   .section {
-    padding: 100px 30px 80px;
+    padding: 100px 40px 80px;
   }
-
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+  }
+  .ctaLink {
+    font-size: 16px;
+    padding: 14px 40px;
   }
 }

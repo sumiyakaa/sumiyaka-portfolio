@@ -51,7 +51,7 @@ export default function ScrollReveal({
           y: 0,
           duration,
           delay,
-          ease: "power3.out",
+          ease: "cubic-bezier(0.16, 1, 0.3, 1)",
         });
       },
     });

@@ -4,24 +4,34 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./ContactForm.module.css";
 
-const CONTACT_TYPES = [
-  "LP制作の相談",
-  "WordPress構築の相談",
-  "コーディングの相談",
-  "その他",
+const BUDGET_OPTIONS = [
+  "〜10万円",
+  "10万円〜20万円",
+  "20万円〜30万円",
+  "30万円〜50万円",
+  "50万円〜",
+  "未定・相談したい",
+] as const;
+
+const DEADLINE_OPTIONS = [
+  "1ヶ月以内",
+  "1〜2ヶ月",
+  "2〜3ヶ月",
+  "3ヶ月以上",
+  "未定・相談したい",
 ] as const;
 
 interface FormData {
   name: string;
   email: string;
-  type: string;
+  budget: string;
+  deadline: string;
   message: string;
 }
 
 interface FormErrors {
   name?: string;
   email?: string;
-  type?: string;
   message?: string;
 }
 
@@ -40,12 +50,11 @@ function validateField(field: keyof FormData, value: string): string | undefined
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
         return "正しいメールアドレスを入力してください";
       return undefined;
-    case "type":
-      if (!value) return "お問い合わせ種別を選択してください";
-      return undefined;
     case "message":
       if (!value.trim()) return "お問い合わせ内容を入力してください";
       if (value.length > 5000) return "5000文字以内で入力してください";
+      return undefined;
+    default:
       return undefined;
   }
 }
@@ -54,7 +63,8 @@ export default function ContactForm() {
   const [form, setForm] = useState<FormData>({
     name: "",
     email: "",
-    type: "",
+    budget: "",
+    deadline: "",
     message: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -64,8 +74,9 @@ export default function ContactForm() {
   const handleChange = useCallback(
     (field: keyof FormData, value: string) => {
       setForm((prev) => ({ ...prev, [field]: value }));
-      if (errors[field]) {
-        setErrors((prev) => ({ ...prev, [field]: undefined }));
+      const errKey = field as keyof FormErrors;
+      if (errKey in errors && errors[errKey]) {
+        setErrors((prev) => ({ ...prev, [errKey]: undefined }));
       }
     },
     [errors],
@@ -76,7 +87,8 @@ export default function ContactForm() {
     setServerError("");
 
     const newErrors: FormErrors = {};
-    (Object.keys(form) as (keyof FormData)[]).forEach((field) => {
+    const requiredFields: (keyof FormErrors)[] = ["name", "email", "message"];
+    requiredFields.forEach((field) => {
       const err = validateField(field, form[field]);
       if (err) newErrors[field] = err;
     });
@@ -121,12 +133,10 @@ export default function ContactForm() {
             animate={{ opacity: 1, y: 0 }}
             transition={transition}
           >
-            <span className={styles.successIcon}>&#10003;</span>
-            <h3 className={styles.successTitle}>送信完了</h3>
+            <h3 className={styles.successTitle}>THANK YOU.</h3>
             <p className={styles.successText}>
-              お問い合わせいただきありがとうございます。
-              <br />
-              内容を確認のうえ、折り返しご連絡いたします。
+              お問い合わせを受け付けました。<br />
+              2営業日以内にご返信いたします。
             </p>
           </motion.div>
         ) : (
@@ -140,81 +150,105 @@ export default function ContactForm() {
             transition={transition}
             noValidate
           >
-            {/* Name */}
+            {/* NAME */}
             <div className={styles.field}>
               <label htmlFor="contact-name" className={styles.label}>
-                氏名<span className={styles.required}>*</span>
+                NAME <span className={styles.labelSep}>—</span> <span className={styles.labelJp}>氏名</span>
+                <span className={styles.required}>*</span>
               </label>
               <input
                 id="contact-name"
                 type="text"
-                className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
+                className={styles.input}
                 value={form.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="山田 太郎"
+                placeholder="お名前をご記入ください"
                 autoComplete="name"
+                required
                 disabled={status === "sending"}
               />
-              {errors.name && <span className={styles.error}>{errors.name}</span>}
+              <span className={styles.error} aria-live="polite">{errors.name ?? ""}</span>
             </div>
 
-            {/* Email */}
+            {/* EMAIL */}
             <div className={styles.field}>
               <label htmlFor="contact-email" className={styles.label}>
-                メールアドレス<span className={styles.required}>*</span>
+                EMAIL <span className={styles.labelSep}>—</span> <span className={styles.labelJp}>メールアドレス</span>
+                <span className={styles.required}>*</span>
               </label>
               <input
                 id="contact-email"
                 type="email"
-                className={`${styles.input} ${errors.email ? styles.inputError : ""}`}
+                className={styles.input}
                 value={form.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                placeholder="example@mail.com"
+                placeholder="example@email.com"
                 autoComplete="email"
+                required
                 disabled={status === "sending"}
               />
-              {errors.email && <span className={styles.error}>{errors.email}</span>}
+              <span className={styles.error} aria-live="polite">{errors.email ?? ""}</span>
             </div>
 
-            {/* Type */}
+            {/* BUDGET */}
             <div className={styles.field}>
-              <label htmlFor="contact-type" className={styles.label}>
-                お問い合わせ種別<span className={styles.required}>*</span>
+              <label htmlFor="contact-budget" className={styles.label}>
+                BUDGET <span className={styles.labelSep}>—</span> <span className={styles.labelJp}>ご予算</span>
               </label>
-              <select
-                id="contact-type"
-                className={`${styles.select} ${errors.type ? styles.inputError : ""}`}
-                value={form.type}
-                onChange={(e) => handleChange("type", e.target.value)}
-                disabled={status === "sending"}
-              >
-                <option value="">選択してください</option>
-                {CONTACT_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-              {errors.type && <span className={styles.error}>{errors.type}</span>}
+              <div className={styles.selectWrap}>
+                <select
+                  id="contact-budget"
+                  className={styles.select}
+                  value={form.budget}
+                  onChange={(e) => handleChange("budget", e.target.value)}
+                  disabled={status === "sending"}
+                >
+                  <option value="" disabled>選択してください</option>
+                  {BUDGET_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Message */}
+            {/* DEADLINE */}
+            <div className={styles.field}>
+              <label htmlFor="contact-deadline" className={styles.label}>
+                DEADLINE <span className={styles.labelSep}>—</span> <span className={styles.labelJp}>ご希望納期</span>
+              </label>
+              <div className={styles.selectWrap}>
+                <select
+                  id="contact-deadline"
+                  className={styles.select}
+                  value={form.deadline}
+                  onChange={(e) => handleChange("deadline", e.target.value)}
+                  disabled={status === "sending"}
+                >
+                  <option value="" disabled>選択してください</option>
+                  {DEADLINE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* MESSAGE */}
             <div className={styles.field}>
               <label htmlFor="contact-message" className={styles.label}>
-                お問い合わせ内容<span className={styles.required}>*</span>
+                MESSAGE <span className={styles.labelSep}>—</span> <span className={styles.labelJp}>ご相談内容</span>
+                <span className={styles.required}>*</span>
               </label>
               <textarea
                 id="contact-message"
-                className={`${styles.textarea} ${errors.message ? styles.inputError : ""}`}
+                className={styles.textarea}
                 value={form.message}
                 onChange={(e) => handleChange("message", e.target.value)}
-                placeholder="ご相談内容をお聞かせください"
-                rows={8}
+                placeholder="ご相談内容をご記入ください"
+                rows={6}
+                required
                 disabled={status === "sending"}
               />
-              {errors.message && (
-                <span className={styles.error}>{errors.message}</span>
-              )}
+              <span className={styles.error} aria-live="polite">{errors.message ?? ""}</span>
             </div>
 
             {/* Server Error */}
@@ -241,7 +275,7 @@ export default function ContactForm() {
               {status === "sending" ? (
                 <span className={styles.spinner} />
               ) : (
-                "SEND MESSAGE"
+                "SEND →"
               )}
             </button>
           </motion.form>

@@ -10,6 +10,7 @@ import React, {
 import Lenis from "@studio-freight/lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ScrollProgress from "./ScrollProgress";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -58,6 +59,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
   return (
     <LenisContext.Provider value={lenisRef}>
+      <ScrollProgress />
       {children}
     </LenisContext.Provider>
   );
