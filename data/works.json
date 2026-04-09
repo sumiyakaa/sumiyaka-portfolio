@@ -7,7 +7,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
     "description": "アパレルブランドのバイリンガル対応サイト。英語・日本語の2言語に対応し、ブランドの世界観を忠実に再現。",
     "thumbnail": "/works/caldwell-sons/thumbnail.webp",
-    "images": ["/works/caldwell-sons/01.webp", "/works/caldwell-sons/02.webp", "/works/caldwell-sons/03.webp"],
+    "images": ["/works/caldwell-sons/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/caldwell-sons/",
     "isPickUp": true,
     "order": 1
@@ -20,7 +20,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP"],
     "description": "ジュエリーブランドのコーポレートサイト。上質なブランドイメージを表現するデザインとアニメーション。",
     "thumbnail": "/works/aoki-atelier/thumbnail.webp",
-    "images": ["/works/aoki-atelier/01.webp", "/works/aoki-atelier/02.webp", "/works/aoki-atelier/03.webp"],
+    "images": ["/works/aoki-atelier/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-Atelier/",
     "isPickUp": true,
     "order": 2
@@ -33,7 +33,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP", "ScrollTrigger"],
     "description": "リフォーム会社の13ページコーポレートサイト。施工事例・サービス紹介を豊富なビジュアルで訴求。",
     "thumbnail": "/works/aoki-reform/thumbnail.webp",
-    "images": ["/works/aoki-reform/01.webp", "/works/aoki-reform/02.webp", "/works/aoki-reform/03.webp"],
+    "images": ["/works/aoki-reform/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-Reform/",
     "isPickUp": true,
     "order": 3
@@ -46,7 +46,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
     "description": "美容クリニックの3言語対応サイト（日本語・英語・中国語）。36ページ構成の大規模多言語サイト。",
     "thumbnail": "/works/beauty-clinic-no2/thumbnail.webp",
-    "images": ["/works/beauty-clinic-no2/01.webp", "/works/beauty-clinic-no2/02.webp", "/works/beauty-clinic-no2/03.webp"],
+    "images": ["/works/beauty-clinic-no2/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-BeautyClinic-No2/ja/",
     "isPickUp": true,
     "order": 4
@@ -59,7 +59,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP"],
     "description": "税理士事務所のコーポレートサイト。信頼感と専門性を伝えるクリーンなデザイン。",
     "thumbnail": "/works/aoki-tax/thumbnail.webp",
-    "images": ["/works/aoki-tax/01.webp", "/works/aoki-tax/02.webp", "/works/aoki-tax/03.webp"],
+    "images": ["/works/aoki-tax/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/AokiTax/",
     "isPickUp": false,
     "order": 5
@@ -72,7 +72,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP"],
     "description": "パーソナルジムのランディングページ。力強いビジュアルとダイナミックなスクロールアニメーション。",
     "thumbnail": "/works/aoki-gym/thumbnail.webp",
-    "images": ["/works/aoki-gym/01.webp", "/works/aoki-gym/02.webp", "/works/aoki-gym/03.webp"],
+    "images": ["/works/aoki-gym/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/AokiGym/",
     "isPickUp": true,
     "order": 6
@@ -85,7 +85,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP"],
     "description": "レストランのランディングページ。食欲をそそるビジュアルと洗練されたレイアウト。",
     "thumbnail": "/works/bistro-aoki/thumbnail.webp",
-    "images": ["/works/bistro-aoki/01.webp", "/works/bistro-aoki/02.webp", "/works/bistro-aoki/03.webp"],
+    "images": ["/works/bistro-aoki/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/BistroAoki/",
     "isPickUp": true,
     "order": 7
@@ -98,7 +98,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP", "ScrollTrigger"],
     "description": "不動産会社の16ページコーポレートサイト。物件情報を見やすく整理し、信頼感のあるデザイン。",
     "thumbnail": "/works/aoki-estate/thumbnail.webp",
-    "images": ["/works/aoki-estate/01.webp", "/works/aoki-estate/02.webp", "/works/aoki-estate/03.webp"],
+    "images": ["/works/aoki-estate/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/AokiEstate/",
     "isPickUp": false,
     "order": 8
@@ -111,7 +111,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "英語教室のランディングページ。親しみやすいデザインでファミリー層にアプローチ。",
     "thumbnail": "/works/aoki-family-english/thumbnail.webp",
-    "images": ["/works/aoki-family-english/01.webp", "/works/aoki-family-english/02.webp"],
+    "images": ["/works/aoki-family-english/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/aoki-family-english/",
     "isPickUp": false,
     "order": 9
@@ -124,7 +124,7 @@
     "technologies": ["HTML", "CSS", "JavaScript", "GSAP"],
     "description": "アニメーション制作会社の7ページコーポレートサイト。動きのあるインタラクションで制作力を表現。",
     "thumbnail": "/works/aoki-animation/thumbnail.webp",
-    "images": ["/works/aoki-animation/01.webp", "/works/aoki-animation/02.webp", "/works/aoki-animation/03.webp"],
+    "images": ["/works/aoki-animation/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-Animation/",
     "isPickUp": false,
     "order": 10
@@ -137,7 +137,7 @@
     "technologies": ["React", "TypeScript", "CSS"],
     "description": "制作実績検索ツール。React + TypeScriptで構築したインタラクティブなフィルタリングUI。",
     "thumbnail": "/works/works-finder/thumbnail.webp",
-    "images": ["/works/works-finder/01.webp", "/works/works-finder/02.webp"],
+    "images": ["/works/works-finder/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/works-finder/",
     "isPickUp": false,
     "order": 11
@@ -150,7 +150,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "Web制作の見積シミュレーター。ユーザーが条件を選択して概算見積もりを算出。",
     "thumbnail": "/works/aoki-mitumori/thumbnail.webp",
-    "images": ["/works/aoki-mitumori/01.webp", "/works/aoki-mitumori/02.webp"],
+    "images": ["/works/aoki-mitumori/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-Mitumori/",
     "isPickUp": false,
     "order": 12
@@ -163,7 +163,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "美容クリニックの広告用ランディングページ。コンバージョン重視の設計。",
     "thumbnail": "/works/beauty-clinic/thumbnail.webp",
-    "images": ["/works/beauty-clinic/01.webp", "/works/beauty-clinic/02.webp"],
+    "images": ["/works/beauty-clinic/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-BeautyClinic/",
     "isPickUp": false,
     "order": 13
@@ -176,7 +176,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "ポップアップストア告知用のイベントランディングページ。",
     "thumbnail": "/works/popup-store-lp/thumbnail.webp",
-    "images": ["/works/popup-store-lp/01.webp", "/works/popup-store-lp/02.webp"],
+    "images": ["/works/popup-store-lp/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/lp-aoki-standard/",
     "isPickUp": false,
     "order": 14
@@ -189,7 +189,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "テック系企業のコーポレートランディングページ。モダンで洗練されたデザイン。",
     "thumbnail": "/works/aoki-tech-studio/thumbnail.webp",
-    "images": ["/works/aoki-tech-studio/01.webp", "/works/aoki-tech-studio/02.webp"],
+    "images": ["/works/aoki-tech-studio/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/Aoki-Tech-Studio/",
     "isPickUp": false,
     "order": 15
@@ -202,7 +202,7 @@
     "technologies": ["WordPress", "PHP", "CSS", "JavaScript"],
     "description": "化粧品ブランドのWordPressオリジナルテーマ。管理画面からのコンテンツ更新に対応。",
     "thumbnail": "/works/aoki-cosmetic-wp/thumbnail.webp",
-    "images": ["/works/aoki-cosmetic-wp/01.webp", "/works/aoki-cosmetic-wp/02.webp"],
+    "images": ["/works/aoki-cosmetic-wp/01.webp"],
     "liveUrl": "https://github.com/sumiyakaa/aokicosmetic-wp",
     "isPickUp": false,
     "order": 16
@@ -215,7 +215,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "化粧品の販売用ランディングページ。商品の魅力を最大限に引き出すビジュアル設計。",
     "thumbnail": "/works/aoki-lotion/thumbnail.webp",
-    "images": ["/works/aoki-lotion/01.webp", "/works/aoki-lotion/02.webp"],
+    "images": ["/works/aoki-lotion/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/aoki-lotion-lp/",
     "isPickUp": false,
     "order": 17
@@ -228,7 +228,7 @@
     "technologies": ["HTML", "CSS", "JavaScript"],
     "description": "カフェのランディングページ。温かみのあるデザインで店舗の雰囲気を表現。",
     "thumbnail": "/works/cafe-aoki/thumbnail.webp",
-    "images": ["/works/cafe-aoki/01.webp", "/works/cafe-aoki/02.webp"],
+    "images": ["/works/cafe-aoki/01.webp"],
     "liveUrl": "https://sumiyakaa.github.io/cafe-aoki/",
     "isPickUp": false,
     "order": 18
