@@ -1,9 +1,9 @@
 .container {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 9999;
   overflow: hidden;
-  background: var(--color-background);
+  background: #000;
 }
 
 .inkCanvas {
@@ -23,11 +23,5 @@
 }
 
 .fallback {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(40, 40, 40, 0.6) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 30%, rgba(200, 169, 110, 0.04) 0%, transparent 50%),
-    var(--color-background);
+  display: none;
 }

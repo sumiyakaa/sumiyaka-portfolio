@@ -197,7 +197,10 @@ ul, ol {
   color: var(--color-primary);
 }
 
-/* Body lock — SP menu open */
+/* Body lock — SP menu open / Opening Animation */
 body.is-locked {
   overflow: hidden;
+  position: fixed;
+  inset: 0;
+  width: 100%;
 }

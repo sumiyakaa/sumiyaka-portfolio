@@ -6,6 +6,7 @@ import { FontLoader, Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { gsap } from "gsap";
 import { createFluidSim, type FluidSimAPI } from "@/lib/webgl/fluidSim";
+import { useLenisRef } from "@/components/animation/SmoothScroll";
 import styles from "./OpeningAnimation.module.css";
 
 // ---- Vertex color helpers (ported from v1) ----
@@ -84,18 +85,39 @@ function removeDegenTriangles(geometry: THREE.BufferGeometry): void {
 
 // ---- Component ----
 
-export default function OpeningAnimation() {
+interface OpeningAnimationProps {
+  onComplete: () => void;
+}
+
+export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inkCanvasRef = useRef<HTMLCanvasElement>(null);
   const threeCanvasRef = useRef<HTMLCanvasElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const [fallback, setFallback] = useState(false);
+  const lenisRef = useLenisRef();
+
+  // Safety timeout refs shared between initScene and runAnimation
+  const safetyFiredRef = useRef(false);
+  const safetyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const initScene = useCallback(() => {
     const container = containerRef.current;
     const inkCanvas = inkCanvasRef.current;
     const threeCanvas = threeCanvasRef.current;
     if (!container || !inkCanvas || !threeCanvas) return;
+
+    // sessionStorage check — skip if already played
+    if (sessionStorage.getItem("akashiki-splash") === "done") {
+      onComplete();
+      return;
+    }
+
+    // body lock
+    document.body.classList.add("is-locked");
+
+    // Lenis stop
+    lenisRef.current?.stop();
 
     // SP: skip WebGL
     if (window.innerWidth <= 768) {
@@ -123,8 +145,19 @@ export default function OpeningAnimation() {
       return;
     }
 
+    // Safety timeout (10s)
+    safetyFiredRef.current = false;
+    safetyTimeoutRef.current = setTimeout(() => {
+      if (safetyFiredRef.current) return;
+      safetyFiredRef.current = true;
+      document.body.classList.remove("is-locked");
+      lenisRef.current?.start();
+      if (cleanupRef.current) cleanupRef.current();
+      sessionStorage.setItem("akashiki-splash", "done");
+      onComplete();
+    }, 10000);
+
     // ---- Ink fluid ----
-    // Set canvas CSS size before creating fluid sim so clientWidth/Height are valid
     inkCanvas.style.width = W + "px";
     inkCanvas.style.height = H + "px";
     const ink = createFluidSim(inkCanvas, {
@@ -507,8 +540,9 @@ export default function OpeningAnimation() {
       master.to(textState, { rotY: Math.PI, duration: 0.6, ease: "power2.in" }, S2);
       master.to(camState, { x: 1.5, y: 1.5, z: 18, duration: 0.6, ease: "power2.inOut" }, S2);
 
-      // Step 3: 3D rotation + settle
+      // Step 3: 3D rotation + Canvas自体を左上ロゴ位置へCSS transform移動+縮小 (1.2s)
       const S3 = S2 + 0.5;
+
       master.to(
         textState,
         {
@@ -520,40 +554,54 @@ export default function OpeningAnimation() {
         S3
       );
 
-      // Ink canvas fade
-      if (inkCanvasRef.current) {
-        master.to(inkCanvasRef.current, { opacity: 0, duration: 1.0, ease: "power2.out" }, S3);
+      // Three.js canvasをロゴ位置へCSS transform移動
+      if (threeCanvasRef.current) {
+        const canvasRect = threeCanvasRef.current.getBoundingClientRect();
+        // ロゴの目標位置: 画面左上 (left: 24px, top: 18px)
+        const targetX = 24 + 60 - canvasRect.width / 2;
+        const targetY = 18 + 10 - canvasRect.height / 2;
+        const targetScale = 0.015;
+
+        master.to(threeCanvasRef.current, {
+          x: targetX,
+          y: targetY,
+          scale: targetScale,
+          duration: 1.2,
+          ease: "cubic-bezier(0.16, 1, 0.3, 1)",
+        }, S3);
       }
 
-      // Step 4: Settle into background state
-      const S4 = S3 + 1.2;
-      master.to(
-        lightState,
-        {
-          ambient: 0.06,
-          topIntensity: 1.5,
-          rimIntensity: 0.3,
-          fillIntensity: 0.2,
-          frontIntensity: 0.08,
-          topSurfIntensity: 0.8,
+      // inkCanvas fadeout
+      if (inkCanvasRef.current) {
+        master.to(inkCanvasRef.current, {
+          opacity: 0,
           duration: 1.0,
           ease: "power2.out",
-        },
-        S4
-      );
+        }, S3);
+      }
 
-      // Gentle continuous rotation after animation
-      master.to(
-        textState,
-        {
-          rotY: Math.PI * 2 + 0.15,
-          duration: 20,
-          ease: "none",
-          repeat: -1,
-          yoyo: true,
-        },
-        S4 + 1.0
-      );
+      // Step 4: オーバーレイfadeout → 完了 (0.4s)
+      const S4 = S3 + 1.0;
+      if (containerRef.current) {
+        master.to(containerRef.current, {
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.out",
+          onComplete: () => {
+            safetyFiredRef.current = true;
+            if (safetyTimeoutRef.current) clearTimeout(safetyTimeoutRef.current);
+            // クリーンアップ
+            if (cleanupRef.current) cleanupRef.current();
+            // body unlock + Lenis再開
+            document.body.classList.remove("is-locked");
+            lenisRef.current?.start();
+            // sessionStorage記録
+            sessionStorage.setItem("akashiki-splash", "done");
+            // 親に完了通知
+            onComplete();
+          },
+        }, S4);
+      }
     }
 
     // Cleanup
@@ -577,7 +625,17 @@ export default function OpeningAnimation() {
       const ext = glCtx.getExtension("WEBGL_lose_context");
       if (ext) ext.loseContext();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Fallback handling — call onComplete when fallback triggers
+  useEffect(() => {
+    if (fallback) {
+      document.body.classList.remove("is-locked");
+      sessionStorage.setItem("akashiki-splash", "done");
+      onComplete();
+    }
+  }, [fallback, onComplete]);
 
   useEffect(() => {
     // Wait one frame for DOM layout to complete
