@@ -4,6 +4,8 @@ import Marquee from "@/components/home/Marquee";
 import PickUpWorks from "@/components/home/PickUpWorks";
 import PriceAnim from "@/components/home/PriceAnim";
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import MagneticType from "@/components/home/MagneticType";
+import PriceRunner from "@/components/home/PriceRunner";
 import DynamicLantern from "@/components/webgl/DynamicLantern";
 import { getPickUpWorks } from "@/lib/works";
 import styles from "./page.module.css";
@@ -43,21 +45,35 @@ export default function Home() {
         {/* 4. About Teaser — Asymmetric Split */}
         <section className={styles.aboutTeaser}>
           <ScrollReveal direction="left" className={styles.aboutLeft}>
-            <span className={styles.aboutLabel}>WHO WE ARE</span>
-            <div className={styles.aboutLargeType}>
-              <span>WEB</span>
-              <span>DESIGNER</span>
-              <span>&amp;</span>
-              <span>DEVELOPER</span>
-            </div>
+            <MagneticType
+              label="WHY AKASHIKI"
+              labelClassName={styles.aboutLabel}
+              lines={[
+                { text: "DESIGN" },
+                { text: "&" },
+                { text: "DEPLOY." },
+              ]}
+              linesClassName={styles.aboutLargeType}
+            />
           </ScrollReveal>
           <ScrollReveal direction="right" delay={0.15} className={styles.aboutRight}>
             <p>
-              構成からデザイン、コーディング、公開まで一括対応。
+              20サイト以上の制作実績を持つ、Web デザイン × コーディングの専門家。見た目だけでなく、表示速度・保守性・運用まで見据えたサイトを構築します。
             </p>
-            <p>
-              見た目を再現するだけでは足りない。表示速度、アクセシビリティ、保守性——運用まで見据えた、実務に耐えるWebサイトを作ること。それが私たちの仕事です。
-            </p>
+            <div className={styles.aboutStrengths}>
+              <div className={styles.aboutStrength}>
+                <span className={styles.aboutStrengthLabel}>LP / CORPORATE / WORDPRESS</span>
+                <p className={styles.aboutStrengthDesc}>あらゆるサイト種別に対応。多言語サイトは3言語まで実績あり。</p>
+              </div>
+              <div className={styles.aboutStrength}>
+                <span className={styles.aboutStrengthLabel}>ONE-STOP WORKFLOW</span>
+                <p className={styles.aboutStrengthDesc}>構成・デザイン・コーディング・公開まで、すべてワンストップで完結。</p>
+              </div>
+              <div className={styles.aboutStrength}>
+                <span className={styles.aboutStrengthLabel}>MOTION &amp; INTERACTION</span>
+                <p className={styles.aboutStrengthDesc}>GSAP・スクロール連動アニメーションなど、動きのある表現を標準実装。</p>
+              </div>
+            </div>
             <Link href="/about" className={styles.aboutLink}>
               MORE <span>→</span>
             </Link>
@@ -72,6 +88,7 @@ export default function Home() {
 
         {/* 6. Price Digest — 旧サイト忠実再現（白背景・リスト型） */}
         <PriceAnim className={styles.priceSection}>
+          <PriceRunner />
           <div className={styles.priceInner}>
             <div data-price-header className={styles.priceHead}>
               <h2 className={styles.priceTitle}>
@@ -86,14 +103,14 @@ export default function Home() {
                   <h3 className={styles.priceName}>LP DESIGN</h3>
                   <p className={styles.priceDesc}>静的コーディング / レスポンシブ対応</p>
                 </div>
-                <span className={styles.priceAmount}>¥150,000〜</span>
+                <span data-price-amount className={styles.priceAmount}>¥150,000〜</span>
               </div>
               <div data-price-card className={styles.priceItem}>
                 <div className={styles.priceItemLeft}>
                   <h3 className={styles.priceName}>WORDPRESS</h3>
                   <p className={styles.priceDesc}>テーマ構築 / カスタマイズ</p>
                 </div>
-                <span className={styles.priceAmount}>¥200,000〜</span>
+                <span data-price-amount className={styles.priceAmount}>¥200,000〜</span>
               </div>
             </div>
           </div>

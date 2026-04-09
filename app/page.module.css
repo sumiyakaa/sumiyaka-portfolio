@@ -12,13 +12,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   padding: 80px 60px;
   border-right: 1px solid var(--color-border);
+  text-align: center;
 }
 
 .aboutLabel {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 19px;
   font-weight: 300;
   letter-spacing: 0.2em;
   color: var(--color-secondary);
@@ -30,18 +32,24 @@
   flex-direction: column;
 }
 
-.aboutLargeType span {
+.aboutLargeType {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aboutLargeType > span {
   font-family: var(--font-heading);
-  font-size: clamp(2.8rem, 5.5vw, 5rem);
+  font-size: clamp(4.2rem, 8.4vw, 7.8rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--color-foreground);
 }
 
-.aboutLargeType span:nth-child(3) {
+.aboutLargeType > span:nth-child(2) {
   font-weight: 200;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-size: clamp(2.4rem, 4.2vw, 3.6rem);
   color: var(--color-secondary);
   margin: 8px 0;
 }
@@ -54,12 +62,46 @@
   gap: 24px;
 }
 
-.aboutRight p {
+.aboutRight > p {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 400;
   line-height: 2;
   color: var(--color-secondary-light);
+}
+
+/* ---- Strengths List ---- */
+.aboutStrengths {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+
+.aboutStrength {
+  padding: 20px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.aboutStrength:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.aboutStrengthLabel {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-foreground);
+}
+
+.aboutStrengthDesc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--color-secondary);
+  margin-top: 8px;
 }
 
 .aboutLink {
@@ -97,6 +139,8 @@
 .priceSection {
   background: #f5f5f5;
   padding: 160px 80px;
+  position: relative;
+  overflow: hidden;
 }
 
 .priceInner {

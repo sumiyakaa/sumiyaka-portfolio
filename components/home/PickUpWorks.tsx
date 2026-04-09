@@ -53,7 +53,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
     const ratio = img.naturalHeight / img.naturalWidth;
     if (ratio <= 0.8) return;
 
-    const duration = Math.min(6, Math.max(3, ratio * 1.0));
+    const duration = Math.min(12, Math.max(6, ratio * 2.0));
     if (!scrollProxies.current[i]) scrollProxies.current[i] = { pct: 0 };
     const proxy = scrollProxies.current[i];
     proxy.pct = 0;
@@ -262,7 +262,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                 onMouseLeave={() => handleLeave(i)}
                 data-pickup-card
               >
-                <Link href={`/works/${work.slug}`} className={styles.cardLink}>
+                <a href={work.liveUrl} target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
                   {/* Thumbnail — full-page screenshot, scrolls on hover */}
                   <div className={styles.thumbnail}>
                     <Image
@@ -307,7 +307,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                       />
                     </div>
                   </div>
-                </Link>
+                </a>
               </div>
             </div>
           ))}
