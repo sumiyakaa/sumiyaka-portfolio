@@ -6,6 +6,7 @@ import {
   useCallback,
   useRef,
   useEffect,
+  useState,
   type ReactNode,
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -67,72 +68,72 @@ void main(){
 `;
 
 /* =================================================================
-   WebGL helpers — on-demand init / destroy
-   ================================================================= */
-interface GLState {
-  gl: WebGLRenderingContext;
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
-}
-
-function initGL(canvas: HTMLCanvasElement): GLState | null {
-  const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false });
-  if (!gl) return null;
-
-  const vs = gl.createShader(gl.VERTEX_SHADER)!;
-  gl.shaderSource(vs, VERT);
-  gl.compileShader(vs);
-
-  const fs = gl.createShader(gl.FRAGMENT_SHADER)!;
-  gl.shaderSource(fs, FRAG);
-  gl.compileShader(fs);
-
-  const prog = gl.createProgram()!;
-  gl.attachShader(prog, vs);
-  gl.attachShader(prog, fs);
-  gl.linkProgram(prog);
-
-  const buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
-  const aPos = gl.getAttribLocation(prog, "a_pos");
-  gl.enableVertexAttribArray(aPos);
-  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-  gl.useProgram(prog);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-  return {
-    gl,
-    program: prog,
-    uniforms: {
-      uResolution: gl.getUniformLocation(prog, "uResolution"),
-      uOrigin: gl.getUniformLocation(prog, "uOrigin"),
-      uProgress: gl.getUniformLocation(prog, "uProgress"),
-      uDirection: gl.getUniformLocation(prog, "uDirection"),
-    },
-  };
-}
-
-function destroyGL(state: GLState) {
-  const { gl, program } = state;
-  gl.deleteProgram(program);
-  const ext = gl.getExtension("WEBGL_lose_context");
-  if (ext) ext.loseContext();
-}
-
-/* =================================================================
    Provider Component
    ================================================================= */
 export default function InkTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const glStateRef = useRef<GLState | null>(null);
+  const glRef = useRef<WebGLRenderingContext | null>(null);
+  const programRef = useRef<WebGLProgram | null>(null);
+  const uniformsRef = useRef<Record<string, WebGLUniformLocation | null>>({});
   const animRef = useRef<number>(0);
+  const [ready, setReady] = useState(false);
   const busyRef = useRef(false);
   const prevPathRef = useRef(pathname);
+
+  // Init WebGL once on mount
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false });
+    if (!gl) return;
+    glRef.current = gl;
+
+    const vs = gl.createShader(gl.VERTEX_SHADER)!;
+    gl.shaderSource(vs, VERT);
+    gl.compileShader(vs);
+
+    const fs = gl.createShader(gl.FRAGMENT_SHADER)!;
+    gl.shaderSource(fs, FRAG);
+    gl.compileShader(fs);
+
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    programRef.current = prog;
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, "a_pos");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    gl.useProgram(prog);
+    uniformsRef.current = {
+      uResolution: gl.getUniformLocation(prog, "uResolution"),
+      uOrigin: gl.getUniformLocation(prog, "uOrigin"),
+      uProgress: gl.getUniformLocation(prog, "uProgress"),
+      uDirection: gl.getUniformLocation(prog, "uDirection"),
+    };
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    setReady(true);
+
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      gl.deleteProgram(prog);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      const ext = gl.getExtension("WEBGL_lose_context");
+      if (ext) ext.loseContext();
+    };
+  }, []);
 
   // Resize handler
   useEffect(() => {
@@ -158,31 +159,16 @@ export default function InkTransitionProvider({ children }: { children: ReactNod
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const ensureGL = useCallback((): GLState | null => {
-    if (glStateRef.current) return glStateRef.current;
+  const drawFrame = useCallback((progress: number, direction: number, ox: number, oy: number) => {
+    const gl = glRef.current;
     const canvas = canvasRef.current;
-    if (!canvas) return null;
-    const state = initGL(canvas);
-    glStateRef.current = state;
-    return state;
-  }, []);
-
-  const releaseGL = useCallback(() => {
-    if (glStateRef.current) {
-      destroyGL(glStateRef.current);
-      glStateRef.current = null;
-    }
-  }, []);
-
-  const drawFrame = useCallback((state: GLState, progress: number, direction: number, ox: number, oy: number) => {
-    const { gl, uniforms: u } = state;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!gl || !canvas) return;
 
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.useProgram(state.program);
+    gl.useProgram(programRef.current);
 
+    const u = uniformsRef.current;
     gl.uniform2f(u.uResolution, canvas.width, canvas.height);
     gl.uniform2f(u.uOrigin, ox, 1 - oy);
     gl.uniform1f(u.uProgress, progress);
@@ -193,8 +179,7 @@ export default function InkTransitionProvider({ children }: { children: ReactNod
 
   const playReveal = useCallback(() => {
     const canvas = canvasRef.current;
-    const state = ensureGL();
-    if (!canvas || !state) { busyRef.current = false; return; }
+    if (!canvas) return;
     canvas.style.pointerEvents = "auto";
 
     const duration = 600;
@@ -204,43 +189,40 @@ export default function InkTransitionProvider({ children }: { children: ReactNod
       const elapsed = now - start;
       const p = Math.min(elapsed / duration, 1);
       const eased = 1 - (1 - p) * (1 - p);
-      drawFrame(state, eased, -1, 0.5, 0.5);
+      drawFrame(eased, -1, 0.5, 0.5);
 
       if (p < 1) {
         animRef.current = requestAnimationFrame(tick);
       } else {
+        // Clear canvas — fully transparent
+        const gl = glRef.current;
+        if (gl) {
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+        }
         canvas.style.pointerEvents = "none";
         busyRef.current = false;
-        // Destroy WebGL after reveal completes
-        releaseGL();
       }
     };
 
     animRef.current = requestAnimationFrame(tick);
-  }, [ensureGL, releaseGL, drawFrame]);
+  }, [drawFrame]);
 
   const navigate = useCallback(
     (href: string, origin?: { x: number; y: number }) => {
-      if (busyRef.current) {
+      if (busyRef.current || !ready) {
         router.push(href);
         return;
       }
       if (href === pathname) return;
 
+      busyRef.current = true;
       const canvas = canvasRef.current;
       if (!canvas) {
         router.push(href);
         return;
       }
 
-      // Init WebGL on-demand
-      const state = ensureGL();
-      if (!state) {
-        router.push(href);
-        return;
-      }
-
-      busyRef.current = true;
       canvas.style.pointerEvents = "auto";
       window.scrollTo({ top: 0, behavior: "instant" });
 
@@ -254,7 +236,7 @@ export default function InkTransitionProvider({ children }: { children: ReactNod
         const elapsed = now - start;
         const p = Math.min(elapsed / duration, 1);
         const eased = p * p;
-        drawFrame(state, eased, 1, ox, oy);
+        drawFrame(eased, 1, ox, oy);
 
         if (p < 1) {
           animRef.current = requestAnimationFrame(tick);
@@ -265,16 +247,8 @@ export default function InkTransitionProvider({ children }: { children: ReactNod
 
       animRef.current = requestAnimationFrame(tick);
     },
-    [router, pathname, ensureGL, drawFrame],
+    [ready, router, pathname, drawFrame],
   );
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cancelAnimationFrame(animRef.current);
-      releaseGL();
-    };
-  }, [releaseGL]);
 
   return (
     <InkContext.Provider value={{ navigate }}>
