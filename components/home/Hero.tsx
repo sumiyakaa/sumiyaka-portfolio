@@ -20,7 +20,7 @@ function LetterSpan({ text, className }: { text: string; className?: string }) {
         ch === " " ? (
           <span key={i} className={styles.fvSpace} />
         ) : (
-          <span key={i} data-hero-letter data-hero-mag className={styles.fvLetter} style={{ display: "inline-block", willChange: "transform" }}>
+          <span key={i} data-hero-letter data-hero-mag className={styles.fvLetter} style={{ display: "inline-block", willChange: "transform", opacity: 0 }}>
             {ch}
           </span>
         )
