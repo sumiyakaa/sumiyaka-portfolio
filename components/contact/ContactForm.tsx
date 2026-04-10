@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useActionState } from "react";
+import { useState, useCallback, useActionState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { submitContact, type ContactState } from "@/app/contact/actions";
 import ContactRunner from "./ContactRunner";
@@ -29,7 +29,7 @@ interface FormErrors {
   message?: string;
 }
 
-type Phase = "form" | "sending" | "runner" | "done";
+type Phase = "form" | "confirm" | "sending" | "runner" | "done";
 
 const transition = { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const };
 
@@ -55,16 +55,42 @@ function validateField(field: string, value: string): string | undefined {
 
 const initialState: ContactState = { success: false, error: "" };
 
+interface FormValues {
+  name: string;
+  email: string;
+  budget: string;
+  deadline: string;
+  message: string;
+}
+
 export default function ContactForm() {
+  const [form, setForm] = useState<FormValues>({ name: "", email: "", budget: "", deadline: "", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [phase, setPhase] = useState<Phase>("form");
+  const formRef = useRef<HTMLFormElement>(null);
+  const pendingFormDataRef = useRef<FormData | null>(null);
 
   const handleAction = useCallback(
     async (prev: ContactState, formData: FormData): Promise<ContactState> => {
+      // If in confirm phase, this is the actual submission
+      if (pendingFormDataRef.current) {
+        setPhase("sending");
+        const result = await submitContact(prev, pendingFormDataRef.current);
+        pendingFormDataRef.current = null;
+        if (result.success) {
+          setPhase("runner");
+        } else {
+          setPhase("form");
+        }
+        return result;
+      }
+
       // Client-side validation
       const name = formData.get("name") as string;
       const email = formData.get("email") as string;
       const message = formData.get("message") as string;
+      const budget = formData.get("budget") as string;
+      const deadline = formData.get("deadline") as string;
 
       const newErrors: FormErrors = {};
       const nameErr = validateField("name", name ?? "");
@@ -80,30 +106,36 @@ export default function ContactForm() {
       }
 
       setErrors({});
-      setPhase("sending");
-
-      const result = await submitContact(prev, formData);
-
-      if (result.success) {
-        setPhase("runner");
-      } else {
-        setPhase("form");
-      }
-
-      return result;
+      // Show confirm modal
+      pendingFormDataRef.current = formData;
+      setPhase("confirm");
+      return { success: false, error: "" };
     },
     [],
   );
 
   const [state, formAction, isPending] = useActionState(handleAction, initialState);
 
+  const handleConfirmSend = useCallback(() => {
+    // Re-submit with the stored formData
+    if (formRef.current && pendingFormDataRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }, []);
+
+  const handleConfirmCancel = useCallback(() => {
+    pendingFormDataRef.current = null;
+    setPhase("form");
+  }, []);
+
   const handleRunnerComplete = useCallback(() => {
     setPhase("done");
   }, []);
 
-  const handleFieldChange = useCallback(
-    (field: keyof FormErrors) => {
-      if (errors[field]) {
+  const handleChange = useCallback(
+    (field: keyof FormValues, value: string) => {
+      setForm((prev) => ({ ...prev, [field]: value }));
+      if (field in errors && errors[field as keyof FormErrors]) {
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
     },
@@ -155,6 +187,7 @@ export default function ContactForm() {
         ) : (
           <motion.form
             key="form"
+            ref={formRef}
             className={styles.form}
             action={formAction}
             initial={{ opacity: 0, y: 20 }}
@@ -174,7 +207,8 @@ export default function ContactForm() {
                 name="name"
                 type="text"
                 className={styles.input}
-                onChange={() => handleFieldChange("name")}
+                value={form.name}
+                onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="お名前をご記入ください"
                 autoComplete="name"
                 required
@@ -194,7 +228,8 @@ export default function ContactForm() {
                 name="email"
                 type="email"
                 className={styles.input}
-                onChange={() => handleFieldChange("email")}
+                value={form.email}
+                onChange={(e) => handleChange("email", e.target.value)}
                 placeholder="example@email.com"
                 autoComplete="email"
                 required
@@ -213,7 +248,8 @@ export default function ContactForm() {
                   id="contact-budget"
                   name="budget"
                   className={styles.select}
-                  defaultValue=""
+                  value={form.budget}
+                  onChange={(e) => handleChange("budget", e.target.value)}
                   disabled={phase === "sending"}
                 >
                   <option value="" disabled>選択してください</option>
@@ -234,7 +270,8 @@ export default function ContactForm() {
                   id="contact-deadline"
                   name="deadline"
                   className={styles.select}
-                  defaultValue=""
+                  value={form.deadline}
+                  onChange={(e) => handleChange("deadline", e.target.value)}
                   disabled={phase === "sending"}
                 >
                   <option value="" disabled>選択してください</option>
@@ -255,7 +292,8 @@ export default function ContactForm() {
                 id="contact-message"
                 name="message"
                 className={styles.textarea}
-                onChange={() => handleFieldChange("message")}
+                value={form.message}
+                onChange={(e) => handleChange("message", e.target.value)}
                 placeholder="ご相談内容をご記入ください"
                 rows={6}
                 required
@@ -292,6 +330,60 @@ export default function ContactForm() {
               )}
             </button>
           </motion.form>
+        )}
+      </AnimatePresence>
+
+      {/* Confirm Modal */}
+      <AnimatePresence>
+        {phase === "confirm" && (
+          <motion.div
+            className={styles.confirmOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className={styles.confirmModal}
+              initial={{ opacity: 0, y: 20, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.97 }}
+              transition={transition}
+            >
+              <h3 className={styles.confirmTitle}>送信内容の確認</h3>
+              <div className={styles.confirmHr} />
+              <dl className={styles.confirmList}>
+                <div className={styles.confirmItem}>
+                  <dt className={styles.confirmDt}>氏名</dt>
+                  <dd className={styles.confirmDd}>{form.name}</dd>
+                </div>
+                <div className={styles.confirmItem}>
+                  <dt className={styles.confirmDt}>メールアドレス</dt>
+                  <dd className={styles.confirmDd}>{form.email}</dd>
+                </div>
+                <div className={styles.confirmItem}>
+                  <dt className={styles.confirmDt}>ご予算</dt>
+                  <dd className={styles.confirmDd}>{form.budget || "未選択"}</dd>
+                </div>
+                <div className={styles.confirmItem}>
+                  <dt className={styles.confirmDt}>ご希望納期</dt>
+                  <dd className={styles.confirmDd}>{form.deadline || "未選択"}</dd>
+                </div>
+                <div className={styles.confirmItem}>
+                  <dt className={styles.confirmDt}>ご相談内容</dt>
+                  <dd className={`${styles.confirmDd} ${styles.confirmDdMessage}`}>{form.message}</dd>
+                </div>
+              </dl>
+              <div className={styles.confirmActions}>
+                <button type="button" className={styles.confirmCancel} onClick={handleConfirmCancel}>
+                  修正する
+                </button>
+                <button type="button" className={styles.confirmSend} onClick={handleConfirmSend}>
+                  送信する →
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
