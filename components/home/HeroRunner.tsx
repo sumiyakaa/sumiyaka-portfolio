@@ -358,6 +358,8 @@ interface HeroRunnerProps {
 export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const hasPlayed = useRef(false);
+  const masterRef = useRef<gsap.core.Timeline | null>(null);
+  const runCyclesRef = useRef<gsap.core.Timeline[]>([]);
 
   const play = useCallback(() => {
     if (hasPlayed.current) return;
@@ -378,12 +380,17 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
     const scaledW = FW * figScale;
     const scaledH = FH * figScale;
 
+    runCyclesRef.current = [];
     const master = gsap.timeline({
       onComplete() {
+        // Kill all run cycles
+        runCyclesRef.current.forEach((rc) => rc.kill());
+        runCyclesRef.current = [];
         if (overlay) overlay.style.display = "none";
         onComplete();
       },
     });
+    masterRef.current = master;
 
     // Hide all letters initially
     letterEls.forEach((el) => {
@@ -436,6 +443,7 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
       }
 
       const runCycle = createRunCycle(svg, item.char);
+      runCyclesRef.current.push(runCycle);
 
       // Phase 1: Run in
       master
@@ -485,11 +493,19 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
 
   useEffect(() => {
     if (active && !hasPlayed.current) {
-      // Short delay to ensure DOM positions are stable
       const timer = setTimeout(play, 100);
       return () => clearTimeout(timer);
     }
   }, [active, play]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      masterRef.current?.kill();
+      runCyclesRef.current.forEach((rc) => rc.kill());
+      runCyclesRef.current = [];
+    };
+  }, []);
 
   return (
     <div
