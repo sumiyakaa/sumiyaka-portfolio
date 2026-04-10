@@ -1,108 +1,77 @@
 /* =============================================
-   Works Page — Hero
+   Works Page — FV (100vh → 50vh)
    ============================================= */
-.hero {
+.fv {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
+  background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 120px 40px 80px;
   overflow: hidden;
 }
 
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      ellipse 80% 60% at 50% 40%,
-      rgba(200, 169, 110, 0.03) 0%,
-      transparent 70%
-    );
-  pointer-events: none;
-}
-
-.heroContent {
+.fvContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
 }
 
-.heroLabel {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  margin-bottom: 24px;
-}
-
-.heroTitle {
+.fvTitle {
   font-family: var(--font-display);
-  font-size: clamp(5rem, 15vw, 14rem);
   font-weight: 400;
-  letter-spacing: 0.04em;
-  line-height: 0.9;
+  font-size: clamp(48px, 10vw, 120px);
+  letter-spacing: 0.2em;
+  line-height: 0.95;
   color: var(--color-foreground);
-  margin-bottom: 32px;
+  opacity: 0;
 }
 
-.heroSub {
+.fvSub {
   font-family: var(--font-mono);
-  font-size: 12px;
   font-weight: 300;
+  font-size: 12px;
   letter-spacing: 0.14em;
   line-height: 2;
   color: var(--color-secondary);
+  margin-top: 20px;
+  opacity: 0;
 }
 
-.heroCount {
-  display: inline-block;
-  font-family: var(--font-heading);
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--color-foreground);
-  margin-top: 8px;
+.fvHr {
+  width: 60px;
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 24px auto 0;
+  transform: scaleX(0);
+  transform-origin: center;
 }
 
-.heroCountLabel {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  color: var(--color-secondary);
-}
-
-/* =============================================
-   Corner Labels
-   ============================================= */
-.heroCornerLeft {
+/* Edge Text */
+.fvEdgeBl,
+.fvEdgeBr {
   position: absolute;
+  z-index: 2;
+}
+
+.fvEdgeText {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground);
+}
+
+.fvEdgeBl {
   bottom: 40px;
   left: 40px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  opacity: 0.5;
-  writing-mode: vertical-rl;
+  opacity: 0;
 }
 
-.heroCornerRight {
-  position: absolute;
+.fvEdgeBr {
   bottom: 40px;
   right: 40px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  opacity: 0.5;
-  writing-mode: vertical-rl;
+  opacity: 0;
 }
 
 /* =============================================
@@ -112,52 +81,35 @@
   padding: 0 40px 120px;
 }
 
-.contentInner {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 /* =============================================
-   Responsive
+   Responsive — Tablet (768–1279)
    ============================================= */
-@media (max-width: 768px) {
-  .hero {
-    min-height: 80vh;
-    padding: 100px 20px 60px;
-  }
-
-  .heroTitle {
-    font-size: clamp(3.5rem, 20vw, 7rem);
-  }
-
-  .heroCount {
-    font-size: 28px;
-  }
-
-  .heroCornerLeft,
-  .heroCornerRight {
-    bottom: 20px;
-  }
-
-  .heroCornerLeft {
-    left: 20px;
-  }
-
-  .heroCornerRight {
-    right: 20px;
-  }
-
-  .content {
-    padding: 0 20px 80px;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1279px) {
-  .hero {
-    padding: 120px 30px 80px;
-  }
+@media (min-width: 768px) and (max-width: 1279px) {
+  .fvEdgeBl { left: 24px; bottom: 24px; }
+  .fvEdgeBr { right: 24px; bottom: 24px; }
 
   .content {
     padding: 0 30px 100px;
+  }
+}
+
+/* =============================================
+   Responsive — SP (–767)
+   ============================================= */
+@media (max-width: 767px) {
+  .fvTitle {
+    font-size: clamp(32px, 12vw, 56px);
+    letter-spacing: 0.12em;
+  }
+
+  .fvSub {
+    font-size: 11px;
+  }
+
+  .fvEdgeBl { left: 16px; bottom: 20px; }
+  .fvEdgeBr { right: 16px; bottom: 20px; }
+
+  .content {
+    padding: 0 20px 80px;
   }
 }

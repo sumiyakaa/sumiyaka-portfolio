@@ -1,0 +1,144 @@
+/* =============================================
+   Works Explorer — Layout
+   ============================================= */
+.layout {
+  display: flex;
+  gap: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* =============================================
+   Main Content
+   ============================================= */
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* =============================================
+   Works View — Grid
+   ============================================= */
+.worksView {
+  /* base */
+}
+
+.viewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+/* =============================================
+   Works View — List
+   ============================================= */
+.viewList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =============================================
+   Works View — Thumbnail
+   ============================================= */
+.viewThumbnail {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+/* =============================================
+   Empty State
+   ============================================= */
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.emptyTitle {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  margin-bottom: 8px;
+}
+
+.emptyDesc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+  margin-bottom: 24px;
+}
+
+.emptyBtn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground-muted);
+  padding: 10px 24px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color var(--duration-normal) ease,
+    border-color var(--duration-normal) ease;
+}
+
+.emptyBtn:hover {
+  color: var(--color-foreground);
+  border-color: var(--color-border-light);
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+
+/* Tablet: sidebar hidden, 2-col grid */
+@media (max-width: 1023px) {
+  .layout {
+    gap: 0;
+  }
+
+  .viewGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .viewThumbnail {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Mobile: 1-col grid */
+@media (max-width: 768px) {
+  .viewGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .viewThumbnail {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .empty {
+    padding: 60px 20px;
+  }
+}
+
+/* Wide desktop: larger thumbnail grid */
+@media (min-width: 1440px) {
+  .viewThumbnail {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Between 1024 and 1439: 4-col thumbnail */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .viewThumbnail {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

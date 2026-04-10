@@ -6,7 +6,7 @@ import PriceAnim from "@/components/home/PriceAnim";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import MagneticType from "@/components/home/MagneticType";
 import PriceRunner from "@/components/home/PriceRunner";
-import DynamicLantern from "@/components/webgl/DynamicLantern";
+import BoundaryFigure from "@/components/home/BoundaryFigure";
 import { getPickUpWorks } from "@/lib/works";
 import styles from "./page.module.css";
 
@@ -37,7 +37,17 @@ export default function Home() {
       {/* 1. HomeClient（Hero + OpeningAnimation連携） */}
       <HomeClient>
         {/* 2. Marquee Band */}
-        <Marquee text="WEB DESIGN — DEVELOPMENT — CODING — WORDPRESS" />
+        <Marquee
+          variant="code"
+          items={[
+            "<Design />",
+            "{ precision: true }",
+            "/* AKASHIKI */",
+            "<Deploy />",
+            'quality: "pixel-perfect"',
+            "<!-- crafted -->",
+          ]}
+        />
 
         {/* 3. Pick Up Works */}
         <PickUpWorks works={pickupWorks} />
@@ -82,7 +92,17 @@ export default function Home() {
 
         {/* 5. Marquee Band (Reverse) */}
         <Marquee
-          text="LP DESIGN — CORPORATE SITE — WORDPRESS — AI SEARCH OPTIMIZATION"
+          variant="code"
+          items={[
+            "#0a0a0a",
+            "font-weight: 200",
+            "ratio: 1.618",
+            "letter-spacing: 0.08em",
+            "#c8a96e",
+            "grid: 8px",
+            "line-height: 1.6",
+            "font-family: Barlow",
+          ]}
           reverse
         />
 
@@ -122,10 +142,8 @@ export default function Home() {
           </div>
         </PriceAnim>
 
-        {/* 7. Lantern WebGL */}
-        <section className={styles.lanternSection}>
-          <DynamicLantern />
-        </section>
+        {/* 7. Boundary Easter Egg */}
+        <BoundaryFigure />
 
         {/* 8. Contact CTA */}
         <section className={styles.contactSection}>

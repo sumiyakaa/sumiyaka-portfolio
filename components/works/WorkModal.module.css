@@ -1,0 +1,136 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  animation: fadeIn 0.3s ease;
+  overscroll-behavior: contain;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalWrap {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-height: 85vh;
+  background: #fff;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.closeBtn {
+  position: sticky;
+  top: 16px;
+  float: right;
+  margin: 16px 16px 0 0;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  color: #111;
+  transition: background 0.2s, color 0.2s;
+}
+
+.closeBtn:hover {
+  background: #111;
+  color: #fff;
+}
+
+.content {
+  padding: 40px 48px 56px;
+}
+
+/* Sticky CTA — positioned outside modal, overlapping right edge */
+.stickyCta {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #111;
+  background: #fff;
+  padding: 20px 12px;
+  border: none;
+  border-radius: 0 100px 100px 0;
+  cursor: pointer;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transition: background 0.3s, box-shadow 0.3s, padding 0.3s;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.stickyCta:hover {
+  background: #f0f0f0;
+  padding: 20px 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+.stickyCtaArrow {
+  display: inline-block;
+  font-size: 13px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stickyCta:hover .stickyCtaArrow {
+  transform: translateY(4px);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .overlay {
+    padding: 16px;
+  }
+
+  .modal {
+    max-height: 90vh;
+  }
+
+  .content {
+    padding: 24px 20px 40px;
+  }
+
+  .stickyCta {
+    display: none;
+  }
+}

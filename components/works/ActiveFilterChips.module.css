@@ -1,0 +1,115 @@
+/* =============================================
+   Active Filter Chips
+   ============================================= */
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 0 16px;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--color-secondary);
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: inline-flex;
+}
+
+/* =============================================
+   Chip
+   ============================================= */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+}
+
+.chip:hover {
+  border-color: var(--color-border-light);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chipQuery {
+  border-color: rgba(200, 169, 110, 0.3);
+  background: rgba(200, 169, 110, 0.04);
+}
+
+.chipQuery:hover {
+  border-color: rgba(200, 169, 110, 0.5);
+  background: rgba(200, 169, 110, 0.08);
+}
+
+.chipFilter {
+  /* default border styling */
+}
+
+.chipText {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground-muted);
+}
+
+.chipQuery .chipText {
+  color: var(--color-accent);
+}
+
+.chipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast) ease;
+}
+
+.chipRemove:hover {
+  color: var(--color-foreground);
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0 12px;
+  }
+
+  .label {
+    padding-top: 0;
+  }
+
+  .chipText {
+    font-size: 10px;
+  }
+}

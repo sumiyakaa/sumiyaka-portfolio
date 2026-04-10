@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description:
     "AKASHIKI（灯敷）へのお問い合わせ。LP制作・WordPress構築・Webデザインのご相談はお気軽にどうぞ。",
   robots: { index: true, follow: true },
+  openGraph: {
+    images: [{ url: "/api/og?title=CONTACT&sub=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B", width: 1200, height: 630 }],
+  },
 };
 
 export default function ContactPage() {

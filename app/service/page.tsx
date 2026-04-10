@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "SERVICE — AKASHIKI | Web制作サービス・料金",
   description:
     "AKASHIKI（灯敷）のWeb制作サービス。LP制作・WordPress構築・AI検索最適化（AIO）を、構成からデザイン、コーディング、公開まで一括対応。料金・制作の流れをご案内します。",
+  openGraph: {
+    images: [{ url: "/api/og?title=SERVICE&sub=Web%E5%88%B6%E4%BD%9C%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E3%83%BB%E6%96%99%E9%87%91", width: 1200, height: 630 }],
+  },
 };
 
 const HOW_I_WORK = [

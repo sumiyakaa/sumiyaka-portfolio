@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLenis } from "@/components/animation/SmoothScroll";
+import { useInkTransition } from "@/components/animation/InkTransition";
 import styles from "./Header.module.css";
 
 const NAV_LINKS = [
@@ -18,6 +19,16 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const lenis = useLenis();
+  const { navigate } = useInkTransition();
+
+  const handleNav = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+      if (href === pathname) return;
+      e.preventDefault();
+      navigate(href, { x: e.clientX, y: e.clientY });
+    },
+    [navigate, pathname],
+  );
   const [isVisible, setIsVisible] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isHome = pathname === "/";
@@ -33,14 +44,12 @@ export default function Header() {
 
       requestAnimationFrame(() => {
         const currentY = window.scrollY;
-        // サブページ: FV要素があればその高さ、なければ viewportHeight
+        // トップ: 100vh / サブページ: data-fv要素の高さ（縮小後は50vh）
         const threshold = isHome
           ? window.innerHeight
           : (() => {
-              const subFv = document.querySelector<HTMLElement>(
-                '[class*="-fv"], [class*="Fv"], [class*="hero"]'
-              );
-              return subFv ? subFv.offsetHeight : window.innerHeight;
+              const fv = document.querySelector<HTMLElement>("[data-fv]");
+              return fv ? fv.offsetTop + fv.offsetHeight : window.innerHeight;
             })();
 
         if (!isVisible && currentY > threshold + BUFFER) {
@@ -84,7 +93,7 @@ export default function Header() {
       <header
         className={`${styles.header} ${isVisible ? styles.visible : styles.hidden}`}
       >
-        <Link href="/" className={styles.logo}>
+        <Link href="/" className={styles.logo} onClick={(e) => handleNav(e, "/")}>
           AKASHIKI
         </Link>
 
@@ -94,6 +103,7 @@ export default function Header() {
               key={href}
               href={href}
               className={`${styles.navLink} ${pathname === href ? styles.active : ""}`}
+              onClick={(e) => handleNav(e, href)}
             >
               {label}
             </Link>
@@ -138,7 +148,7 @@ export default function Header() {
                 <Link
                   href={href}
                   className={`${styles.spMenuLink} ${pathname === href ? styles.active : ""}`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => { setIsMenuOpen(false); handleNav(e, href); }}
                 >
                   {label}
                 </Link>

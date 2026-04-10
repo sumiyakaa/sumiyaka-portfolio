@@ -230,7 +230,7 @@
 .edgeText {
   font-family: var(--font-mono);
   font-weight: 300;
-  font-size: 11px;
+  font-size: 13.2px;
   letter-spacing: 0.1em;
   color: var(--color-foreground);
 }

@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useActionState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { submitContact, type ContactState } from "@/app/contact/actions";
+import ContactRunner from "./ContactRunner";
 import styles from "./ContactForm.module.css";
 
 const BUDGET_OPTIONS = [
@@ -21,25 +23,17 @@ const DEADLINE_OPTIONS = [
   "未定・相談したい",
 ] as const;
 
-interface FormData {
-  name: string;
-  email: string;
-  budget: string;
-  deadline: string;
-  message: string;
-}
-
 interface FormErrors {
   name?: string;
   email?: string;
   message?: string;
 }
 
-type Status = "idle" | "sending" | "success" | "error";
+type Phase = "form" | "sending" | "runner" | "done";
 
 const transition = { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const };
 
-function validateField(field: keyof FormData, value: string): string | undefined {
+function validateField(field: string, value: string): string | undefined {
   switch (field) {
     case "name":
       if (!value.trim()) return "氏名を入力してください";
@@ -59,73 +53,77 @@ function validateField(field: keyof FormData, value: string): string | undefined
   }
 }
 
-export default function ContactForm() {
-  const [form, setForm] = useState<FormData>({
-    name: "",
-    email: "",
-    budget: "",
-    deadline: "",
-    message: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<Status>("idle");
-  const [serverError, setServerError] = useState("");
+const initialState: ContactState = { success: false, error: "" };
 
-  const handleChange = useCallback(
-    (field: keyof FormData, value: string) => {
-      setForm((prev) => ({ ...prev, [field]: value }));
-      const errKey = field as keyof FormErrors;
-      if (errKey in errors && errors[errKey]) {
-        setErrors((prev) => ({ ...prev, [errKey]: undefined }));
+export default function ContactForm() {
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [phase, setPhase] = useState<Phase>("form");
+
+  const handleAction = useCallback(
+    async (prev: ContactState, formData: FormData): Promise<ContactState> => {
+      // Client-side validation
+      const name = formData.get("name") as string;
+      const email = formData.get("email") as string;
+      const message = formData.get("message") as string;
+
+      const newErrors: FormErrors = {};
+      const nameErr = validateField("name", name ?? "");
+      const emailErr = validateField("email", email ?? "");
+      const msgErr = validateField("message", message ?? "");
+      if (nameErr) newErrors.name = nameErr;
+      if (emailErr) newErrors.email = emailErr;
+      if (msgErr) newErrors.message = msgErr;
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return { success: false, error: "" };
+      }
+
+      setErrors({});
+      setPhase("sending");
+
+      const result = await submitContact(prev, formData);
+
+      if (result.success) {
+        setPhase("runner");
+      } else {
+        setPhase("form");
+      }
+
+      return result;
+    },
+    [],
+  );
+
+  const [state, formAction, isPending] = useActionState(handleAction, initialState);
+
+  const handleRunnerComplete = useCallback(() => {
+    setPhase("done");
+  }, []);
+
+  const handleFieldChange = useCallback(
+    (field: keyof FormErrors) => {
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
     },
     [errors],
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setServerError("");
-
-    const newErrors: FormErrors = {};
-    const requiredFields: (keyof FormErrors)[] = ["name", "email", "message"];
-    requiredFields.forEach((field) => {
-      const err = validateField(field, form[field]);
-      if (err) newErrors[field] = err;
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setStatus("sending");
-
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setServerError(data.error ?? "送信に失敗しました");
-        setStatus("error");
-        return;
-      }
-
-      setStatus("success");
-    } catch {
-      setServerError("通信エラーが発生しました。時間をおいて再度お試しください。");
-      setStatus("error");
-    }
-  };
-
   return (
     <div className={styles.wrapper}>
       <AnimatePresence mode="wait">
-        {status === "success" ? (
+        {phase === "runner" ? (
+          <motion.div
+            key="runner"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={transition}
+          >
+            <ContactRunner onComplete={handleRunnerComplete} />
+          </motion.div>
+        ) : phase === "done" ? (
           <motion.div
             key="success"
             className={styles.successState}
@@ -133,6 +131,21 @@ export default function ContactForm() {
             animate={{ opacity: 1, y: 0 }}
             transition={transition}
           >
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className={styles.successCheck}>
+              <circle cx="24" cy="24" r="22" stroke="#111" strokeWidth="2" />
+              <polyline
+                points="14,24 22,32 34,18"
+                stroke="#111"
+                strokeWidth="2.5"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray="40"
+                strokeDashoffset="40"
+              >
+                <animate attributeName="stroke-dashoffset" from="40" to="0" dur="0.6s" fill="freeze" begin="0.2s" />
+              </polyline>
+            </svg>
             <h3 className={styles.successTitle}>THANK YOU.</h3>
             <p className={styles.successText}>
               お問い合わせを受け付けました。<br />
@@ -143,10 +156,10 @@ export default function ContactForm() {
           <motion.form
             key="form"
             className={styles.form}
-            onSubmit={handleSubmit}
+            action={formAction}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={transition}
             noValidate
           >
@@ -158,14 +171,14 @@ export default function ContactForm() {
               </label>
               <input
                 id="contact-name"
+                name="name"
                 type="text"
                 className={styles.input}
-                value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                onChange={() => handleFieldChange("name")}
                 placeholder="お名前をご記入ください"
                 autoComplete="name"
                 required
-                disabled={status === "sending"}
+                disabled={phase === "sending"}
               />
               <span className={styles.error} aria-live="polite">{errors.name ?? ""}</span>
             </div>
@@ -178,14 +191,14 @@ export default function ContactForm() {
               </label>
               <input
                 id="contact-email"
+                name="email"
                 type="email"
                 className={styles.input}
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
+                onChange={() => handleFieldChange("email")}
                 placeholder="example@email.com"
                 autoComplete="email"
                 required
-                disabled={status === "sending"}
+                disabled={phase === "sending"}
               />
               <span className={styles.error} aria-live="polite">{errors.email ?? ""}</span>
             </div>
@@ -198,10 +211,10 @@ export default function ContactForm() {
               <div className={styles.selectWrap}>
                 <select
                   id="contact-budget"
+                  name="budget"
                   className={styles.select}
-                  value={form.budget}
-                  onChange={(e) => handleChange("budget", e.target.value)}
-                  disabled={status === "sending"}
+                  defaultValue=""
+                  disabled={phase === "sending"}
                 >
                   <option value="" disabled>選択してください</option>
                   {BUDGET_OPTIONS.map((opt) => (
@@ -219,10 +232,10 @@ export default function ContactForm() {
               <div className={styles.selectWrap}>
                 <select
                   id="contact-deadline"
+                  name="deadline"
                   className={styles.select}
-                  value={form.deadline}
-                  onChange={(e) => handleChange("deadline", e.target.value)}
-                  disabled={status === "sending"}
+                  defaultValue=""
+                  disabled={phase === "sending"}
                 >
                   <option value="" disabled>選択してください</option>
                   {DEADLINE_OPTIONS.map((opt) => (
@@ -240,20 +253,20 @@ export default function ContactForm() {
               </label>
               <textarea
                 id="contact-message"
+                name="message"
                 className={styles.textarea}
-                value={form.message}
-                onChange={(e) => handleChange("message", e.target.value)}
+                onChange={() => handleFieldChange("message")}
                 placeholder="ご相談内容をご記入ください"
                 rows={6}
                 required
-                disabled={status === "sending"}
+                disabled={phase === "sending"}
               />
               <span className={styles.error} aria-live="polite">{errors.message ?? ""}</span>
             </div>
 
             {/* Server Error */}
             <AnimatePresence>
-              {status === "error" && serverError && (
+              {state.error && phase === "form" && (
                 <motion.div
                   className={styles.serverError}
                   initial={{ opacity: 0, height: 0 }}
@@ -261,7 +274,7 @@ export default function ContactForm() {
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {serverError}
+                  {state.error}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -270,9 +283,9 @@ export default function ContactForm() {
             <button
               type="submit"
               className={styles.submit}
-              disabled={status === "sending"}
+              disabled={phase === "sending" || isPending}
             >
-              {status === "sending" ? (
+              {phase === "sending" || isPending ? (
                 <span className={styles.spinner} />
               ) : (
                 "SEND →"

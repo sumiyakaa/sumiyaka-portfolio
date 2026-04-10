@@ -99,8 +99,8 @@ export default function WorksGrid({
               </div>
 
               <div className={styles.grid}>
-                {group.works.map((work) => (
-                  <WorkCard key={work.slug} work={work} />
+                {group.works.map((work, i) => (
+                  <WorkCard key={work.slug} work={work} index={i} viewMode="grid" />
                 ))}
               </div>
             </section>

@@ -1,9 +1,11 @@
 /* =============================================
-   Work Card
+   Work Card — Grid View
    ============================================= */
 .card {
   display: block;
-  transition: transform 300ms ease, box-shadow 300ms ease;
+  transition:
+    transform var(--duration-normal) ease,
+    box-shadow var(--duration-normal) ease;
 }
 
 .card:hover {
@@ -11,9 +13,7 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* =============================================
-   Thumbnail
-   ============================================= */
+/* Thumbnail */
 .thumbnail {
   position: relative;
   width: 100%;
@@ -23,11 +23,16 @@
 }
 
 .thumbnailImage {
-  transition: transform 300ms ease;
+  object-fit: cover;
+  object-position: 50% 0%;
+  transition:
+    transform 0.4s ease,
+    object-position 8s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .card:hover .thumbnailImage {
   transform: scale(1.06);
+  object-position: 50% 100%;
 }
 
 .tierBadge {
@@ -44,9 +49,7 @@
   border: 1px solid rgba(200, 169, 110, 0.3);
 }
 
-/* =============================================
-   Card Body
-   ============================================= */
+/* Card Body */
 .cardBody {
   padding: 16px 4px 0;
 }
@@ -72,9 +75,7 @@
   overflow: hidden;
 }
 
-/* =============================================
-   Tags
-   ============================================= */
+/* Tags */
 .cardMeta {
   display: flex;
   flex-wrap: wrap;
@@ -113,7 +114,175 @@
 }
 
 /* =============================================
-   Responsive
+   Work Card — List View
+   ============================================= */
+.listCard {
+  display: flex;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--duration-fast) ease;
+}
+
+.listCard:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.listThumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 140px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.listThumbImage {
+  object-fit: cover;
+  transition: transform var(--duration-normal) ease;
+}
+
+.listCard:hover .listThumbImage {
+  transform: scale(1.04);
+}
+
+.listBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.listTitle {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground);
+}
+
+.listMeta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+}
+
+.listSummary {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-foreground-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.listTags {
+  display: flex;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.listTag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+}
+
+.listRight {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.listTier {
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+  padding: 2px 8px;
+  border: 1px solid rgba(200, 169, 110, 0.3);
+}
+
+.listBudget {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+/* =============================================
+   Work Card — Thumbnail View
+   ============================================= */
+.thumbCard {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.thumbImage {
+  object-fit: cover;
+  object-position: 50% 0%;
+  transition:
+    transform 0.4s ease,
+    object-position 8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.thumbCard:hover .thumbImage {
+  transform: scale(1.06);
+  object-position: 50% 100%;
+}
+
+.thumbOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-normal) ease;
+}
+
+.thumbCard:hover .thumbOverlay {
+  opacity: 1;
+}
+
+.thumbTitle {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =============================================
+   Responsive — Grid
    ============================================= */
 @media (max-width: 768px) {
   .cardTitle {
@@ -122,6 +291,27 @@
 
   .cardDesc {
     font-size: 11px;
-    -webkit-line-clamp: 2;
+  }
+}
+
+/* =============================================
+   Responsive — List
+   ============================================= */
+@media (max-width: 768px) {
+  .listCard {
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .listThumb {
+    width: 100px;
+  }
+
+  .listSummary {
+    display: none;
+  }
+
+  .listRight {
+    display: none;
   }
 }

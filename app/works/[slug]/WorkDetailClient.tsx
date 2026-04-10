@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import type { Work } from "@/types/work";
 import styles from "./page.module.css";
 
@@ -11,123 +9,83 @@ interface WorkDetailClientProps {
 }
 
 export default function WorkDetailClient({ work }: WorkDetailClientProps) {
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [device, setDevice] = useState<"pc" | "sp">("pc");
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [pcScale, setPcScale] = useState(1);
+  const siteUrl = work.liveUrl ?? work.siteUrl;
 
-  const openLightbox = useCallback((index: number) => {
-    setLightboxIndex(index);
-    document.body.classList.add("is-locked");
-  }, []);
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || device !== "pc") return;
+    const observer = new ResizeObserver(([entry]) => {
+      setPcScale(entry.contentRect.width / 1920);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [device]);
 
-  const closeLightbox = useCallback(() => {
-    setLightboxIndex(null);
-    document.body.classList.remove("is-locked");
-  }, []);
-
-  const goNext = useCallback(() => {
-    setLightboxIndex((prev) =>
-      prev !== null ? (prev + 1) % work.images.length : null
-    );
-  }, [work.images.length]);
-
-  const goPrev = useCallback(() => {
-    setLightboxIndex((prev) =>
-      prev !== null
-        ? (prev - 1 + work.images.length) % work.images.length
-        : null
-    );
-  }, [work.images.length]);
+  if (!siteUrl) return null;
 
   return (
-    <>
-      {/* Screenshot Gallery */}
-      <section className={styles.gallery}>
-        <div className={styles.galleryInner}>
-          {work.images.map((img, i) => (
-            <button
-              key={img}
-              className={styles.galleryItem}
-              onClick={() => openLightbox(i)}
-              type="button"
-            >
-              <Image
-                src={img}
-                alt={`${work.title} — ${String(i + 1).padStart(2, "0")}`}
-                fill
-                sizes="(max-width: 768px) 100vw, 80vw"
-                className={styles.galleryImage}
-                style={{ objectFit: 'cover' }}
-              />
-            </button>
-          ))}
-        </div>
-      </section>
+    <section className={styles.preview}>
+      <div className={styles.previewInner}>
+        <p className={styles.previewNotice}>
+          このプレビューは実サイトを埋め込み表示しています。レイアウトは実際の閲覧環境と異なる場合があります。
+        </p>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxIndex !== null && (
-          <motion.div
-            className={styles.lightbox}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={closeLightbox}
+        <div className={styles.previewToolbar}>
+          <div className={styles.deviceToggle}>
+            <button
+              type="button"
+              className={`${styles.deviceBtn} ${device === "pc" ? styles.deviceBtnActive : ""}`}
+              onClick={() => setDevice("pc")}
+            >
+              PC
+            </button>
+            <button
+              type="button"
+              className={`${styles.deviceBtn} ${device === "sp" ? styles.deviceBtnActive : ""}`}
+              onClick={() => setDevice("sp")}
+            >
+              SP
+            </button>
+          </div>
+
+          <a
+            href={siteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.liveBtn}
           >
-            <button
-              className={styles.lightboxClose}
-              onClick={closeLightbox}
-              type="button"
-            >
-              &#10005;
-            </button>
+            VIEW LIVE SITE &#8599;
+          </a>
+        </div>
 
-            <button
-              className={`${styles.lightboxNav} ${styles.lightboxPrev}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                goPrev();
-              }}
-              type="button"
-            >
-              &#8592;
-            </button>
-
-            <motion.div
-              key={lightboxIndex}
-              className={styles.lightboxContent}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={work.images[lightboxIndex]}
-                alt={`${work.title} — ${String(lightboxIndex + 1).padStart(2, "0")}`}
-                fill
-                sizes="90vw"
-                className={styles.lightboxImage}
-                style={{ objectFit: 'contain' }}
-              />
-            </motion.div>
-
-            <button
-              className={`${styles.lightboxNav} ${styles.lightboxNext}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                goNext();
-              }}
-              type="button"
-            >
-              &#8594;
-            </button>
-
-            <div className={styles.lightboxCounter}>
-              {lightboxIndex + 1} / {work.images.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        <div
+          ref={wrapRef}
+          className={`${styles.iframeWrap} ${
+            device === "sp" ? styles.iframeWrapSp : styles.iframeWrapPc
+          }`}
+        >
+          <iframe
+            src={siteUrl}
+            title={`${work.title} プレビュー`}
+            className={styles.iframe}
+            sandbox="allow-scripts allow-same-origin"
+            loading="lazy"
+            style={
+              device === "pc"
+                ? {
+                    width: 1920,
+                    height: 1080,
+                    transform: `scale(${pcScale})`,
+                    transformOrigin: "0 0",
+                  }
+                : undefined
+            }
+          />
+        </div>
+      </div>
+    </section>
   );
 }

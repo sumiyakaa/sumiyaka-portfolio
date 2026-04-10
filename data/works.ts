@@ -1,0 +1,1013 @@
+import type { Work } from "@/types/work";
+
+export const works: Work[] = [
+  // -------------------------------------------------------------------------
+  // 1. J. CALDWELL & SONS (Finder: caldwell-sons / work-17)
+  // -------------------------------------------------------------------------
+  {
+    slug: "caldwell-sons",
+    title: "J. CALDWELL & SONS",
+    id: "work-17",
+    tier: "S",
+    order: 1,
+    category: ["MULTI-LANG"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
+    description:
+      "アパレルブランドのバイリンガル対応サイト。英語・日本語の2言語に対応し、ブランドの世界観を忠実に再現。",
+    thumbnail: "/works/caldwell-sons/thumbnail.webp",
+    images: ["/works/caldwell-sons/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/caldwell-sons/",
+    isPickUp: true,
+    // Finder fields
+    genre: "ファッション・ライフスタイル",
+    siteType: "ブランドサイト",
+    purpose: "ブランド訴求",
+    tags: [
+      "ブランドサイト",
+      "バイリンガル（EN/JP）",
+      "マルチページ（10P）",
+      "エディトリアルデザイン",
+      "ルックブック",
+      "パララックス",
+      "レスポンシブ",
+    ],
+    summary:
+      "デトロイト発ワークウェアブランドの英日バイリンガルサイト。新聞エディトリアル調のレイアウトで、ルックブック・コレクション・ブランドストーリーを全5ページ×2言語で展開し、ヴィンテージ工業トーンの重厚な世界観を演出。",
+    challenge:
+      "新聞エディトリアル調のレイアウトとヴィンテージ工業トーンで重厚なブランド世界観を構築しつつ、英日2言語の全10ページで情報設計とデザインの統一性を維持した。",
+    designTone: "ヴィンテージ / エディトリアル",
+    features: [
+      "アニメーション",
+      "多言語対応",
+      "ルックブック",
+      "モーダルUI",
+      "パララックス",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 10,
+    scale: null,
+    budgetRange: "¥250,000〜400,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: false,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/caldwell-sons/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 2. AOKI ATELIER (Finder: aoki-atelier / work-16)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-atelier",
+    title: "AOKI ATELIER",
+    id: "work-16",
+    tier: "A",
+    order: 2,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
+    description:
+      "ジュエリーブランドのコーポレートサイト。上質なブランドイメージを表現するデザインとアニメーション。",
+    thumbnail: "/works/aoki-atelier/thumbnail.webp",
+    images: ["/works/aoki-atelier/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-Atelier/",
+    isPickUp: true,
+    // Finder fields
+    genre: "ファッション・ライフスタイル",
+    siteType: "ブランドサイト",
+    purpose: "ブランド訴求・販路開拓",
+    tags: [
+      "ジュエリーブランド",
+      "ダークUI",
+      "GSAP ScrollTrigger",
+      "パララックス",
+      "横スクロール",
+      "WebP最適化",
+      "アクセシビリティ",
+    ],
+    summary:
+      "ハンドメイドジュエリーブランドのポートフォリオサイト。ダーク×ゴールドの配色にGSAP ScrollTriggerによるパララックス・フェードアップ・横スクロールを全セクションに実装し、WebP二重対応・prefers-reduced-motion・ARIA属性など品質面も徹底。",
+    challenge:
+      "全セクションにGSAP ScrollTriggerのアニメーションを実装しながら、prefers-reduced-motion対応やARIA属性など品質・アクセシビリティ基準を両立させた。",
+    designTone: "ダークミニマル / ラグジュアリー",
+    features: [
+      "アニメーション",
+      "パララックス",
+      "横スクロール",
+      "コレクションフィルター",
+      "動画背景",
+    ],
+    techTags: ["JavaScript", "GSAP"],
+    techStack: ["HTML", "CSS", "JavaScript", "GSAP", "ScrollTrigger"],
+    pageCount: 5,
+    scale: null,
+    budgetRange: "¥250,000〜400,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/Aoki-Atelier/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 3. AOKI REFORM (Finder: aoki-reform / work-15)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-reform",
+    title: "AOKI REFORM",
+    id: "work-15",
+    tier: "S",
+    order: 3,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP", "ScrollTrigger"],
+    description:
+      "リフォーム会社の13ページコーポレートサイト。施工事例・サービス紹介を豊富なビジュアルで訴求。",
+    thumbnail: "/works/aoki-reform/thumbnail.webp",
+    images: ["/works/aoki-reform/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-Reform/",
+    isPickUp: true,
+    // Finder fields
+    genre: "建築・リフォーム",
+    siteType: "コーポレートサイト",
+    purpose: "集客・問い合わせ",
+    tags: [
+      "リフォーム会社",
+      "マルチページ（13P）",
+      "見積シミュレーター",
+      "施工事例フィルター",
+      "ビフォーアフターUI",
+      "パララックス",
+      "アクセシビリティ",
+    ],
+    summary:
+      "地域密着型リフォーム会社の全13ページサイト。手書き書体と自然素材カラーで温かみを演出し、リアルタイム見積シミュレーター・施工事例フィルター・ビフォーアフターフリップカード・パララックスなど多彩なJS機能を実装。",
+    challenge:
+      "手書き書体×自然素材トーンの温かみあるデザインを全13ページで統一しつつ、見積シミュレーター・施工事例フィルター・ビフォーアフターUIなど実用的なJS機能を多数実装した。",
+    designTone: "ウォーム / ナチュラル",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "見積シミュレーター",
+      "施工事例フィルター",
+      "ビフォーアフターUI",
+      "パララックス",
+      "FAQ",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 13,
+    scale: null,
+    budgetRange: "¥500,000〜800,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/Aoki-Reform/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 4. AOKI BEAUTY CLINIC NO2 (Finder: aoki-beauty-clinic-no2 / work-14)
+  // -------------------------------------------------------------------------
+  {
+    slug: "beauty-clinic-no2",
+    title: "AOKI BEAUTY CLINIC NO2",
+    id: "work-14b",
+    tier: "S",
+    order: 4,
+    category: ["MULTI-LANG"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
+    description:
+      "美容クリニックの3言語対応サイト（日本語・英語・中国語）。36ページ構成の大規模多言語サイト。",
+    thumbnail: "/works/beauty-clinic-no2/thumbnail.webp",
+    images: ["/works/beauty-clinic-no2/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic-No2/ja/",
+    isPickUp: true,
+    // Finder fields
+    genre: "美容・クリニック",
+    siteType: "マルチページサイト",
+    purpose: "ブランディング・集客",
+    tags: [
+      "多言語サイト（JA/EN/ZH）",
+      "マルチページ（36P）",
+      "症例フィルタリング",
+      "WordPress移行前提",
+      "hreflang",
+      "コンバージョン設計",
+    ],
+    summary:
+      "美容クリニックの総合サイト。施術カテゴリ別メニュー・症例フィルタリング・医師紹介・院内ギャラリーなど全12ページを日英中3言語で展開し、WordPress移行を前提とした設計で構築。",
+    challenge:
+      "12ページ×3言語の大規模構成を、WordPress移行を見据えた保守性の高い設計で統一しつつ、症例フィルタリングや多言語SEOなど機能面も両立させた。",
+    designTone: "ダーク / ラグジュアリー",
+    features: [
+      "多言語対応",
+      "症例フィルタリング",
+      "アニメーション",
+      "フォーム",
+      "予約導線",
+      "計測連携",
+      "構造化データ",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 36,
+    scale: null,
+    budgetRange: "¥500,000〜750,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic-No2/ja/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 5. AOKI TAX OFFICE (Finder: aoki-tax-office / work-14)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-tax",
+    title: "AOKI TAX OFFICE",
+    id: "work-14a",
+    tier: "A",
+    order: 5,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
+    description:
+      "税理士事務所のコーポレートサイト。信頼感と専門性を伝えるクリーンなデザイン。",
+    thumbnail: "/works/aoki-tax/thumbnail.webp",
+    images: ["/works/aoki-tax/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/AokiTax/",
+    isPickUp: false,
+    // Finder fields
+    genre: "士業・専門サービス",
+    siteType: "コーポレートサイト",
+    purpose: "リード獲得",
+    tags: [
+      "士業サイト",
+      "マルチページ",
+      "パララックス",
+      "マーキー",
+      "フォームUI",
+      "エディトリアルデザイン",
+    ],
+    summary:
+      "紺×白×金の王道トーンに、全幅レイアウトとマーキー演出で情報密度と格式を両立した個人税理士事務所の3ページサイト。",
+    challenge:
+      "堅実な士業の信頼感を保ちつつ、全幅レイアウト・マーキー・エディトリアル型実績表現で情報密度とデザイン差別化を両立させた。",
+    designTone: "フォーマル / エレガント",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "FAQ",
+      "パララックス",
+      "マーキー",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 3,
+    scale: null,
+    budgetRange: "¥250,000〜400,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/AokiTax/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 6. AOKI GYM (Finder: aoki-gym / work-12)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-gym",
+    title: "AOKI GYM",
+    id: "work-12",
+    tier: "A",
+    order: 6,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
+    description:
+      "パーソナルジムのランディングページ。力強いビジュアルとダイナミックなスクロールアニメーション。",
+    thumbnail: "/works/aoki-gym/thumbnail.webp",
+    images: ["/works/aoki-gym/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/AokiGym/",
+    isPickUp: true,
+    // Finder fields
+    genre: "フィットネス・ヘルスケア",
+    siteType: "LP",
+    purpose: "集客・体験予約",
+    tags: [
+      "ジムLP",
+      "ビフォーアフター",
+      "プログラム紹介",
+      "トレーナー紹介",
+      "CTA設計",
+      "スクロールアニメーション",
+    ],
+    summary:
+      "パーソナルジムの集客LP。ビフォーアフター比較スライダー・3種のプログラム紹介・トレーナープロフィール・料金表・予約CTAを1ページに集約し、体験予約への導線を設計。",
+    challenge:
+      "ビフォーアフター比較・プログラム詳細・料金表など情報量の多いコンテンツを1ページに集約しつつ、CTAへの自然な導線を維持した。",
+    designTone: "ダーク / パワフル",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "ビフォーアフター",
+      "CTA設計",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 1,
+    scale: null,
+    budgetRange: "¥150,000〜250,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: false,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/AokiGym/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 7. BISTRO AOKI (Finder: bistro-aoki / work-11)
+  // -------------------------------------------------------------------------
+  {
+    slug: "bistro-aoki",
+    title: "BISTRO AOKI",
+    id: "work-11",
+    tier: "A",
+    order: 7,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
+    description:
+      "レストランのランディングページ。食欲をそそるビジュアルと洗練されたレイアウト。",
+    thumbnail: "/works/bistro-aoki/thumbnail.webp",
+    images: ["/works/bistro-aoki/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/BistroAoki/",
+    isPickUp: true,
+    // Finder fields
+    genre: "カフェ・飲食",
+    siteType: "店舗サイト",
+    purpose: "集客・予約促進",
+    tags: [
+      "レストランサイト",
+      "マルチページ",
+      "ダークUI",
+      "料理ギャラリー",
+      "予約フォーム",
+      "世界観設計",
+    ],
+    summary:
+      "表参道の隠れ家イタリアン「Bistro Aoki」のサイト。ダークトーンの洗練されたビジュアルで店舗の世界観を表現し、コンセプト・メニュー・ギャラリー・アクセス・予約の全6ページで来店導線を設計。",
+    challenge:
+      "ダークトーンで統一した高級感のあるビジュアルと、料理写真12枚のギャラリー・予約フォームを組み合わせ、世界観を崩さずに来店導線を確保した。",
+    designTone: "ダーク / エレガント",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "予約導線",
+      "ギャラリーUI",
+      "Google Maps",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 6,
+    scale: null,
+    budgetRange: "¥250,000〜400,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/BistroAoki/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 8. AOKI ESTATE (Finder: aoki-estate / work-10)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-estate",
+    title: "AOKI ESTATE",
+    id: "work-10",
+    tier: "S",
+    order: 8,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP", "ScrollTrigger"],
+    description:
+      "不動産会社の16ページコーポレートサイト。物件情報を見やすく整理し、信頼感のあるデザイン。",
+    thumbnail: "/works/aoki-estate/thumbnail.webp",
+    images: ["/works/aoki-estate/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/AokiEstate/",
+    isPickUp: false,
+    // Finder fields
+    genre: "不動産",
+    siteType: "コーポレートサイト",
+    purpose: "物件紹介・集客・問い合わせ",
+    tags: [
+      "不動産サイト",
+      "マルチページ",
+      "物件検索UI",
+      "ギャラリーモーダル",
+      "フォームバリデーション",
+      "タイポグラフィ",
+      "アクセシビリティ",
+    ],
+    summary:
+      "杉並・中野・世田谷エリアに密着する架空の不動産会社サイト。賃貸・売買物件一覧（検索フィルタリング・並び替え対応）、物件詳細6件（ギャラリーUI・モーダル拡大・スワイプ対応）、会社概要・スタッフ紹介・オーナー向け・お客様の声・コラム・採用・お問い合わせ（バリデーション・確認ステップ）の全16ページ構成。明朝体×ゴシック体のタイポグラフィとアースカラー基調のモダンナチュラルなデザイン。",
+    challenge:
+      "賃貸・売買合計6物件のデータ属性ベースのフィルタリング・並び替え、ECサイト風のギャラリーUI（矢印ナビ・スワイプ・モーダル）、3ステップフォームなど多数のVanilla JS機能を実装しつつ、全16ページのデザイン統一性とWCAG AAコントラスト準拠を両立させた。",
+    designTone: "モダンナチュラル / アースカラー",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "物件検索",
+      "ギャラリーUI",
+      "並び替え",
+      "アコーディオン",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 16,
+    scale: null,
+    budgetRange: "¥500,000〜800,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/AokiEstate/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 9. AOKI FAMILY ENGLISH (Finder: aoki-family-english / work-08)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-family-english",
+    title: "AOKI FAMILY ENGLISH",
+    id: "work-08",
+    tier: "B",
+    order: 9,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "英語教室のランディングページ。親しみやすいデザインでファミリー層にアプローチ。",
+    thumbnail: "/works/aoki-family-english/thumbnail.webp",
+    images: ["/works/aoki-family-english/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/aoki-family-english/",
+    isPickUp: false,
+    // Finder fields
+    genre: "教育・スクール",
+    siteType: "LP",
+    purpose: "集客・体験予約",
+    tags: [
+      "英会話教室LP",
+      "3プラン紹介",
+      "講師紹介",
+      "料金表",
+      "予約フォーム",
+      "スクロールアニメーション",
+    ],
+    summary:
+      "経堂の家族向け英会話教室LP。キッズ・ママ・パパの3プラン紹介、講師プロフィール、料金表、無料体験予約フォームを1ページに集約し、家族で通える安心感と体験申込への導線を設計。",
+    challenge:
+      "キッズ・ママ・パパ3プランの情報を整理しつつ、講師紹介・料金表・体験予約を自然な流れでつなぎ、家族全員が安心して申し込める導線を設計した。",
+    designTone: "ウォーム / フレンドリー",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "予約導線",
+      "プラン紹介",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 1,
+    scale: null,
+    budgetRange: "¥150,000〜230,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: false,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/aoki-family-english/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 10. AOKI ANIMATION (Finder: aoki-animation / work-09)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-animation",
+    title: "AOKI ANIMATION",
+    id: "work-09",
+    tier: "A",
+    order: 10,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
+    description:
+      "アニメーション制作会社の7ページコーポレートサイト。動きのあるインタラクションで制作力を表現。",
+    thumbnail: "/works/aoki-animation/thumbnail.webp",
+    images: ["/works/aoki-animation/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-Animation/",
+    isPickUp: false,
+    // Finder fields
+    genre: "アニメ・映像制作",
+    siteType: "コーポレートサイト",
+    purpose: "ポートフォリオ・採用・問い合わせ",
+    tags: [
+      "制作会社",
+      "作品ポートフォリオ",
+      "採用ページ",
+      "ニュースティッカー",
+      "マルチページ",
+    ],
+    summary:
+      "TV・劇場アニメの制作実績5件を個別詳細ページで紹介し、サービス案内・ニュースティッカー・採用ページ・問い合わせフォームまで全12ページで構成したアニメーション制作会社サイト。",
+    challenge:
+      "作品5件の個別詳細・サービス案内・採用・ニュースなど12ページの情報量を整理し、ファンタジックな世界観を保ったまま企業サイトとしての実用性を両立させた。",
+    designTone: "クリエイティブ / ファンタジック",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "作品詳細ページ",
+      "採用ページ",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 12,
+    scale: null,
+    budgetRange: "¥450,000〜650,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/Aoki-Animation/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 11. AKASHIKI WORKS FINDER (Portfolio only)
+  // -------------------------------------------------------------------------
+  {
+    slug: "works-finder",
+    title: "AKASHIKI WORKS FINDER",
+    id: "work-18",
+    tier: "A",
+    order: 11,
+    category: ["CORPORATE"],
+    technologies: ["React", "TypeScript", "CSS"],
+    description:
+      "制作実績検索ツール。React + TypeScriptで構築したインタラクティブなフィルタリングUI。",
+    thumbnail: "/works/works-finder/thumbnail.webp",
+    images: ["/works/works-finder/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/works-finder/",
+    isPickUp: false,
+    // Finder-format fields
+    genre: "制作会社・BtoB",
+    siteType: "Webツール",
+    purpose: "ポートフォリオ・作品検索",
+    tags: [
+      "検索ツール",
+      "フィルタリングUI",
+      "React SPA",
+      "TypeScript",
+      "レスポンシブ",
+    ],
+    summary:
+      "制作実績の検索・比較ツール。7軸フィルタリング・キーワード検索・6種ソート・グリッド/リスト表示切替をReact + TypeScriptで実装し、URL永続化で探索状態を共有可能にしたインタラクティブSPA。",
+    challenge:
+      "17件の作品データに対して7軸フィルタ・検索・ソートを直感的に操作できるUIを設計し、URL状態永続化で探索状態の共有を実現した。",
+    designTone: "ダーク / プロダクト",
+    features: [
+      "フィルタリング",
+      "キーワード検索",
+      "ソート",
+      "表示切替",
+      "URL永続化",
+    ],
+    techTags: ["React", "TypeScript"],
+    techStack: ["React", "TypeScript", "CSS", "Vite"],
+    pageCount: 1,
+    scale: null,
+    budgetRange: null,
+    durationRange: null,
+    year: 2026,
+    isFeatured: false,
+    hasCms: false,
+    hasAnimation: false,
+    hasForm: false,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/works-finder/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 12. AOKI MITUMORI (Finder: aoki-mitumori / work-05)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-mitumori",
+    title: "AOKI MITUMORI",
+    id: "work-05",
+    tier: "B",
+    order: 12,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "Web制作の見積シミュレーター。ユーザーが条件を選択して概算見積もりを算出。",
+    thumbnail: "/works/aoki-mitumori/thumbnail.webp",
+    images: ["/works/aoki-mitumori/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-Mitumori/",
+    isPickUp: false,
+    // Finder fields
+    genre: "制作会社・BtoB",
+    siteType: "Webツール",
+    purpose: "リード獲得",
+    tags: [
+      "見積シミュレーター",
+      "見積比較",
+      "PDF出力",
+      "日英切替",
+    ],
+    summary:
+      "サイト種別・ページ数・機能を選ぶと即座に概算を算出し、比較保存・PDF出力・メール送信・日英切替まで一画面で完結させるWeb制作見積シミュレーター。",
+    challenge:
+      "費用感の可視化で終わらせず、比較保存・共有・相談フォーム連携までを切れ目なくつなぐ体験にまとめた。",
+    designTone: "ダーク / プロダクト",
+    features: [
+      "フォーム",
+      "多言語",
+      "PDF出力",
+      "メール送信",
+    ],
+    techTags: ["JavaScript", "EmailJS", "jsPDF", "PWA"],
+    techStack: ["HTML", "CSS", "JavaScript", "EmailJS", "jsPDF", "PWA"],
+    pageCount: 4,
+    scale: null,
+    budgetRange: "¥600,000〜900,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: "./projects/aoki-estimate-simulator/",
+    siteUrl: "https://sumiyakaa.github.io/Aoki-Mitumori/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 13. AOKI BEAUTY CLINIC (Finder: aoki-beauty-clinic / work-01)
+  // -------------------------------------------------------------------------
+  {
+    slug: "beauty-clinic",
+    title: "AOKI BEAUTY CLINIC",
+    id: "work-01",
+    tier: "B",
+    order: 13,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "美容クリニックの広告用ランディングページ。コンバージョン重視の設計。",
+    thumbnail: "/works/beauty-clinic/thumbnail.webp",
+    images: ["/works/beauty-clinic/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic/",
+    isPickUp: false,
+    // Finder fields
+    genre: "美容・クリニック",
+    siteType: "LP",
+    purpose: "リード獲得",
+    tags: [
+      "美容クリニックLP",
+      "症例ギャラリー",
+      "予約導線",
+      "計測設計",
+    ],
+    summary:
+      "無料カウンセリング予約を主軸に、施術メニュー・症例写真・料金表・医師紹介を1ページに集約し、電話とWebの2経路で予約へつなぐ美容クリニックLP。",
+    challenge:
+      "施術メニュー・症例・料金・FAQを1ページに整理しつつ、電話予約とWeb予約の2導線を両立させた。",
+    designTone: "クリーン / ライトラグジュアリー",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "予約導線",
+      "計測連携",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 3,
+    scale: null,
+    budgetRange: "¥200,000〜300,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: "./projects/aoki-beauty-clinic/",
+    siteUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 14. POP-UP STORE LP (Finder: aoki-standard-co / work-02)
+  // -------------------------------------------------------------------------
+  {
+    slug: "popup-store-lp",
+    title: "POP-UP STORE LP",
+    id: "work-02",
+    tier: "B",
+    order: 14,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "ポップアップストア告知用のイベントランディングページ。",
+    thumbnail: "/works/popup-store-lp/thumbnail.webp",
+    images: ["/works/popup-store-lp/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/lp-aoki-standard/",
+    isPickUp: false,
+    // Finder fields
+    genre: "ファッション・ライフスタイル",
+    siteType: "LP",
+    purpose: "キャンペーン訴求",
+    tags: [
+      "イベントLP",
+      "SVGアニメーション",
+      "パララックス",
+      "EC導線",
+      "商品ラインナップ",
+    ],
+    summary:
+      "SVGテキストリングの回転アニメーションによるオープニング演出、3レイヤーのパララックス画像で高級感と限定感を訴求し、商品ラインナップからEC遷移までを設計したポップアップストア告知LP。",
+    challenge:
+      "冒頭のSVG回転演出と多層レイヤーの画像リビールをバニラJSで実装し、ECページまで離脱しにくい流れに整えた。",
+    designTone: "シネマティック / ラグジュアリー",
+    features: [
+      "アニメーション",
+      "EC導線",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 2,
+    scale: null,
+    budgetRange: "¥150,000〜200,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: false,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/lp-aoki-standard/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 15. AOKI TECH STUDIO (Finder: aoki-tech-studio / work-03)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-tech-studio",
+    title: "AOKI TECH STUDIO",
+    id: "work-03",
+    tier: "B",
+    order: 15,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "テック系企業のコーポレートランディングページ。モダンで洗練されたデザイン。",
+    thumbnail: "/works/aoki-tech-studio/thumbnail.webp",
+    images: ["/works/aoki-tech-studio/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/Aoki-Tech-Studio/",
+    isPickUp: false,
+    // Finder fields
+    genre: "制作会社・BtoB",
+    siteType: "コーポレートサイト",
+    purpose: "リード獲得",
+    tags: [
+      "制作会社サイト",
+      "ケーススタディ",
+      "カウントアップ演出",
+      "お問い合わせ導線",
+    ],
+    summary:
+      "実績数・スタック数のカウントアップ演出やスクロールアニメーションで技術力を伝え、3件のケーススタディと問い合わせ導線をつないだWeb制作スタジオサイト。",
+    challenge:
+      "制作・EC・Webアプリの3領域を個別のケーススタディで掘り下げつつ、初見でも相談内容を想像しやすい構成に整えた。",
+    designTone: "シャープ / テック",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "ケーススタディ",
+    ],
+    techTags: ["JavaScript", "Formspree"],
+    techStack: ["HTML", "CSS", "JavaScript", "Formspree"],
+    pageCount: 6,
+    scale: null,
+    budgetRange: "¥300,000〜450,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: "./projects/aoki-tech-studio/",
+    siteUrl: "https://sumiyakaa.github.io/Aoki-Tech-Studio/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 16. AOKICOSMETIC WP (Finder: aoki-cosmetic / work-07)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-cosmetic-wp",
+    title: "AOKICOSMETIC WP",
+    id: "work-07",
+    tier: "A",
+    order: 16,
+    category: ["WORDPRESS"],
+    technologies: ["WordPress", "PHP", "CSS", "JavaScript"],
+    description:
+      "化粧品ブランドのWordPressオリジナルテーマ。管理画面からのコンテンツ更新に対応。",
+    thumbnail: "/works/aoki-cosmetic-wp/thumbnail.webp",
+    images: ["/works/aoki-cosmetic-wp/01.webp"],
+    liveUrl: "https://github.com/sumiyakaa/aokicosmetic-wp",
+    isPickUp: false,
+    // Finder fields
+    genre: "美容・コスメ",
+    siteType: "ブランドサイト",
+    purpose: "ブランド訴求・販路開拓",
+    tags: [
+      "ブランドサイト",
+      "WordPressテーマ",
+      "カスタム投稿タイプ",
+      "料金プラン",
+      "ACF",
+    ],
+    summary:
+      "サロン向けコスメ3ライン（スキンケア・メイク・ヘアケア）を紹介し、導入実績・お客様の声・3段階の料金プランでサロンパートナー獲得へつなぐ美容ブランドサイト。WordPressテーマとしても設計。",
+    challenge:
+      "高級感あるビジュアルとサロン向けB2B情報（料金プラン・導入実績）を両立し、WordPressテーマとして管理画面からの更新にも対応した。",
+    designTone: "ラグジュアリー / エレガント",
+    features: [
+      "フォーム",
+      "CMS",
+      "料金プラン",
+    ],
+    techTags: ["JavaScript", "WordPress", "ACF"],
+    techStack: ["HTML", "CSS", "JavaScript", "WordPress", "ACF", "PHP"],
+    pageCount: 2,
+    scale: null,
+    budgetRange: "¥300,000〜450,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: false,
+    hasCms: true,
+    hasAnimation: false,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://github.com/sumiyakaa/aokicosmetic-wp",
+  },
+
+  // -------------------------------------------------------------------------
+  // 17. AOKI LOTION (Finder: aoki-lotion-lp / work-06)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-lotion",
+    title: "AOKI LOTION",
+    id: "work-06",
+    tier: "B",
+    order: 17,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "化粧品の販売用ランディングページ。商品の魅力を最大限に引き出すビジュアル設計。",
+    thumbnail: "/works/aoki-lotion/thumbnail.webp",
+    images: ["/works/aoki-lotion/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/aoki-lotion-lp/",
+    isPickUp: false,
+    // Finder fields
+    genre: "美容・コスメ",
+    siteType: "LP",
+    purpose: "商品販売",
+    tags: [
+      "販売LP",
+      "購入フォーム",
+      "CTA設計",
+      "購買導線",
+      "フローティングCTA",
+    ],
+    summary:
+      "信頼バッジ・FAQ・3段階のCTAブロックで購買心理を段階的に後押しし、多ステップ購入フォームで商品理解から購入完了まで1ページで完結させるスキンケア販売LP。",
+    challenge:
+      "12枚の商品ビジュアルと複数CTAを配置しつつ押し売り感を抑え、モバイルではフローティングCTAがフォーム到達時に自動非表示になる導線を設計した。",
+    designTone: "プレミアム / コンバージョン",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "LP最適化",
+      "EC導線",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 1,
+    scale: null,
+    budgetRange: "¥150,000〜300,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: false,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/aoki-lotion-lp/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 18. CAFE AOKI (Finder: cafe-aoki / work-04)
+  // -------------------------------------------------------------------------
+  {
+    slug: "cafe-aoki",
+    title: "CAFE AOKI",
+    id: "work-04",
+    tier: "B",
+    order: 18,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "カフェのランディングページ。温かみのあるデザインで店舗の雰囲気を表現。",
+    thumbnail: "/works/cafe-aoki/thumbnail.webp",
+    images: ["/works/cafe-aoki/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/cafe-aoki/",
+    isPickUp: false,
+    // Finder fields
+    genre: "カフェ・飲食",
+    siteType: "店舗サイト",
+    purpose: "集客・予約促進",
+    tags: [
+      "店舗サイト",
+      "メニューページ",
+      "予約フォーム",
+      "パララックス",
+      "SNSギャラリー",
+    ],
+    summary:
+      "パララックス背景やスチームアニメーションで空間の空気感まで再現し、メニューページとFlatpickr予約フォームで来店導線を確保した自家焙煎カフェサイト。",
+    challenge:
+      "ダークトーンとゴールドのアクセントで静かな店内の雰囲気を伝えながら、メニュー閲覧・予約・SNS連携を自然につないだ。",
+    designTone: "ダーク / クラシック",
+    features: [
+      "アニメーション",
+      "フォーム",
+      "予約導線",
+      "SNS連携",
+      "Google Maps",
+    ],
+    techTags: ["JavaScript", "Formspree", "Flatpickr"],
+    techStack: ["HTML", "CSS", "JavaScript", "Formspree", "Flatpickr"],
+    pageCount: 2,
+    scale: null,
+    budgetRange: "¥150,000〜200,000",
+    durationRange: null,
+    year: 2026,
+    isFeatured: false,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/cafe-aoki/",
+  },
+];

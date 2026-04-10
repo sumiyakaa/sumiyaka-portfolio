@@ -1,0 +1,22 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 2;
+}
+
+.figure {
+  position: absolute;
+  width: 48px;
+  height: 60px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .figure {
+    width: 36px;
+    height: 45px;
+  }
+}

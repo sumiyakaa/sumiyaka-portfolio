@@ -223,6 +223,7 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
     // Render state
     let rafId: number | null = null;
     let inkRafId: number | null = null;
+    let masterTl: gsap.core.Timeline | null = null;
 
     // Light proxy — values pre-scaled by PI for physically-based lighting (Three.js r155+)
     const lightState = {
@@ -450,6 +451,7 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
 
       // GSAP Master Timeline
       const master = gsap.timeline();
+      masterTl = master;
 
       // Phase 1: Darkness
       master.to(lightState, { ambient: 0.015 * L, duration: 0.4, ease: "power2.out" }, 0.2);
@@ -605,9 +607,18 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
       }
     }
 
-    // Cleanup
+    // Cleanup — only kill OpeningAnimation's own tweens (not global)
     cleanupRef.current = () => {
-      gsap.killTweensOf("*");
+      // Kill only this animation's master timeline
+      if (masterTl) {
+        masterTl.kill();
+        masterTl = null;
+      }
+      // Kill tweens on OpeningAnimation's own DOM elements only
+      if (threeCanvasRef.current) gsap.killTweensOf(threeCanvasRef.current);
+      if (inkCanvasRef.current) gsap.killTweensOf(inkCanvasRef.current);
+      if (containerRef.current) gsap.killTweensOf(containerRef.current);
+      gsap.killTweensOf(lightState);
       if (rafId !== null) cancelAnimationFrame(rafId);
       if (inkRafId !== null) cancelAnimationFrame(inkRafId);
       renderer.dispose();
@@ -625,6 +636,8 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
       const glCtx = renderer.getContext();
       const ext = glCtx.getExtension("WEBGL_lose_context");
       if (ext) ext.loseContext();
+      // Prevent double cleanup on unmount
+      cleanupRef.current = null;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -38,8 +38,15 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
   const nameRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const subRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
+  // Heading refs for SELECTED ↔ typed title swap
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const headingTypedRef = useRef<HTMLDivElement>(null);
+  const headingNameRef = useRef<HTMLSpanElement>(null);
+  const headingSubRef = useRef<HTMLParagraphElement>(null);
+
   const activeRef = useRef(-1);
   const typeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const headingTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollProxies = useRef<Record<number, { pct: number }>>({});
   const scrollTweens = useRef<Record<number, gsap.core.Tween | null>>({});
 
@@ -89,7 +96,34 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
     });
   }, []);
 
-  /* ---- Typing ---- */
+  /* ---- Heading typing (SELECTED → work title) ---- */
+  const startHeadingTyping = useCallback(
+    (i: number) => {
+      const el = headingNameRef.current;
+      if (!el) return;
+      const text = works[i].title;
+      el.textContent = "";
+      let idx = 0;
+      function tick() {
+        if (activeRef.current !== i) return;
+        if (idx < text.length) {
+          el!.textContent += text[idx];
+          idx++;
+          headingTypeTimerRef.current = setTimeout(tick, TYPE_SPEED);
+        } else {
+          const sub = headingSubRef.current;
+          if (sub) {
+            sub.textContent = works[i].category.join(" / ");
+            gsap.fromTo(sub, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
+          }
+        }
+      }
+      tick();
+    },
+    [works],
+  );
+
+  /* ---- Card typing ---- */
   const startTyping = useCallback(
     (i: number) => {
       const el = nameRefs.current[i];
@@ -123,6 +157,10 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
         clearTimeout(typeTimerRef.current);
         typeTimerRef.current = null;
       }
+      if (headingTypeTimerRef.current) {
+        clearTimeout(headingTypeTimerRef.current);
+        headingTypeTimerRef.current = null;
+      }
       stopScroll(i);
 
       const body = bodyRefs.current[i];
@@ -147,11 +185,25 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
         sub.style.opacity = "0";
       }
 
-      // Undim all
+      // Restore heading: show SELECTED, hide typed
+      const heading = headingRef.current;
+      const headingTyped = headingTypedRef.current;
+      const headingName = headingNameRef.current;
+      const headingSub = headingSubRef.current;
+      if (heading) heading.style.visibility = "";
+      if (headingTyped) headingTyped.classList.remove(styles.headingTypedActive);
+      if (headingName) headingName.textContent = "";
+      if (headingSub) {
+        headingSub.textContent = "";
+        headingSub.style.opacity = "0";
+      }
+
+      // Undim & reset scale
       cardRefs.current.forEach((c) => {
         if (c) {
           gsap.killTweensOf(c);
           c.style.opacity = "1";
+          c.style.transform = "";
         }
       });
 
@@ -181,18 +233,32 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
       gsap.to(panel, { opacity: 1, duration: 0.4, delay: 0.1, ease: "power2.out" });
       panel.style.pointerEvents = "auto";
 
-      // Dim siblings
+      // Heading swap: hide SELECTED, show typed area
+      const heading = headingRef.current;
+      const headingTyped = headingTypedRef.current;
+      if (heading) heading.style.visibility = "hidden";
+      if (headingTyped) headingTyped.classList.add(styles.headingTypedActive);
+
+      // Dim & shrink siblings, scale up active
       cardRefs.current.forEach((c, j) => {
-        if (j !== i && c) gsap.to(c, { opacity: 0.25, duration: 0.4 });
+        if (!c) return;
+        if (j === i) {
+          gsap.to(c, { scale: 1.04, duration: 0.5, ease: EASE });
+        } else {
+          gsap.to(c, { opacity: 0.25, scale: 0.96, duration: 0.5, ease: EASE });
+        }
       });
 
       // Scroll & type
       startScroll(i);
       setTimeout(() => {
-        if (activeRef.current === i) startTyping(i);
+        if (activeRef.current === i) {
+          startTyping(i);
+          startHeadingTyping(i);
+        }
       }, 250);
     },
-    [resetCard, startScroll, startTyping],
+    [resetCard, startScroll, startTyping, startHeadingTyping],
   );
 
   /* ---- Hover leave ---- */
@@ -229,6 +295,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
   useEffect(() => {
     return () => {
       if (typeTimerRef.current) clearTimeout(typeTimerRef.current);
+      if (headingTypeTimerRef.current) clearTimeout(headingTypeTimerRef.current);
       Object.values(scrollTweens.current).forEach((t) => t?.kill());
     };
   }, []);
@@ -246,7 +313,17 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
           </span>
         </div>
 
-        <h2 className={styles.heading} data-pickup-heading>SELECTED</h2>
+        {/* SELECTED ↔ Typed title swap area */}
+        <div className={styles.headingWrap} data-pickup-heading>
+          <h2 className={styles.heading} ref={headingRef}>SELECTED</h2>
+          <div className={styles.headingTyped} ref={headingTypedRef}>
+            <div className={styles.headingTypedNameWrap}>
+              <span className={styles.headingTypedName} ref={headingNameRef} />
+              <span className={styles.typedCursor} />
+            </div>
+            <p className={styles.headingTypedSub} ref={headingSubRef} />
+          </div>
+        </div>
 
         <div className={styles.grid}>
           {works.map((work, i) => (
@@ -263,7 +340,6 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                 data-pickup-card
               >
                 <a href={work.liveUrl} target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-                  {/* Thumbnail — full-page screenshot, scrolls on hover */}
                   <div className={styles.thumbnail}>
                     <Image
                       src={work.images[0]}
@@ -273,10 +349,8 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                       className={styles.thumbnailImage}
                       style={{ objectFit: "cover", objectPosition: "center top" }}
                     />
-                    <span className={styles.tierBadge}>{work.tier}</span>
                   </div>
 
-                  {/* Info area — body cross-fades to typed panel */}
                   <div className={styles.cardInfo}>
                     <div
                       className={styles.cardBody}

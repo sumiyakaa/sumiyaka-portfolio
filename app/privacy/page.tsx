@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description:
     "AKASHIKI（灯敷）のプライバシーポリシー。個人情報の取り扱いについて。",
   robots: { index: true, follow: true },
+  openGraph: {
+    images: [{ url: "/api/og?title=PRIVACY+POLICY&sub=AKASHIKI", width: 1200, height: 630 }],
+  },
 };
 
 const SECTIONS = [

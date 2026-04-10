@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroFXLayer from "./HeroFXLayer";
+import HeroRunner from "./HeroRunner";
 import styles from "./Hero.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -19,13 +20,26 @@ function LetterSpan({ text, className }: { text: string; className?: string }) {
         ch === " " ? (
           <span key={i} className={styles.fvSpace} />
         ) : (
-          <span key={i} data-hero-letter className={styles.fvLetter}>
+          <span key={i} data-hero-letter data-hero-mag className={styles.fvLetter} style={{ display: "inline-block", willChange: "transform" }}>
             {ch}
           </span>
         )
       )}
     </span>
   );
+}
+
+/** マグネティック反発用に文字列を個別inline-block spanに分割 */
+function magChars(text: string) {
+  return text.split("").map((ch, i) => (
+    <span
+      key={i}
+      data-hero-mag=""
+      style={{ display: "inline-block", willChange: "transform" }}
+    >
+      {ch === " " ? "\u00A0" : ch}
+    </span>
+  ));
 }
 
 interface HeroProps {
@@ -37,8 +51,15 @@ export default function Hero({ openingDone }: HeroProps) {
   const stickyRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const [runnerDone, setRunnerDone] = useState(false);
+  const entryDoneRef = useRef(false);
+  const scrollBoundRef = useRef(false);
 
-  // 入場アニメーション → 完了後にスクロールバインド（旧 revealAndBind → bindScroll 順序を再現）
+  const handleRunnerComplete = useCallback(() => {
+    setRunnerDone(true);
+  }, []);
+
+  // 入場アニメーション（タイトル以外）→ サブ/AIO/HR/エッジ/コーナー
   useEffect(() => {
     if (!openingDone) return;
 
@@ -71,113 +92,211 @@ export default function Hero({ openingDone }: HeroProps) {
         gsap.set(el, { visibility: "visible", opacity: 0 });
       });
 
-      // ===== 入場タイムライン（完了後にbindScrollを呼ぶ） =====
+      // ===== 入場タイムライン =====
       const tl = gsap.timeline({
         delay: 0.1,
         onComplete() {
-          // スクロール連動を入場完了後にバインド
-          const stConfig = {
-            trigger: scrollArea,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 0.5,
-          };
-
-          // 3D tilt
-          gsap.fromTo(
-            sticky,
-            { rotateX: 0, rotateY: 0, scale: 1, transformPerspective: 800 },
-            {
-              rotateX: 8, rotateY: -3, scale: 0.9, transformPerspective: 800,
-              ease: "power1.in", scrollTrigger: stConfig,
-            }
-          );
-
-          // メインテキスト — Y: -180px
-          gsap.fromTo("[data-hero-main]", { y: 0 }, {
-            y: -180, ease: "none", scrollTrigger: stConfig,
-          });
-
-          // サブ — Y: -100px
-          gsap.fromTo("[data-hero-sub]", { y: 0 }, {
-            y: -100, ease: "none", scrollTrigger: stConfig,
-          });
-
-          // AIO — Y: -90px
-          gsap.fromTo("[data-hero-aio]", { y: 0 }, {
-            y: -90, ease: "none", scrollTrigger: stConfig,
-          });
-
-          // AIO Link — Y: -85px
-          gsap.fromTo("[data-hero-aio-link]", { y: 0 }, {
-            y: -85, ease: "none", scrollTrigger: stConfig,
-          });
-
-          // フェードアウト
-          gsap.fromTo(
-            [
-              "[data-hero-main]", "[data-hero-sub]", "[data-hero-aio]",
-              "[data-hero-aio-link]", "[data-hero-hr]",
-              "[data-hero-corner]", "[data-hero-corners-svg]",
-            ],
-            { opacity: 1 },
-            {
-              opacity: 0, ease: "power1.in",
-              scrollTrigger: {
-                trigger: scrollArea,
-                start: "30% top",
-                end: "bottom bottom",
-                scrub: 0.5,
-              },
-            }
-          );
+          entryDoneRef.current = true;
         },
       });
 
-      // メイン文字コンテナ — 即時表示
+      // メイン文字コンテナ — 即時表示（文字自体はRunnerが配置する）
       tl.to("[data-hero-main]", { opacity: 1, duration: 0.01 }, 0);
 
-      // 文字 — スタガー
-      tl.from("[data-hero-letter]", {
-        y: 20, opacity: 0, duration: 1.4, stagger: 0.08, ease: EASE,
-      }, 0);
-
       // サブコピー
-      tl.from("[data-hero-sub]", {
-        y: 15, opacity: 0, duration: 1.2, ease: EASE,
-      }, 0.3);
+      tl.fromTo("[data-hero-sub]",
+        { y: 15, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.2, ease: EASE },
+      0);
 
       // AIO テキスト
-      tl.from("[data-hero-aio]", {
-        y: 10, opacity: 0, duration: 1.0, ease: EASE,
-      }, 0.5);
+      tl.fromTo("[data-hero-aio]",
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.0, ease: EASE },
+      0);
 
       // AIO リンク
-      tl.from("[data-hero-aio-link]", {
-        y: 8, opacity: 0, duration: 0.8, ease: EASE,
-      }, 0.65);
+      tl.fromTo("[data-hero-aio-link]",
+        { y: 8, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: EASE },
+      0);
 
       // HR
-      tl.from("[data-hero-hr]", {
-        opacity: 0, scaleX: 0, duration: 0.8, ease: EASE, transformOrigin: "left",
-      }, 0.6);
+      tl.fromTo("[data-hero-hr]",
+        { opacity: 0, scaleX: 0, transformOrigin: "left" },
+        { opacity: 1, scaleX: 1, duration: 0.8, ease: EASE },
+      0.2);
 
       // エッジテキスト
-      tl.from("[data-hero-corner]", {
-        opacity: 0, duration: 1.0, ease: "power2.out",
-      }, 0.8);
+      tl.fromTo("[data-hero-corner]",
+        { opacity: 0 },
+        { opacity: 1, duration: 1.0, ease: "power2.out" },
+      0.15);
 
-      // コーナーSVGコンテナ — 即時表示
-      tl.to("[data-hero-corners-svg]", { opacity: 1, duration: 0.01 }, 1.0);
+      // コーナーSVGコンテナ
+      tl.to("[data-hero-corners-svg]", { opacity: 1, duration: 0.01 }, 0.2);
 
-      // コーナーライン — strokeDashoffset
+      // コーナーライン
       tl.from("[data-hero-corner-line]", {
         strokeDashoffset: 80, opacity: 0, duration: 1.0, ease: EASE, stagger: 0.1,
-      }, 1.0);
+      }, 0.2);
     }, heroRef);
 
     return () => ctx.revert();
   }, [openingDone]);
+
+  // スクロール連動 — Runner完了後にバインド
+  useEffect(() => {
+    if (!runnerDone || scrollBoundRef.current) return;
+    scrollBoundRef.current = true;
+
+    const scrollArea = scrollAreaRef.current;
+    const sticky = stickyRef.current;
+    if (!scrollArea || !sticky) return;
+
+    const stConfig = {
+      trigger: scrollArea,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.5,
+    };
+
+    const ctx = gsap.context(() => {
+      // 3D tilt
+      gsap.fromTo(
+        sticky,
+        { rotateX: 0, rotateY: 0, scale: 1, transformPerspective: 800 },
+        {
+          rotateX: 8, rotateY: -3, scale: 0.9, transformPerspective: 800,
+          ease: "power1.in", scrollTrigger: stConfig,
+        }
+      );
+
+      // メインテキスト — Y: -180px
+      gsap.fromTo("[data-hero-main]", { y: 0 }, {
+        y: -180, ease: "none", scrollTrigger: stConfig,
+      });
+
+      // サブ — Y: -100px
+      gsap.fromTo("[data-hero-sub]", { y: 0 }, {
+        y: -100, ease: "none", scrollTrigger: stConfig,
+      });
+
+      // AIO — Y: -90px
+      gsap.fromTo("[data-hero-aio]", { y: 0 }, {
+        y: -90, ease: "none", scrollTrigger: stConfig,
+      });
+
+      // AIO Link — Y: -85px
+      gsap.fromTo("[data-hero-aio-link]", { y: 0 }, {
+        y: -85, ease: "none", scrollTrigger: stConfig,
+      });
+
+      // フェードアウト
+      gsap.fromTo(
+        [
+          "[data-hero-main]", "[data-hero-sub]", "[data-hero-aio]",
+          "[data-hero-aio-link]", "[data-hero-hr]",
+          "[data-hero-corner]", "[data-hero-corners-svg]",
+        ],
+        { opacity: 1 },
+        {
+          opacity: 0, ease: "power1.in",
+          scrollTrigger: {
+            trigger: scrollArea,
+            start: "30% top",
+            end: "bottom bottom",
+            scrub: 0.5,
+          },
+        }
+      );
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, [runnerDone]);
+
+  // マグネティック反発エフェクト（PC only）— Runner完了後に有効化
+  useEffect(() => {
+    if (!runnerDone) return;
+    if (typeof window !== "undefined" && window.innerWidth <= 768) return;
+
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const chars = Array.from(
+      hero.querySelectorAll<HTMLSpanElement>("[data-hero-mag]")
+    );
+    if (!chars.length) return;
+
+    const MAG_RADIUS = 160;
+    const MAG_STRENGTH = 70;
+    let pending = false;
+    let mx = 0;
+    let my = 0;
+
+    const tick = () => {
+      pending = false;
+      chars.forEach((char) => {
+        const rect = char.getBoundingClientRect();
+        const tx = (gsap.getProperty(char, "x") as number) || 0;
+        const ty = (gsap.getProperty(char, "y") as number) || 0;
+        const ox = rect.left + rect.width / 2 - tx;
+        const oy = rect.top + rect.height / 2 - ty;
+
+        const dx = ox - mx;
+        const dy = oy - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < MAG_RADIUS) {
+          const force = ((1 - dist / MAG_RADIUS) ** 2) * MAG_STRENGTH;
+          const angle = Math.atan2(dy, dx);
+          gsap.to(char, {
+            x: Math.cos(angle) * force,
+            y: Math.sin(angle) * force,
+            duration: 0.3,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+        } else {
+          gsap.to(char, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.4)",
+            overwrite: "auto",
+          });
+        }
+      });
+    };
+
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (!pending) {
+        pending = true;
+        requestAnimationFrame(tick);
+      }
+    };
+
+    const onLeave = () => {
+      chars.forEach((char) => {
+        gsap.to(char, {
+          x: 0,
+          y: 0,
+          duration: 1.2,
+          ease: "elastic.out(1, 0.3)",
+          overwrite: true,
+        });
+      });
+    };
+
+    hero.addEventListener("mousemove", onMove);
+    hero.addEventListener("mouseleave", onLeave);
+    return () => {
+      hero.removeEventListener("mousemove", onMove);
+      hero.removeEventListener("mouseleave", onLeave);
+    };
+  }, [runnerDone]);
 
   return (
     <div ref={scrollAreaRef} className={styles.scrollArea}>
@@ -207,11 +326,11 @@ export default function Hero({ openingDone }: HeroProps) {
             </h1>
 
             <p data-hero-sub className={styles.sub} style={{ visibility: "hidden" }}>
-              DESIGNED WITH PRECISION
+              {magChars("DESIGNED WITH PRECISION")}
             </p>
 
             <p data-hero-aio className={styles.aioText} style={{ visibility: "hidden" }}>
-              AIO — AI検索最適化を、全案件に標準搭載。
+              {magChars("AIO — AI検索最適化を、全案件に標準搭載。")}
             </p>
 
             <Link href="/service#aio" data-hero-aio-link className={styles.aioLink} style={{ visibility: "hidden" }}>
@@ -221,12 +340,15 @@ export default function Hero({ openingDone }: HeroProps) {
             <div data-hero-hr className={styles.hr} style={{ visibility: "hidden" }} />
 
             <div data-hero-corner className={styles.edgeBl} style={{ visibility: "hidden" }}>
-              <span className={styles.edgeText}>PORTFOLIO 2026</span>
+              <span className={styles.edgeText}>{magChars("PORTFOLIO 2026")}</span>
             </div>
             <div data-hero-corner className={styles.edgeBr} style={{ visibility: "hidden" }}>
-              <span className={styles.edgeText}>TOKYO, JAPAN</span>
+              <span className={styles.edgeText}>{magChars("TOKYO, JAPAN")}</span>
             </div>
           </div>
+
+          {/* HeroRunner — 文字運搬アニメーション */}
+          <HeroRunner active={openingDone} onComplete={handleRunnerComplete} />
 
           {/* Corner Frames SVG */}
           <svg

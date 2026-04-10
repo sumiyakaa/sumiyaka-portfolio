@@ -45,7 +45,13 @@
   transform: translateY(-4px);
 }
 
-/* ---- Section Heading ---- */
+/* ---- Section Heading (SELECTED ↔ Typed swap) ---- */
+.headingWrap {
+  position: relative;
+  margin-bottom: 56px;
+  min-height: 1.2em;
+}
+
 .heading {
   font-family: var(--font-heading);
   font-weight: 100;
@@ -53,7 +59,45 @@
   letter-spacing: 0.15em;
   color: var(--color-foreground);
   line-height: 1.2;
-  margin-bottom: 56px;
+}
+
+/* Typed title that replaces SELECTED */
+.headingTyped {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.headingTypedActive {
+  visibility: visible;
+  opacity: 1;
+}
+
+.headingTypedNameWrap {
+  display: flex;
+  align-items: center;
+  min-height: 1.2em;
+}
+
+.headingTypedName {
+  font-family: var(--font-heading);
+  font-weight: 100;
+  font-size: clamp(48px, 6vw, 96px);
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  line-height: 1.2;
+}
+
+.headingTypedSub {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--color-secondary);
+  opacity: 0;
 }
 
 /* ---- Grid 3x2 ---- */
@@ -104,22 +148,6 @@
 .thumbnailImage {
   /* object-fit / object-position via inline style */
   /* GSAP animates objectPosition on hover */
-}
-
-.tierBadge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 1;
-  font-family: var(--font-heading);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: var(--color-accent);
-  padding: 3px 10px;
-  border: 1px solid rgba(200, 169, 110, 0.3);
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(4px);
 }
 
 /* ---- Card Info (body + typed panel wrapper) ---- */

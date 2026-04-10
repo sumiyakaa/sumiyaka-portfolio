@@ -1,9 +1,9 @@
 /* ========================================
-   about page — AKASHIKI Portfolio (旧サイト忠実再現)
+   About Page — Redesigned
    ======================================== */
 
 /* ========================================
-   FV — 100vh 全画面
+   FV — 100vh
    ======================================== */
 .fv {
   position: relative;
@@ -15,7 +15,6 @@
   overflow: hidden;
 }
 
-/* ---- Background Layers ---- */
 .fvBg {
   position: absolute;
   inset: 0;
@@ -41,21 +40,6 @@
   90% { transform: translate(-1%, 7%); }
 }
 
-.fvScanline {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255,255,255,0.015) 2px,
-    rgba(255,255,255,0.015) 4px
-  );
-  pointer-events: none;
-  opacity: 0.02;
-}
-
-/* ---- Content ---- */
 .fvContent {
   position: relative;
   z-index: 2;
@@ -63,20 +47,20 @@
 }
 
 .fvTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: clamp(36px, 5vw, 64px);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(48px, 10vw, 120px);
   letter-spacing: 0.2em;
   color: var(--color-foreground);
   opacity: 0;
 }
 
 .fvSub {
-  font-family: var(--font-heading);
-  font-weight: 400;
+  font-family: var(--font-mono);
+  font-weight: 300;
   font-size: 13px;
   letter-spacing: 0.12em;
-  color: var(--color-foreground);
+  color: var(--color-secondary);
   margin-top: 16px;
   opacity: 0;
 }
@@ -90,7 +74,6 @@
   transform-origin: center;
 }
 
-/* ---- Edge Text ---- */
 .fvEdgeBl,
 .fvEdgeBr {
   position: absolute;
@@ -105,146 +88,220 @@
   color: var(--color-foreground);
 }
 
-.fvEdgeBl {
-  bottom: 40px;
-  left: 40px;
-  opacity: 0;
-}
+.fvEdgeBl { bottom: 40px; left: 40px; opacity: 0; }
+.fvEdgeBr { bottom: 40px; right: 40px; opacity: 0; }
 
-.fvEdgeBr {
-  bottom: 40px;
-  right: 40px;
-  opacity: 0;
+/* ========================================
+   Shared
+   ======================================== */
+.sectionLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-secondary);
+  margin-bottom: 48px;
 }
 
 /* ========================================
-   経歴ストーリーセクション（黒背景）
+   Profile — Photo + Text 2-column
    ======================================== */
-.story {
+.profile {
   background: var(--color-primary);
-  padding: 160px 80px;
+  padding: 140px 80px;
 }
 
-.storyInner {
-  max-width: 640px;
-  margin: 0 auto 0 calc((100% - 640px) / 3);
+.profileInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
 }
 
-.storyLead {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 21.6px;
-  line-height: 2.0;
+/* Photo */
+.profilePhoto {
+  position: static;
+}
+
+.photoWrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.photoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-mask-image:
+    linear-gradient(to right,  transparent, black 15%, black 85%, transparent),
+    linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to right,  transparent, black 15%, black 85%, transparent),
+    linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  mask-composite: intersect;
+}
+
+.photoCaption {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--color-secondary);
+}
+
+/* Text */
+.profileText {
+  padding-top: 8px;
+}
+
+.profileLead {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 5vw, 72px);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
   color: var(--color-foreground);
+  margin-bottom: 12px;
 }
 
-.storyBody {
-  margin-top: 48px;
+.profileLeadSub {
+  font-family: var(--font-heading);
+  font-weight: 200;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  color: var(--color-secondary);
+  margin-bottom: 48px;
 }
 
-.storyParagraph {
+.profileBody {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 2.2;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
-  margin-bottom: 32px;
+  color: var(--color-foreground-muted);
+  margin-bottom: 28px;
 }
 
-.storyParagraph:last-child {
+.profileBody:last-of-type {
   margin-bottom: 0;
 }
 
-.storyHighlight {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 28.8px;
-  letter-spacing: 0.1em;
-  color: #fff;
-  padding: 40px 0;
+.profileSns {
+  display: flex;
+  gap: 24px;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border);
+}
+
+.snsLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+  transition: color 0.3s ease;
+}
+
+.snsLink svg { flex-shrink: 0; }
+
+.snsLink:hover {
+  color: var(--color-foreground);
 }
 
 /* ========================================
-   信条・こだわりセクション（白背景）
+   Belief — Numbered Cards
    ======================================== */
 .belief {
-  background: #fff;
-  padding: 160px 80px;
+  background: var(--color-primary);
+  padding: 0 80px 140px;
 }
 
 .beliefInner {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 0 auto;
+  padding-top: 140px;
+  border-top: 1px solid var(--color-border);
 }
 
-.beliefItem {
-  padding: 48px 0;
+.beliefGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
 }
 
-.beliefItem:first-child {
-  padding-top: 0;
+.beliefCard {
+  padding: 40px 32px;
+  border: 1px solid var(--color-border);
+  margin-left: -1px;
+  height: 100%;
+  transition: background-color 0.4s ease;
+}
+
+.beliefCard:first-child {
+  margin-left: 0;
+}
+
+.beliefCard:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.beliefNum {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 58px;
+  font-weight: 100;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1;
+  margin-bottom: 24px;
 }
 
 .beliefHeading {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 28.8px;
-  color: #111;
+  font-size: 22px;
   line-height: 1.6;
   letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  margin-bottom: 16px;
 }
 
 .beliefText {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16.8px;
-  line-height: 2.0;
-  color: #111;
-  margin-top: 16px;
-  letter-spacing: 0.04em;
-}
-
-.beliefDivider {
-  width: 100%;
-  height: 1px;
-  background: #e0e0e0;
+  font-size: 15px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground-muted);
 }
 
 /* ========================================
-   スキルセット Terminal Index（黒背景）
+   Skill Set
    ======================================== */
 .skill {
   background: var(--color-primary);
-  padding: 160px 80px 0;
+  padding: 0 80px 160px;
 }
+
 
 .skillInner {
-  max-width: 700px;
-  margin: 0 auto 0 calc((100% - 700px) / 3);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-top: 140px;
+  border-top: 1px solid var(--color-border);
 }
 
-.skillHead {
-  margin-bottom: 64px;
-}
-
-.skillTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 48px;
-  letter-spacing: 0.2em;
-  color: var(--color-foreground);
-  transition: font-weight 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.skillHr {
-  width: 40px;
-  height: 1px;
-  background: var(--color-border-light);
-  margin-top: 24px;
-}
-
-/* ---- Skill Grid ---- */
 .skillList {
   display: flex;
   flex-direction: column;
@@ -252,8 +309,9 @@
 
 .skillRow {
   display: grid;
-  grid-template-columns: 60px 180px 1fr;
-  padding: 20px 0;
+  grid-template-columns: 48px 200px 1fr;
+  gap: 0 16px;
+  padding: 22px 0;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -264,16 +322,16 @@
 .skillNum {
   font-family: var(--font-mono);
   font-weight: 300;
-  font-size: 13.2px;
+  font-size: 14px;
   letter-spacing: 0.1em;
-  color: var(--color-foreground);
+  color: var(--color-secondary);
   align-self: center;
 }
 
 .skillName {
   font-family: var(--font-heading);
   font-weight: 400;
-  font-size: 16.9px;
+  font-size: 18px;
   letter-spacing: 0.06em;
   color: var(--color-foreground);
   align-self: center;
@@ -282,65 +340,11 @@
 .skillDesc {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 14.5px;
+  font-size: 16px;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--color-foreground-muted);
   align-self: center;
   line-height: 1.8;
-}
-
-/* ========================================
-   SNSセクション（スキルセットと連続）
-   ======================================== */
-.sns {
-  padding: 80px 0 160px;
-}
-
-.snsInner {
-  max-width: 700px;
-  margin: 0 auto 0 calc((100% - 700px) / 3);
-}
-
-.snsDivider {
-  width: 100%;
-  height: 1px;
-  background: var(--color-border);
-  margin-bottom: 32px;
-}
-
-.snsLabel {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--color-foreground);
-  margin-bottom: 20px;
-}
-
-.snsLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.snsLink {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 14px;
-  color: var(--color-foreground);
-  transition: opacity 0.3s;
-  letter-spacing: 0.04em;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.snsLink svg {
-  flex-shrink: 0;
-}
-
-.snsLink:hover {
-  opacity: 0.7;
 }
 
 /* ========================================
@@ -350,77 +354,78 @@
   .fvEdgeBl { left: 24px; bottom: 24px; }
   .fvEdgeBr { right: 24px; bottom: 24px; }
 
-  .story { padding: 120px 40px; }
-  .storyInner { margin: 0 auto 0 40px; }
+  .profile { padding: 100px 40px; }
+  .profileInner {
+    grid-template-columns: 300px 1fr;
+    gap: 48px;
+  }
 
-  .belief { padding: 120px 40px; }
+  .belief { padding: 0 40px 100px; }
+  .beliefInner { padding-top: 100px; }
 
-  .skill { padding: 120px 40px 0; }
-  .skillInner { margin: 0 auto 0 40px; }
-
-  .sns { padding: 60px 0 120px; }
-  .snsInner { margin: 0 auto 0 40px; }
+  .skill { padding: 0 40px 120px; }
+  .skillInner { padding-top: 100px; }
 }
 
 /* ========================================
    Responsive — SP (–767)
    ======================================== */
 @media (max-width: 767px) {
-  /* FV */
   .fvTitle {
-    font-size: clamp(24px, 7vw, 40px);
+    font-size: clamp(32px, 12vw, 56px);
     letter-spacing: 0.12em;
   }
   .fvSub { font-size: 11px; }
   .fvEdgeBl { left: 16px; bottom: 20px; }
   .fvEdgeBr { right: 16px; bottom: 20px; }
 
-  /* Story */
-  .story {
-    padding: 80px 20px;
+  /* Profile */
+  .profile { padding: 80px 20px; }
+  .profileInner {
+    grid-template-columns: 1fr;
+    gap: 48px;
   }
-  .storyInner {
-    margin: 0;
+  .profilePhoto {
+    position: static;
     max-width: 100%;
   }
-  .storyLead { font-size: 16px; }
-  .storyParagraph { font-size: 14px; }
-  .storyHighlight { font-size: 18px; }
+
+  .photoImg {
+    width: 100%;
+    height: auto;
+  }
+  .profileLead { font-size: clamp(32px, 9vw, 48px); }
+  .profileLeadSub { font-size: 13px; }
+  .profileBody { font-size: 14px; }
+  .profileSns { flex-direction: column; gap: 12px; }
 
   /* Belief */
-  .belief {
-    padding: 80px 20px;
+  .belief { padding: 0 20px 80px; }
+  .beliefInner { padding-top: 80px; }
+  .beliefGrid {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
-  .beliefHeading { font-size: 18px; }
-  .beliefText { font-size: 13px; }
-  .beliefItem { padding: 32px 0; }
+  .beliefCard {
+    margin-left: 0;
+    margin-top: -1px;
+    padding: 32px 20px;
+  }
+  .beliefCard:first-child { margin-top: 0; }
+  .sectionLabel { font-size: 24px; }
+  .beliefNum { font-size: 36px; margin-bottom: 16px; }
+  .beliefHeading { font-size: 16px; }
 
   /* Skill */
-  .skill {
-    padding: 80px 20px 0;
-  }
-  .skillInner {
-    margin: 0;
-    max-width: 100%;
-  }
-  .skillTitle { font-size: 36px; }
+  .skill { padding: 0 20px 80px; }
+  .skillInner { padding-top: 80px; }
   .skillRow {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 36px 1fr;
     gap: 4px;
   }
   .skillDesc {
     grid-column: 1 / -1;
-    padding-left: 40px;
+    padding-left: 36px;
     margin-top: 4px;
-  }
-
-  /* SNS */
-  .sns {
-    padding: 60px 0 80px;
-  }
-  .snsInner {
-    margin: 0;
-    padding: 0 20px;
-    max-width: 100%;
   }
 }

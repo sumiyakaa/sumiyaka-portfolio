@@ -39,22 +39,21 @@ export default function SubPageFVAnim({
     if (!fv) return;
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        delay: 0.2,
-        onComplete: () => {
-          if (shrink) {
-            gsap.to(fv, {
-              height: "50vh",
-              duration: 0.8,
-              ease: EASE,
-              onComplete: () => {
-                fv.style.height = "50vh";
-                ScrollTrigger.refresh();
-              },
-            });
-          }
-        },
-      });
+      // FV縮小: 1秒後に開始、0.5秒で完了（1.5秒時点）
+      if (shrink) {
+        gsap.to(fv, {
+          height: "50vh",
+          duration: 0.5,
+          delay: 1,
+          ease: EASE,
+          onComplete: () => {
+            fv.style.height = "50vh";
+            ScrollTrigger.refresh();
+          },
+        });
+      }
+
+      const tl = gsap.timeline({ delay: 0.2 });
 
       // タイトル: letter-spacing アニメーション
       const title = fv.querySelector("[data-fv-title]");
@@ -104,7 +103,7 @@ export default function SubPageFVAnim({
   }, [shrink, targetLetterSpacing]);
 
   return (
-    <section ref={fvRef} className={className}>
+    <section ref={fvRef} className={className} data-fv>
       {children}
     </section>
   );

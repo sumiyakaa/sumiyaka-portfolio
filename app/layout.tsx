@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Barlow, Noto_Sans_JP, IBM_Plex_Mono, Anton } from "next/font/google";
 import SmoothScroll from "@/components/animation/SmoothScroll";
+import InkTransitionProvider from "@/components/animation/InkTransition";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
@@ -49,6 +50,14 @@ export const metadata: Metadata = {
     description:
       "Webデザイン・コーディングのポートフォリオ。LP制作・WordPress構築を中心に、設計から実装までワンストップで対応。",
     url: "https://akashiki.com",
+    images: [
+      {
+        url: "/api/og?title=AKASHIKI&sub=Web+Design+%26+Development+Portfolio",
+        width: 1200,
+        height: 630,
+        alt: "AKASHIKI — Web Design & Development Portfolio",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -62,8 +71,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html
@@ -95,11 +106,14 @@ export default function RootLayout({
             }),
           }}
         />
-        <SmoothScroll>
-          <Header />
-          {children}
-          <Footer />
-        </SmoothScroll>
+        <InkTransitionProvider>
+          <SmoothScroll>
+            <Header />
+            {children}
+            {modal}
+            <Footer />
+          </SmoothScroll>
+        </InkTransitionProvider>
       </body>
     </html>
   );

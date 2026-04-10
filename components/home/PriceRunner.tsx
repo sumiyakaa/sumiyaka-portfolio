@@ -145,8 +145,6 @@ export default function PriceRunner() {
     const amountEls = section.querySelectorAll<HTMLElement>("[data-price-amount]");
     if (!amountEls.length) return;
 
-    // Use CTA button as the landing zone baseline
-    const ctaEl = section.querySelector<HTMLElement>("[data-price-cta]");
     const sectionRect = section.getBoundingClientRect();
 
     const runners: {
@@ -154,6 +152,7 @@ export default function PriceRunner() {
       label: HTMLDivElement;
       runCycle: gsap.core.Timeline;
       targetX: number;
+      groundY: number;
       amountEl: HTMLElement;
     }[] = [];
 
@@ -162,14 +161,10 @@ export default function PriceRunner() {
       const label = overlay.querySelector<HTMLDivElement>(`[data-cargo="r${i}"]`);
       if (!svg || !label) return;
 
-      // Target: spread horizontally above the CTA button
-      const ctaRect = ctaEl
-        ? ctaEl.getBoundingClientRect()
-        : amountEl.getBoundingClientRect();
-      const ctaTop = ctaRect.top - sectionRect.top;
-      const spacing = 200;
-      const centerX = ctaRect.left - sectionRect.left + ctaRect.width / 2;
-      const targetX = centerX + (i - (amountEls.length - 1) / 2) * spacing - FIGURE_W / 2;
+      // 各価格要素の位置に合わせてターゲット座標を算出
+      const amountRect = amountEl.getBoundingClientRect();
+      const targetX = amountRect.left - sectionRect.left + amountRect.width / 2 - FIGURE_W / 2;
+      const groundY = amountRect.top - sectionRect.top + amountRect.height / 2 - FIGURE_H / 2;
 
       // Hide real amount
       amountEl.style.opacity = "0";
@@ -182,13 +177,10 @@ export default function PriceRunner() {
         label,
         runCycle: createRunCycle(svg),
         targetX,
+        groundY,
         amountEl,
       });
     });
-
-    // Position figures on the ground line just above CTA
-    const ctaRect = ctaEl ? ctaEl.getBoundingClientRect() : sectionRect;
-    const groundY = ctaRect.top - sectionRect.top - FIGURE_H - 16;
 
     // Master timeline
     const master = gsap.timeline();
@@ -198,8 +190,8 @@ export default function PriceRunner() {
       const startX = -120;
 
       // Initial state: off-screen left, arms up, carrying cargo
-      gsap.set(r.svg, { x: startX, y: groundY, opacity: 1 });
-      gsap.set(r.label, { x: startX, y: groundY - 8, opacity: 1 });
+      gsap.set(r.svg, { x: startX, y: r.groundY, opacity: 1 });
+      gsap.set(r.label, { x: startX, y: r.groundY - 8, opacity: 1 });
       armsUp(r.svg, true);
 
       // Phase 1: Run in — figure + cargo move together
@@ -207,8 +199,8 @@ export default function PriceRunner() {
 
       // Body bob during run
       const bobTl = gsap.timeline({ repeat: Math.ceil(runDuration / 0.4) * 2 });
-      bobTl.to(r.svg, { y: groundY - 4, duration: 0.2, ease: "sine.inOut" })
-        .to(r.svg, { y: groundY, duration: 0.2, ease: "sine.inOut" });
+      bobTl.to(r.svg, { y: r.groundY - 4, duration: 0.2, ease: "sine.inOut" })
+        .to(r.svg, { y: r.groundY, duration: 0.2, ease: "sine.inOut" });
 
       master
         // Start run cycle
@@ -236,7 +228,7 @@ export default function PriceRunner() {
         }, [], offset + runDuration)
         // Cargo drops down and fades
         .to(r.label, {
-          y: groundY + 16,
+          y: r.groundY + 16,
           opacity: 0,
           duration: 0.6,
           ease: "bounce.out",
