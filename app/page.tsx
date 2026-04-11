@@ -132,6 +132,13 @@ export default function Home() {
                 </div>
                 <span data-price-amount className={styles.priceAmount}>¥200,000〜</span>
               </div>
+              <div data-price-card className={styles.priceItem}>
+                <div className={styles.priceItemLeft}>
+                  <h3 className={styles.priceName}>NEXT.JS / WEB APP</h3>
+                  <p className={styles.priceDesc}>高速表示 / ログイン・管理画面など本格Web機能</p>
+                </div>
+                <span data-price-amount className={styles.priceAmount}>ASK</span>
+              </div>
             </div>
           </div>
 

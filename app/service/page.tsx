@@ -280,9 +280,20 @@ export default function ServicePage() {
                 <p className={styles.priceDesc}>テーマ構築 / カスタマイズ / 管理画面設計</p>
               </div>
             </ScrollReveal>
+
+            <ScrollReveal delay={0.2}>
+              <div className={styles.priceItem}>
+                <div className={styles.priceItemTop}>
+                  <span className={styles.priceNum}>03</span>
+                  <h3 className={styles.priceName}>NEXT.JS / WEB APP</h3>
+                  <span className={styles.priceAmount}>ASK</span>
+                </div>
+                <p className={styles.priceDesc}>静的サイトでは実現できない本格Web機能 / 会員制サイト・予約システム・管理画面 / 高速表示・SEO最適化</p>
+              </div>
+            </ScrollReveal>
           </div>
 
-          <ScrollReveal delay={0.2}>
+          <ScrollReveal delay={0.25}>
             <div className={styles.priceOption}>
               <p className={styles.priceOptionLabel}>OPTION</p>
               <div className={styles.priceOptionList}>
@@ -297,7 +308,7 @@ export default function ServicePage() {
             </div>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.25}>
+          <ScrollReveal delay={0.3}>
             <p className={styles.priceNote}>
               上記は目安です。ページ数・機能・素材の有無により変動します。お気軽にご相談ください。
             </p>

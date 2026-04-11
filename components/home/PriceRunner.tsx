@@ -50,6 +50,45 @@ function StickFigure({ id }: { id: string }) {
   );
 }
 
+/* ---------- SVG tribot figure (三角ロボ) ---------- */
+function TribotFigure({ id }: { id: string }) {
+  return (
+    <svg
+      data-runner={id}
+      width={FIGURE_W}
+      height={FIGURE_H}
+      viewBox="0 0 48 72"
+      fill="none"
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        opacity: 0,
+        pointerEvents: "none",
+      }}
+    >
+      {/* triangle head */}
+      <polygon data-part="head" points="24,2 38,22 10,22" stroke="#111" strokeWidth="2.5" strokeLinejoin="round" />
+      {/* eyes */}
+      <circle cx="20" cy="16" r="1.5" fill="#111" />
+      <circle cx="28" cy="16" r="1.5" fill="#111" />
+      {/* body */}
+      <line data-part="body" x1="24" y1="22" x2="24" y2="42" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      {/* left arm */}
+      <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      {/* right arm */}
+      <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      {/* left leg */}
+      <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      {/* right leg */}
+      <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      {/* feet */}
+      <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+      <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /* ---------- Running cycle timeline ---------- */
 function createRunCycle(svg: SVGElement): gsap.core.Timeline {
   const legL = svg.querySelector('[data-part="legL"]')!;
@@ -306,6 +345,24 @@ export default function PriceRunner() {
       <StickFigure id="r1" />
       <div
         data-cargo="r1"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          opacity: 0,
+          fontFamily: "var(--font-heading)",
+          fontWeight: 600,
+          fontSize: "20px",
+          letterSpacing: "0.04em",
+          color: "#111",
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Runner 2 (tribot) */}
+      <TribotFigure id="r2" />
+      <div
+        data-cargo="r2"
         style={{
           position: "absolute",
           top: 0,
