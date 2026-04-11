@@ -782,19 +782,18 @@ export const sortWorks = (
     compareStrings(left.title, right.title);
   const sortByTitleDescending = (left: Work, right: Work) =>
     compareStrings(right.title, left.title);
-  const sortByYear = (
+  const sortByCreatedAt = (
     left: Work,
     right: Work,
     direction: "asc" | "desc"
   ) => {
-    const leftYear = typeof left.year === "number" ? left.year : null;
-    const rightYear = typeof right.year === "number" ? right.year : null;
-    if (leftYear === null && rightYear === null) return 0;
-    if (leftYear === null) return 1;
-    if (rightYear === null) return -1;
-    return direction === "desc"
-      ? rightYear - leftYear
-      : leftYear - rightYear;
+    const leftDate = left.createdAt ?? "";
+    const rightDate = right.createdAt ?? "";
+    if (leftDate === "" && rightDate === "") return 0;
+    if (leftDate === "") return 1;
+    if (rightDate === "") return -1;
+    const cmp = leftDate.localeCompare(rightDate);
+    return direction === "desc" ? -cmp : cmp;
   };
 
   const sorted = [...withIndex].sort((left, right) => {
@@ -809,7 +808,7 @@ export const sortWorks = (
         Number(right.item.isConcept ?? false);
       if (conceptDiff !== 0) return conceptDiff;
 
-      const yearDiff = sortByYear(left.item, right.item, "desc");
+      const yearDiff = sortByCreatedAt(left.item, right.item, "desc");
       if (yearDiff !== 0) return yearDiff;
 
       return (
@@ -823,7 +822,7 @@ export const sortWorks = (
         getBudgetRank(right.item.budgetRange);
       if (budgetDiff !== 0) return budgetDiff;
 
-      const yearDiff = sortByYear(left.item, right.item, "desc");
+      const yearDiff = sortByCreatedAt(left.item, right.item, "desc");
       if (yearDiff !== 0) return yearDiff;
 
       return (
@@ -847,8 +846,8 @@ export const sortWorks = (
     // year-desc / year-asc
     const yearDiff =
       sortOrder === "year-desc"
-        ? sortByYear(left.item, right.item, "desc")
-        : sortByYear(left.item, right.item, "asc");
+        ? sortByCreatedAt(left.item, right.item, "desc")
+        : sortByCreatedAt(left.item, right.item, "asc");
 
     return (
       yearDiff ||

@@ -20,11 +20,11 @@ export interface SortOption {
 
 export type SortOptionLabel = SortOption["label"];
 
-export const DEFAULT_SORT_ORDER: SortOrder = "recommended";
+export const DEFAULT_SORT_ORDER: SortOrder = "year-desc";
 
 export const SORT_OPTIONS: readonly SortOption[] = [
-  { value: "recommended", label: "おすすめ順" },
   { value: "year-desc", label: "新しい順" },
+  { value: "recommended", label: "おすすめ順" },
   { value: "year-asc", label: "古い順" },
   { value: "budget-asc", label: "予算帯順" },
   { value: "title-asc", label: "タイトル順" },
