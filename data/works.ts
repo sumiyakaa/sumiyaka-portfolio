@@ -167,7 +167,7 @@ export const works: Work[] = [
     scale: null,
     budgetRange: "¥350,000（税抜）",
     durationRange: null,
-    createdAt: "2026-04",
+    createdAt: "2026-04-11",
     year: 2026,
     isFeatured: true,
     hasCms: false,

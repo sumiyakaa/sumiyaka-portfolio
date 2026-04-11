@@ -32,7 +32,7 @@ export interface Work {
   technologies: string[];
 
   // === Supplemental metadata ===
-  createdAt: string; // 作成年月 "YYYY-MM"（例: "2026-04"）
+  createdAt: string; // 作成日 "YYYY-MM" or "YYYY-MM-DD"（例: "2026-04-11"）
   pageCount?: number;
   scale?: string | null;
   budgetRange?: string | null;
