@@ -8,74 +8,36 @@ interface WorkDetailClientProps {
   work: Work;
 }
 
-const PC_W = 1920;
-const PC_H = 5400;
-const PC_VIEWPORT_H = 1080;
-
 export default function WorkDetailClient({ work }: WorkDetailClientProps) {
   const [device, setDevice] = useState<"pc" | "sp">("pc");
   const wrapRef = useRef<HTMLDivElement>(null);
   const [pcScale, setPcScale] = useState(1);
-  const [pcScrollY, setPcScrollY] = useState(0);
-  const touchYRef = useRef(0);
   const siteUrl = work.liveUrl ?? work.siteUrl;
 
-  /* ── PC scale tracking ── */
   useEffect(() => {
     const el = wrapRef.current;
     if (!el || device !== "pc") return;
     const observer = new ResizeObserver(([entry]) => {
-      setPcScale(entry.contentRect.width / PC_W);
+      setPcScale(entry.contentRect.width / 1920);
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, [device]);
 
-  /* ── Reset scroll on device switch ── */
-  useEffect(() => {
-    setPcScrollY(0);
-  }, [device]);
-
-  /* ── PC mode: touch & wheel scroll via translateY ── */
+  /* ── iframe領域でのタッチ時、親ページのスクロールを阻止 ── */
   useEffect(() => {
     const el = wrapRef.current;
-    if (!el || device !== "pc") return;
-
-    const maxScroll = PC_H - PC_VIEWPORT_H;
-
-    const onTouchStart = (e: TouchEvent) => {
-      touchYRef.current = e.touches[0].clientY;
-    };
+    if (!el) return;
 
     const onTouchMove = (e: TouchEvent) => {
+      // iframe内部は別ドキュメントなので影響しない
+      // 親ページ（Lenis）のスクロールだけを止める
       e.preventDefault();
-      e.stopPropagation();
-      const y = e.touches[0].clientY;
-      const delta = touchYRef.current - y;
-      touchYRef.current = y;
-      setPcScrollY((prev) =>
-        Math.max(0, Math.min(maxScroll, prev + delta / pcScale)),
-      );
     };
 
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setPcScrollY((prev) =>
-        Math.max(0, Math.min(maxScroll, prev + e.deltaY / pcScale)),
-      );
-    };
-
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchmove", onTouchMove, { passive: false });
-    el.addEventListener("wheel", onWheel, { passive: false });
-
-    return () => {
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove", onTouchMove);
-      el.removeEventListener("wheel", onWheel);
-    };
-  }, [device, pcScale]);
+    return () => el.removeEventListener("touchmove", onTouchMove);
+  }, []);
 
   if (!siteUrl) return null;
 
@@ -130,9 +92,9 @@ export default function WorkDetailClient({ work }: WorkDetailClientProps) {
             style={
               device === "pc"
                 ? {
-                    width: PC_W,
-                    height: PC_H,
-                    transform: `scale(${pcScale}) translateY(${-pcScrollY}px)`,
+                    width: 1920,
+                    height: 1080,
+                    transform: `scale(${pcScale})`,
                     transformOrigin: "0 0",
                   }
                 : undefined

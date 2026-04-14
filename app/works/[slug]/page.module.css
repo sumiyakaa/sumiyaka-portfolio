@@ -293,9 +293,6 @@
   width: 390px;
   max-width: 100%;
   aspect-ratio: 9 / 16;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
 }
 
 .iframe {
@@ -305,7 +302,7 @@
 
 .iframeWrapSp .iframe {
   width: 100%;
-  height: 4000px;
+  height: 100%;
 }
 
 /* =============================================
