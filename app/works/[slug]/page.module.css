@@ -282,6 +282,7 @@
   background: #fff;
   transition: width 400ms ease;
   position: relative;
+  touch-action: none;
 }
 
 .iframeWrapPc {

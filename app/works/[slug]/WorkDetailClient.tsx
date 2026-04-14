@@ -66,6 +66,7 @@ export default function WorkDetailClient({ work }: WorkDetailClientProps) {
           className={`${styles.iframeWrap} ${
             device === "sp" ? styles.iframeWrapSp : styles.iframeWrapPc
           }`}
+          data-lenis-prevent-touch
         >
           <iframe
             src={siteUrl}
