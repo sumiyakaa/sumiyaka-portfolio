@@ -37,33 +37,72 @@ export default function WorkModal({ children, slug }: WorkModalProps) {
       }
     };
 
-    // Touch scroll: Lenisがタッチイベントを横取りするため手動処理
+    // Touch scroll: Lenisがタッチイベントを横取りするため手動処理 + 慣性
     let touchStartY = 0;
-    const onTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
+    let velocity = 0;
+    let lastTouchY = 0;
+    let lastTouchTime = 0;
+    let inertiaRaf = 0;
+
+    const stopInertia = () => {
+      if (inertiaRaf) {
+        cancelAnimationFrame(inertiaRaf);
+        inertiaRaf = 0;
+      }
+      velocity = 0;
     };
+
+    const onTouchStart = (e: TouchEvent) => {
+      stopInertia();
+      touchStartY = e.touches[0].clientY;
+      lastTouchY = touchStartY;
+      lastTouchTime = Date.now();
+      velocity = 0;
+    };
+
     const onTouchMove = (e: TouchEvent) => {
       e.stopPropagation();
+      e.preventDefault();
       const modal = modalRef.current;
       if (!modal) return;
       const touchY = e.touches[0].clientY;
-      const deltaY = touchStartY - touchY;
-      touchStartY = touchY;
+      const now = Date.now();
+      const dt = now - lastTouchTime || 16;
+      const deltaY = lastTouchY - touchY;
+      velocity = deltaY / dt * 16; // px per frame (≈16ms)
+      lastTouchY = touchY;
+      lastTouchTime = now;
       modal.scrollTop += deltaY;
-      e.preventDefault();
+    };
+
+    const onTouchEnd = () => {
+      const modal = modalRef.current;
+      if (!modal || Math.abs(velocity) < 0.5) return;
+
+      const friction = 0.95;
+      const tick = () => {
+        velocity *= friction;
+        if (Math.abs(velocity) < 0.5) { inertiaRaf = 0; return; }
+        modal.scrollTop += velocity;
+        inertiaRaf = requestAnimationFrame(tick);
+      };
+      inertiaRaf = requestAnimationFrame(tick);
     };
 
     overlay?.addEventListener("wheel", onWheel, { passive: false, capture: true });
     overlay?.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
     overlay?.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
+    overlay?.addEventListener("touchend", onTouchEnd, { capture: true });
 
     return () => {
+      stopInertia();
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
       lenis?.start();
       overlay?.removeEventListener("wheel", onWheel, { capture: true });
       overlay?.removeEventListener("touchstart", onTouchStart, { capture: true });
       overlay?.removeEventListener("touchmove", onTouchMove, { capture: true });
+      overlay?.removeEventListener("touchend", onTouchEnd, { capture: true });
     };
   }, [close, lenis]);
 
