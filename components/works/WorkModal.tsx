@@ -37,13 +37,33 @@ export default function WorkModal({ children, slug }: WorkModalProps) {
       }
     };
 
+    // Touch scroll: Lenisがタッチイベントを横取りするため手動処理
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      e.stopPropagation();
+      const modal = modalRef.current;
+      if (!modal) return;
+      const touchY = e.touches[0].clientY;
+      const deltaY = touchStartY - touchY;
+      touchStartY = touchY;
+      modal.scrollTop += deltaY;
+      e.preventDefault();
+    };
+
     overlay?.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    overlay?.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
+    overlay?.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
 
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
       lenis?.start();
       overlay?.removeEventListener("wheel", onWheel, { capture: true });
+      overlay?.removeEventListener("touchstart", onTouchStart, { capture: true });
+      overlay?.removeEventListener("touchmove", onTouchMove, { capture: true });
     };
   }, [close, lenis]);
 

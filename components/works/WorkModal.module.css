@@ -10,6 +10,7 @@
   padding: 40px;
   animation: fadeIn 0.3s ease;
   overscroll-behavior: contain;
+  touch-action: none;
 }
 
 @keyframes fadeIn {
