@@ -25,3 +25,44 @@
 .fallback {
   display: none;
 }
+
+.skipButton {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2;
+  padding: 10px 20px;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.skipButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ffffff;
+}
+
+.skipButton:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .skipButton {
+    right: 16px;
+    bottom: 16px;
+    padding: 9px 16px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+  }
+}

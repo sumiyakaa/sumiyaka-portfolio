@@ -100,6 +100,38 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
   // Safety timeout refs shared between initScene and runAnimation
   const safetyFiredRef = useRef(false);
   const safetyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skippedRef = useRef(false);
+
+  const handleSkip = useCallback(() => {
+    if (skippedRef.current) return;
+    skippedRef.current = true;
+    safetyFiredRef.current = true;
+    if (safetyTimeoutRef.current) {
+      clearTimeout(safetyTimeoutRef.current);
+      safetyTimeoutRef.current = null;
+    }
+    if (cleanupRef.current) cleanupRef.current();
+    const finalize = () => {
+      document.body.classList.remove("is-locked");
+      lenisRef.current?.start();
+      try {
+        sessionStorage.setItem("akashiki-splash", "done");
+      } catch {
+        // ignore storage errors (private mode, etc.)
+      }
+      onComplete();
+    };
+    if (containerRef.current) {
+      gsap.to(containerRef.current, {
+        opacity: 0,
+        duration: 0.25,
+        ease: "power2.out",
+        onComplete: finalize,
+      });
+    } else {
+      finalize();
+    }
+  }, [onComplete, lenisRef]);
 
   const initScene = useCallback(() => {
     const container = containerRef.current;
@@ -670,6 +702,14 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
     <div ref={containerRef} className={styles.container}>
       <canvas ref={inkCanvasRef} className={styles.inkCanvas} />
       <canvas ref={threeCanvasRef} className={styles.threeCanvas} />
+      <button
+        type="button"
+        className={styles.skipButton}
+        onClick={handleSkip}
+        aria-label="オープニングをスキップ"
+      >
+        SKIP
+      </button>
     </div>
   );
 }
