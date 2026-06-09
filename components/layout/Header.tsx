@@ -81,12 +81,16 @@ export default function Header() {
       lockStateRef.current = null;
       document.body.classList.remove("is-locked");
       document.body.style.top = "";
+      // 同一ページでメニューを閉じた時だけ位置を復元（ページ遷移時は先頭=0）
+      const restoreY = locked && locked.path === pathname ? locked.y : 0;
+      // ネイティブのスクロール位置を先に戻してから Lenis を再開する
+      // （順序を逆にすると Lenis が 0 を基準にして先頭へ飛ぶ）。
+      // body:fixed 中に Lenis がスクロール上限を 0 でキャッシュするため
+      // resize() で再計測し、force で確実に復元する。
+      window.scrollTo(0, restoreY);
       lenis?.start();
-      // 同一ページでメニューを閉じた時だけ位置を復元（ページ遷移時は復元しない）
-      if (locked && locked.path === pathname && locked.y) {
-        window.scrollTo(0, locked.y);
-        lenis?.scrollTo(locked.y, { immediate: true });
-      }
+      lenis?.resize();
+      lenis?.scrollTo(restoreY, { immediate: true, force: true });
     }
   }, [isMenuOpen, lenis, pathname]);
 
