@@ -220,3 +220,17 @@ body.is-locked {
     scroll-behavior: auto !important;
   }
 }
+
+/* =============================================
+   日本語 改行品質 — SP限定の禁則処理（PC/タブレットは不変）
+   prose要素のみ対象。アニメ用の1文字span・nav/UIラベルは非対象。
+   ============================================= */
+@media (max-width: 767px) {
+  p, li,
+  h1, h2, h3, h4, h5, h6,
+  dd, dt, figcaption, blockquote {
+    word-break: keep-all;      /* 和文を語の途中で折らない（CJK最適） */
+    line-break: strict;        /* 句読点・括弧の禁則を厳格化 */
+    overflow-wrap: anywhere;   /* 極端な狭幅時のみ任意位置で折る保険 */
+  }
+}
