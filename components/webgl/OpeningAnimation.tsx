@@ -680,10 +680,17 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
   useEffect(() => {
     if (fallback) {
       document.body.classList.remove("is-locked");
-      sessionStorage.setItem("akashiki-splash", "done");
+      // initScene で lenis.stop() 済みのため、必ず再開する。
+      // 再開しないとホームがスクロール不能（FVだけ表示）になる。
+      lenisRef.current?.start();
+      try {
+        sessionStorage.setItem("akashiki-splash", "done");
+      } catch {
+        // private mode 等の storage エラーは無視
+      }
       onComplete();
     }
-  }, [fallback, onComplete]);
+  }, [fallback, onComplete, lenisRef]);
 
   useEffect(() => {
     // Wait one frame for DOM layout to complete

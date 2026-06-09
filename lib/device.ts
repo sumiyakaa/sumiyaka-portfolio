@@ -17,6 +17,11 @@ export function prefersLightVisuals(): boolean {
   const coarsePointer = canMatch && window.matchMedia("(pointer: coarse)").matches;
   const reducedMotion =
     canMatch && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // iPad Safari は初期設定「デスクトップ表示」だと pointer:coarse がマッチしない
+  // ことがあるため、maxTouchPoints / ontouchstart でタッチ端末を確実に検出する。
+  const touchCapable =
+    (typeof navigator !== "undefined" && (navigator.maxTouchPoints ?? 0) > 0) ||
+    "ontouchstart" in window;
   const narrow = window.innerWidth <= 768;
-  return coarsePointer || reducedMotion || narrow;
+  return coarsePointer || touchCapable || reducedMotion || narrow;
 }
