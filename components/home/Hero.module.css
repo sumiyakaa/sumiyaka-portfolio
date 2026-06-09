@@ -286,7 +286,7 @@
 /* =============================================
    Responsive
    ============================================= */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .scrollArea {
     height: 110vh;
     height: 110svh;
@@ -341,7 +341,7 @@
 }
 
 
-@media (min-width: 769px) and (max-width: 1279px) {
+@media (min-width: 768px) and (max-width: 1279px) {
   .mainText {
     font-size: clamp(48px, 7vw, 96px);
   }

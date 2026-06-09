@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import Hero from "./Hero";
-import DebugBadge from "./DebugBadge";
 
 const OpeningAnimation = dynamic(
   () => import("@/components/webgl/OpeningAnimation"),
@@ -42,7 +41,6 @@ export default function HomeClient({ children }: HomeClientProps) {
         )}
       <Hero openingDone={openingDone} />
       {children}
-      <DebugBadge />
     </>
   );
 }

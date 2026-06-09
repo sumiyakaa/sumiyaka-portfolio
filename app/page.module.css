@@ -348,7 +348,7 @@
 /* =============================================
    Responsive
    ============================================= */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .aboutTeaser {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -400,7 +400,7 @@
   }
 }
 
-@media (min-width: 769px) and (max-width: 1279px) {
+@media (min-width: 768px) and (max-width: 1279px) {
   .aboutLeft {
     padding: 60px 40px;
   }

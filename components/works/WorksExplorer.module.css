@@ -95,8 +95,8 @@
    Responsive
    ============================================= */
 
-/* Tablet: sidebar hidden, 2-col grid */
-@media (max-width: 1023px) {
+/* Tablet (768–1279): sidebar hidden, 2-col grid */
+@media (max-width: 1279px) {
   .layout {
     gap: 0;
   }
@@ -112,8 +112,8 @@
   }
 }
 
-/* Mobile: 1-col grid */
-@media (max-width: 768px) {
+/* Mobile (≤767): 1-col grid */
+@media (max-width: 767px) {
   .viewGrid {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -136,8 +136,8 @@
   }
 }
 
-/* Between 1024 and 1439: 4-col thumbnail */
-@media (min-width: 1024px) and (max-width: 1439px) {
+/* Between 1280 and 1439: 4-col thumbnail */
+@media (min-width: 1280px) and (max-width: 1439px) {
   .viewThumbnail {
     grid-template-columns: repeat(4, 1fr);
   }

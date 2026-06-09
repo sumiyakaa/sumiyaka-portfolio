@@ -109,7 +109,7 @@
 /* =============================================
    Responsive
    ============================================= */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .filter {
     padding: 24px 0;
     margin-bottom: 32px;

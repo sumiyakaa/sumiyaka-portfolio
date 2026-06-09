@@ -202,7 +202,7 @@
 }
 
 /* ---- Neg-Pos Invert Hover ---- */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   .styleItem:hover .styleName {
     color: var(--color-primary);
     background: #fff;

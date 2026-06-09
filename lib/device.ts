@@ -31,21 +31,3 @@ export function prefersLightVisuals(): boolean {
 
   return coarse || touchCapable || iPadOS || iOS || reducedMotion || narrow;
 }
-
-/** デバッグ用：判定に使う生の値を文字列で返す（?debug 表示で使用） */
-export function describeDeviceSignals(): string {
-  if (typeof window === "undefined") return "ssr";
-  const nav = navigator;
-  const mm = (q: string) =>
-    typeof window.matchMedia === "function" && window.matchMedia(q).matches;
-  return [
-    `light=${prefersLightVisuals()}`,
-    `mt=${nav.maxTouchPoints ?? 0}`,
-    `ots=${"ontouchstart" in window}`,
-    `coarse=${mm("(pointer: coarse)")}`,
-    `anyCoarse=${mm("(any-pointer: coarse)")}`,
-    `w=${window.innerWidth}`,
-    `plt=${nav.platform}`,
-    `ua=${nav.userAgent.slice(0, 48)}`,
-  ].join(" | ");
-}

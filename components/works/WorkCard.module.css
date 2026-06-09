@@ -284,7 +284,7 @@
 /* =============================================
    Responsive — Grid
    ============================================= */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .cardTitle {
     font-size: 13px;
   }
@@ -297,7 +297,7 @@
 /* =============================================
    Responsive — List
    ============================================= */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .listCard {
     gap: 12px;
     padding: 12px 0;
