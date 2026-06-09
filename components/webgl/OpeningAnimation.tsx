@@ -8,6 +8,7 @@ import { gsap } from "gsap";
 import { createFluidSim, type FluidSimAPI } from "@/lib/webgl/fluidSim";
 import { useLenisRef } from "@/components/animation/SmoothScroll";
 import styles from "./OpeningAnimation.module.css";
+import { prefersLightVisuals } from "@/lib/device";
 
 // ---- Vertex color helpers (ported from v1) ----
 
@@ -151,8 +152,9 @@ export default function OpeningAnimation({ onComplete }: OpeningAnimationProps) 
     // Lenis stop
     lenisRef.current?.stop();
 
-    // SP: skip WebGL
-    if (window.innerWidth <= 768) {
+    // タッチ端末（スマホ・タブレット）/ reduced-motion / 狭幅では重い演出をスキップ。
+    // iPad Pro のように幅が広くてもタッチ端末はフォールバックにして滑らかさを優先する。
+    if (prefersLightVisuals()) {
       setFallback(true);
       return;
     }

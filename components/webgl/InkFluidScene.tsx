@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createFluidSim, type FluidSimAPI } from "@/lib/webgl/fluidSim";
+import { prefersLightVisuals } from "@/lib/device";
 import styles from "./InkFluidScene.module.css";
 
 export default function InkFluidScene() {
@@ -14,7 +15,8 @@ export default function InkFluidScene() {
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    if (window.innerWidth <= 768) {
+    // タッチ端末 / reduced-motion / 狭幅では重い流体演出をスキップ（CSSフォールバック）
+    if (prefersLightVisuals()) {
       setFallback(true);
       return;
     }
