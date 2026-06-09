@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, type MouseEvent } from "react";
+import { useEffect, useState, useCallback, useRef, type MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -68,16 +68,27 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHome, isVisible]);
 
-  // メニュー開閉時の body ロック
+  // メニュー開閉時の body ロック（iOS対策: スクロール位置を保存/復元）
+  const lockStateRef = useRef<{ y: number; path: string } | null>(null);
   useEffect(() => {
     if (isMenuOpen) {
+      lockStateRef.current = { y: window.scrollY, path: pathname };
+      document.body.style.top = `-${lockStateRef.current.y}px`;
       document.body.classList.add("is-locked");
       lenis?.stop();
     } else {
+      const locked = lockStateRef.current;
+      lockStateRef.current = null;
       document.body.classList.remove("is-locked");
+      document.body.style.top = "";
       lenis?.start();
+      // 同一ページでメニューを閉じた時だけ位置を復元（ページ遷移時は復元しない）
+      if (locked && locked.path === pathname && locked.y) {
+        window.scrollTo(0, locked.y);
+        lenis?.scrollTo(locked.y, { immediate: true });
+      }
     }
-  }, [isMenuOpen, lenis]);
+  }, [isMenuOpen, lenis, pathname]);
 
   // ページ遷移時にメニューを閉じる
   useEffect(() => {

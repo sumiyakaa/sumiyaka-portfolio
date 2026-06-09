@@ -201,7 +201,8 @@ ul, ol {
 body.is-locked {
   overflow: hidden;
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
 }
 

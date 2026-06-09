@@ -8,6 +8,7 @@
 .fv {
   position: relative;
   height: 100vh;
+  height: 100svh;
   background: var(--color-primary);
   display: flex;
   align-items: center;

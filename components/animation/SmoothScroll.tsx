@@ -50,7 +50,27 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
+    // 初回セットアップ後にトリガー位置を確定
+    ScrollTrigger.refresh();
+
+    // リサイズ／向き変更でトリガー位置がズレるため再計算（デバウンス）。
+    // iOSのアドレスバー開閉は「高さのみ変化」なので無視してガタつきを防ぐ
+    // （FVは svh 指定で高さ自体が変わらないため幅基準で十分）。
+    let lastWidth = window.innerWidth;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    const handleResize = () => {
+      if (window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
+    };
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+      clearTimeout(refreshTimer);
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();
       lenisRef.current = null;

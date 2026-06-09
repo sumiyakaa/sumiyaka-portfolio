@@ -108,6 +108,13 @@
   z-index: 1200;
 }
 
+/* タップ領域を 44px 以上に拡張（見た目は 28×20 のまま） */
+.burger::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+
 .burgerLine {
   display: block;
   width: 100%;
@@ -136,7 +143,7 @@
   position: fixed;
   inset: 0;
   z-index: 1100;
-  background: rgba(0, 0, 0, 0.98);
+  background: rgba(0, 0, 0, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
