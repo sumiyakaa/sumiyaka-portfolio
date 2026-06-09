@@ -204,3 +204,18 @@ body.is-locked {
   inset: 0;
   width: 100%;
 }
+
+/* =============================================
+   Reduced Motion — respect OS "減らす" setting
+   （前庭障害・低電力端末向け。設定OFFのユーザーには無影響）
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

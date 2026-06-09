@@ -757,20 +757,19 @@ export const filterWorks = (
   });
 };
 
-const BUDGET_RANK: Record<string, number> = {
-  "80-120万円": 1,
-  "120-180万円": 2,
-  "180-250万円": 3,
-  "250-400万円": 4,
-  "400万円以上": 5,
-};
-
+// 予算帯ラベル（例: "¥250,000〜400,000" / "¥350,000（税抜）"）の先頭金額を
+// 数値として抽出し、その下限金額でランク付けする（昇順 = 予算帯順）。
+// 旧実装は固定キー("250-400万円"等)の完全一致で実データ形式と噛み合わず、
+// 全件 MAX_SAFE_INTEGER 扱いになりソートが無反応だった。
 const getBudgetRank = (
   rangeLabel: string | null | undefined
-): number =>
-  rangeLabel != null && rangeLabel in BUDGET_RANK
-    ? BUDGET_RANK[rangeLabel]
-    : Number.MAX_SAFE_INTEGER;
+): number => {
+  if (rangeLabel == null) return Number.MAX_SAFE_INTEGER;
+  const match = rangeLabel.match(/[\d,]+/);
+  if (match == null) return Number.MAX_SAFE_INTEGER;
+  const value = Number(match[0].replace(/,/g, ""));
+  return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
+};
 
 export const sortWorks = (
   items: Work[],

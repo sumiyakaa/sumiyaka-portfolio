@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow, Noto_Sans_JP, IBM_Plex_Mono, Anton } from "next/font/google";
 import SmoothScroll from "@/components/animation/SmoothScroll";
 import InkTransitionProvider from "@/components/animation/InkTransition";
@@ -67,6 +67,13 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://akashiki.com",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0a0a",
 };
 
 export default function RootLayout({
