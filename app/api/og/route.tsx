@@ -3,11 +3,30 @@ import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
+// SSRF対策: img は自ドメインのサムネイルのみ許可（@vercel/og がサーバー側で fetch するため）
+const ALLOWED_IMG_HOSTS = new Set([
+  "akashiki.com",
+  "www.akashiki.com",
+  "sumiyaka-portfolio.vercel.app",
+]);
+
+function safeThumb(raw: string | null): string | null {
+  if (!raw) return null;
+  try {
+    const u = new URL(raw);
+    return u.protocol === "https:" && ALLOWED_IMG_HOSTS.has(u.hostname)
+      ? u.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const title = searchParams.get("title") ?? "AKASHIKI";
   const sub = searchParams.get("sub") ?? "Web Design & Development";
-  const img = searchParams.get("img"); // optional thumbnail URL
+  const img = safeThumb(searchParams.get("img")); // 自ドメインのサムネイルのみ
 
   return new ImageResponse(
     (

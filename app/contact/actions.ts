@@ -36,6 +36,12 @@ export async function submitContact(
     return { success: false, error: "送信回数の上限に達しました。しばらく経ってからお試しください。" };
   }
 
+  // honeypot: ボットが埋める隠しフィールド。値があればサイレントに成功扱いで破棄（メールは送らない）
+  const honeypot = formData.get("contact_hp");
+  if (typeof honeypot === "string" && honeypot.trim() !== "") {
+    return { success: true, error: "" };
+  }
+
   const name = formData.get("name") as string | null;
   const email = formData.get("email") as string | null;
   const budget = formData.get("budget") as string | null;
@@ -61,7 +67,8 @@ export async function submitContact(
       message: message.trim(),
     });
     return { success: true, error: "" };
-  } catch {
+  } catch (e) {
+    console.error("[contact] mail send failed:", e);
     return { success: false, error: "送信に失敗しました。時間をおいて再度お試しください。" };
   }
 }

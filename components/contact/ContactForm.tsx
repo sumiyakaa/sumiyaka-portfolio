@@ -196,6 +196,18 @@ export default function ContactForm() {
             transition={transition}
             noValidate
           >
+            {/* honeypot — ボットが埋める隠しフィールド。実ユーザー/スクリーンリーダーには露出しない */}
+            <div className={styles.hp} aria-hidden="true">
+              <label htmlFor="contact-hp">この項目は空のままにしてください</label>
+              <input
+                id="contact-hp"
+                name="contact_hp"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
             {/* NAME */}
             <div className={styles.field}>
               <label htmlFor="contact-name" className={styles.label}>
