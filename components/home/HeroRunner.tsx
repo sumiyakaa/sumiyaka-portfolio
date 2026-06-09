@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
+import { prefersLightVisuals } from "@/lib/device";
 
 /* =================================================================
    Constants
@@ -373,6 +374,20 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
 
     const letterEls = heroContainer.querySelectorAll<HTMLElement>("[data-hero-letter]");
     if (!letterEls.length) return;
+
+    // タッチ端末 / reduced-motion では重い「文字運搬」演出（21体のSVGキャラ）を
+    // スキップし、見出し文字をそのまま表示する（iPad等のフレームレート低下を回避）。
+    if (prefersLightVisuals()) {
+      overlay.style.display = "none";
+      gsap.to(letterEls, {
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.03,
+        ease: "power2.out",
+      });
+      onComplete();
+      return;
+    }
 
     const containerRect = overlay.getBoundingClientRect();
     const isMobile = window.innerWidth <= 768;
