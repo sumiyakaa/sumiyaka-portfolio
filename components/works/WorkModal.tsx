@@ -29,12 +29,11 @@ export default function WorkModal({ children, slug }: WorkModalProps) {
     lenis?.stop();
 
     const overlay = overlayRef.current;
+    // Lenis（ページ全体のスムーススクロール）だけを遮断し、モーダル内の縦スクロールは
+    // ブラウザのネイティブスクロールに委ねる。手動で scrollTop を加算すると
+    // ネイティブ分と二重に動き（移動量が倍）、イージングも無くガクつくため行わない。
     const onWheel = (e: WheelEvent) => {
       e.stopPropagation();
-      const modal = modalRef.current;
-      if (modal) {
-        modal.scrollTop += e.deltaY;
-      }
     };
 
     // Touch scroll: Lenisがタッチイベントを横取りするため手動処理 + 慣性
