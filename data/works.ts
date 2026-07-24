@@ -680,7 +680,7 @@ export const works: Work[] = [
     thumbnail: "/works/aoki-gym/thumbnail.webp",
     images: ["/works/aoki-gym/01.webp"],
     liveUrl: "https://sumiyakaa.github.io/AokiGym/",
-    isPickUp: true,
+    isPickUp: false,
     // Finder fields
     genre: "フィットネス・ヘルスケア",
     siteType: "LP",
@@ -795,7 +795,7 @@ export const works: Work[] = [
     thumbnail: "/works/aoki-estate/thumbnail.webp",
     images: ["/works/aoki-estate/01.webp"],
     liveUrl: "https://sumiyakaa.github.io/AokiEstate/",
-    isPickUp: false,
+    isPickUp: true,
     // Finder fields
     genre: "不動産",
     siteType: "コーポレートサイト",
