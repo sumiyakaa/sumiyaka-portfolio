@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,6 +26,23 @@ export function generateStaticParams() {
   return works.map((work) => ({ slug: work.slug }));
 }
 
+// 本番URL。akashiki.com を取得して Vercel に紐付ければ自動でそちらに切り替わる。
+const SITE_ORIGIN =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://akashiki.com");
+
+// OGカード用の画像。@vercel/og は WebP を描画できないため専用の og.jpg を使う
+// （thumbnail.webp を渡すと画像枠だけが空で描かれる）。
+// ファイルが無い作品は img を渡さない＝空枠ではなく文字だけのカードにする。
+function ogThumbUrl(slug: string): string | null {
+  const rel = `/works/${slug}/og.jpg`;
+  return fs.existsSync(path.join(process.cwd(), "public", rel))
+    ? `${SITE_ORIGIN}${rel}`
+    : null;
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -31,9 +50,9 @@ export async function generateMetadata({
   const work = getWorkBySlug(slug);
   if (!work) return { title: "Work Not Found — AKASHIKI" };
 
-  const ogImg = work.thumbnail
-    ? `/api/og?title=${encodeURIComponent(work.title)}&sub=${encodeURIComponent(work.category.join(" / "))}&img=${encodeURIComponent(`https://akashiki.com${work.thumbnail}`)}`
-    : `/api/og?title=${encodeURIComponent(work.title)}&sub=${encodeURIComponent(work.category.join(" / "))}`;
+  const ogBase = `/api/og?title=${encodeURIComponent(work.title)}&sub=${encodeURIComponent(work.category.join(" / "))}`;
+  const thumb = ogThumbUrl(work.slug);
+  const ogImg = thumb ? `${ogBase}&img=${encodeURIComponent(thumb)}` : ogBase;
 
   return {
     title: `${work.title} — AKASHIKI Works`,

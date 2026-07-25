@@ -4,11 +4,19 @@ import { NextRequest } from "next/server";
 export const runtime = "nodejs";
 
 // SSRF対策: img は自ドメインのサムネイルのみ許可（@vercel/og がサーバー側で fetch するため）
-const ALLOWED_IMG_HOSTS = new Set([
-  "akashiki.com",
-  "www.akashiki.com",
-  "sumiyaka-portfolio.vercel.app",
-]);
+// 実際に配信されている本番ホストも許可に含める（独自ドメイン紐付け時に自動追随）
+const RUNTIME_HOST =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, "").replace(/\/.*$/, "") ||
+  process.env.VERCEL_PROJECT_PRODUCTION_URL;
+
+const ALLOWED_IMG_HOSTS = new Set(
+  [
+    "akashiki.com",
+    "www.akashiki.com",
+    "sumiyaka-portfolio.vercel.app",
+    RUNTIME_HOST,
+  ].filter(Boolean) as string[]
+);
 
 function safeThumb(raw: string | null): string | null {
   if (!raw) return null;
