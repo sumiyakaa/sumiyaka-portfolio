@@ -558,7 +558,7 @@ export const works: Work[] = [
     category: ["MULTI-LANG"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
     description:
-      "美容クリニックの3言語対応サイト（日本語・英語・中国語）。36ページ構成の大規模多言語サイト。",
+      "美容クリニックの3言語対応サイト（日本語・英語・中国語）。66ページ構成の大規模多言語サイト。",
     thumbnail: "/works/beauty-clinic-no2/thumbnail.webp",
     images: ["/works/beauty-clinic-no2/01.webp"],
     liveUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic-No2/ja/",
@@ -569,17 +569,17 @@ export const works: Work[] = [
     purpose: "ブランディング・集客",
     tags: [
       "多言語サイト（JA/EN/ZH）",
-      "マルチページ（36P）",
+      "マルチページ（66P）",
       "症例フィルタリング",
       "WordPress移行前提",
       "hreflang",
       "コンバージョン設計",
     ],
     summary:
-      "美容クリニックの総合サイト。施術カテゴリ別メニュー・症例フィルタリング・医師紹介・院内ギャラリーなど全12ページを日英中3言語で展開し、WordPress移行を前提とした設計で構築。",
+      "美容クリニックの総合サイト。施術カテゴリ別メニュー・症例フィルタリング・医師紹介・院内ギャラリーなど全22ページを日英中3言語で展開し、WordPress移行を前提とした設計で構築。",
     challenge:
-      "12ページ×3言語の大規模構成を、WordPress移行を見据えた保守性の高い設計で統一しつつ、症例フィルタリングや多言語SEOなど機能面も両立させた。",
-    designTone: "ダーク / ラグジュアリー",
+      "22ページ×3言語の大規模構成を、WordPress移行を見据えた保守性の高い設計で統一しつつ、症例フィルタリングや多言語SEOなど機能面も両立させた。",
+    designTone: "ライト / ラグジュアリー",
     features: [
       "多言語対応",
       "症例フィルタリング",
@@ -591,7 +591,7 @@ export const works: Work[] = [
     ],
     techTags: ["JavaScript"],
     techStack: ["HTML", "CSS", "JavaScript"],
-    pageCount: 36,
+    pageCount: 66,
     scale: null,
     budgetRange: "¥500,000〜750,000",
     durationRange: null,
