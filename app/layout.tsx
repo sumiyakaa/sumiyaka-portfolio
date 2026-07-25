@@ -4,6 +4,7 @@ import SmoothScroll from "@/components/animation/SmoothScroll";
 import InkTransitionProvider from "@/components/animation/InkTransition";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { SITE_ORIGIN } from "@/lib/site";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -41,7 +42,9 @@ export const metadata: Metadata = {
   },
   description:
     "灯敷（AKASHIKI）— Webデザイン・コーディングのポートフォリオサイト。LP制作・WordPress構築を中心に、設計から実装までワンストップで対応します。",
-  metadataBase: new URL("https://akashiki.com"),
+  // og:image 等の相対URLの解決基準。実際に到達できるオリジンでないとOGカードが取得されない。
+  // canonical / sitemap は akashiki.com のまま（ブランドの本命ドメイン）。
+  metadataBase: new URL(SITE_ORIGIN),
   openGraph: {
     type: "website",
     locale: "ja_JP",
