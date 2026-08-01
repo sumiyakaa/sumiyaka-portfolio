@@ -383,7 +383,7 @@ export const works: Work[] = [
     thumbnail: "/works/aoki-atelier/thumbnail.webp",
     images: ["/works/aoki-atelier/01.webp"],
     liveUrl: "https://sumiyakaa.github.io/Aoki-Atelier/",
-    isPickUp: true,
+    isPickUp: false,
     // Finder fields
     genre: "ファッション・ライフスタイル",
     siteType: "ブランドサイト",
@@ -965,14 +965,70 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 17. AKASHIKI WORKS FINDER (Portfolio only)
+  // 17. BLUE WOODS No.1 POP-UP SHOP (Finder: aoki-standard-co / work-02)
+  // -------------------------------------------------------------------------
+  {
+    slug: "popup-store-lp",
+    title: "BLUE WOODS No.1 POP-UP SHOP",
+    id: "work-02",
+    tier: "A",
+    order: 17,
+    category: ["LP"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "アパレルブランド AOKI STANDARD CO. の八日間のポップアップに向けた特設ランディングページ。ブランドサイト本体と同じデザイン基盤の上に、会期だけの紙の色と差し色を重ねている。",
+    thumbnail: "/works/popup-store-lp/thumbnail.webp",
+    images: ["/works/popup-store-lp/01.webp"],
+    liveUrl: "https://sumiyakaa.github.io/lp-aoki-standard/popup.html",
+    isPickUp: true,
+    // Finder fields
+    genre: "ファッション・ライフスタイル",
+    siteType: "LP（ランディングページ）",
+    purpose: "キャンペーン訴求",
+    tags: [
+      "イベントLP",
+      "動画ヒーロー",
+      "SVGマスク",
+      "会期カレンダー",
+      "3層積層アニメーション",
+      "商品ラインナップ",
+    ],
+    summary:
+      "巨大タイポの背面に、木のかたちへ切り抜いた動画を重ねたファーストビュー。会期の八日間は横一枚の年表に組み、商品10型は同一構図の3層積層でスクロールに合わせて組み上がる。ブランドサイト本体とは地色だけを替え、特設ページだけが持つ熱量を色で分けた。",
+    challenge:
+      "動画のクロップは iOS で崩れる clip-path を避け、CSS mask-image をデータURIで埋め込んで解決した。外部ファイル参照は読み込みに失敗すると要素ごと消えるため、fetch そのものを無くしている。商品コピーは名前付きアンカー6種の宣言に集約し、幅ごとの座標指定を全廃した。",
+    designTone: "エディトリアル / 和のリズム",
+    features: [
+      "アニメーション",
+      "動画",
+      "商品ラインナップ",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 1,
+    scale: null,
+    budgetRange: "¥200,000〜300,000",
+    durationRange: null,
+    createdAt: "2026-06",
+    year: 2026,
+    isFeatured: true,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: false,
+    isConcept: false,
+    detailUrl: null,
+    siteUrl: "https://sumiyakaa.github.io/lp-aoki-standard/popup.html",
+  },
+
+  // -------------------------------------------------------------------------
+  // 18. AKASHIKI WORKS FINDER (Portfolio only)
   // -------------------------------------------------------------------------
   {
     slug: "works-finder",
     title: "AKASHIKI WORKS FINDER",
     id: "work-18",
     tier: "A",
-    order: 17,
+    order: 18,
     category: ["CORPORATE"],
     technologies: ["React", "TypeScript", "CSS"],
     description:
@@ -1027,14 +1083,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 18. AOKI MITUMORI (Finder: aoki-mitumori / work-05)
+  // 19. AOKI MITUMORI (Finder: aoki-mitumori / work-05)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-mitumori",
     title: "AOKI MITUMORI",
     id: "work-05",
     tier: "B",
-    order: 18,
+    order: 19,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1082,14 +1138,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 19. AOKI BEAUTY CLINIC (Finder: aoki-beauty-clinic / work-01)
+  // 20. AOKI BEAUTY CLINIC (Finder: aoki-beauty-clinic / work-01)
   // -------------------------------------------------------------------------
   {
     slug: "beauty-clinic",
     title: "AOKI BEAUTY CLINIC",
     id: "work-01",
     tier: "B",
-    order: 19,
+    order: 20,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1137,47 +1193,47 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 20. POP-UP STORE LP (Finder: aoki-standard-co / work-02)
+  // 21. AOKI STANDARD CO. (Finder: aoki-standard-co / work-02b)
   // -------------------------------------------------------------------------
   {
-    slug: "popup-store-lp",
-    title: "POP-UP STORE LP",
-    id: "work-02",
-    tier: "B",
-    order: 20,
-    category: ["LP"],
+    slug: "aoki-standard",
+    title: "AOKI STANDARD CO.",
+    id: "work-02b",
+    tier: "A",
+    order: 21,
+    category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
-      "ポップアップストア告知用のイベントランディングページ。",
-    thumbnail: "/works/popup-store-lp/thumbnail.webp",
-    images: ["/works/popup-store-lp/01.webp"],
+      "アパレルブランド AOKI STANDARD CO. のブランドサイト。トップ・WOMEN・MEN の3ページを、実測から起こした一つのデザイン基盤の上に構築した。",
+    thumbnail: "/works/aoki-standard/thumbnail.webp",
+    images: ["/works/aoki-standard/01.webp"],
     liveUrl: "https://sumiyakaa.github.io/lp-aoki-standard/",
     isPickUp: false,
     // Finder fields
     genre: "ファッション・ライフスタイル",
-    siteType: "LP",
-    purpose: "キャンペーン訴求",
+    siteType: "ブランドサイト",
+    purpose: "ブランディング・世界観訴求",
     tags: [
-      "イベントLP",
-      "SVGアニメーション",
-      "パララックス",
-      "EC導線",
+      "ブランドサイト",
+      "3層積層アニメーション",
+      "横スライダー",
+      "縦組みタイポグラフィ",
       "商品ラインナップ",
     ],
     summary:
-      "SVGテキストリングの回転アニメーションによるオープニング演出、3レイヤーのパララックス画像で高級感と限定感を訴求し、商品ラインナップからEC遷移までを設計したポップアップストア告知LP。",
+      "静かなトップから下層へ潜るほど演出が濃くなる深度設計。トップは写真とグリッドだけで組み、WOMEN と MEN では同じ商品を別の積層の型で見せる。差し色の赤はトップに一度も置かず、特設ページで初めて姿を見せる配色にした。",
     challenge:
-      "冒頭のSVG回転演出と多層レイヤーの画像リビールをバニラJSで実装し、ECページまで離脱しにくい流れに整えた。",
-    designTone: "シネマティック / ラグジュアリー",
+      "配色・余白・タイポ・モーションを一つのCSSに憲法として固定し、ページ側はそれを参照するだけの構造に分離。カード内の aspect-ratio を排して WebKit の 0×0 潰れを避け、320〜2560px の全幅で横あふれゼロを実測で確認している。",
+    designTone: "ミニマル / エディトリアル",
     features: [
       "アニメーション",
-      "EC導線",
+      "商品ラインナップ",
     ],
     techTags: ["JavaScript"],
     techStack: ["HTML", "CSS", "JavaScript"],
-    pageCount: 2,
+    pageCount: 3,
     scale: null,
-    budgetRange: "¥150,000〜200,000",
+    budgetRange: "¥300,000〜450,000",
     durationRange: null,
     createdAt: "2026-03",
     year: 2026,
@@ -1191,14 +1247,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 21. AOKI TECH STUDIO (Finder: aoki-tech-studio / work-03)
+  // 22. AOKI TECH STUDIO (Finder: aoki-tech-studio / work-03)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-tech-studio",
     title: "AOKI TECH STUDIO",
     id: "work-03",
     tier: "B",
-    order: 21,
+    order: 22,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1245,14 +1301,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 22. AOKICOSMETIC WP (Finder: aoki-cosmetic / work-07)
+  // 23. AOKICOSMETIC WP (Finder: aoki-cosmetic / work-07)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-cosmetic-wp",
     title: "AOKICOSMETIC WP",
     id: "work-07",
     tier: "A",
-    order: 22,
+    order: 23,
     category: ["WORDPRESS"],
     technologies: ["WordPress", "PHP", "CSS", "JavaScript"],
     description:
@@ -1300,14 +1356,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 23. AOKI LOTION (Finder: aoki-lotion-lp / work-06)
+  // 24. AOKI LOTION (Finder: aoki-lotion-lp / work-06)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-lotion",
     title: "AOKI LOTION",
     id: "work-06",
     tier: "B",
-    order: 23,
+    order: 24,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1356,14 +1412,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 24. CAFE AOKI (Finder: cafe-aoki / work-04)
+  // 25. CAFE AOKI (Finder: cafe-aoki / work-04)
   // -------------------------------------------------------------------------
   {
     slug: "cafe-aoki",
     title: "CAFE AOKI",
     id: "work-04",
     tier: "B",
-    order: 24,
+    order: 25,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
