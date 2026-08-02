@@ -105,7 +105,7 @@ export default function RootLayout({
                 "Webデザイン・フロントエンド開発。LP制作・WordPress構築を中心に、設計から実装までワンストップで対応。",
               sameAs: [
                 "https://x.com/sumiyakaaa",
-                "https://github.com/sumiyakaa",
+                "https://github.com/sumiyakastudio",
               ],
               contactPoint: {
                 "@type": "ContactPoint",

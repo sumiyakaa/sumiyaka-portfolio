@@ -16,7 +16,7 @@ export const works: Work[] = [
       "微量ミネラルの化粧水ブランド「SUIGEN 水源」のブランドサイト（コンセプト）。英字セリフ×インクネイビーのミニマルなエディトリアルデザインで、水源の思想と製品を全18ページで伝える。",
     thumbnail: "/works/suigen/thumbnail.webp",
     images: ["/works/suigen/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/suigen-lotion/",
+    liveUrl: "https://sumiyakastudio.github.io/suigen-lotion/",
     isPickUp: false,
     // Finder fields
     genre: "化粧品・スキンケア",
@@ -61,7 +61,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: true,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/suigen-lotion/",
+    siteUrl: "https://sumiyakastudio.github.io/suigen-lotion/",
   },
 
   // -------------------------------------------------------------------------
@@ -79,7 +79,7 @@ export const works: Work[] = [
       "清涼飲料ブランド「REGENT BEVERAGE」のブランドサイト（コンセプト）。巨大タイポと製品ビジュアルを主役に、スクロール連動の没入演出で世界観を伝える全8ページ構成。",
     thumbnail: "/works/regent-beverage/thumbnail.webp",
     images: ["/works/regent-beverage/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/regent-beverage/",
+    liveUrl: "https://sumiyakastudio.github.io/regent-beverage/",
     isPickUp: true,
     // Finder fields
     genre: "飲料・メーカー",
@@ -121,7 +121,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: true,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/regent-beverage/",
+    siteUrl: "https://sumiyakastudio.github.io/regent-beverage/",
   },
 
   // -------------------------------------------------------------------------
@@ -139,7 +139,7 @@ export const works: Work[] = [
       "「塗り替えの前に、洗う」を訴求する外壁洗浄専門のランディングページ。全幅のBefore/Afterスライダーで洗浄効果を体感させ、無料テスト洗浄へ導く1枚完結ページ。",
     thumbnail: "/works/reclear/thumbnail.webp",
     images: ["/works/reclear/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/reclear/",
+    liveUrl: "https://sumiyakastudio.github.io/reclear/",
     isPickUp: false,
     // Finder fields
     genre: "外壁洗浄・ハウスクリーニング",
@@ -182,7 +182,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/reclear/",
+    siteUrl: "https://sumiyakastudio.github.io/reclear/",
   },
 
   // -------------------------------------------------------------------------
@@ -200,7 +200,7 @@ export const works: Work[] = [
       "「日々の暮らしに、やさしい歯科体験を。」を掲げる歯科医院サイト。無彩色のプレミアムなトーンと、スクロールに連動する大胆なタイポグラフィ表現で、上質で静かな世界観を全5ページに構築した。",
     thumbnail: "/works/hidamari-dental/thumbnail.webp",
     images: ["/works/hidamari-dental/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/hidamari-dental/",
+    liveUrl: "https://sumiyakastudio.github.io/hidamari-dental/",
     isPickUp: false,
     // Finder fields
     genre: "医療・歯科",
@@ -244,7 +244,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/hidamari-dental/",
+    siteUrl: "https://sumiyakastudio.github.io/hidamari-dental/",
   },
 
   // -------------------------------------------------------------------------
@@ -262,7 +262,7 @@ export const works: Work[] = [
       "自然のなかでのびのび育つ幼稚園の公式サイト。深いグリーンに多色のマスコットや紙吹雪が弾ける、賑やかでポップな世界観で見学予約まで導く全12ページのマルチページサイト。",
     thumbnail: "/works/morinoko-kindergarten/thumbnail.webp",
     images: ["/works/morinoko-kindergarten/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/morinoko-kindergarten/",
+    liveUrl: "https://sumiyakastudio.github.io/morinoko-kindergarten/",
     isPickUp: false,
     // Finder fields
     genre: "教育・スクール",
@@ -305,7 +305,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/morinoko-kindergarten/",
+    siteUrl: "https://sumiyakastudio.github.io/morinoko-kindergarten/",
   },
 
   // -------------------------------------------------------------------------
@@ -323,7 +323,7 @@ export const works: Work[] = [
       "アパレルブランドのバイリンガル対応サイト。英語・日本語の2言語に対応し、ブランドの世界観を忠実に再現。",
     thumbnail: "/works/caldwell-sons/thumbnail.webp",
     images: ["/works/caldwell-sons/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/caldwell-sons/",
+    liveUrl: "https://sumiyakastudio.github.io/caldwell-sons/",
     isPickUp: false,
     // Finder fields
     genre: "ファッション・ライフスタイル",
@@ -364,7 +364,7 @@ export const works: Work[] = [
     hasForm: false,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/caldwell-sons/",
+    siteUrl: "https://sumiyakastudio.github.io/caldwell-sons/",
   },
 
   // -------------------------------------------------------------------------
@@ -382,7 +382,7 @@ export const works: Work[] = [
       "ジュエリーブランドのコーポレートサイト。上質なブランドイメージを表現するデザインとアニメーション。",
     thumbnail: "/works/aoki-atelier/thumbnail.webp",
     images: ["/works/aoki-atelier/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-Atelier/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-Atelier/",
     isPickUp: false,
     // Finder fields
     genre: "ファッション・ライフスタイル",
@@ -423,7 +423,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/Aoki-Atelier/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-Atelier/",
   },
 
   // -------------------------------------------------------------------------
@@ -441,7 +441,7 @@ export const works: Work[] = [
       "子ども向けプログラミング教室の集客LP。親の信頼感を軸にしたトップページと、子どもが夢中で遊べるピクセルアート体験ゲームの2ページ構成。",
     thumbnail: "/works/codequest/thumbnail.webp",
     images: ["/works/codequest/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/codequest/",
+    liveUrl: "https://sumiyakastudio.github.io/codequest/",
     isPickUp: false,
     // Finder fields
     genre: "教育・スクール",
@@ -482,7 +482,7 @@ export const works: Work[] = [
     hasForm: false,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/codequest/",
+    siteUrl: "https://sumiyakastudio.github.io/codequest/",
   },
 
   // -------------------------------------------------------------------------
@@ -500,7 +500,7 @@ export const works: Work[] = [
       "リフォーム会社の13ページコーポレートサイト。縦組みの明朝と全画面写真のFVで、施工事例を主役に据えた。",
     thumbnail: "/works/aoki-reform/thumbnail.webp",
     images: ["/works/aoki-reform/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-Reform/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-Reform/",
     isPickUp: false,
     // Finder fields
     genre: "建築・リフォーム",
@@ -544,7 +544,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/Aoki-Reform/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-Reform/",
   },
 
   // -------------------------------------------------------------------------
@@ -562,7 +562,7 @@ export const works: Work[] = [
       "美容クリニックの3言語対応サイト（日本語・英語・中国語）。66ページ構成の大規模多言語サイト。",
     thumbnail: "/works/beauty-clinic-no2/thumbnail.webp",
     images: ["/works/beauty-clinic-no2/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic-No2/ja/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-BeautyClinic-No2/ja/",
     isPickUp: true,
     // Finder fields
     genre: "美容・クリニック",
@@ -604,7 +604,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic-No2/ja/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-BeautyClinic-No2/ja/",
   },
 
   // -------------------------------------------------------------------------
@@ -622,7 +622,7 @@ export const works: Work[] = [
       "個人税理士事務所のコーポレートサイト。縦組みの明朝タイポと非対称グリッドで、士業の格式と親しみを両立。",
     thumbnail: "/works/aoki-tax/thumbnail.webp",
     images: ["/works/aoki-tax/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/AokiTax/",
+    liveUrl: "https://sumiyakastudio.github.io/AokiTax/",
     isPickUp: false,
     // Finder fields
     genre: "士業・専門サービス",
@@ -664,7 +664,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/AokiTax/",
+    siteUrl: "https://sumiyakastudio.github.io/AokiTax/",
   },
 
   // -------------------------------------------------------------------------
@@ -682,7 +682,7 @@ export const works: Work[] = [
       "パーソナルジムのランディングページ。力強いビジュアルとダイナミックなスクロールアニメーション。",
     thumbnail: "/works/aoki-gym/thumbnail.webp",
     images: ["/works/aoki-gym/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/AokiGym/",
+    liveUrl: "https://sumiyakastudio.github.io/AokiGym/",
     isPickUp: false,
     // Finder fields
     genre: "フィットネス・ヘルスケア",
@@ -721,7 +721,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/AokiGym/",
+    siteUrl: "https://sumiyakastudio.github.io/AokiGym/",
   },
 
   // -------------------------------------------------------------------------
@@ -739,7 +739,7 @@ export const works: Work[] = [
       "レストランのランディングページ。食欲をそそるビジュアルと洗練されたレイアウト。",
     thumbnail: "/works/bistro-aoki/thumbnail.webp",
     images: ["/works/bistro-aoki/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/BistroAoki/",
+    liveUrl: "https://sumiyakastudio.github.io/BistroAoki/",
     isPickUp: true,
     // Finder fields
     genre: "カフェ・飲食",
@@ -779,7 +779,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/BistroAoki/",
+    siteUrl: "https://sumiyakastudio.github.io/BistroAoki/",
   },
 
   // -------------------------------------------------------------------------
@@ -797,7 +797,7 @@ export const works: Work[] = [
       "杉並・中野・世田谷の不動産会社サイトを全面リニューアル。全画面動画のヒーロー、物件のお気に入り・比較、住宅ローン試算、資料PDF出力、パノラマ内見など実務機能を実装した18ページのコーポレートサイト。",
     thumbnail: "/works/aoki-estate/thumbnail.webp",
     images: ["/works/aoki-estate/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/AokiEstate/",
+    liveUrl: "https://sumiyakastudio.github.io/AokiEstate/",
     isPickUp: true,
     // Finder fields
     genre: "不動産",
@@ -842,7 +842,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/AokiEstate/",
+    siteUrl: "https://sumiyakastudio.github.io/AokiEstate/",
   },
 
   // -------------------------------------------------------------------------
@@ -860,7 +860,7 @@ export const works: Work[] = [
       "家族向け英会話教室の7ページサイト。楕円クロップ写真と手描き装飾で、教室の空気ごと見せる。",
     thumbnail: "/works/aoki-family-english/thumbnail.webp",
     images: ["/works/aoki-family-english/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/aoki-family-english/",
+    liveUrl: "https://sumiyakastudio.github.io/aoki-family-english/",
     isPickUp: false,
     // Finder fields
     genre: "教育・スクール",
@@ -905,7 +905,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/aoki-family-english/",
+    siteUrl: "https://sumiyakastudio.github.io/aoki-family-english/",
   },
 
   // -------------------------------------------------------------------------
@@ -923,7 +923,7 @@ export const works: Work[] = [
       "アニメーション制作会社の12ページコーポレートサイト。黒×白のシネマティックなデザインと動画ショーリールで作品を主役に。",
     thumbnail: "/works/aoki-animation/thumbnail.webp",
     images: ["/works/aoki-animation/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-Animation/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-Animation/",
     isPickUp: true,
     // Finder fields
     genre: "アニメ・映像制作",
@@ -961,7 +961,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/Aoki-Animation/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-Animation/",
   },
 
   // -------------------------------------------------------------------------
@@ -979,7 +979,7 @@ export const works: Work[] = [
       "アパレルブランド AOKI STANDARD CO. の八日間のポップアップに向けた特設ランディングページ。ブランドサイト本体と同じデザイン基盤の上に、会期だけの紙の色と差し色を重ねている。",
     thumbnail: "/works/popup-store-lp/thumbnail.webp",
     images: ["/works/popup-store-lp/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/lp-aoki-standard/popup.html",
+    liveUrl: "https://sumiyakastudio.github.io/lp-aoki-standard/popup.html",
     isPickUp: true,
     // Finder fields
     genre: "ファッション・ライフスタイル",
@@ -1017,7 +1017,7 @@ export const works: Work[] = [
     hasForm: false,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/lp-aoki-standard/popup.html",
+    siteUrl: "https://sumiyakastudio.github.io/lp-aoki-standard/popup.html",
   },
 
   // -------------------------------------------------------------------------
@@ -1035,7 +1035,7 @@ export const works: Work[] = [
       "制作実績を条件から探す検索ツール。React + TypeScript で構築した4軸フィルタ・検索・比較のダークUI。",
     thumbnail: "/works/works-finder/thumbnail.webp",
     images: ["/works/works-finder/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/works-finder/",
+    liveUrl: "https://sumiyakastudio.github.io/works-finder/",
     isPickUp: false,
     // Finder-format fields
     genre: "制作会社・BtoB",
@@ -1079,7 +1079,7 @@ export const works: Work[] = [
     hasForm: false,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/works-finder/",
+    siteUrl: "https://sumiyakastudio.github.io/works-finder/",
   },
 
   // -------------------------------------------------------------------------
@@ -1097,7 +1097,7 @@ export const works: Work[] = [
       "Web制作の見積シミュレーター。ユーザーが条件を選択して概算見積もりを算出。",
     thumbnail: "/works/aoki-mitumori/thumbnail.webp",
     images: ["/works/aoki-mitumori/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-Mitumori/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-Mitumori/",
     isPickUp: false,
     // Finder fields
     genre: "制作会社・BtoB",
@@ -1134,7 +1134,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: "./projects/aoki-estimate-simulator/",
-    siteUrl: "https://sumiyakaa.github.io/Aoki-Mitumori/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-Mitumori/",
   },
 
   // -------------------------------------------------------------------------
@@ -1152,7 +1152,7 @@ export const works: Work[] = [
       "美容クリニックの広告用ランディングページ。コンバージョン重視の設計。",
     thumbnail: "/works/beauty-clinic/thumbnail.webp",
     images: ["/works/beauty-clinic/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-BeautyClinic/",
     isPickUp: false,
     // Finder fields
     genre: "美容・クリニック",
@@ -1189,7 +1189,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: "./projects/aoki-beauty-clinic/",
-    siteUrl: "https://sumiyakaa.github.io/Aoki-BeautyClinic/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-BeautyClinic/",
   },
 
   // -------------------------------------------------------------------------
@@ -1207,7 +1207,7 @@ export const works: Work[] = [
       "アパレルブランド AOKI STANDARD CO. のブランドサイト。トップ・WOMEN・MEN の3ページを、実測から起こした一つのデザイン基盤の上に構築した。",
     thumbnail: "/works/aoki-standard/thumbnail.webp",
     images: ["/works/aoki-standard/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/lp-aoki-standard/",
+    liveUrl: "https://sumiyakastudio.github.io/lp-aoki-standard/",
     isPickUp: false,
     // Finder fields
     genre: "ファッション・ライフスタイル",
@@ -1243,7 +1243,7 @@ export const works: Work[] = [
     hasForm: false,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/lp-aoki-standard/",
+    siteUrl: "https://sumiyakastudio.github.io/lp-aoki-standard/",
   },
 
   // -------------------------------------------------------------------------
@@ -1261,7 +1261,7 @@ export const works: Work[] = [
       "テック系企業のコーポレートランディングページ。モダンで洗練されたデザイン。",
     thumbnail: "/works/aoki-tech-studio/thumbnail.webp",
     images: ["/works/aoki-tech-studio/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/Aoki-Tech-Studio/",
+    liveUrl: "https://sumiyakastudio.github.io/Aoki-Tech-Studio/",
     isPickUp: false,
     // Finder fields
     genre: "制作会社・BtoB",
@@ -1297,7 +1297,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: "./projects/aoki-tech-studio/",
-    siteUrl: "https://sumiyakaa.github.io/Aoki-Tech-Studio/",
+    siteUrl: "https://sumiyakastudio.github.io/Aoki-Tech-Studio/",
   },
 
   // -------------------------------------------------------------------------
@@ -1315,7 +1315,7 @@ export const works: Work[] = [
       "化粧品ブランドのWordPressオリジナルテーマ。管理画面からのコンテンツ更新に対応。",
     thumbnail: "/works/aoki-cosmetic-wp/thumbnail.webp",
     images: ["/works/aoki-cosmetic-wp/01.webp"],
-    liveUrl: "https://github.com/sumiyakaa/aokicosmetic-wp",
+    liveUrl: "https://github.com/sumiyakastudio/aokicosmetic-wp",
     isPickUp: false,
     // Finder fields
     genre: "美容・コスメ",
@@ -1352,7 +1352,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://github.com/sumiyakaa/aokicosmetic-wp",
+    siteUrl: "https://github.com/sumiyakastudio/aokicosmetic-wp",
   },
 
   // -------------------------------------------------------------------------
@@ -1370,7 +1370,7 @@ export const works: Work[] = [
       "化粧品の販売用ランディングページ。商品の魅力を最大限に引き出すビジュアル設計。",
     thumbnail: "/works/aoki-lotion/thumbnail.webp",
     images: ["/works/aoki-lotion/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/aoki-lotion-lp/",
+    liveUrl: "https://sumiyakastudio.github.io/aoki-lotion-lp/",
     isPickUp: false,
     // Finder fields
     genre: "美容・コスメ",
@@ -1408,7 +1408,7 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/aoki-lotion-lp/",
+    siteUrl: "https://sumiyakastudio.github.io/aoki-lotion-lp/",
   },
 
   // -------------------------------------------------------------------------
@@ -1426,7 +1426,7 @@ export const works: Work[] = [
       "カフェのランディングページ。温かみのあるデザインで店舗の雰囲気を表現。",
     thumbnail: "/works/cafe-aoki/thumbnail.webp",
     images: ["/works/cafe-aoki/01.webp"],
-    liveUrl: "https://sumiyakaa.github.io/cafe-aoki/",
+    liveUrl: "https://sumiyakastudio.github.io/cafe-aoki/",
     isPickUp: false,
     // Finder fields
     genre: "カフェ・飲食",
@@ -1465,6 +1465,6 @@ export const works: Work[] = [
     hasForm: true,
     isConcept: false,
     detailUrl: null,
-    siteUrl: "https://sumiyakaa.github.io/cafe-aoki/",
+    siteUrl: "https://sumiyakastudio.github.io/cafe-aoki/",
   },
 ];

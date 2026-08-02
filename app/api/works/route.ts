@@ -3,7 +3,7 @@ import { works } from "@/data/works";
 /**
  * 制作実績データの配信エンドポイント。
  *
- * 用途: Works Finder（https://sumiyakaa.github.io/works-finder/）が起動時に取得し、
+ * 用途: Works Finder（https://sumiyakastudio.github.io/works-finder/）が起動時に取得し、
  * 「ポートフォリオに作品を追加したら Finder 側も自動で最新になる」状態をつくる。
  *
  * - 読み取り専用・公開情報のみ（works.ts に載っている＝すでに公開済みの内容）
