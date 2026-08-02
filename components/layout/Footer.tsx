@@ -28,7 +28,7 @@ export default function Footer() {
 
           <div className={styles.sns}>
             <a
-              href="https://x.com/sumiyakaaa"
+              href="https://x.com/sumiyakastudio"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.snsLink}

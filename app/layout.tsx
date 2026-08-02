@@ -64,8 +64,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@sumiyakaaa",
-    creator: "@sumiyakaaa",
+    site: "@sumiyakastudio",
+    creator: "@sumiyakastudio",
   },
   alternates: {
     canonical: "https://akashiki.com",
@@ -104,7 +104,7 @@ export default function RootLayout({
               description:
                 "Webデザイン・フロントエンド開発。LP制作・WordPress構築を中心に、設計から実装までワンストップで対応。",
               sameAs: [
-                "https://x.com/sumiyakaaa",
+                "https://x.com/sumiyakastudio",
                 "https://github.com/sumiyakastudio",
               ],
               contactPoint: {
