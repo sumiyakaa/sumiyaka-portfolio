@@ -75,7 +75,6 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
   // Explore state
   const [query, setQuery] = useState(initialResolved.state.query);
   const [selectedFilters, setSelectedFilters] = useState<FilterState>(() => ({
-    selectedCaseTypes: initialResolved.state.selectedCaseTypes,
     selectedGenres: initialResolved.state.selectedGenres,
     selectedSiteTypes: initialResolved.state.selectedSiteTypes,
     selectedPurposes: initialResolved.state.selectedPurposes,
@@ -159,7 +158,6 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
       );
       setQuery(next.query);
       setSelectedFilters({
-        selectedCaseTypes: next.selectedCaseTypes,
         selectedGenres: next.selectedGenres,
         selectedSiteTypes: next.selectedSiteTypes,
         selectedPurposes: next.selectedPurposes,
@@ -185,7 +183,6 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
     const cleared = clearExploreFilters(exploreState);
     setQuery(cleared.query);
     setSelectedFilters({
-      selectedCaseTypes: cleared.selectedCaseTypes,
       selectedGenres: cleared.selectedGenres,
       selectedSiteTypes: cleared.selectedSiteTypes,
       selectedPurposes: cleared.selectedPurposes,
@@ -199,7 +196,6 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
     const next = removeExploreChip(exploreState, action);
     setQuery(next.query);
     setSelectedFilters({
-      selectedCaseTypes: next.selectedCaseTypes,
       selectedGenres: next.selectedGenres,
       selectedSiteTypes: next.selectedSiteTypes,
       selectedPurposes: next.selectedPurposes,

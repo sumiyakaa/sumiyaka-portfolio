@@ -32,7 +32,6 @@ export const SORT_OPTIONS: readonly SortOption[] = [
 ] as const;
 
 export interface FilterState {
-  selectedCaseTypes: string[];
   selectedGenres: string[];
   selectedSiteTypes: string[];
   selectedPurposes: string[];
@@ -66,7 +65,6 @@ export type ExploreSerializableKey = keyof ExploreSerializableState;
 
 export const EXPLORE_SERIALIZABLE_KEYS: readonly ExploreSerializableKey[] = [
   "query",
-  "selectedCaseTypes",
   "selectedGenres",
   "selectedSiteTypes",
   "selectedPurposes",

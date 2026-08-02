@@ -53,11 +53,6 @@ export default async function InterceptedWorkPage({ params }: PageProps) {
 
       {/* Hero pills */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-        {work.isConcept ? (
-          <span style={{ fontSize: 11, letterSpacing: "0.08em", padding: "4px 12px", border: "1px solid #ccc", color: "#666", fontFamily: "var(--font-heading)" }}>Concept</span>
-        ) : (
-          <span style={{ fontSize: 11, letterSpacing: "0.08em", padding: "4px 12px", background: "#111", color: "#fff", fontFamily: "var(--font-heading)" }}>実案件</span>
-        )}
         {work.category.map((cat) => (
           <span key={cat} style={{ fontSize: 11, letterSpacing: "0.08em", padding: "4px 12px", border: "1px solid #ddd", color: "#666", fontFamily: "var(--font-heading)" }}>{cat}</span>
         ))}

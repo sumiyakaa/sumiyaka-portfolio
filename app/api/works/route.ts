@@ -99,7 +99,7 @@ export function GET() {
         hasCms: work.hasCms ?? false,
         hasAnimation: work.hasAnimation ?? false,
         hasForm: work.hasForm ?? false,
-        isConcept: work.isConcept ?? false,
+        isConcept: false,
         // 導線
         siteUrl: work.siteUrl ?? work.liveUrl ?? null,
         detailUrl: work.detailUrl ?? null,

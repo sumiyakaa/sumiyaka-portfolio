@@ -45,7 +45,6 @@ export interface Work {
   hasCms?: boolean;
   hasAnimation?: boolean;
   hasForm?: boolean;
-  isConcept?: boolean;
 
   // === Navigation URLs ===
   detailUrl?: string | null;

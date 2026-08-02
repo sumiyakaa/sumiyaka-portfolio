@@ -37,6 +37,22 @@ export default function WorksPage() {
         </div>
       </SubPageFVAnim>
 
+      {/* 掲載作品についてのアナウンス */}
+      <section className={styles.notice} aria-labelledby="works-notice-label">
+        <div className={styles.noticeInner}>
+          <span id="works-notice-label" className={styles.noticeLabel}>
+            ABOUT THESE WORKS
+          </span>
+          <p className={styles.noticeText}>
+            本ページに掲載しているサイトは、すべて
+            <span className={styles.noticeStrong}>
+              実際の案件をベースに、クライアントを特定できる情報と権利上掲載できない素材を差し替えた見本ページ
+            </span>
+            です。
+          </p>
+        </div>
+      </section>
+
       {/* Works Explorer */}
       <section className={styles.content}>
         <WorksExplorer works={works} />

@@ -96,13 +96,6 @@ export default async function WorkDetailPage({ params }: PageProps) {
           </div>
 
           <div className={styles.heroPills}>
-            {work.isConcept ? (
-              <span className={styles.pill}>Concept</span>
-            ) : (
-              <span className={`${styles.pill} ${styles.pillAccent}`}>
-                実案件
-              </span>
-            )}
             {work.isFeatured && (
               <span className={`${styles.pill} ${styles.pillAccent}`}>
                 Featured
