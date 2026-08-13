@@ -24,15 +24,15 @@
 
 .thumbnailImage {
   object-fit: cover;
+  /* object-position は JS が動かす（lib/hoverScroll.ts）。
+     速度を全作品で揃えるため、CSSトランジションは掛けない。
+     ここに transition を戻すと「時間固定＝速度がばらつく」旧挙動に戻る */
   object-position: 50% 0%;
-  transition:
-    transform 0.4s ease,
-    object-position 8s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: transform 0.4s ease;
 }
 
 .card:hover .thumbnailImage {
   transform: scale(1.06);
-  object-position: 50% 100%;
 }
 
 .tierBadge {
@@ -240,15 +240,13 @@
 
 .thumbImage {
   object-fit: cover;
+  /* object-position は JS が動かす（lib/hoverScroll.ts）。CSSトランジションは掛けない */
   object-position: 50% 0%;
-  transition:
-    transform 0.4s ease,
-    object-position 8s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: transform 0.4s ease;
 }
 
 .thumbCard:hover .thumbImage {
   transform: scale(1.06);
-  object-position: 50% 100%;
 }
 
 .thumbOverlay {

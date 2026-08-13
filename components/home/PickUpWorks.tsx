@@ -6,9 +6,13 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Work } from "@/types/work";
+import { createHoverScroll, type HoverScroll } from "@/lib/hoverScroll";
 import styles from "./PickUpWorks.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/** ホバー時にカードへ掛かる拡大率。下の gsap.to(c, { scale: ... }) と一致させること */
+const CARD_HOVER_SCALE = 1.04;
 
 const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const TYPE_SPEED = 60;
@@ -47,54 +51,31 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
   const activeRef = useRef(-1);
   const typeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const headingTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrollProxies = useRef<Record<number, { pct: number }>>({});
-  const scrollTweens = useRef<Record<number, gsap.core.Tween | null>>({});
+  /* ---- Thumbnail scroll ----
+     速度は lib/hoverScroll.ts の CRUISE_SPEED で全作品共通。
+     Worksページのカードと同じモジュールを使う（実装を1本化）。
+     所要時間はサムネの縦横比で変わるが、速度は変わらない＝それが仕様 */
+  const scrollers = useRef<Record<number, HoverScroll>>({});
 
-  /* ---- Thumbnail scroll (object-position 0%→100%) ---- */
-  const startScroll = useCallback((i: number) => {
-    const card = cardRefs.current[i];
-    if (!card) return;
-    const img = card.querySelector("img") as HTMLImageElement | null;
-    if (!img || !img.naturalWidth || !img.naturalHeight) return;
-
-    const ratio = img.naturalHeight / img.naturalWidth;
-    if (ratio <= 0.8) return;
-
-    const duration = Math.min(12, Math.max(6, ratio * 2.0));
-    if (!scrollProxies.current[i]) scrollProxies.current[i] = { pct: 0 };
-    const proxy = scrollProxies.current[i];
-    proxy.pct = 0;
-
-    if (scrollTweens.current[i]) scrollTweens.current[i]!.kill();
-    scrollTweens.current[i] = gsap.to(proxy, {
-      pct: 100,
-      duration,
-      ease: "none",
-      onUpdate() {
-        img.style.objectPosition = `center ${proxy.pct}%`;
-      },
-    });
-  }, []);
-
-  const stopScroll = useCallback((i: number) => {
-    if (scrollTweens.current[i]) {
-      scrollTweens.current[i]!.kill();
-      scrollTweens.current[i] = null;
+  const getScroller = useCallback((i: number) => {
+    if (!scrollers.current[i]) {
+      scrollers.current[i] = createHoverScroll(CARD_HOVER_SCALE);
     }
-    const card = cardRefs.current[i];
-    if (!card) return;
-    const img = card.querySelector("img") as HTMLImageElement | null;
-    const proxy = scrollProxies.current[i];
-    if (!img || !proxy) return;
-    gsap.to(proxy, {
-      pct: 0,
-      duration: 0.5,
-      ease: "power2.out",
-      onUpdate() {
-        img.style.objectPosition = `center ${proxy.pct}%`;
-      },
-    });
+    return scrollers.current[i];
   }, []);
+
+  const startScroll = useCallback(
+    (i: number) => {
+      const img = cardRefs.current[i]?.querySelector("img");
+      if (img) getScroller(i).start(img);
+    },
+    [getScroller],
+  );
+
+  const stopScroll = useCallback(
+    (i: number) => getScroller(i).stop(),
+    [getScroller],
+  );
 
   /* ---- Heading typing (SELECTED → work title) ---- */
   const startHeadingTyping = useCallback(
@@ -293,10 +274,11 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
   }, []);
 
   useEffect(() => {
+    const activeScrollers = scrollers.current;
     return () => {
       if (typeTimerRef.current) clearTimeout(typeTimerRef.current);
       if (headingTypeTimerRef.current) clearTimeout(headingTypeTimerRef.current);
-      Object.values(scrollTweens.current).forEach((t) => t?.kill());
+      Object.values(activeScrollers).forEach((sc) => sc.kill());
     };
   }, []);
 

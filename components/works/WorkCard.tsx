@@ -1,11 +1,16 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Work } from "@/types/work";
 import type { ViewMode } from "@/types/filter";
+import { createHoverScroll } from "@/lib/hoverScroll";
 import styles from "./WorkCard.module.css";
+
+/** ホバー時に画像へ掛かる拡大率。WorkCard.module.css の transform: scale と一致させること */
+const HOVER_SCALE = 1.06;
 
 interface WorkCardProps {
   work: Work;
@@ -27,6 +32,18 @@ const cardVariants = {
 };
 
 export default function WorkCard({ work, index, viewMode }: WorkCardProps) {
+  // サムネのホバースクロール。速度は lib/hoverScroll.ts の CRUISE_SPEED で全作品共通
+  const frameRef = useRef<HTMLElement | null>(null);
+  const scroller = useMemo(() => createHoverScroll(HOVER_SCALE), []);
+  useEffect(() => () => scroller.kill(), [scroller]);
+
+  const handleEnter = useCallback(() => {
+    const img = frameRef.current?.querySelector("img");
+    if (img) scroller.start(img);
+  }, [scroller]);
+
+  const handleLeave = useCallback(() => scroller.stop(), [scroller]);
+
   if (viewMode === "thumbnail") {
     return (
       <motion.div
@@ -35,7 +52,15 @@ export default function WorkCard({ work, index, viewMode }: WorkCardProps) {
         animate="visible"
         variants={cardVariants}
       >
-        <Link href={`/works/${work.slug}`} className={styles.thumbCard}>
+        <Link
+          href={`/works/${work.slug}`}
+          className={styles.thumbCard}
+          ref={(el) => {
+            frameRef.current = el;
+          }}
+          onMouseEnter={handleEnter}
+          onMouseLeave={handleLeave}
+        >
           <Image
             src={work.thumbnail}
             alt={work.title}
@@ -103,8 +128,18 @@ export default function WorkCard({ work, index, viewMode }: WorkCardProps) {
       animate="visible"
       variants={cardVariants}
     >
-      <Link href={`/works/${work.slug}`} className={styles.card}>
-        <div className={styles.thumbnail}>
+      <Link
+        href={`/works/${work.slug}`}
+        className={styles.card}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+      >
+        <div
+          className={styles.thumbnail}
+          ref={(el) => {
+            frameRef.current = el;
+          }}
+        >
           <Image
             src={work.thumbnail}
             alt={work.title}
