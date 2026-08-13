@@ -313,7 +313,7 @@ export const works: Work[] = [
     tier: "S",
     order: 6,
     category: ["MULTI-LANG"],
-    technologies: ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
+    technologies: ["HTML", "CSS", "JavaScript", "i18n"],
     description:
       "アパレルブランドのバイリンガル対応サイト。英語・日本語の2言語に対応し、ブランドの世界観を忠実に再現。",
     thumbnail: "/works/caldwell-sons/thumbnail.webp",
