@@ -113,6 +113,13 @@ export default async function InterceptedWorkPage({ params }: PageProps) {
               <dd style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "#333" }}>{fact.value}</dd>
             </div>
           ))}
+
+          {/* 担当範囲。掲載作品はすべて同じ体制なので Work 型には持たせず固定表現で出す。
+              既存項目の並び・文言は変えず、最終行に全幅で1行だけ足している */}
+          <div style={{ gridColumn: "1 / -1" }}>
+            <dt style={{ fontFamily: "var(--font-heading)", fontSize: 11, fontWeight: 400, letterSpacing: "0.06em", color: "#999", marginBottom: 4 }}>担当範囲</dt>
+            <dd style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 300, color: "#333" }}>企画・設計・デザイン・コーディング・実装・公開（すべて一人）</dd>
+          </div>
         </dl>
       </div>
 

@@ -7,11 +7,13 @@ import ScrollReveal from "@/components/animation/ScrollReveal";
 import MagneticType from "@/components/home/MagneticType";
 import PriceRunner from "@/components/home/PriceRunner";
 import BoundaryFigure from "@/components/home/BoundaryFigure";
-import { getPickUpWorks } from "@/lib/works";
+import { getAllWorks, getPickUpWorks } from "@/lib/works";
 import styles from "./page.module.css";
 
 export default function Home() {
   const pickupWorks = getPickUpWorks();
+  // 件数はハードコードせず、作品データから毎回集計する（作品追加で自動追従）
+  const worksCount = getAllWorks().length;
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -68,7 +70,7 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal direction="right" delay={0.15} className={styles.aboutRight}>
             <p>
-              20サイト以上の制作実績を持つ、Web デザイン × コーディングの専門家。見た目だけでなく、表示速度・保守性・運用まで見据えたサイトを構築します。
+              {worksCount}サイトの制作実績を持つ、Web デザイン × コーディングの専門家。見た目だけでなく、表示速度・保守性・運用まで見据えたサイトを構築します。
             </p>
             <div className={styles.aboutStrengths}>
               <div className={styles.aboutStrength}>

@@ -1,0 +1,196 @@
+/* =============================================
+   WorksAio — AI検索最適化（AIO）セクション
+   `/works`（Web制作ページ）に置く自己完結セクション。
+   `/service` の .aio 系から移植。色は無彩色のみ（§10-1 モノクロ基調）。
+
+   互換方針：
+   - vw単位 / 100vh前提 / filter・backdrop-filter のアニメ /
+     mix-blend-mode / 複雑な clip-path / 3D transform は不使用
+   - grid stretch × aspect-ratio × absolute子 の3点セットは不使用
+   - prefers-reduced-motion: reduce に対応（ScrollReveal の初期 opacity:0 を解除）
+   ============================================= */
+.worksAio {
+  background: #fff;
+  padding: 160px 80px;
+}
+
+.worksAioInner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ScrollReveal のラッパーに付ける識別用クラス（reduced-motion で使用） */
+.worksAioReveal {
+  display: block;
+}
+
+.worksAioTitle {
+  font-family: var(--font-heading);
+  font-weight: 200;
+  font-size: 50.4px;
+  letter-spacing: 0.15em;
+  color: #111;
+  line-height: 1.4;
+}
+
+.worksAioLead {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 21.6px;
+  color: #111;
+  margin-top: 32px;
+  line-height: 2;
+}
+
+.worksAioBody {
+  margin-top: 40px;
+}
+
+.worksAioText {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 16.8px;
+  line-height: 2;
+  color: #111;
+  letter-spacing: 0.04em;
+  margin-bottom: 16px;
+}
+
+.worksAioText:last-child {
+  margin-bottom: 0;
+}
+
+.worksAioList {
+  margin: 16px 0 24px;
+  padding-left: 0;
+}
+
+.worksAioListItem {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 16.8px;
+  line-height: 2;
+  color: #111;
+  letter-spacing: 0.04em;
+  padding-left: 1.2em;
+  position: relative;
+  list-style: none;
+}
+
+.worksAioListItem::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: #111;
+}
+
+/* ---- Marker Highlight（無彩色） ---- */
+.worksAioMarker {
+  background: none;
+  color: inherit;
+  background-image: linear-gradient(
+    rgba(17, 17, 17, 0.12),
+    rgba(17, 17, 17, 0.12)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 85%;
+  background-size: 100% 40%;
+}
+
+/* ---- Statistics ---- */
+.worksAioStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  margin: 48px 0;
+  padding: 48px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.worksAioStat {
+  text-align: center;
+}
+
+.worksAioStatNum {
+  font-family: var(--font-heading);
+  font-weight: 200;
+  font-size: 48px;
+  letter-spacing: -0.02em;
+  color: #111;
+  line-height: 1;
+  display: block;
+}
+
+.worksAioStatUnit {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.worksAioStatLabel {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 13px;
+  color: #555;
+  margin-top: 12px;
+  display: block;
+  line-height: 1.6;
+}
+
+.worksAioStatLabel small {
+  font-size: 11px;
+  color: #999;
+}
+
+/* =============================================
+   Responsive — Tablet (768–1279)
+   ============================================= */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .worksAio {
+    padding: 120px 40px;
+  }
+
+  .worksAioTitle {
+    font-size: 32px;
+  }
+}
+
+/* =============================================
+   Responsive — SP (–767)
+   ============================================= */
+@media (max-width: 767px) {
+  .worksAio {
+    padding: 80px 20px;
+  }
+
+  .worksAioTitle {
+    font-size: 28px;
+  }
+
+  .worksAioLead {
+    font-size: 16px;
+  }
+
+  .worksAioStats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding: 32px 0;
+  }
+
+  .worksAioStatNum {
+    font-size: 36px;
+  }
+}
+
+/* =============================================
+   Reduced Motion
+   ScrollReveal は GSAP で inline に opacity:0 / transform を置くため、
+   !important で打ち消して「動かないが必ず見える」状態にする。
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .worksAioReveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

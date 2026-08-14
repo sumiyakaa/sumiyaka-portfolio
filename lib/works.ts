@@ -6,17 +6,14 @@ import type {
   ExploreEmptyStateContent,
   ExploreSerializableState,
   ExploreStateInput,
-  ExploreStatusContext,
   ExploreSummary,
   ExploreSummaryItem,
-  ExploreUiState,
   FilterGroup,
   FilterGroupKey,
   FilterOptionItem,
   FilterState,
   SortOptionLabel,
   SortOrder,
-  SortState,
 } from "@/types/filter";
 import { DEFAULT_SORT_ORDER, SORT_OPTIONS } from "@/types/filter";
 import { works as worksData } from "@/data/works";
@@ -39,34 +36,6 @@ export function getPickUpWorks(): Work[] {
   return allWorks
     .filter((work) => work.isPickUp)
     .sort((a, b) => a.order - b.order);
-}
-
-export function getWorksByCategory(category: string): Work[] {
-  return allWorks
-    .filter((work) => work.category.includes(category))
-    .sort((a, b) => a.order - b.order);
-}
-
-export function getWorksByTechnology(tech: string): Work[] {
-  return allWorks
-    .filter((work) => work.technologies.includes(tech))
-    .sort((a, b) => a.order - b.order);
-}
-
-export function getAllCategories(): string[] {
-  const categories = new Set<string>();
-  allWorks.forEach((work) => {
-    work.category.forEach((cat) => categories.add(cat));
-  });
-  return Array.from(categories).sort();
-}
-
-export function getAllTechnologies(): string[] {
-  const technologies = new Set<string>();
-  allWorks.forEach((work) => {
-    work.technologies.forEach((tech) => technologies.add(tech));
-  });
-  return Array.from(technologies).sort();
 }
 
 // ===========================================================================
@@ -211,10 +180,6 @@ export const createInitialFilterState = (): FilterState => ({
   selectedFeatures: [],
   selectedBudgetRanges: [],
   selectedTechTags: [],
-});
-
-export const createInitialSortState = (): SortState => ({
-  sortOrder: DEFAULT_SORT_ORDER,
 });
 
 export const sanitizeExploreState = (
@@ -555,92 +520,6 @@ export const getExploreSummary = (
   };
 };
 
-export const getExploreSummaryText = (
-  exploreState: ExploreSerializableState,
-  context?: ExploreStatusContext
-): string => {
-  const summary = getExploreSummary(exploreState);
-
-  if (!context || context.visibleCount > 0 || !summary.hasActiveRefinement) {
-    return summary.note;
-  }
-
-  if (summary.hasSearchTerm && summary.hasSelectedFilters) {
-    return "検索語と絞り込み条件に一致する作品はありません。条件を少し緩めると一覧へ戻れます。";
-  }
-  if (summary.hasSearchTerm) {
-    return "検索語に一致する作品はありません。検索語を調整すると一覧へ戻れます。";
-  }
-  if (summary.hasSelectedFilters) {
-    return "絞り込み条件に一致する作品はありません。条件を調整すると一覧へ戻れます。";
-  }
-
-  return summary.note;
-};
-
-export const getExploreStatusSegments = (
-  exploreState: ExploreSerializableState,
-  { visibleCount, totalCount }: ExploreStatusContext
-): string[] => {
-  const segments: string[] = [];
-  const sanitizedState = sanitizeExploreState(exploreState);
-  const trimmedQuery = sanitizedState.query;
-  const appliedFilterCount = getAppliedFilterCount(sanitizedState);
-
-  segments.push(
-    typeof totalCount === "number"
-      ? `全${totalCount}件中 ${visibleCount}件表示中`
-      : `${visibleCount}件表示中`
-  );
-
-  if (hasSearchQuery(trimmedQuery)) {
-    const compactQuery =
-      trimmedQuery.length > 18
-        ? `${trimmedQuery.slice(0, 18)}…`
-        : trimmedQuery;
-    segments.push(`検索: ${compactQuery}`);
-  }
-
-  if (appliedFilterCount > 0) {
-    segments.push(`フィルタ: ${appliedFilterCount}`);
-  }
-
-  segments.push(`並び順: ${getSortLabel(sanitizedState.sortOrder)}`);
-
-  return segments;
-};
-
-export const getExploreStatusText = (
-  exploreState: ExploreSerializableState,
-  context: ExploreStatusContext
-): string => getExploreStatusSegments(exploreState, context).join(" / ");
-
-export const getExploreUiState = (
-  exploreState: ExploreSerializableState,
-  context: ExploreStatusContext
-): ExploreUiState => {
-  const sanitizedState = sanitizeExploreState(exploreState);
-  const summary = getExploreSummary(sanitizedState);
-  const activeFilterDescriptors = getActiveFilterDescriptors(sanitizedState);
-
-  return {
-    ...sanitizedState,
-    visibleCount: context.visibleCount,
-    totalCount: context.totalCount,
-    sortLabel: summary.sortLabel,
-    appliedFilterCount: summary.activeFilterCount,
-    hasSearchQuery: summary.hasSearchTerm,
-    hasActiveFilters: summary.hasSelectedFilters,
-    hasCustomSort: summary.hasCustomSort,
-    hasActiveRefinement: summary.hasActiveRefinement,
-    summaryText: getExploreSummaryText(sanitizedState, context),
-    statusText: getExploreStatusText(sanitizedState, context),
-    activeFilterDescriptors,
-    activeFilterChips: getActiveFilterChips(sanitizedState),
-    chips: summary.chips,
-  };
-};
-
 export const getExploreEmptyStateContent = (
   exploreState: ExploreSerializableState,
   totalCount: number
@@ -919,23 +798,3 @@ export const getFilterOptions = (items: Work[]): FilterGroup[] => [
     getWorkTechnicalFilterValues
   ),
 ];
-
-export const getPopularTags = (items: Work[], limit = 8): string[] => {
-  const counts = new Map<string, number>();
-  items.forEach((work) => {
-    (work.tags ?? []).filter(isNonEmptyString).forEach((tag) => {
-      counts.set(tag, (counts.get(tag) ?? 0) + 1);
-    });
-  });
-
-  return [...counts.entries()]
-    .sort((left, right) => {
-      if (right[1] !== left[1]) return right[1] - left[1];
-      return left[0].localeCompare(right[0], "ja");
-    })
-    .slice(0, limit)
-    .map(([tag]) => tag);
-};
-
-export const formatTags = (tags: string[], limit = 3): string[] =>
-  tags.filter(isNonEmptyString).slice(0, limit);

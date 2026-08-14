@@ -396,6 +396,13 @@
   border-right: 1px solid var(--color-border);
 }
 
+/* 担当範囲の行。2カラムの最終行に半端なマスを作らないよう全幅で1行を占有する。
+   nth-child(odd) の右罫線より後ろに置いて上書きする（同一詳細度・後勝ち） */
+.metaItem.metaItemWide {
+  grid-column: 1 / -1;
+  border-right: none;
+}
+
 .metaDt {
   font-family: var(--font-mono);
   font-size: 10px;

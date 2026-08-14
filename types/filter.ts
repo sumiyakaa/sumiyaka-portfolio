@@ -120,28 +120,6 @@ export interface ExploreSummary {
   note: string;
 }
 
-export interface ExploreStatusContext {
-  visibleCount: number;
-  totalCount?: number;
-}
-
-export interface ExploreUiState
-  extends ExploreSerializableState {
-  visibleCount: number;
-  totalCount?: number;
-  sortLabel: SortOptionLabel;
-  appliedFilterCount: number;
-  hasSearchQuery: boolean;
-  hasActiveFilters: boolean;
-  hasCustomSort: boolean;
-  hasActiveRefinement: boolean;
-  summaryText: string;
-  statusText: string;
-  activeFilterDescriptors: ActiveFilterDescriptor[];
-  activeFilterChips: ActiveExploreChip[];
-  chips: ExploreSummaryItem[];
-}
-
 export interface ExploreEmptyStateContent {
   title: string;
   description: string;

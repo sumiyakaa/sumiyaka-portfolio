@@ -112,11 +112,11 @@
   }
 }
 
-/* Mobile (≤767): 1-col grid */
+/* Mobile (≤767): 2-col grid（C7・SP縦長の緩和） */
 @media (max-width: 767px) {
   .viewGrid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 12px;
   }
 
   .viewThumbnail {

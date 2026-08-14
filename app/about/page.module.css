@@ -61,7 +61,15 @@
   font-weight: 300;
   font-size: 13px;
   letter-spacing: 0.12em;
-  color: var(--color-secondary);
+  /* コントラスト確保（WCAG AA・通常テキスト4.5:1）
+     旧: #888888(--color-secondary) → 地の #0a0a0a に対し 5.58:1 だが、
+         背後のインク流体(fluidSim: bgBase 0.039 + brightness 0.25 ≒ #4a4a4a)が
+         明るく出る箇所では実効 2.50:1 まで落ちて読めなくなっていた。
+     新: #d5d5d5 → #0a0a0a に対し 13.49:1 ／ #4a4a4a に対しても 6.04:1。
+     無彩色のまま明度だけで解決（色相を足していない）。
+     text-shadow はインクがさらに明るく出た場合の保険（フィルタではないので iOS/WebKit でも安全）。 */
+  color: #d5d5d5;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.75);
   margin-top: 16px;
   opacity: 0;
 }
@@ -220,6 +228,83 @@
 }
 
 /* ========================================
+   Scope — 担当範囲
+   ======================================== */
+.scope {
+  background: var(--color-primary);
+  padding: 0 80px 140px;
+}
+
+.scopeInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-top: 140px;
+  border-top: 1px solid var(--color-border);
+}
+
+.scopeMain {
+  border: 1px solid var(--color-border);
+  padding: 48px 40px;
+}
+
+.scopeLead {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+}
+
+.scopeNote {
+  margin-top: 20px;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground-muted);
+}
+
+.scopeSub {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--color-border);
+  border-top: 0;
+}
+
+.scopeCell {
+  min-width: 0;
+}
+
+.scopeCell + .scopeCell {
+  border-left: 1px solid var(--color-border);
+}
+
+.scopeItem {
+  padding: 36px 32px;
+}
+
+.scopeItemHeading {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  margin-bottom: 14px;
+}
+
+.scopeItemText {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground-muted);
+}
+
+/* ========================================
    Belief — Numbered Cards
    ======================================== */
 .belief {
@@ -361,6 +446,12 @@
     gap: 48px;
   }
 
+  .scope { padding: 0 40px 100px; }
+  .scopeInner { padding-top: 100px; }
+  .scopeMain { padding: 40px 32px; }
+  .scopeLead { font-size: 22px; }
+  .scopeItem { padding: 32px 24px; }
+
   .belief { padding: 0 40px 100px; }
   .beliefInner { padding-top: 100px; }
 
@@ -399,6 +490,21 @@
   .profileLeadSub { font-size: 13px; }
   .profileBody { font-size: 14px; }
   .profileSns { flex-direction: column; gap: 12px; }
+
+  /* Scope */
+  .scope { padding: 0 20px 80px; }
+  .scopeInner { padding-top: 80px; }
+  .scopeMain { padding: 28px 20px; }
+  .scopeLead { font-size: 18px; }
+  .scopeNote { font-size: 14px; }
+  .scopeSub { grid-template-columns: 1fr; }
+  .scopeCell + .scopeCell {
+    border-left: 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .scopeItem { padding: 28px 20px; }
+  .scopeItemHeading { font-size: 16px; }
+  .scopeItemText { font-size: 14px; }
 
   /* Belief */
   .belief { padding: 0 20px 80px; }

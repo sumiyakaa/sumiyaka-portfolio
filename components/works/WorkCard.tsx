@@ -12,6 +12,13 @@ import styles from "./WorkCard.module.css";
 /** ホバー時に画像へ掛かる拡大率。WorkCard.module.css の transform: scale と一致させること */
 const HOVER_SCALE = 1.06;
 
+/**
+ * 全作品に共通の担当範囲。掲載作品はすべて企画から公開まで私一人で担当しており、
+ * 作品ごとの差が無いため Work 型・data/works.ts には持たせず表示側で固定表現として出す。
+ * `/works` 入口および作品詳細の PROJECT INFO「担当範囲」と同義（カード用に短縮した形）。
+ */
+const ROLE_SCOPE_LABEL = "企画から公開まで、すべて私一人で担当";
+
 interface WorkCardProps {
   work: Work;
   index: number;
@@ -99,6 +106,7 @@ export default function WorkCard({ work, index, viewMode }: WorkCardProps) {
             <p className={styles.listMeta}>
               {work.genre} / {work.siteType}
             </p>
+            <p className={styles.listRole}>{ROLE_SCOPE_LABEL}</p>
             <p className={styles.listSummary}>{work.summary}</p>
             <div className={styles.listTags}>
               {work.tags.slice(0, 4).map((tag) => (
@@ -150,6 +158,7 @@ export default function WorkCard({ work, index, viewMode }: WorkCardProps) {
         </div>
         <div className={styles.cardBody}>
           <h3 className={styles.cardTitle}>{work.title}</h3>
+          <p className={styles.cardRole}>{ROLE_SCOPE_LABEL}</p>
           <p className={styles.cardDesc}>{work.description}</p>
           <div className={styles.cardMeta}>
             <div className={styles.cardTags}>

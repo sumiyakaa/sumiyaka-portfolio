@@ -9,7 +9,7 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "ABOUT — AKASHIKI | Web Designer SUMIYAKA",
   description:
-    "SUMIYAKA（墨家）— 7年間の医療IT運営経験を経て、Webデザイン・フロントエンド開発に転身。構成からデザイン、コーディング、公開まで一括対応。",
+    "SUMIYAKA（墨家）— 7年間の医療IT運営経験を経て、Webデザイン・フロントエンド開発に転身。企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。",
   openGraph: {
     images: [{ url: "/api/og?title=ABOUT&sub=Web+Designer+SUMIYAKA", width: 1200, height: 630 }],
   },
@@ -98,7 +98,7 @@ export default function AboutPage() {
 
             <ScrollReveal delay={0.15}>
               <p className={styles.profileBody}>
-                その回路はそのまま、Web制作に引き継がれています。Figma/XDからの忠実な実装、LP制作、WordPress構築、既存サイトの改善。構成からデザイン、コーディング、公開まで一括対応。表層から構造まで、一貫して手がけます。
+                その回路はそのまま、Web制作に引き継がれています。LP制作、WordPress構築、既存サイトの改善。表層から構造まで、一貫して手がけます。
               </p>
             </ScrollReveal>
 
@@ -112,6 +112,46 @@ export default function AboutPage() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
                   sumiyakastudio
                 </a>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== Scope — 担当範囲（実績の担当範囲と「できることの追加」を節で分ける） ========== */}
+      <section className={styles.scope}>
+        <div className={styles.scopeInner}>
+          <ScrollReveal>
+            <span className={styles.sectionLabel}>SCOPE OF WORK</span>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className={styles.scopeMain}>
+              <p className={styles.scopeLead}>
+                企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。分業も外注もありません。
+              </p>
+              <p className={styles.scopeNote}>
+                Works に掲載しているものは、すべてこの体制で手がけたものです。作品によって担当した範囲が違う、ということはありません。
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className={styles.scopeSub}>
+            <ScrollReveal className={styles.scopeCell} delay={0.1}>
+              <div className={styles.scopeItem}>
+                <h2 className={styles.scopeItemHeading}>対応できる媒体</h2>
+                <p className={styles.scopeItemText}>
+                  静的サイト、WordPress、STUDIO、Figma。制作物はすべて静的データで持っているため、いずれの媒体へも丸ごと移せます。
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal className={styles.scopeCell} delay={0.15}>
+              <div className={styles.scopeItem}>
+                <h2 className={styles.scopeItemHeading}>支給データからの実装</h2>
+                <p className={styles.scopeItemText}>
+                  デザインが既にある場合は、Figma／XD からの実装だけを承ることもできます。これは対応できる範囲の話で、上に書いた実績の担当範囲とは別のものです。
+                </p>
               </div>
             </ScrollReveal>
           </div>

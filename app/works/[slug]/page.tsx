@@ -158,6 +158,19 @@ export default async function WorkDetailPage({ params }: PageProps) {
                 <dd className={styles.metaDd}>{fact.value}</dd>
               </ScrollReveal>
             ))}
+
+            {/* 担当範囲。掲載作品はすべて同じ体制なので Work 型には持たせず固定表現で出す。
+                既存6項目の並び・文言は変えず、最終行に全幅で1行だけ足している */}
+            <ScrollReveal
+              delay={metaFacts.length * 0.05}
+              as="div"
+              className={`${styles.metaItem} ${styles.metaItemWide}`}
+            >
+              <dt className={styles.metaDt}>担当範囲</dt>
+              <dd className={styles.metaDd}>
+                企画・設計・デザイン・コーディング・実装・公開（すべて一人）
+              </dd>
+            </ScrollReveal>
           </dl>
         </div>
       </section>

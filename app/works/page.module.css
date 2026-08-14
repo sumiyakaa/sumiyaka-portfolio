@@ -169,3 +169,315 @@
     padding: 0 20px 80px;
   }
 }
+
+/* =============================================
+   Scope — 担当範囲 0→100 ＋ 対応できる媒体
+   ============================================= */
+.scope {
+  padding: 96px 40px 0;
+}
+
+.scopeInner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.scopeLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+  margin-bottom: 18px;
+}
+
+.scopeTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(22px, 2.4rem, 34px);
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0 0 32px;
+}
+
+.brSp {
+  display: none;
+}
+
+/* 工程 */
+.flow {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 0 0 28px;
+  padding: 0;
+}
+
+.flowItem {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-background-light);
+  padding: 9px 14px;
+}
+
+.flowNum {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+.flowName {
+  font-family: var(--font-body);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+}
+
+.scopeText {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+  margin: 0 0 40px;
+  max-width: 42em;
+}
+
+.scopeStrong {
+  color: var(--color-foreground);
+  font-weight: 700;
+}
+
+/* 対応できる媒体 */
+.media {
+  border-top: 1px solid var(--color-border);
+  padding-top: 28px;
+}
+
+.mediaLabel {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  margin-bottom: 14px;
+}
+
+.mediaList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.mediaItem {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border-light);
+  padding: 7px 14px;
+}
+
+.mediaNote {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.95;
+  color: var(--color-foreground-muted);
+  margin: 0;
+  max-width: 46em;
+}
+
+/* =============================================
+   CTA — 末尾の問い合わせ
+   ============================================= */
+.cta {
+  padding: 0 40px 96px;
+}
+
+.ctaInner {
+  max-width: 1080px;
+  margin: 0 auto;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-background-light);
+  padding: 56px 40px;
+  text-align: center;
+}
+
+.ctaLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.ctaTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(20px, 2rem, 28px);
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  margin: 0 0 16px;
+}
+
+.ctaText {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--color-foreground-muted);
+  margin: 0 0 32px;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  background: var(--color-foreground);
+  border: 1px solid var(--color-foreground);
+  padding: 16px 36px;
+  text-decoration: none;
+  transition: background var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.ctaButton:hover,
+.ctaButton:focus-visible {
+  background: transparent;
+  color: var(--color-foreground);
+}
+
+.ctaArrow {
+  display: inline-block;
+  transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.ctaButton:hover .ctaArrow,
+.ctaButton:focus-visible .ctaArrow,
+.bridgeLink:hover .ctaArrow,
+.bridgeLink:focus-visible .ctaArrow {
+  transform: translateX(5px);
+}
+
+/* =============================================
+   Bridge — もうひとつの仕事への導線
+   ============================================= */
+.bridge {
+  padding: 0 40px 120px;
+}
+
+.bridgeInner {
+  max-width: 1080px;
+  margin: 0 auto;
+  border-top: 1px solid var(--color-border);
+  padding-top: 48px;
+}
+
+.bridgeTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(17px, 1.5rem, 22px);
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0 0 16px;
+  max-width: 34em;
+}
+
+.bridgeText {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+  margin: 0 0 24px;
+  max-width: 42em;
+}
+
+.bridgeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 6px;
+  transition: border-color var(--duration-normal) var(--ease-default);
+}
+
+.bridgeLink:hover,
+.bridgeLink:focus-visible {
+  border-bottom-color: var(--color-accent);
+}
+
+/* =============================================
+   Responsive — Tablet (768–1279)｜追加ブロック
+   ============================================= */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .scope { padding: 80px 30px 0; }
+  .cta { padding: 0 30px 80px; }
+  .ctaInner { padding: 48px 32px; }
+  .bridge { padding: 0 30px 100px; }
+}
+
+/* =============================================
+   Responsive — SP (–767)｜追加ブロック
+   ============================================= */
+@media (max-width: 767px) {
+  .brSp { display: block; }
+
+  .scope { padding: 64px 20px 0; }
+  .scopeTitle { font-size: 20px; line-height: 1.7; margin-bottom: 26px; }
+  .flow { gap: 8px; margin-bottom: 24px; }
+  .flowItem { padding: 8px 11px; }
+  .flowName { font-size: 13px; }
+  .scopeText { font-size: 14px; line-height: 1.95; margin-bottom: 32px; }
+  .media { padding-top: 24px; }
+  .mediaNote { font-size: 12.5px; }
+
+  .cta { padding: 0 20px 72px; }
+  .ctaInner { padding: 40px 20px; }
+  .ctaTitle { font-size: 19px; }
+  .ctaText { font-size: 13px; }
+  .ctaButton { width: 100%; justify-content: center; padding: 16px 20px; }
+
+  .bridge { padding: 0 20px 88px; }
+  .bridgeInner { padding-top: 40px; }
+  .bridgeTitle { font-size: 16px; }
+  .bridgeText { font-size: 13px; }
+}
+
+/* =============================================
+   Motion — reduce
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .ctaButton,
+  .ctaArrow,
+  .bridgeLink {
+    transition: none;
+  }
+
+  .ctaButton:hover .ctaArrow,
+  .ctaButton:focus-visible .ctaArrow,
+  .bridgeLink:hover .ctaArrow,
+  .bridgeLink:focus-visible .ctaArrow {
+    transform: none;
+  }
+}
