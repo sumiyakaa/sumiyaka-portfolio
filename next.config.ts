@@ -3,6 +3,24 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
+  // 正規ドメインは akashiki.com。www と旧 vercel.app は 308 で集約する。
+  // ※プレビュー用の sumiyaka-portfolio-<hash>.vercel.app はホスト名が一致しないため対象外。
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.akashiki.com" }],
+        destination: "https://akashiki.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "sumiyaka-portfolio.vercel.app" }],
+        destination: "https://akashiki.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
