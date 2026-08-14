@@ -52,7 +52,8 @@ export const metadata: Metadata = {
     title: "AKASHIKI — Web Design & Development Portfolio",
     description:
       "Webデザイン・コーディングのポートフォリオ。LP制作・WordPress構築を中心に、設計から実装までワンストップで対応。",
-    url: "https://akashiki.com",
+    // canonical と同様、"./" でページ自身のURLに解決させる。
+    url: "./",
     images: [
       {
         url: "/api/og?title=AKASHIKI&sub=Web+Design+%26+Development+Portfolio",
@@ -68,7 +69,9 @@ export const metadata: Metadata = {
     creator: "@sumiyakastudio",
   },
   alternates: {
-    canonical: "https://akashiki.com",
+    // "./" は metadataBase を基準に「そのページ自身のURL」へ解決される。
+    // 固定URLを書くと全ページがトップの重複として扱われ、下層がインデックスされない。
+    canonical: "./",
   },
 };
 
