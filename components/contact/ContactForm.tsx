@@ -181,7 +181,7 @@ export default function ContactForm() {
             <h3 className={styles.successTitle}>THANK YOU.</h3>
             <p className={styles.successText}>
               お問い合わせを受け付けました。<br />
-              2営業日以内にご返信いたします。
+              通常24時間以内にご返信します。
             </p>
           </motion.div>
         ) : (
@@ -328,6 +328,9 @@ export default function ContactForm() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* 返信目安 — 送信前に見える位置に置く（送信完了画面と同一文言） */}
+            <p className={styles.replyNote}>通常24時間以内にご返信します。</p>
 
             {/* Submit */}
             <button

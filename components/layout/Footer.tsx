@@ -4,7 +4,8 @@ import styles from "./Footer.module.css";
 const FOOTER_NAV = [
   { href: "/about", label: "ABOUT" },
   { href: "/service", label: "SERVICE" },
-  { href: "/works", label: "WORKS" },
+  // 表示ラベルのみ日本語化（URL は /works のまま。Header の NAV_LINKS と揃えること）
+  { href: "/works", label: "WEB制作" },
   { href: "/contact", label: "CONTACT" },
 ] as const;
 
@@ -27,23 +28,6 @@ export default function Footer() {
           </nav>
 
           <div className={styles.sns}>
-            <a
-              href="https://x.com/sumiyakastudio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.snsLink}
-              aria-label="X（旧Twitter）"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
             <a
               href="https://github.com/sumiyakastudio"
               target="_blank"

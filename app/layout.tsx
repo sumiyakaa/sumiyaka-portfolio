@@ -106,10 +106,7 @@ export default function RootLayout({
               url: "https://akashiki.com",
               description:
                 "Webデザイン・フロントエンド開発。LP制作・WordPress構築を中心に、設計から実装までワンストップで対応。",
-              sameAs: [
-                "https://x.com/sumiyakastudio",
-                "https://github.com/sumiyakastudio",
-              ],
+              sameAs: ["https://github.com/sumiyakastudio"],
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer service",

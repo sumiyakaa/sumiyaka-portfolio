@@ -12,7 +12,8 @@ const NAV_LINKS = [
   { href: "/", label: "HOME" },
   { href: "/about", label: "ABOUT" },
   { href: "/service", label: "SERVICE" },
-  { href: "/works", label: "WORKS" },
+  // 表示ラベルのみ日本語化（URL は /works のまま。Footer の FOOTER_NAV と揃えること）
+  { href: "/works", label: "WEB制作" },
   { href: "/contact", label: "CONTACT" },
 ] as const;
 

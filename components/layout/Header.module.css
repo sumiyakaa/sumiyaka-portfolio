@@ -58,7 +58,13 @@
 }
 
 .navLink {
-  font-family: var(--font-heading);
+  /* Barlow（--font-heading）は欧文のみ。日本語ラベル（WEB制作）が
+     未指定のシステムフォントに落ちるのを防ぐため和文フォールバックを明示する。
+     ※ var(--font-heading) をそのまま使うと末尾の sans-serif で解決が
+       打ち切られ、後続の和文フォントに到達しないのでスタックを展開して書く。
+       欧文ラベルは従来どおり先頭の Barlow で描画されるため見た目は変わらない。 */
+  font-family: var(--font-barlow), var(--font-noto-sans-jp),
+    "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif;
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0.12em;
@@ -152,7 +158,9 @@
 }
 
 .spMenuLink {
-  font-family: var(--font-heading);
+  /* .navLink と同じ理由で和文フォールバックを明示（欧文の見た目は不変） */
+  font-family: var(--font-barlow), var(--font-noto-sans-jp),
+    "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif;
   font-size: 32px;
   font-weight: 200;
   letter-spacing: 0.2em;
