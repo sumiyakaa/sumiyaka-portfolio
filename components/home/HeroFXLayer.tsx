@@ -15,6 +15,36 @@ import { gsap } from "gsap";
 export default function HeroFXLayer({ active }: { active: boolean }) {
   const activeRef = useRef(active);
   activeRef.current = active;
+  const inViewRef = useRef(true);
+  const driftTweensRef = useRef<gsap.core.Tween[]>([]);
+  const breathTweensRef = useRef<gsap.core.Tween[]>([]);
+
+  // ===== Visibility Gate (IntersectionObserver) =====
+  // 画面外の間は rAF ループのフレーム処理をスキップし、無限リピートの
+  // 環境ドリフト系 tween を一時停止する（DOM・位置は維持＝ポッピングなし）。
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const sticky = document.querySelector("[data-hero-sticky]");
+    if (!sticky) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[entries.length - 1];
+        if (!entry) return;
+        inViewRef.current = entry.isIntersecting;
+        const all = [...driftTweensRef.current, ...breathTweensRef.current];
+        if (entry.isIntersecting) {
+          all.forEach((tw) => tw.resume());
+        } else {
+          all.forEach((tw) => tw.pause());
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(sticky);
+
+    return () => observer.disconnect();
+  }, []);
 
   // ===== Wireframe + Particles + Ripple (DOM生成系) =====
   useEffect(() => {
@@ -23,6 +53,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
     if (!sticky) return;
 
     const tweens: gsap.core.Tween[] = [];
+    driftTweensRef.current = tweens;
     const cleanups: (() => void)[] = [];
     const isDesktop = window.innerWidth > 767;
 
@@ -195,8 +226,12 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
       });
     }
 
+    // 生成時点で既に画面外なら即停止（戻った時に observer が resume する）
+    if (!inViewRef.current) tweens.forEach((tw) => tw.pause());
+
     return () => {
       tweens.forEach((tw) => tw.kill());
+      driftTweensRef.current = [];
       cleanups.forEach((fn) => fn());
     };
   }, [active]);
@@ -221,7 +256,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
 
     let rafId = 0;
     function animate() {
-      if (activeRef.current) {
+      if (activeRef.current && inViewRef.current) {
         for (let i = 0; i < count; i++) {
           const lerp = lerpPool[i] ?? lerpPool[lerpPool.length - 1];
           current[i].x += (targets[i].x - current[i].x) * lerp;
@@ -255,7 +290,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
 
     let rafId = 0;
     function animate() {
-      if (!activeRef.current) { rafId = requestAnimationFrame(animate); return; }
+      if (!activeRef.current || !inViewRef.current) { rafId = requestAnimationFrame(animate); return; }
       const rects = Array.from(letters, (l) => l.getBoundingClientRect());
       for (let j = 0; j < letters.length; j++) {
         const cx = rects[j].left + rects[j].width / 2;
@@ -288,6 +323,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
     if (!corners.length) return;
 
     const tweens: gsap.core.Tween[] = [];
+    breathTweensRef.current = tweens;
     corners.forEach((corner, i) => {
       gsap.set(corner, { opacity: 0.6 });
       tweens.push(gsap.to(corner, {
@@ -295,7 +331,13 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
       }));
     });
 
-    return () => { tweens.forEach((tw) => tw.kill()); };
+    // 生成時点で既に画面外なら即停止（戻った時に observer が resume する）
+    if (!inViewRef.current) tweens.forEach((tw) => tw.pause());
+
+    return () => {
+      tweens.forEach((tw) => tw.kill());
+      breathTweensRef.current = [];
+    };
   }, [active]);
 
   return null; // No visible DOM — all effects are injected into parent

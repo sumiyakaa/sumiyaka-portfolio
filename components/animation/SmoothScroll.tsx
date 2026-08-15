@@ -16,10 +16,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 const LenisContext = createContext<React.MutableRefObject<Lenis | null>>({ current: null });
 
-export function useLenisRef() {
-  return useContext(LenisContext);
-}
-
 export function useLenis() {
   const ref = useContext(LenisContext);
   return ref.current;

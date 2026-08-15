@@ -361,6 +361,8 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
   const hasPlayed = useRef(false);
   const masterRef = useRef<gsap.core.Timeline | null>(null);
   const runCyclesRef = useRef<gsap.core.Timeline[]>([]);
+  const inViewRef = useRef(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const play = useCallback(() => {
     if (hasPlayed.current) return;
@@ -402,6 +404,9 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
         runCyclesRef.current.forEach((rc) => rc.kill());
         runCyclesRef.current = [];
         if (overlay) overlay.style.display = "none";
+        // 完走後は可視性ゲート不要 — オブザーバーを破棄
+        observerRef.current?.disconnect();
+        observerRef.current = null;
         onComplete();
       },
     });
@@ -504,6 +509,10 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
         .to(svg, { x: exitX, duration: 1.4, ease: "power1.in" }, exitTime)
         .to(svg, { opacity: 0, duration: 0.3 }, exitTime + 1.1);
     });
+
+    // 可視性ゲート: タイムライン生成時点で既に画面外なら開始を保留する
+    // （画面内に戻った時に IntersectionObserver が resume して続きから完走する）
+    if (!inViewRef.current) master.pause();
   }, [onComplete]);
 
   useEffect(() => {
@@ -512,6 +521,37 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
       return () => clearTimeout(timer);
     }
   }, [active, play]);
+
+  // 可視性ゲート — 画面外ではマスタータイムラインを pause し、戻ったら resume する
+  // （演出の速度・タイミング・動きは不変。画面外の間だけ時間を進めない）
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[entries.length - 1];
+        if (!entry) return;
+        inViewRef.current = entry.isIntersecting;
+        const master = masterRef.current;
+        if (!master) return; // タイムライン未生成（active前・100ms遅延中・軽量経路）
+        if (entry.isIntersecting) {
+          master.resume();
+        } else {
+          master.pause();
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(overlay);
+    observerRef.current = observer;
+
+    return () => {
+      observer.disconnect();
+      if (observerRef.current === observer) observerRef.current = null;
+    };
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
