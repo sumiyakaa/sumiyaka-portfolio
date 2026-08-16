@@ -63,7 +63,7 @@ void main(){
   float t=uProgress*maxDist*1.3;
   float edge=smoothstep(t-0.06,t+0.02,dist+n);
   float alpha=uDirection>0.?1.-edge:edge;
-  gl_FragColor=vec4(vec3(0.039),alpha);
+  gl_FragColor=vec4(vec3(0.839,0.827,0.804),alpha);
 }
 `;
 

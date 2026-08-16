@@ -78,7 +78,7 @@
 .radial {
   position: absolute;
   inset: 0;
-  /* washi: 生成りの紙にごく薄い灯の暈（トークンは theme-washi.css で定義） */
+  /* 黒地にごく薄い灯の暈（トークンは theme-top.css で定義） */
   background: radial-gradient(ellipse at 30% 40%, var(--washi-radial-tint, transparent) 0%, transparent 60%);
   pointer-events: none;
 }

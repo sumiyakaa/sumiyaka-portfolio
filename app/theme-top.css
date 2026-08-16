@@ -1,0 +1,56 @@
+/* =============================================================
+   theme-top — トップページ用トークン（黒ベース×差し色白のモノトーン）
+   2026-08-16 あおきさん指示：白（washi）ベースは不採用→黒基調へ回帰。
+
+   スコープは :root（サイト全体が黒基調＝既存 --color-* と衝突しない）。
+   既存グローバルトークンと重複する値は既存トークンを参照する。
+   金 --color-accent(#c8a96e) はサブページが参照し得るため globals.css の
+   定義を残しつつ、トップの新規要素はここで定義する白系 --accent を使う。
+   ============================================================= */
+:root {
+  /* ---- color（黒地×白系のモノトーン） ---- */
+  --paper:       var(--color-background);        /* 地 #0a0a0a */
+  --paper-2:     var(--color-background-light);  /* 地・浮き #111111 */
+  --rule:        var(--color-border-light);      /* 罫線・強 #333333 */
+  --rule-soft:   var(--color-border);            /* 罫線・弱 #222222 */
+  --neutral:     var(--color-foreground-muted);  /* 最弱ラベル #999999 */
+  --muted:       var(--color-secondary-light);   /* サブ文字 #aaaaaa */
+  --ink:         var(--color-foreground);        /* 本文 #f0f0f0 */
+  --ink-deep:    #ffffff;                        /* 見出し白抜き */
+  --accent:      var(--color-foreground);        /* 差し色＝白（金は不使用） */
+  --accent-halo: rgba(240, 240, 240, 0.3);       /* 灯のにじみ＝白 */
+
+  /* ---- 派生アルファトークン（Hero の装飾用・白系） ---- */
+  --washi-radial-tint: rgba(240, 240, 240, 0.08); /* 灯の暈（ヒーロー背景） */
+  --washi-orb-a:       rgba(240, 240, 240, 0.10);
+  --washi-orb-b:       rgba(240, 240, 240, 0.08);
+  --washi-orb-c:       rgba(240, 240, 240, 0.06);
+  --washi-scanline:    rgba(240, 240, 240, 0.02); /* 簀の目（走査線） */
+
+  /* ---- font（書体は washi 案から継続：見出し=Shippori／本文=Zen Kaku） ---- */
+  --font-display-washi: var(--font-shippori-mincho), "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --font-body-washi: var(--font-zen-kaku), "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+
+  /* ---- type scale（--washi- 接頭辞は既存参照互換のため維持） ---- */
+  --washi-t-xs:   0.78rem;
+  --washi-t-sm:   0.9rem;
+  --washi-t-base: 1rem;
+  --washi-t-md:   1.15rem;
+  --washi-t-lg:   1.4rem;
+  --washi-t-xl:   1.7rem;
+  --washi-t-h2:   clamp(1.35rem, 1rem + 1.2vw, 2rem);
+  --washi-t-h1:   clamp(1.45rem, 0.2rem + 5.4vw, 4.1rem);
+  --washi-t-stat: clamp(3rem, 2rem + 3vw, 4.6rem);
+
+  /* ---- space（4pt） ---- */
+  --washi-space-3xs: 0.125rem;
+  --washi-space-2xs: 0.25rem;
+  --washi-space-xs:  0.5rem;
+  --washi-space-sm:  0.75rem;
+  --washi-space-md:  1rem;
+  --washi-space-lg:  1.5rem;
+  --washi-space-xl:  2.5rem;
+  --washi-space-2xl: 4rem;
+  --washi-space-3xl: 6rem;
+  --washi-space-4xl: 9rem;
+}

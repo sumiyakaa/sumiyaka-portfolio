@@ -1,6 +1,7 @@
 /* =============================================
-   どんな人か — an-a.html .sec-person 忠実移植
-   色は washi トークンのみ参照
+   どんな人か — 横書き大見出し＋空間（余白）重視の組み
+   2026-08-16 あおきさん指示：縦書き廃止・暫定改善（本格再設計はアンカー後）。
+   色はトークン（theme-top.css）のみ参照・罫線は最小限
    ============================================= */
 .section {
   background: var(--paper);
@@ -14,36 +15,43 @@
   max-width: 1120px;
   margin-inline: auto;
   padding-inline: clamp(1.5rem, 4vw, 4rem);
-  padding-block: 6rem 4rem;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 4rem clamp(2.5rem, 6vw, 6rem);
-  align-items: start;
+  padding-block: var(--washi-space-4xl, 9rem) var(--washi-space-3xl, 6rem);
 }
 
 .label {
-  grid-column: 1 / -1;
   font-size: 0.78rem;
   letter-spacing: 0.22em;
   color: var(--neutral);
 }
 
 .display {
+  margin-top: var(--washi-space-xl, 2.5rem);
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.5rem);
-  letter-spacing: 0.18em;
+  font-size: clamp(1.8rem, 1.2rem + 2.6vw, 3.4rem);
+  letter-spacing: 0.14em;
   font-feature-settings: "palt" 1;
   color: var(--ink-deep);
   line-height: 1.4;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
 }
 
 .bio {
+  /* 見出しとの間に大きな余白・本文は右へ寄せた非対称配置 */
+  margin-top: var(--washi-space-3xl, 6rem);
+  margin-left: clamp(0rem, 16vw, 14rem);
   font-size: 1.15rem;
   line-height: 2.2;
   color: var(--ink);
-  max-width: 34em;
-  padding-top: 0.75rem;
+  max-width: 38em;
+}
+
+@media (max-width: 860px) {
+  .wrap {
+    padding-block: var(--washi-space-3xl, 6rem) var(--washi-space-2xl, 4rem);
+  }
+
+  .bio {
+    margin-top: var(--washi-space-xl, 2.5rem);
+    margin-left: 0;
+  }
 }

@@ -1,6 +1,6 @@
 /* =============================================
-   価格の考え方 — an-a.html .sec-price 忠実移植
-   色は washi トークン（html[data-theme="washi"] スコープ定義）のみ参照。
+   価格の考え方 — an-a.html .sec-price の構成を踏襲（黒地×白系）
+   色はトークン（theme-top.css）のみ参照。
    PriceRunner のオーバーレイ都合で position:relative / overflow:hidden は維持
    ============================================= */
 .priceSection {

@@ -66,7 +66,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
     wireDiv.setAttribute("aria-hidden", "true");
     Object.assign(wireDiv.style, {
       position: "absolute", inset: "0", pointerEvents: "none", zIndex: "1", overflow: "hidden",
-      // 図形は stroke=currentColor — washi の墨色を継承（透明度は stroke-opacity 側で維持）
+      // 図形は stroke=currentColor — 黒地の白系トークンを継承（透明度は stroke-opacity 側で維持）
       color: "var(--ink, var(--color-foreground))",
     });
     const wireSvg = document.createElementNS(svgNS, "svg");
@@ -173,7 +173,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
       const ripDiv = document.createElement("div");
       Object.assign(ripDiv.style, {
         position: "absolute", inset: "0", pointerEvents: "none", zIndex: "2", overflow: "hidden",
-        // 波紋も墨色（透明度は opacity 属性 0.18 のまま）
+        // 波紋も白系トークン（透明度は opacity 属性 0.18 のまま）
         color: "var(--ink, var(--color-foreground))",
       });
       const ripSvg = document.createElementNS(svgNS, "svg");

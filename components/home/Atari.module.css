@@ -1,6 +1,6 @@
 /* =============================================
-   言い当て — an-a.html .sec-insight 忠実移植
-   色は washi トークン（html[data-theme="washi"] スコープ定義）のみ参照
+   言い当て — an-a.html .sec-insight の構成を踏襲（黒地×白系）
+   色はトークン（theme-top.css）のみ参照
    ============================================= */
 .section {
   background: var(--paper);

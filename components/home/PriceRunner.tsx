@@ -32,20 +32,20 @@ function StickFigure({ id }: { id: string }) {
       }}
     >
       {/* head */}
-      <circle data-part="head" cx="24" cy="10" r="7" stroke="#111" strokeWidth="2.5" />
+      <circle data-part="head" cx="24" cy="10" r="7" stroke="currentColor" strokeWidth="2.5" />
       {/* body */}
-      <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* left arm */}
-      <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* right arm */}
-      <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* left leg */}
-      <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* right leg */}
-      <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* feet */}
-      <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#111" strokeWidth="2" strokeLinecap="round" />
-      <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+      <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -68,23 +68,23 @@ function TribotFigure({ id }: { id: string }) {
       }}
     >
       {/* triangle head */}
-      <polygon data-part="head" points="24,2 38,22 10,22" stroke="#111" strokeWidth="2.5" strokeLinejoin="round" />
+      <polygon data-part="head" points="24,2 38,22 10,22" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
       {/* eyes */}
-      <circle cx="20" cy="16" r="1.5" fill="#111" />
-      <circle cx="28" cy="16" r="1.5" fill="#111" />
+      <circle cx="20" cy="16" r="1.5" fill="currentColor" />
+      <circle cx="28" cy="16" r="1.5" fill="currentColor" />
       {/* body */}
-      <line data-part="body" x1="24" y1="22" x2="24" y2="42" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="body" x1="24" y1="22" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* left arm */}
-      <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* right arm */}
-      <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* left leg */}
-      <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* right leg */}
-      <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+      <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       {/* feet */}
-      <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#111" strokeWidth="2" strokeLinecap="round" />
-      <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+      <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -332,6 +332,8 @@ export default function PriceRunner() {
         pointerEvents: "none",
         overflow: "hidden",
         zIndex: 10,
+        // キャラSVGは stroke/fill=currentColor — 黒地の白系トークンを継承（色のみ・動き不変）
+        color: "var(--ink, var(--color-foreground))",
       }}
     >
       {/* Runner 0 */}

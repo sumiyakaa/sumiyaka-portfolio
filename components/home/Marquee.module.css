@@ -88,8 +88,8 @@
 }
 
 /* =============================================
-   Washi Variant — an-a.html .band 忠実移植
-   （washi トークンのみ参照・drift 56s・帯罫線は rule-soft）
+   Washi Variant — an-a.html .band の構成を踏襲（黒地×白系）
+   （トークンのみ参照・drift 56s・帯罫線は rule-soft）
    ============================================= */
 .washiMarquee {
   padding: 0.75rem 0;

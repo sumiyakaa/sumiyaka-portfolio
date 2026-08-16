@@ -577,7 +577,7 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
         pointerEvents: "none",
         overflow: "hidden",
         zIndex: 20,
-        // キャラSVGは stroke/fill=currentColor — washi の墨色を継承させる
+        // キャラSVGは stroke/fill=currentColor — 黒地の白系トークンを継承させる
         color: "var(--ink, var(--color-foreground))",
       }}
     >

@@ -1,4 +1,3 @@
-import type { Viewport } from "next";
 import Link from "next/link";
 import HomeIntro from "@/components/home/HomeIntro";
 import Marquee from "@/components/home/Marquee";
@@ -12,11 +11,6 @@ import Person from "@/components/home/Person";
 import CtaSection from "@/components/home/CtaSection";
 import { getPickUpWorks } from "@/lib/works";
 import styles from "./page.module.css";
-
-// トップのみ washi（生成り）テーマ＝モバイルUIの色もページ地に合わせる（他フィールドはlayoutの値とマージ）
-export const viewport: Viewport = {
-  themeColor: "#f7f5f0",
-};
 
 export default function Home() {
   // 件数はハードコードせず、作品データから毎回集計する（作品追加で自動追従）
@@ -46,8 +40,7 @@ export default function Home() {
       {/* 1. Hero（OP→Hero の配線は HomeIntro＝子CC-E提供） */}
       <HomeIntro />
 
-      {/* 2. マーキー帯A */}
-      <Marquee variant="washi" text="静かに、確実に、回りつづける仕組みを。" />
+      {/* 2. マーキー帯A＝削除（2026-08-16 あおきさん指示「FV下のスクロール文字はAI臭の典型のため削除」。帯Bの扱いは確認中） */}
 
       {/* 3. 言い当て */}
       <Atari />

@@ -11,10 +11,9 @@ import SmoothScroll from "@/components/animation/SmoothScroll";
 import InkTransitionProvider from "@/components/animation/InkTransition";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import RouteTheme from "@/components/layout/RouteTheme";
 import { SITE_ORIGIN } from "@/lib/site";
 import "./globals.css";
-import "./theme-washi.css";
+import "./theme-top.css";
 
 const barlow = Barlow({
   variable: "--font-barlow",
@@ -44,7 +43,7 @@ const anton = Anton({
   display: "swap",
 });
 
-// washi テーマ（トップページ）用フォント。既存4フォントはサブページが使用中のため残す。
+// トップページ用フォント（見出し=Shippori Mincho／本文=Zen Kaku）。既存4フォントはサブページが使用中のため残す。
 const shipporiMincho = Shippori_Mincho({
   variable: "--font-shippori-mincho",
   subsets: ["latin"],
@@ -118,20 +117,8 @@ export default function RootLayout({
     <html
       lang="ja"
       className={`${barlow.variable} ${notoSansJP.variable} ${ibmPlexMono.variable} ${anton.variable} ${shipporiMincho.variable} ${zenKakuGothicNew.variable}`}
-      // pre-hydration script が html へ data-theme を付与するため、
-      // その属性差分の警告のみ抑止（html 要素1階層に限定）。
-      suppressHydrationWarning
     >
       <body>
-        {/* pre-hydration テーマ判定 — トップ（/）のみ washi を初期描画前に付与
-            （同期インラインscript＝後続DOMのペイント前に実行され、フラッシュを防ぐ） */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              '(function(){try{if(location.pathname==="/"){document.documentElement.dataset.theme="washi"}}catch(e){}})()',
-          }}
-        />
-        <RouteTheme />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

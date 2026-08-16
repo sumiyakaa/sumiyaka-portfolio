@@ -26,8 +26,8 @@
   display: block;
 }
 
-/* washi 明地対応（色のみ・位置/動き不変）：
-   SVG の stroke 属性 #111 を CSS で墨色トークンに上書き */
+/* 黒地対応（色のみ・位置/動き不変）：
+   SVG の stroke 属性 #111 を CSS で白系トークンに上書き */
 .figure circle,
 .figure line {
   stroke: var(--ink);
