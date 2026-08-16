@@ -1,0 +1,131 @@
+/* =============================================
+   OpeningLite — 一筆と灯（総尺1.4s・CSSのみ）
+   色はすべて washi トークン参照（theme-washi.css）。
+   pointer-events:none = スクロールをロックしない。
+   ============================================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: var(--paper, var(--color-background));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.stage {
+  width: clamp(240px, 40%, 440px);
+  height: auto;
+  display: block;
+}
+
+/* ---- 初期状態（.play が付くまで静止） ---- */
+.brush {
+  stroke: var(--ink, currentColor);
+  stroke-width: 6.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.flick {
+  stroke: var(--ink, currentColor);
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.kanji {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  fill: var(--ink-deep, currentColor);
+  opacity: 0;
+}
+
+.emberHalo {
+  fill: var(--accent-halo, transparent);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ember {
+  fill: var(--accent, currentColor);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ---- 再生（タイムラインは CSS の delay で構成） ----
+   0–0.55s  一筆が走る
+   0.42s    穂先のかすれ
+   0.55s〜  筆致が薄れ「灯敷」が結ばれる
+   0.95s    灯がともる
+   1.0–1.4s 明転（オーバーレイのフェードアウト） */
+.play .brush {
+  animation:
+    opDraw 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+    opDim 0.35s ease-out 0.55s forwards;
+}
+
+.play .flick {
+  animation:
+    opDraw 0.18s ease-out 0.42s forwards,
+    opDim 0.35s ease-out 0.55s forwards;
+}
+
+.play .kanji {
+  animation: opIn 0.35s ease-out 0.55s forwards;
+}
+
+.play .emberHalo {
+  animation: opEmber 0.3s ease-out 0.95s forwards;
+}
+
+.play .ember {
+  animation: opEmber 0.25s ease-out 0.95s forwards;
+}
+
+.play {
+  animation: opFade 0.4s ease-in 1s forwards;
+}
+
+@keyframes opDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes opDim {
+  to { opacity: 0.14; }
+}
+
+@keyframes opIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes opEmber {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes opFade {
+  to { opacity: 0; }
+}
+
+/* reduced-motion: JS 側で即スキップされるが、
+   ハイドレーション前の一瞬も含めて表示自体を消しておく保険 */
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    display: none;
+  }
+}

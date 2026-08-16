@@ -82,8 +82,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
           <Link href="/works" className={styles.backLink}>
             <span className={styles.backArrow}>&#8592;</span>
             <span className={styles.backLabel}>
-              <span className={styles.backEn}>BACK TO WORKS</span>
-              <span className={styles.backRuby}>一覧へ戻る</span>
+              <span className={styles.backEn}>一覧へ戻る</span>
             </span>
           </Link>
 
@@ -124,7 +123,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
         <section className={styles.overviewSection}>
           <div className={styles.overviewInner}>
             <ScrollReveal>
-              <span className={styles.sectionLabel}>CONCEPT</span>
+              <span className={styles.sectionLabel}>コンセプト</span>
               <p className={styles.overviewText}>{work.summary}</p>
             </ScrollReveal>
 
@@ -144,7 +143,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
       <section className={styles.metaSection}>
         <div className={styles.metaInner}>
           <ScrollReveal>
-            <span className={styles.sectionLabel}>PROJECT INFO</span>
+            <span className={styles.sectionLabel}>プロジェクト情報</span>
           </ScrollReveal>
           <dl className={styles.metaGrid}>
             {metaFacts.map((fact, i) => (
@@ -248,7 +247,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
               href={`/works/${prevWork.slug}`}
               className={styles.navLink}
             >
-              <span className={styles.navDir}>&#8592; PREV</span>
+              <span className={styles.navDir}>&#8592; 前へ</span>
               <span className={styles.navTitle}>{prevWork.title}</span>
             </Link>
           ) : (
@@ -264,7 +263,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
               href={`/works/${nextWork.slug}`}
               className={`${styles.navLink} ${styles.navLinkRight}`}
             >
-              <span className={styles.navDir}>NEXT &#8594;</span>
+              <span className={styles.navDir}>次へ &#8594;</span>
               <span className={styles.navTitle}>{nextWork.title}</span>
             </Link>
           ) : (

@@ -66,6 +66,8 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
     wireDiv.setAttribute("aria-hidden", "true");
     Object.assign(wireDiv.style, {
       position: "absolute", inset: "0", pointerEvents: "none", zIndex: "1", overflow: "hidden",
+      // 図形は stroke=currentColor — washi の墨色を継承（透明度は stroke-opacity 側で維持）
+      color: "var(--ink, var(--color-foreground))",
     });
     const wireSvg = document.createElementNS(svgNS, "svg");
     wireSvg.setAttribute("viewBox", "0 0 1920 1080");
@@ -82,7 +84,8 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
       line.setAttribute("y1", String(coords[1]));
       line.setAttribute("x2", String(coords[2]));
       line.setAttribute("y2", String(coords[3]));
-      line.setAttribute("stroke", "rgba(255,255,255,0.20)");
+      line.setAttribute("stroke", "currentColor");
+      line.setAttribute("stroke-opacity", "0.20");
       line.setAttribute("stroke-width", "1");
       wireSvg.appendChild(line);
       const dx = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 20);
@@ -100,7 +103,8 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
     triData.forEach((pts, i) => {
       const poly = document.createElementNS(svgNS, "polygon");
       poly.setAttribute("points", pts);
-      poly.setAttribute("stroke", "rgba(255,255,255,0.16)");
+      poly.setAttribute("stroke", "currentColor");
+      poly.setAttribute("stroke-opacity", "0.16");
       poly.setAttribute("stroke-width", "1");
       poly.setAttribute("fill", "none");
       wireSvg.appendChild(poly);
@@ -115,7 +119,8 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
     const circle = document.createElementNS(svgNS, "circle");
     circle.setAttribute("cx", "1400"); circle.setAttribute("cy", "450");
     circle.setAttribute("r", "40");
-    circle.setAttribute("stroke", "rgba(255,255,255,0.14)");
+    circle.setAttribute("stroke", "currentColor");
+    circle.setAttribute("stroke-opacity", "0.14");
     circle.setAttribute("stroke-width", "1"); circle.setAttribute("fill", "none");
     wireSvg.appendChild(circle);
     tweens.push(gsap.to(circle, {
@@ -140,7 +145,8 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
       const p = document.createElement("div");
       const size = 2 + Math.random() * 1.5;
       Object.assign(p.style, {
-        position: "absolute", borderRadius: "50%", background: "#fff",
+        position: "absolute", borderRadius: "50%",
+        background: "var(--ink, var(--color-foreground))",
         width: size + "px", height: size + "px",
         left: (Math.random() * 100) + "%", top: (Math.random() * 100) + "%",
         opacity: String(0.25 + Math.random() * 0.25),
@@ -167,6 +173,8 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
       const ripDiv = document.createElement("div");
       Object.assign(ripDiv.style, {
         position: "absolute", inset: "0", pointerEvents: "none", zIndex: "2", overflow: "hidden",
+        // 波紋も墨色（透明度は opacity 属性 0.18 のまま）
+        color: "var(--ink, var(--color-foreground))",
       });
       const ripSvg = document.createElementNS(svgNS, "svg");
       ripSvg.setAttribute("width", "100%"); ripSvg.setAttribute("height", "100%");
@@ -190,7 +198,7 @@ export default function HeroFXLayer({ active }: { active: boolean }) {
         c.setAttribute("cy", String(y - rect.top));
         c.setAttribute("r", "0");
         c.setAttribute("fill", "none");
-        c.setAttribute("stroke", "#fff");
+        c.setAttribute("stroke", "currentColor");
         c.setAttribute("stroke-width", "1");
         c.setAttribute("opacity", "0.18");
         ripSvg.appendChild(c);

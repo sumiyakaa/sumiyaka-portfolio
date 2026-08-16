@@ -285,19 +285,9 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
   return (
     <section ref={sectionRef} className={styles.section}>
       <div className={styles.inner}>
-        <div className={styles.pickupTitle} data-pickup-heading>
-          <span className={styles.pickupEn}>
-            {charSpans("Pickup ")}
-            {charSpans("—", 0.21)}
-          </span>
-          <span className={styles.pickupJp}>
-            {charSpans("注目の作品", 0.24)}
-          </span>
-        </div>
-
-        {/* SELECTED ↔ Typed title swap area */}
+        {/* 制作実績 ↔ Typed title swap area（ホバータイピング演出は不変） */}
         <div className={styles.headingWrap} data-pickup-heading>
-          <h2 className={styles.heading} ref={headingRef}>SELECTED</h2>
+          <h2 className={styles.heading} ref={headingRef}>制作実績</h2>
           <div className={styles.headingTyped} ref={headingTypedRef}>
             <div className={styles.headingTypedNameWrap}>
               <span className={styles.headingTypedName} ref={headingNameRef} />
@@ -305,6 +295,13 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
             </div>
             <p className={styles.headingTypedSub} ref={headingSubRef} />
           </div>
+        </div>
+
+        {/* リード（件数は配列から自動集計＝ハードコード禁止） */}
+        <div className={styles.pickupTitle} data-pickup-heading>
+          <span className={styles.pickupJp}>
+            {charSpans(`/works より、${works.length}件。`)}
+          </span>
         </div>
 
         <div className={styles.grid}>
@@ -321,7 +318,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                 onMouseLeave={() => handleLeave(i)}
                 data-pickup-card
               >
-                <a href={work.liveUrl} target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+                <Link href={`/works/${work.slug}`} className={styles.cardLink}>
                   <div className={styles.thumbnail}>
                     <Image
                       src={work.images[0]}
@@ -339,11 +336,9 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                       ref={(el) => { bodyRefs.current[i] = el; }}
                     >
                       <h3 className={styles.cardTitle}>{work.title}</h3>
-                      <div className={styles.cardMeta}>
-                        {work.category.map((cat) => (
-                          <span key={cat} className={styles.cardTag}>{cat}</span>
-                        ))}
-                      </div>
+                      <p className={styles.cardMeta}>
+                        {work.category.join(" ・ ")}
+                      </p>
                     </div>
 
                     <div
@@ -363,7 +358,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
                       />
                     </div>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
           ))}
@@ -371,7 +366,7 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
 
         <div className={styles.cta} data-pickup-cta>
           <Link href="/works" className={styles.ctaLink}>
-            <span className={styles.ctaLinkText}>VIEW ALL WORKS →</span>
+            <span className={styles.ctaLinkText}>実績をすべて見る →</span>
           </Link>
         </div>
       </div>

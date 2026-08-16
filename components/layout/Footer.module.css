@@ -159,3 +159,49 @@
     padding: 60px 40px;
   }
 }
+
+/* =============================================
+   washi テーマ上書き（トップページのみ・明地対応）
+   構造・ナビ項目は不変。色のみ an-a.html の
+   フッター配色（ink-deep / muted / neutral / rule-soft）へ揃える。
+   ============================================= */
+:global(html[data-theme="washi"]) .footer {
+  background: var(--paper);
+  border-top-color: var(--rule-soft);
+}
+
+:global(html[data-theme="washi"]) .logo {
+  color: var(--ink-deep);
+}
+
+:global(html[data-theme="washi"]) .sub {
+  color: var(--neutral);
+}
+
+:global(html[data-theme="washi"]) .navLink {
+  color: var(--muted);
+}
+
+:global(html[data-theme="washi"]) .navLink:hover {
+  color: var(--ink-deep);
+}
+
+:global(html[data-theme="washi"]) .snsLink {
+  color: var(--ink);
+}
+
+:global(html[data-theme="washi"]) .bottom {
+  border-top-color: var(--rule-soft);
+}
+
+:global(html[data-theme="washi"]) .copy {
+  color: var(--neutral);
+}
+
+:global(html[data-theme="washi"]) .privacy {
+  color: var(--muted);
+}
+
+:global(html[data-theme="washi"]) .privacy:hover {
+  color: var(--ink-deep);
+}

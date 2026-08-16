@@ -8,7 +8,7 @@ import { getAllWorks } from "@/lib/works";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "WORKS — AKASHIKI | Web制作実績",
+  title: "WEB制作 — 実績一覧 | 墨家 / SUMIYAKA",
   description:
     "LP・コーポレートサイト・WordPress・多言語サイトなど、Web制作の全実績を掲載。企画・設計からデザイン・コーディング・公開まで、すべて私一人で一貫して対応します。AI検索最適化（AIO）は全案件に標準搭載。カテゴリ・使用技術で絞り込み可能。",
   openGraph: {
@@ -28,10 +28,10 @@ export default function WorksPage() {
       {/* Hero — FV維持 */}
       <SubPageFVAnim className={styles.fv}>
         <div className={styles.fvContent}>
-          <h1 data-fv-title className={styles.fvTitle}>WORKS</h1>
+          <h1 data-fv-title className={styles.fvTitle}>WEB制作</h1>
           <p data-fv-sub className={styles.fvSub}>
-            LP / CORPORATE / WORDPRESS / MULTI-LANG —{" "}
-            {works.length} Projects
+            LP・コーポレート・WordPress・多言語 —{" "}
+            {works.length}作品
           </p>
           <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
         </div>
@@ -148,8 +148,8 @@ export default function WorksPage() {
               <br className={styles.brSp} />
               「毎月この転記に何日もかかっている」——そういう作業を、ひとりでに回る形に変えます。
             </p>
-            <Link href="/contact" className={styles.bridgeLink}>
-              相談してみる
+            <Link href="/" className={styles.bridgeLink}>
+              詳しく見る
               <span className={styles.ctaArrow} aria-hidden="true">→</span>
             </Link>
           </ScrollReveal>

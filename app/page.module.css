@@ -1,419 +1,120 @@
 /* =============================================
-   About Teaser — Asymmetric Split
-   ============================================= */
-.aboutTeaser {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 80vh;
-  border-top: 1px solid var(--color-border);
-}
-
-.aboutLeft {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 80px 60px;
-  border-right: 1px solid var(--color-border);
-  text-align: center;
-}
-
-.aboutLabel {
-  font-family: var(--font-mono);
-  font-size: 19px;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  margin-bottom: 32px;
-}
-
-.aboutLargeType {
-  display: flex;
-  flex-direction: column;
-}
-
-.aboutLargeType {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.aboutLargeType > span {
-  font-family: var(--font-heading);
-  font-size: clamp(4.2rem, 8.4vw, 7.8rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--color-foreground);
-}
-
-.aboutLargeType > span:nth-child(2) {
-  font-weight: 200;
-  font-size: clamp(2.4rem, 4.2vw, 3.6rem);
-  color: var(--color-secondary);
-  margin: 8px 0;
-}
-
-.aboutRight {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 80px 60px;
-  gap: 24px;
-}
-
-.aboutRight > p {
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 2;
-  color: var(--color-secondary-light);
-}
-
-/* ---- Strengths List ---- */
-.aboutStrengths {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-top: 8px;
-}
-
-.aboutStrength {
-  padding: 20px 0;
-  border-top: 1px solid var(--color-border);
-}
-
-.aboutStrength:last-child {
-  border-bottom: 1px solid var(--color-border);
-}
-
-.aboutStrengthLabel {
-  font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground);
-}
-
-.aboutStrengthDesc {
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.8;
-  color: var(--color-secondary);
-  margin-top: 8px;
-}
-
-.aboutLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  color: var(--color-foreground);
-  margin-top: 16px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--color-border);
-  transition: border-color 300ms ease, color 300ms ease;
-  width: fit-content;
-}
-
-.aboutLink:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.aboutLink span {
-  transition: transform 300ms ease;
-}
-
-.aboutLink:hover span {
-  transform: translateX(4px);
-}
-
-/* =============================================
-   Price Digest — 旧サイト忠実再現（白背景・リスト型）
+   価格の考え方 — an-a.html .sec-price 忠実移植
+   色は washi トークン（html[data-theme="washi"] スコープ定義）のみ参照。
+   PriceRunner のオーバーレイ都合で position:relative / overflow:hidden は維持
    ============================================= */
 .priceSection {
-  background: #f5f5f5;
-  padding: 160px 80px;
   position: relative;
   overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body-washi, sans-serif);
+  line-height: 2;
+  border-top: 1px solid var(--rule-soft);
 }
 
 .priceInner {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 4vw, 4rem);
+  padding-block: 4rem;
 }
 
 .priceHead {
-  margin-bottom: 64px;
+  margin: 0;
 }
 
 .priceTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 48px;
-  letter-spacing: 0.2em;
-  color: #111;
-  line-height: 1.4;
-  display: flex;
-  align-items: baseline;
-  gap: 0.3em;
-}
-
-.priceTitleJp {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 24px;
-  color: #111;
-}
-
-.priceHr {
-  width: 40px;
-  height: 1px;
-  background: #e0e0e0;
-  margin-top: 24px;
-}
-
-/* ---- Price Items (List) ---- */
-.priceList {
-  display: flex;
-  flex-direction: column;
-}
-
-.priceItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 32px 0;
-  border-bottom: 1px solid #e0e0e0;
-  position: relative;
-}
-
-.priceItem:first-child {
-  border-top: 1px solid #e0e0e0;
-}
-
-.priceItemLeft {
-  display: flex;
-  flex-direction: column;
-}
-
-.priceName {
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 24px;
-  letter-spacing: 0.1em;
-  color: #111;
-  line-height: 1.4;
-}
-
-.priceDesc {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 12px;
-  color: #111;
-  margin-top: 4px;
-  letter-spacing: 0.02em;
-}
-
-.priceAmount {
-  font-family: var(--font-heading);
+  font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: 24px;
-  letter-spacing: 0.04em;
-  color: #111;
+  font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2.05rem);
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+  line-height: 1.8;
+  max-width: 24em;
+}
+
+/* ---- 浮く額 3行（年額側が [data-price-amount]＝PriceRunner の運搬対象） ---- */
+.priceRows {
+  margin-top: 4rem;
+  max-width: 52rem;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.priceRow:first-child {
+  border-top: 1px solid var(--rule);
+}
+
+.priceLabel {
+  font-size: 1rem;
+  color: var(--ink);
   white-space: nowrap;
 }
 
-/* ---- View Details Link (Fill Hover) ---- */
-.priceCta {
-  max-width: 800px;
-  margin: 48px auto 0;
-  text-align: right;
+.priceLeader {
+  flex: 1 1 0;
+  border-bottom: 1px solid var(--rule-soft);
+  transform: translateY(-0.4em);
+  min-width: 1.5rem;
 }
 
-.priceCtaLink {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: 0.1em;
-  color: #111;
-  position: relative;
-  display: inline-block;
-  padding: 16px 48px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+.priceArrow {
+  color: var(--neutral);
+  font-size: 0.9rem;
 }
 
-.priceCtaLink::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #111;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.priceAmount {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1rem + 1.2vw, 1.8rem);
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-deep);
+  white-space: nowrap;
 }
 
-.priceCtaLink:hover {
-  color: #fff;
-  border-color: #111;
+.priceNote {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 38em;
 }
 
-.priceCtaLink:hover::after {
-  transform: scaleX(1);
+.priceNoteLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--rule);
+  transition: text-decoration-color var(--duration-normal) var(--ease-default);
 }
 
-.priceCtaLinkText {
-  position: relative;
-  z-index: 1;
+.priceNoteLink:hover,
+.priceNoteLink:focus-visible {
+  text-decoration-color: var(--accent);
 }
 
-/* =============================================
-   Lantern WebGL Placeholder
-   ============================================= */
-.lanternSection {
-  position: relative;
-  width: 100%;
-  height: 60vh;
-  min-height: 400px;
-  overflow: hidden;
-}
-
-
-/* =============================================
-   Contact CTA
-   ============================================= */
-.contactSection {
-  padding: 120px 40px;
-  text-align: center;
-  border-top: 1px solid var(--color-border);
-}
-
-.contactInner {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.contactHeading {
-  font-family: var(--font-heading);
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-foreground);
-  margin-bottom: 16px;
-}
-
-.contactText {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--color-secondary);
-  margin-bottom: 40px;
-}
-
-.contactLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground);
-  padding: 16px 48px;
-  border: 1px solid var(--color-border-light);
-  transition: border-color 300ms ease, background 300ms ease, color 300ms ease;
-}
-
-.contactLink:hover {
-  border-color: var(--color-accent);
-  background: rgba(200, 169, 110, 0.06);
-  color: var(--color-accent);
-}
-
-.contactLink span {
-  transition: transform 300ms ease;
-}
-
-.contactLink:hover span {
-  transform: translateX(4px);
-}
-
-/* =============================================
-   Responsive
-   ============================================= */
-@media (max-width: 767px) {
-  .aboutTeaser {
-    grid-template-columns: 1fr;
-    min-height: auto;
+@media (max-width: 640px) {
+  .priceRow {
+    gap: 0.75rem;
   }
 
-  .aboutLeft {
-    padding: 60px 20px;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
+  .priceLabel {
+    white-space: normal;
   }
+}
 
-  .aboutRight {
-    padding: 48px 20px 60px;
-  }
-
-  .priceSection {
-    padding: 80px 20px;
-  }
-
-  .priceTitle {
-    font-size: 36px;
-  }
-
-  .priceItem {
-    flex-direction: column;
-    gap: 8px;
-  }
-
+/* reduced-motion 保険：運搬演出がスキップ/中断されても
+   年額が opacity:0 のまま残らないことを CSS 側でも担保する */
+@media (prefers-reduced-motion: reduce) {
   .priceAmount {
-    font-size: 20px;
-  }
-
-  .priceCta {
-    text-align: center;
-  }
-
-  .priceCtaLink {
-    font-size: 14px;
-    padding: 14px 36px;
-  }
-
-  .lanternSection {
-    height: 40vh;
-    min-height: 280px;
-  }
-
-  .contactSection {
-    padding: 80px 20px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1279px) {
-  .aboutLeft {
-    padding: 60px 40px;
-  }
-
-  .aboutRight {
-    padding: 60px 40px;
-  }
-
-  .priceSection {
-    padding: 120px 40px;
-  }
-
-  .contactSection {
-    padding: 100px 30px;
+    opacity: 1 !important;
   }
 }

@@ -88,6 +88,44 @@
 }
 
 /* =============================================
+   Washi Variant — an-a.html .band 忠実移植
+   （washi トークンのみ参照・drift 56s・帯罫線は rule-soft）
+   ============================================= */
+.washiMarquee {
+  padding: 0.75rem 0;
+  background: var(--paper);
+  border-top: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.track.washiTrack {
+  animation-duration: 56s;
+}
+
+.washiItem {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 2.5rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 400;
+  font-size: 0.9rem;
+  letter-spacing: 0.24em;
+  color: var(--neutral);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.washiSeparator {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track.washiTrack {
+    animation: none;
+  }
+}
+
+/* =============================================
    Responsive
    ============================================= */
 @media (max-width: 767px) {

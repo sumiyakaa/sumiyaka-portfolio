@@ -1,0 +1,173 @@
+/* =============================================
+   できること（3つの出口） — an-a.html .sec-exits 忠実移植
+   色は washi トークンのみ参照
+   ============================================= */
+.section {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body-washi, sans-serif);
+  line-height: 2;
+}
+
+.wrap {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 4vw, 4rem);
+  padding-block: 4rem 6rem;
+}
+
+.heading {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 2rem);
+  letter-spacing: 0.08em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+}
+
+.lead {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.branches {
+  margin-top: 4rem;
+  position: relative;
+}
+
+.axisHead {
+  position: relative;
+  padding-left: 1.5rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.axisHead::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 0.85em;
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+}
+
+.branchList {
+  list-style: none;
+  --gut: clamp(3rem, 8vw, 6rem);
+  margin: 2.5rem 0 0;
+  padding-left: var(--gut);
+  border-left: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  padding-block: 0.5rem 1.5rem;
+}
+
+.branch {
+  position: relative;
+  margin-left: var(--ind, 0px);
+}
+
+.branch:nth-child(1) {
+  --ind: 0px;
+}
+
+.branch:nth-child(2) {
+  --ind: 1.5rem;
+}
+
+.branch:nth-child(3) {
+  --ind: 3rem;
+}
+
+.branch::before {
+  content: "";
+  position: absolute;
+  top: 1em;
+  height: 1px;
+  background: var(--rule);
+  left: calc(-1 * (var(--gut) + var(--ind)));
+  width: calc(var(--gut) + var(--ind) - 0.9rem);
+}
+
+.branchTitle {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+  line-height: 1.7;
+}
+
+.no {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: var(--neutral);
+  margin-right: 0.75rem;
+}
+
+.branchCopy {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--ink);
+  max-width: 34em;
+}
+
+.branchAio {
+  margin-top: 0.75rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  position: relative;
+  padding-left: 1rem;
+}
+
+.branchAio::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.85em;
+  width: 5px;
+  height: 5px;
+  background: var(--ink);
+}
+
+.branchLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-deep);
+  text-decoration: underline;
+  text-underline-offset: 0.45em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--rule);
+}
+
+.branchLink:hover {
+  text-decoration-color: var(--ink-deep);
+}
+
+@media (max-width: 860px) {
+  .branchList {
+    --gut: 2.5rem;
+  }
+
+  .branch:nth-child(2) {
+    --ind: 0.75rem;
+  }
+
+  .branch:nth-child(3) {
+    --ind: 1.5rem;
+  }
+}

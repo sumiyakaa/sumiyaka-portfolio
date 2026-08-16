@@ -1,67 +1,41 @@
 /* =============================================
-   Pick Up Works — Option D (Type + Scroll)
+   制作実績（Pickup） — an-a.html .sec-works の設計へ washi 移植
+   ホバータイピング/入場アニメが使うクラスの役割（swap構造・typedPanel・
+   pickupChar 等）は現行のまま。色は washi トークンのみ参照
    ============================================= */
 .section {
   position: relative;
-  background: var(--color-primary);
-  padding: 120px 80px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body-washi, sans-serif);
+  line-height: 2;
+  border-top: 1px solid var(--rule-soft);
 }
 
 .inner {
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 4vw, 4rem);
+  padding-block: 6rem;
 }
 
-/* ---- Pickup Title — Wave Lift ---- */
-.pickupTitle {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3em;
-  margin-bottom: 24px;
-  cursor: default;
-}
-
-.pickupEn {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: clamp(28px, 4vw, 48px);
-  letter-spacing: 0.2em;
-  color: var(--color-foreground);
-}
-
-.pickupJp {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: clamp(14px, 2vw, 24px);
-  color: var(--color-foreground);
-}
-
-.pickupChar {
-  display: inline-block;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.pickupTitle:hover .pickupChar {
-  transform: translateY(-4px);
-}
-
-/* ---- Section Heading (SELECTED ↔ Typed swap) ---- */
+/* ---- Section Heading（「制作実績」 ↔ Typed swap） ---- */
 .headingWrap {
   position: relative;
-  margin-bottom: 56px;
   min-height: 1.2em;
 }
 
 .heading {
-  font-family: var(--font-heading);
-  font-weight: 100;
-  font-size: clamp(48px, 6vw, 96px);
-  letter-spacing: 0.15em;
-  color: var(--color-foreground);
-  line-height: 1.2;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 2rem);
+  letter-spacing: 0.08em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+  line-height: 1.6;
 }
 
-/* Typed title that replaces SELECTED */
+/* Typed title that replaces the heading on hover */
 .headingTyped {
   position: absolute;
   top: 0;
@@ -82,35 +56,84 @@
 }
 
 .headingTypedName {
-  font-family: var(--font-heading);
-  font-weight: 100;
-  font-size: clamp(48px, 6vw, 96px);
-  letter-spacing: 0.08em;
-  color: var(--color-foreground);
-  line-height: 1.2;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 2rem);
+  letter-spacing: 0.06em;
+  color: var(--ink-deep);
+  line-height: 1.6;
+  white-space: nowrap;
 }
 
 .headingTypedSub {
-  margin-top: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 300;
+  margin-top: 4px;
+  font-size: 0.78rem;
   letter-spacing: 0.1em;
-  color: var(--color-secondary);
+  color: var(--neutral);
   opacity: 0;
 }
 
-/* ---- Grid 3x2 ---- */
+/* ---- リード（/works より、N件。） ---- */
+.pickupTitle {
+  margin-top: 0.5rem;
+  cursor: default;
+}
+
+.pickupJp {
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.pickupChar {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pickupTitle:hover .pickupChar {
+  transform: translateY(-4px);
+}
+
+/* ---- 12カラム変則グリッド（an-a .works） ---- */
 .grid {
+  margin-top: 4rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 4rem 1.5rem;
 }
 
 /* ---- Card Slot ---- */
 .cardSlot {
   position: relative;
   z-index: 1;
+  grid-column: span 6; /* 7件目以降のフォールバック */
+}
+
+.cardSlot:nth-child(1) {
+  grid-column: 1 / 8;
+}
+
+.cardSlot:nth-child(2) {
+  grid-column: 8 / 13;
+  margin-top: 6rem;
+}
+
+.cardSlot:nth-child(3) {
+  grid-column: 1 / 6;
+}
+
+.cardSlot:nth-child(4) {
+  grid-column: 7 / 13;
+  margin-top: 2.5rem;
+}
+
+.cardSlot:nth-child(5) {
+  grid-column: 2 / 7;
+}
+
+.cardSlot:nth-child(6) {
+  grid-column: 8 / 13;
+  margin-top: 4rem;
 }
 
 .slotActive {
@@ -120,15 +143,15 @@
 /* ---- Card ---- */
 .card {
   position: relative;
-  border: 1px solid var(--color-border);
-  background: var(--color-primary);
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
   box-sizing: border-box;
   transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   /* NO overflow: hidden — typed panel extends below */
 }
 
 .card:hover {
-  border-color: var(--color-border-light);
+  border-color: var(--neutral);
 }
 
 .cardLink {
@@ -157,33 +180,24 @@
 
 /* ---- Card Body (normal state) ---- */
 .cardBody {
-  padding: 16px 16px 20px;
-  background: var(--color-primary);
+  padding: 12px 16px 16px;
 }
 
 .cardTitle {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--color-foreground);
-  margin-bottom: 8px;
+  font-family: var(--font-display-washi, serif);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-deep);
+  line-height: 1.6;
+  margin-bottom: 2px;
 }
 
 .cardMeta {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.cardTag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.06em;
-  color: var(--color-secondary);
-  padding: 2px 8px;
-  border: 1px solid var(--color-border);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--neutral);
+  line-height: 1.8;
 }
 
 /* ---- Typed Panel (overlays cardBody, extends below on hover) ---- */
@@ -192,11 +206,11 @@
   top: 0;
   left: -1px;
   right: -1px;
-  padding: 24px 16px 32px;
-  background: var(--color-primary);
-  border-left: 1px solid var(--color-border-light);
-  border-right: 1px solid var(--color-border-light);
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 20px 16px 28px;
+  background: var(--paper-2);
+  border-left: 1px solid var(--neutral);
+  border-right: 1px solid var(--neutral);
+  border-bottom: 1px solid var(--neutral);
   opacity: 0;
   pointer-events: none;
 }
@@ -208,19 +222,19 @@
 }
 
 .typedName {
-  font-family: var(--font-heading);
-  font-size: clamp(18px, 2vw, 28px);
-  font-weight: 200;
-  letter-spacing: 0.08em;
-  color: var(--color-foreground);
-  line-height: 1.4;
+  font-family: var(--font-display-washi, serif);
+  font-size: clamp(1rem, 0.9rem + 0.8vw, 1.4rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-deep);
+  line-height: 1.5;
 }
 
 .typedCursor {
   display: inline-block;
   width: 2px;
   height: 0.9em;
-  background: var(--color-foreground);
+  background: var(--ink-deep);
   margin-left: 4px;
   animation: cursorBlink 1s step-end infinite;
 }
@@ -236,32 +250,29 @@
 }
 
 .typedSub {
-  margin-top: 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 300;
+  margin-top: 6px;
+  font-size: 0.78rem;
   letter-spacing: 0.1em;
-  color: var(--color-secondary);
+  color: var(--neutral);
   opacity: 0;
 }
 
 /* ---- CTA ---- */
 .cta {
-  max-width: 1400px;
-  margin: 48px auto 0;
+  margin-top: 4rem;
   text-align: right;
 }
 
 .ctaLink {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 18px;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: 1rem;
   letter-spacing: 0.1em;
-  color: var(--color-foreground);
+  color: var(--ink-deep);
   position: relative;
   display: inline-block;
   padding: 16px 48px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--ink);
   overflow: hidden;
   transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.4s;
@@ -271,15 +282,15 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--color-foreground);
+  background: var(--ink);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ctaLink:hover {
-  color: var(--color-primary);
-  border-color: var(--color-foreground);
+  color: var(--paper);
+  border-color: var(--ink-deep);
 }
 
 .ctaLink:hover::after {
@@ -292,42 +303,30 @@
 }
 
 /* ---- Responsive ---- */
-@media (max-width: 767px) {
-  .section {
-    padding: 80px 20px 60px;
-  }
-  .pickupEn {
-    font-size: 24px;
-  }
-  .pickupJp {
-    font-size: 14px;
-  }
-  .heading {
-    font-size: clamp(36px, 10vw, 56px);
-    margin-bottom: 32px;
-  }
+@media (max-width: 860px) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4rem;
   }
-  .cta {
-    margin-top: 32px;
-    text-align: center;
-  }
-  .ctaLink {
-    font-size: 14px;
-    padding: 14px 36px;
+
+  .cardSlot:nth-child(n) {
+    grid-column: auto;
+    margin-top: 0;
   }
 }
 
-@media (min-width: 768px) and (max-width: 1279px) {
-  .section {
-    padding: 100px 40px 80px;
+@media (max-width: 767px) {
+  .inner {
+    padding-block: 5rem 4rem;
   }
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+
+  .cta {
+    margin-top: 2.5rem;
+    text-align: center;
   }
+
   .ctaLink {
-    font-size: 16px;
-    padding: 14px 40px;
+    font-size: 0.9rem;
+    padding: 14px 36px;
   }
 }

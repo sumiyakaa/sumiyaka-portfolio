@@ -5,7 +5,7 @@ interface MarqueeProps {
   items?: string[];
   reverse?: boolean;
   className?: string;
-  variant?: "default" | "code";
+  variant?: "default" | "code" | "washi";
 }
 
 export default function Marquee({
@@ -16,9 +16,18 @@ export default function Marquee({
   variant = "default",
 }: MarqueeProps) {
   const isCode = variant === "code";
-  const itemClass = isCode ? styles.codeItem : styles.item;
-  const sepClass = isCode ? styles.codeSeparator : styles.separator;
-  const sepChar = isCode ? "·" : "●";
+  const isWashi = variant === "washi";
+  const itemClass = isWashi
+    ? styles.washiItem
+    : isCode
+      ? styles.codeItem
+      : styles.item;
+  const sepClass = isWashi
+    ? styles.washiSeparator
+    : isCode
+      ? styles.codeSeparator
+      : styles.separator;
+  const sepChar = isWashi ? "" : isCode ? "·" : "●";
 
   const renderSet = (prefix: string) => {
     if (itemsProp) {
@@ -50,11 +59,11 @@ export default function Marquee({
 
   return (
     <div
-      className={`${styles.marquee} ${isCode ? styles.codeMarquee : ""} ${className}`}
+      className={`${styles.marquee} ${isCode ? styles.codeMarquee : ""} ${isWashi ? styles.washiMarquee : ""} ${className}`}
       aria-label={ariaLabel}
     >
       <div
-        className={`${styles.track} ${reverse ? styles.reverse : ""}`}
+        className={`${styles.track} ${isWashi ? styles.washiTrack : ""} ${reverse ? styles.reverse : ""}`}
       >
         {renderSet("a")}
         {renderSet("b")}

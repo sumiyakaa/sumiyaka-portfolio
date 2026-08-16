@@ -1,0 +1,49 @@
+/* =============================================
+   どんな人か — an-a.html .sec-person 忠実移植
+   色は washi トークンのみ参照
+   ============================================= */
+.section {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body-washi, sans-serif);
+  line-height: 2;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.wrap {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 4vw, 4rem);
+  padding-block: 6rem 4rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4rem clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
+}
+
+.label {
+  grid-column: 1 / -1;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  color: var(--neutral);
+}
+
+.display {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.5rem);
+  letter-spacing: 0.18em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+  line-height: 1.4;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.bio {
+  font-size: 1.15rem;
+  line-height: 2.2;
+  color: var(--ink);
+  max-width: 34em;
+  padding-top: 0.75rem;
+}

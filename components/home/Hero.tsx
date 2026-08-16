@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroFXLayer from "./HeroFXLayer";
@@ -59,7 +58,7 @@ export default function Hero({ openingDone }: HeroProps) {
     setRunnerDone(true);
   }, []);
 
-  // 入場アニメーション（タイトル以外）→ サブ/AIO/HR/エッジ/コーナー
+  // 入場アニメーション（タイトル以外）→ 肩書き/サブ/HR/エッジ/コーナー
   useEffect(() => {
     if (!openingDone) return;
 
@@ -79,8 +78,8 @@ export default function Hero({ openingDone }: HeroProps) {
     const ctx = gsap.context(() => {
       // 初期表示: visibility visible + opacity 0
       const singleSelectors = [
-        "[data-hero-main]", "[data-hero-sub]", "[data-hero-aio]",
-        "[data-hero-aio-link]", "[data-hero-hr]",
+        "[data-hero-main]", "[data-hero-sub]", "[data-hero-sub2]",
+        "[data-hero-hr]",
         "[data-hero-corners-svg]",
       ];
       singleSelectors.forEach((sel) => {
@@ -103,22 +102,16 @@ export default function Hero({ openingDone }: HeroProps) {
       // メイン文字コンテナ — 即時表示（文字自体はRunnerが配置する）
       tl.to("[data-hero-main]", { opacity: 1, duration: 0.01 }, 0);
 
-      // サブコピー
+      // 肩書き行
       tl.fromTo("[data-hero-sub]",
         { y: 15, opacity: 0 },
         { y: 0, opacity: 1, duration: 1.2, ease: EASE },
       0);
 
-      // AIO テキスト
-      tl.fromTo("[data-hero-aio]",
+      // サブコピー
+      tl.fromTo("[data-hero-sub2]",
         { y: 10, opacity: 0 },
         { y: 0, opacity: 1, duration: 1.0, ease: EASE },
-      0);
-
-      // AIO リンク
-      tl.fromTo("[data-hero-aio-link]",
-        { y: 8, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: EASE },
       0);
 
       // HR
@@ -177,26 +170,21 @@ export default function Hero({ openingDone }: HeroProps) {
         y: -180, ease: "none", scrollTrigger: stConfig,
       });
 
-      // サブ — Y: -100px
+      // 肩書き行 — Y: -100px
       gsap.fromTo("[data-hero-sub]", { y: 0 }, {
         y: -100, ease: "none", scrollTrigger: stConfig,
       });
 
-      // AIO — Y: -90px
-      gsap.fromTo("[data-hero-aio]", { y: 0 }, {
+      // サブ — Y: -90px
+      gsap.fromTo("[data-hero-sub2]", { y: 0 }, {
         y: -90, ease: "none", scrollTrigger: stConfig,
-      });
-
-      // AIO Link — Y: -85px
-      gsap.fromTo("[data-hero-aio-link]", { y: 0 }, {
-        y: -85, ease: "none", scrollTrigger: stConfig,
       });
 
       // フェードアウト
       gsap.fromTo(
         [
-          "[data-hero-main]", "[data-hero-sub]", "[data-hero-aio]",
-          "[data-hero-aio-link]", "[data-hero-hr]",
+          "[data-hero-main]", "[data-hero-sub]", "[data-hero-sub2]",
+          "[data-hero-hr]",
           "[data-hero-corner]", "[data-hero-corners-svg]",
         ],
         { opacity: 1 },
@@ -320,22 +308,18 @@ export default function Hero({ openingDone }: HeroProps) {
           {/* 3D Container */}
           <div className={styles.container} style={{ visibility: openingDone ? "visible" : "hidden" }}>
             <h1 data-hero-main className={styles.mainText} style={{ visibility: "hidden" }}>
-              <LetterSpan text="Web DESIGN" className={styles.fvLine} />
-              <LetterSpan text="&" className={`${styles.fvLine} ${styles.fvLineAmp}`} />
-              <LetterSpan text="DEVELOPMENT" className={styles.fvLine} />
+              <LetterSpan text="バラバラな事務作業を、" className={styles.fvLine} />
+              <LetterSpan text="ひとりでに回る" className={styles.fvLine} />
+              <LetterSpan text="仕組みに変えます。" className={styles.fvLine} />
             </h1>
 
             <p data-hero-sub className={styles.sub} style={{ visibility: "hidden" }}>
-              {magChars("DESIGNED WITH PRECISION")}
+              {magChars("業務効率化の設計と実装 — 墨家 / SUMIYAKA")}
             </p>
 
-            <p data-hero-aio className={styles.aioText} style={{ visibility: "hidden" }}>
-              {magChars("AIO — AI検索最適化を、全案件に標準搭載。")}
+            <p data-hero-sub2 className={styles.sub2} style={{ visibility: "hidden" }}>
+              {magChars("設計から実装・公開まで、すべて一人で。")}
             </p>
-
-            <Link href="/service#aio" data-hero-aio-link className={styles.aioLink} style={{ visibility: "hidden" }}>
-              <span>What we do →</span>
-            </Link>
 
             <div data-hero-hr className={styles.hr} style={{ visibility: "hidden" }} />
 

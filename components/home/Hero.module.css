@@ -43,7 +43,7 @@
   z-index: 100;
   font-size: 13px;
   letter-spacing: 0.2em;
-  color: #fff;
+  color: var(--ink-deep, var(--color-foreground));
   pointer-events: none;
   white-space: nowrap;
   line-height: 1;
@@ -78,7 +78,8 @@
 .radial {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  /* washi: 生成りの紙にごく薄い灯の暈（トークンは theme-washi.css で定義） */
+  background: radial-gradient(ellipse at 30% 40%, var(--washi-radial-tint, transparent) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -91,21 +92,21 @@
 .orb1 {
   width: 200px;
   height: 200px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--washi-orb-a, transparent);
   filter: blur(80px);
 }
 
 .orb2 {
   width: 150px;
   height: 150px;
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--washi-orb-b, transparent);
   filter: blur(80px);
 }
 
 .orb3 {
   width: 100px;
   height: 100px;
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--washi-orb-c, transparent);
   filter: blur(80px);
 }
 
@@ -122,12 +123,14 @@
    Main Text
    ============================================= */
 .mainText {
-  font-family: var(--font-heading);
-  font-weight: 100;
-  font-size: clamp(48px, 8vw, 120px);
-  letter-spacing: 0.08em;
-  line-height: 1.1;
-  color: var(--color-foreground);
+  /* an-a.html の H1 タイポグラフィを踏襲（Shippori Mincho・palt・3行） */
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 600;
+  font-size: clamp(1.45rem, 0.2rem + 5.4vw, 4.1rem);
+  letter-spacing: 0.045em;
+  line-height: 1.55;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep, var(--color-foreground));
 }
 
 .fvLetter {
@@ -143,71 +146,29 @@
   display: block;
 }
 
-.fvLineAmp {
-  font-size: 0.6em;
-}
-
 /* =============================================
-   Sub Copy
+   肩書き行（an-a: .hero-title-role）
    ============================================= */
 .sub {
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 19px;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground);
+  font-family: var(--font-body-washi, var(--font-body));
+  font-weight: 400;
+  font-size: var(--washi-t-sm, 0.9rem);
+  letter-spacing: 0.14em;
+  color: var(--muted, var(--color-foreground-muted));
   margin-top: 24px;
 }
 
 /* =============================================
-   AIO Tagline + Link
+   サブコピー（an-a: .hero-sub）
    ============================================= */
-.aioText {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 16px;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.45);
+.sub2 {
+  font-family: var(--font-display-washi, var(--font-body));
+  font-weight: 500;
+  font-size: var(--washi-t-md, 1.15rem);
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink, var(--color-foreground));
   margin-top: 14px;
-}
-
-.aioLink {
-  display: inline-block;
-  margin-top: 16px;
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 12px;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 8px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
-}
-
-.aioLink::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.12);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.aioLink:hover {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.aioLink:hover::after {
-  transform: scaleX(1);
-}
-
-.aioLink span {
-  position: relative;
-  z-index: 1;
 }
 
 /* =============================================
@@ -216,7 +177,7 @@
 .hr {
   width: 200px;
   height: 1px;
-  background: #333;
+  background: var(--rule, var(--color-border-light));
   margin: 32px auto 0;
 }
 
@@ -276,8 +237,8 @@
     0deg,
     transparent,
     transparent 2px,
-    rgba(255,255,255,0.015) 2px,
-    rgba(255,255,255,0.015) 4px
+    var(--washi-scanline, transparent) 2px,
+    var(--washi-scanline, transparent) 4px
   );
   pointer-events: none;
   z-index: 3;
@@ -292,24 +253,18 @@
     height: 110svh;
   }
 
+  /* an-a.html の SP 指定（letter-spacing .03em）。
+     font-size は clamp が追従（390px幅で約24.3px＝最長11文字行でも約275px→3行維持） */
   .mainText {
-    font-size: clamp(32px, 10vw, 56px);
+    letter-spacing: 0.03em;
   }
 
   .sub {
-    font-size: 16px;
     margin-top: 40px;
   }
 
-  .aioText {
-    font-size: 13px;
+  .sub2 {
     margin-top: 20px;
-  }
-
-  .aioLink {
-    font-size: 11px;
-    margin-top: 12px;
-    padding: 6px 18px;
   }
 
   .hr {
@@ -342,10 +297,6 @@
 
 
 @media (min-width: 768px) and (max-width: 1279px) {
-  .mainText {
-    font-size: clamp(48px, 7vw, 96px);
-  }
-
   .edgeBl {
     left: 24px;
     bottom: 24px;

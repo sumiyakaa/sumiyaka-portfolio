@@ -181,6 +181,13 @@ export default function PriceRunner() {
     const section = overlay.parentElement;
     if (!section) return;
 
+    // prefers-reduced-motion: 運搬演出をスキップ。金額は一度も隠さず、
+    // そのまま表示を維持する（金額が opacity:0 のまま残る事故の防止＝安全側）
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      overlay.style.display = "none";
+      return;
+    }
+
     const amountEls = section.querySelectorAll<HTMLElement>("[data-price-amount]");
     if (!amountEls.length) return;
 
@@ -224,8 +231,12 @@ export default function PriceRunner() {
     // Master timeline
     const master = gsap.timeline();
 
+    // 発火圧縮：セクション表示後 0.5 秒以内に 3 体がバラついて出発する
+    // （各運搬アニメ自体の経路・尺（runDuration）・イージングは一切不変）
+    const STAGGER_OFFSETS = [0, 0.18, 0.42];
+
     runners.forEach((r, i) => {
-      const offset = i * 0.8; // stagger between runners
+      const offset = STAGGER_OFFSETS[i % STAGGER_OFFSETS.length]; // stagger between runners
       const startX = -120;
 
       // Initial state: off-screen left, arms up, carrying cargo
@@ -332,11 +343,11 @@ export default function PriceRunner() {
           top: 0,
           left: 0,
           opacity: 0,
-          fontFamily: "var(--font-heading)",
+          fontFamily: "var(--font-display-washi, serif)",
           fontWeight: 600,
           fontSize: "20px",
           letterSpacing: "0.04em",
-          color: "#111",
+          color: "var(--ink-deep)",
           whiteSpace: "nowrap",
           pointerEvents: "none",
         }}
@@ -350,11 +361,11 @@ export default function PriceRunner() {
           top: 0,
           left: 0,
           opacity: 0,
-          fontFamily: "var(--font-heading)",
+          fontFamily: "var(--font-display-washi, serif)",
           fontWeight: 600,
           fontSize: "20px",
           letterSpacing: "0.04em",
-          color: "#111",
+          color: "var(--ink-deep)",
           whiteSpace: "nowrap",
           pointerEvents: "none",
         }}
@@ -368,11 +379,11 @@ export default function PriceRunner() {
           top: 0,
           left: 0,
           opacity: 0,
-          fontFamily: "var(--font-heading)",
+          fontFamily: "var(--font-display-washi, serif)",
           fontWeight: 600,
           fontSize: "20px",
           letterSpacing: "0.04em",
-          color: "#111",
+          color: "var(--ink-deep)",
           whiteSpace: "nowrap",
           pointerEvents: "none",
         }}

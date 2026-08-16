@@ -26,33 +26,39 @@ type CharType =
   | "worker"
   | "shadow";
 
-/* Letter → character mapping (21 letters) */
+/* Letter → character mapping (27 letters / 10種ローテーション)
+   H1 の [data-hero-letter] のDOM順（行0→行1→行2・句読点も1文字扱い）と一致させること */
 const LETTER_CHARS: { letter: string; line: number; char: CharType }[] = [
-  // Line 0: "Web DESIGN"
-  { letter: "W", line: 0, char: "stick" },
-  { letter: "e", line: 0, char: "tribot" },
-  { letter: "b", line: 0, char: "ninja" },
-  // space
-  { letter: "D", line: 0, char: "worker" },
-  { letter: "E", line: 0, char: "pixel" },
-  { letter: "S", line: 0, char: "blob" },
-  { letter: "I", line: 0, char: "ghost" },
-  { letter: "G", line: 0, char: "cat" },
-  { letter: "N", line: 0, char: "brush" },
-  // Line 1: "&"
-  { letter: "&", line: 1, char: "shadow" },
-  // Line 2: "DEVELOPMENT"
-  { letter: "D", line: 2, char: "blob" },
-  { letter: "E", line: 2, char: "cat" },
-  { letter: "V", line: 2, char: "ghost" },
-  { letter: "E", line: 2, char: "brush" },
-  { letter: "L", line: 2, char: "shadow" },
-  { letter: "O", line: 2, char: "stick" },
-  { letter: "P", line: 2, char: "tribot" },
-  { letter: "M", line: 2, char: "ninja" },
-  { letter: "E", line: 2, char: "worker" },
-  { letter: "N", line: 2, char: "pixel" },
-  { letter: "T", line: 2, char: "blob" },
+  // Line 0: "バラバラな事務作業を、"
+  { letter: "バ", line: 0, char: "stick" },
+  { letter: "ラ", line: 0, char: "blob" },
+  { letter: "バ", line: 0, char: "tribot" },
+  { letter: "ラ", line: 0, char: "ghost" },
+  { letter: "な", line: 0, char: "ninja" },
+  { letter: "事", line: 0, char: "cat" },
+  { letter: "務", line: 0, char: "pixel" },
+  { letter: "作", line: 0, char: "brush" },
+  { letter: "業", line: 0, char: "worker" },
+  { letter: "を", line: 0, char: "shadow" },
+  { letter: "、", line: 0, char: "stick" },
+  // Line 1: "ひとりでに回る"
+  { letter: "ひ", line: 1, char: "blob" },
+  { letter: "と", line: 1, char: "tribot" },
+  { letter: "り", line: 1, char: "ghost" },
+  { letter: "で", line: 1, char: "ninja" },
+  { letter: "に", line: 1, char: "cat" },
+  { letter: "回", line: 1, char: "pixel" },
+  { letter: "る", line: 1, char: "brush" },
+  // Line 2: "仕組みに変えます。"
+  { letter: "仕", line: 2, char: "worker" },
+  { letter: "組", line: 2, char: "shadow" },
+  { letter: "み", line: 2, char: "stick" },
+  { letter: "に", line: 2, char: "blob" },
+  { letter: "変", line: 2, char: "tribot" },
+  { letter: "え", line: 2, char: "ghost" },
+  { letter: "ま", line: 2, char: "ninja" },
+  { letter: "す", line: 2, char: "cat" },
+  { letter: "。", line: 2, char: "pixel" },
 ];
 
 /* =================================================================
@@ -72,14 +78,14 @@ function renderCharSVG(type: CharType, id: string) {
     case "stick":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <circle data-part="head" cx="24" cy="10" r="7" stroke="#fff" strokeWidth="2.5" />
-          <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <circle data-part="head" cx="24" cy="10" r="7" stroke="currentColor" strokeWidth="2.5" />
+          <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
 
@@ -87,15 +93,15 @@ function renderCharSVG(type: CharType, id: string) {
     case "blob":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <ellipse data-part="head" cx="24" cy="30" rx="16" ry="18" stroke="#fff" strokeWidth="2.5" />
-          <circle cx="18" cy="26" r="2" fill="#fff" />
-          <circle cx="30" cy="26" r="2" fill="#fff" />
-          <line data-part="armL" x1="10" y1="32" x2="2" y2="40" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="38" y1="32" x2="46" y2="40" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="18" y1="48" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="30" y1="48" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <ellipse data-part="head" cx="24" cy="30" rx="16" ry="18" stroke="currentColor" strokeWidth="2.5" />
+          <circle cx="18" cy="26" r="2" fill="currentColor" />
+          <circle cx="30" cy="26" r="2" fill="currentColor" />
+          <line data-part="armL" x1="10" y1="32" x2="2" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="38" y1="32" x2="46" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="18" y1="48" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="30" y1="48" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
 
@@ -103,16 +109,16 @@ function renderCharSVG(type: CharType, id: string) {
     case "tribot":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <polygon data-part="head" points="24,2 38,22 10,22" stroke="#fff" strokeWidth="2.5" strokeLinejoin="round" />
-          <circle cx="20" cy="16" r="1.5" fill="#fff" />
-          <circle cx="28" cy="16" r="1.5" fill="#fff" />
-          <line data-part="body" x1="24" y1="22" x2="24" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <polygon data-part="head" points="24,2 38,22 10,22" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+          <circle cx="20" cy="16" r="1.5" fill="currentColor" />
+          <circle cx="28" cy="16" r="1.5" fill="currentColor" />
+          <line data-part="body" x1="24" y1="22" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
 
@@ -120,11 +126,11 @@ function renderCharSVG(type: CharType, id: string) {
     case "ghost":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <path data-part="head" d="M10,30 Q10,6 24,6 Q38,6 38,30 L38,56 Q34,50 30,56 Q26,50 22,56 Q18,50 14,56 Q10,50 10,56 Z" stroke="#fff" strokeWidth="2.5" />
-          <circle cx="18" cy="24" r="2.5" fill="#fff" />
-          <circle cx="30" cy="24" r="2.5" fill="#fff" />
-          <line data-part="armL" x1="10" y1="34" x2="2" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="38" y1="34" x2="46" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          <path data-part="head" d="M10,30 Q10,6 24,6 Q38,6 38,30 L38,56 Q34,50 30,56 Q26,50 22,56 Q18,50 14,56 Q10,50 10,56 Z" stroke="currentColor" strokeWidth="2.5" />
+          <circle cx="18" cy="24" r="2.5" fill="currentColor" />
+          <circle cx="30" cy="24" r="2.5" fill="currentColor" />
+          <line data-part="armL" x1="10" y1="34" x2="2" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="38" y1="34" x2="46" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
 
@@ -132,19 +138,19 @@ function renderCharSVG(type: CharType, id: string) {
     case "ninja":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <circle data-part="head" cx="24" cy="10" r="7" stroke="#fff" strokeWidth="2.5" />
-          <line x1="14" y1="10" x2="34" y2="10" stroke="#fff" strokeWidth="2.5" />
-          <circle cx="20" cy="9" r="1.5" fill="#fff" />
-          <circle cx="28" cy="9" r="1.5" fill="#fff" />
-          <line x1="34" y1="8" x2="44" y2="4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="34" y1="12" x2="44" y2="14" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-          <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <circle data-part="head" cx="24" cy="10" r="7" stroke="currentColor" strokeWidth="2.5" />
+          <line x1="14" y1="10" x2="34" y2="10" stroke="currentColor" strokeWidth="2.5" />
+          <circle cx="20" cy="9" r="1.5" fill="currentColor" />
+          <circle cx="28" cy="9" r="1.5" fill="currentColor" />
+          <line x1="34" y1="8" x2="44" y2="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="34" y1="12" x2="44" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
 
@@ -152,20 +158,20 @@ function renderCharSVG(type: CharType, id: string) {
     case "cat":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <circle data-part="head" cx="24" cy="12" r="8" stroke="#fff" strokeWidth="2.5" />
-          <polygon points="16,5 13,0 19,4" fill="#fff" />
-          <polygon points="32,5 35,0 29,4" fill="#fff" />
-          <circle cx="20" cy="11" r="1.5" fill="#fff" />
-          <circle cx="28" cy="11" r="1.5" fill="#fff" />
-          <line x1="24" y1="15" x2="24" y2="16" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-          <line data-part="body" x1="24" y1="20" x2="24" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <path data-part="tail" d="M24,42 Q40,38 42,28 Q44,22 40,20" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <circle data-part="head" cx="24" cy="12" r="8" stroke="currentColor" strokeWidth="2.5" />
+          <polygon points="16,5 13,0 19,4" fill="currentColor" />
+          <polygon points="32,5 35,0 29,4" fill="currentColor" />
+          <circle cx="20" cy="11" r="1.5" fill="currentColor" />
+          <circle cx="28" cy="11" r="1.5" fill="currentColor" />
+          <line x1="24" y1="15" x2="24" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line data-part="body" x1="24" y1="20" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armL" x1="24" y1="28" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="24" y1="28" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path data-part="tail" d="M24,42 Q40,38 42,28 Q44,22 40,20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
         </svg>
       );
 
@@ -173,16 +179,16 @@ function renderCharSVG(type: CharType, id: string) {
     case "pixel":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <rect data-part="head" x="16" y="2" width="16" height="16" stroke="#fff" strokeWidth="2" />
-          <rect x="20" y="8" width="3" height="3" fill="#fff" />
-          <rect x="27" y="8" width="3" height="3" fill="#fff" />
-          <rect data-part="body" x="18" y="18" width="12" height="16" stroke="#fff" strokeWidth="2" />
-          <line data-part="armL" x1="18" y1="22" x2="8" y2="36" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="30" y1="22" x2="40" y2="36" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="20" y1="34" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="28" y1="34" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <rect data-part="head" x="16" y="2" width="16" height="16" stroke="currentColor" strokeWidth="2" />
+          <rect x="20" y="8" width="3" height="3" fill="currentColor" />
+          <rect x="27" y="8" width="3" height="3" fill="currentColor" />
+          <rect data-part="body" x="18" y="18" width="12" height="16" stroke="currentColor" strokeWidth="2" />
+          <line data-part="armL" x1="18" y1="22" x2="8" y2="36" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="30" y1="22" x2="40" y2="36" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="20" y1="34" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="28" y1="34" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
 
@@ -190,14 +196,14 @@ function renderCharSVG(type: CharType, id: string) {
     case "brush":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <circle data-part="head" cx="24" cy="10" r="7" stroke="#fff" strokeWidth="3.5" strokeDasharray="2 3" />
-          <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 2" />
-          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeDasharray="3 2" />
-          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeDasharray="3 2" />
-          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 2" />
-          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 2" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          <circle data-part="head" cx="24" cy="10" r="7" stroke="currentColor" strokeWidth="3.5" strokeDasharray="2 3" />
+          <line data-part="body" x1="24" y1="17" x2="24" y2="42" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 2" />
+          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="3 2" />
+          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="3 2" />
+          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 2" />
+          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="4 2" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
 
@@ -205,18 +211,18 @@ function renderCharSVG(type: CharType, id: string) {
     case "worker":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <line x1="14" y1="4" x2="34" y2="4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M14,4 Q14,0 24,0 Q34,0 34,4" stroke="#fff" strokeWidth="2" fill="none" />
-          <circle data-part="head" cx="24" cy="12" r="7" stroke="#fff" strokeWidth="2.5" />
-          <circle cx="21" cy="11" r="1.5" fill="#fff" />
-          <circle cx="27" cy="11" r="1.5" fill="#fff" />
-          <line data-part="body" x1="24" y1="19" x2="24" y2="42" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <line x1="14" y1="4" x2="34" y2="4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M14,4 Q14,0 24,0 Q34,0 34,4" stroke="currentColor" strokeWidth="2" fill="none" />
+          <circle data-part="head" cx="24" cy="12" r="7" stroke="currentColor" strokeWidth="2.5" />
+          <circle cx="21" cy="11" r="1.5" fill="currentColor" />
+          <circle cx="27" cy="11" r="1.5" fill="currentColor" />
+          <line data-part="body" x1="24" y1="19" x2="24" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armL" x1="24" y1="26" x2="12" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="armR" x1="24" y1="26" x2="36" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legL" x1="24" y1="42" x2="14" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="legR" x1="24" y1="42" x2="34" y2="62" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footL" x1="14" y1="62" x2="10" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line data-part="footR" x1="34" y1="62" x2="38" y2="68" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
 
@@ -224,14 +230,14 @@ function renderCharSVG(type: CharType, id: string) {
     case "shadow":
       return (
         <svg data-runner={id} width={FW} height={FH} viewBox="0 0 48 72" fill="none" style={common}>
-          <circle data-part="head" cx="24" cy="10" r="7" fill="#fff" />
-          <path data-part="body" d="M24,17 L24,42" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
-          <line data-part="armL" x1="24" y1="24" x2="10" y2="36" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
-          <line data-part="armR" x1="24" y1="24" x2="38" y2="36" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
-          <line data-part="legL" x1="24" y1="42" x2="12" y2="62" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
-          <line data-part="legR" x1="24" y1="42" x2="36" y2="62" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
-          <line data-part="footL" x1="12" y1="62" x2="8" y2="68" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-          <line data-part="footR" x1="36" y1="62" x2="40" y2="68" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          <circle data-part="head" cx="24" cy="10" r="7" fill="currentColor" />
+          <path data-part="body" d="M24,17 L24,42" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <line data-part="armL" x1="24" y1="24" x2="10" y2="36" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <line data-part="armR" x1="24" y1="24" x2="38" y2="36" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <line data-part="legL" x1="24" y1="42" x2="12" y2="62" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <line data-part="legR" x1="24" y1="42" x2="36" y2="62" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <line data-part="footL" x1="12" y1="62" x2="8" y2="68" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line data-part="footR" x1="36" y1="62" x2="40" y2="68" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       );
   }
@@ -377,7 +383,7 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
     const letterEls = heroContainer.querySelectorAll<HTMLElement>("[data-hero-letter]");
     if (!letterEls.length) return;
 
-    // タッチ端末 / reduced-motion では重い「文字運搬」演出（21体のSVGキャラ）を
+    // タッチ端末 / reduced-motion では重い「文字運搬」演出（27体のSVGキャラ）を
     // スキップし、見出し文字をそのまま表示する（iPad等のフレームレート低下を回避）。
     if (prefersLightVisuals()) {
       overlay.style.display = "none";
@@ -571,6 +577,8 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
         pointerEvents: "none",
         overflow: "hidden",
         zIndex: 20,
+        // キャラSVGは stroke/fill=currentColor — washi の墨色を継承させる
+        color: "var(--ink, var(--color-foreground))",
       }}
     >
       {LETTER_CHARS.map((item, i) => (
@@ -583,11 +591,12 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
               top: 0,
               left: 0,
               opacity: 0,
-              fontFamily: "var(--font-heading)",
-              fontWeight: 100,
-              fontSize: "clamp(48px, 8vw, 120px)",
-              letterSpacing: "0.08em",
-              color: "#fff",
+              // 運搬する文字の見た目は H1（.mainText）と揃える
+              fontFamily: "var(--font-display-washi, var(--font-heading))",
+              fontWeight: 600,
+              fontSize: "clamp(1.45rem, 0.2rem + 5.4vw, 4.1rem)",
+              letterSpacing: "0.045em",
+              color: "var(--ink-deep, var(--color-foreground))",
               whiteSpace: "nowrap",
               pointerEvents: "none",
               lineHeight: 1,
