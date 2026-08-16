@@ -1,6 +1,5 @@
 import Link from "next/link";
 import HomeIntro from "@/components/home/HomeIntro";
-import Marquee from "@/components/home/Marquee";
 import Atari from "@/components/home/Atari";
 import Deguchi from "@/components/home/Deguchi";
 import PickUpWorks from "@/components/home/PickUpWorks";
@@ -94,8 +93,7 @@ export default function Home() {
       {/* 7. Boundary Easter Egg（位置・動き不変） */}
       <BoundaryFigure />
 
-      {/* 8. マーキー帯B */}
-      <Marquee variant="washi" text="灯を、ひとつずつ、ともすように。" />
+      {/* 8. マーキー帯B＝削除（2026-08-17 あおきさん決定「帯は全廃」） */}
 
       {/* 9. どんな人か */}
       <Person />
