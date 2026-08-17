@@ -1,22 +1,72 @@
 /* =============================================
-   制作実績（Pickup） — an-a.html .sec-works の設計へ washi 移植
-   ホバータイピング/入場アニメが使うクラスの役割（swap構造・typedPanel・
-   pickupChar 等）は現行のまま。色は washi トークンのみ参照
+   制作実績（Pickup）— 3枠化＋墨明け＋FLIP展開フォーカス
+   （2026-08-17 J4 本実装：works3.html プロトの方式を
+     現行の12カラム変則スパン配置へ移植・発展）
+
+   - 配置：HEAD 版の 12 カラム変則スパン（7/5・5/6 等＋段差）を基礎に維持。
+     均等グリッド化しない（あおきさん指示）。
+   - 墨明け（常時アニメB）：filter はアニメしない。
+     モノクロ（静的 grayscale）＋カラーの 2 枚重ね opacity クロスフェード
+     ＋墨ヴェールの opacity 引き＝ transform / opacity のみ → iOS(WebKit) 安全。
+   - クリック展開：FLIP（実測 rect → transform → 解除）。transform のみ。
+   - 色は app/theme-top.css のトークンを参照。
+     ヴェール／スクリムのアルファ変種のみ、トークン実値からの派生としてここで定義
+     （--paper-deep: #141212 系。theme-top 側の管轄を侵さないためのモジュール内派生）。
    ============================================= */
 .section {
+  /* ---- モジュール内派生トークン ---- */
+  /* 墨ヴェール＝ --paper-deep(#141212) のアルファ変種 */
+  --pw-veil: rgba(20, 18, 18, 0.96);
+  --pw-veil-0: rgba(20, 18, 18, 0);
+  /* 展開スクリム＝ --paper-deep(#141212) のアルファ変種 */
+  --pw-scrim: rgba(20, 18, 18, 0.9);
+  /* 英字（Barlow は layout.tsx で読込済み。400/600/800 のみ使用可） */
+  --pw-font-en: var(--font-barlow), "Barlow", sans-serif;
+  --pw-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --pw-ease-io: cubic-bezier(0.45, 0, 0.2, 1);
+
   position: relative;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body-washi, sans-serif);
   line-height: 2;
   border-top: 1px solid var(--rule-soft);
+  /* 巨大タイポの左裁ち落としを横スクロールにしない */
+  overflow: hidden;
+  overflow: clip;
+}
+
+/* ---- 巨大タイポ「WORKS」（読ませない・地+3〜5%L・full.html踏襲の左裁ち落とし） ---- */
+.ghostType {
+  position: absolute;
+  top: 1.5rem;
+  left: -0.06em;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--pw-font-en);
+  font-weight: 600;
+  font-size: clamp(7rem, 20vw, 18rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--sunk);
 }
 
 .inner {
+  position: relative;
+  z-index: 1;
   max-width: 1120px;
   margin-inline: auto;
   padding-inline: clamp(1.5rem, 4vw, 4rem);
   padding-block: 6rem;
+  transition: opacity 0.6s var(--pw-ease-out), transform 0.6s var(--pw-ease-out);
+}
+
+/* 展開フォーカス中はセクション本体を沈める */
+.receded {
+  opacity: 0.4;
+  transform: scale(0.985);
 }
 
 /* ---- Section Heading（「制作実績」 ↔ Typed swap） ---- */
@@ -87,16 +137,65 @@
 
 .pickupChar {
   display: inline-block;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s var(--pw-ease-out);
 }
 
 .pickupTitle:hover .pickupChar {
   transform: translateY(-4px);
 }
 
-/* ---- 12カラム変則グリッド（an-a .works） ---- */
-.grid {
+/* ============ 01 Web制作 ============ */
+.blockWeb {
+  position: relative;
   margin-top: 4rem;
+}
+
+/* ---- カテゴリ見出し（works3 踏襲・トークン化） ---- */
+.catHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1rem;
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 1.5rem;
+}
+
+.catIdx {
+  font-family: var(--pw-font-en);
+  font-weight: 400;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--neutral);
+}
+
+.catName {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.65rem);
+  letter-spacing: 0.08em;
+  color: var(--ink-deep);
+  line-height: 1.4;
+}
+
+.catEn {
+  font-family: var(--pw-font-en);
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  color: var(--neutral);
+  text-transform: uppercase;
+}
+
+.catCount {
+  margin-left: auto;
+  font-family: var(--pw-font-en);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--neutral);
+}
+
+/* ---- 12カラム変則グリッド（現行スパン配置を維持＝均等化しない） ---- */
+.grid {
+  margin-top: 2.5rem;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 4rem 1.5rem;
@@ -146,12 +245,17 @@
   border: 1px solid var(--rule);
   background: var(--paper-2);
   box-sizing: border-box;
-  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.3s var(--pw-ease-out);
   /* NO overflow: hidden — typed panel extends below */
 }
 
 .card:hover {
   border-color: var(--neutral);
+}
+
+/* 墨明けの点灯札。実スタイルは子要素側（.lit .inkVeil 等）で定義 */
+.lit {
+  /* marker class（JS が付け外し） */
 }
 
 .cardLink {
@@ -160,17 +264,109 @@
   text-decoration: none;
 }
 
-/* ---- Thumbnail ---- */
+.cardLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---- Thumbnail（墨明け：mono 下地＋color の opacity クロスフェード） ---- */
 .thumbnail {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 10; /* lib/hoverScroll.ts の FRAME_RATIO と一致させること */
   overflow: hidden;
+  background: var(--paper-deep);
 }
 
-.thumbnailImage {
-  /* object-fit / object-position via inline style */
-  /* GSAP animates objectPosition on hover */
+.thumbInner {
+  position: absolute;
+  inset: 0;
+  transition: transform 1.2s var(--pw-ease-io);
+}
+
+/* 点灯中のわずかな起き上がり（transform のみ） */
+.lit .thumbInner {
+  transform: scale(1.015);
+}
+
+.thumbImg {
+  object-fit: cover;
+  object-position: 50% 0%; /* hoverScroll が objectPosition を 0→100% で駆動 */
+}
+
+/* filter は静的。アニメしない（iOS/WebKit 安全） */
+.thumbMono {
+  filter: grayscale(1);
+}
+
+.thumbColor {
+  opacity: 0;
+  transition: opacity 0.9s var(--pw-ease-io);
+}
+
+.lit .thumbColor {
+  opacity: 1;
+}
+
+/* ---- 墨ヴェール（opacity と transform のみをアニメ） ---- */
+.inkVeil {
+  position: absolute;
+  inset: -24%;
+  background:
+    radial-gradient(46% 38% at 30% 26%, var(--pw-veil), var(--pw-veil-0) 70%),
+    radial-gradient(54% 46% at 74% 72%, var(--pw-veil), var(--pw-veil-0) 72%),
+    radial-gradient(40% 34% at 58% 44%, var(--pw-veil), var(--pw-veil-0) 68%);
+  opacity: 0.82;
+  pointer-events: none;
+  transition: opacity 0.9s var(--pw-ease-io);
+  animation: veilDrift 26s var(--pw-ease-io) infinite alternate;
+}
+
+.lit .inkVeil {
+  opacity: 0.1;
+}
+
+@keyframes veilDrift {
+  from {
+    transform: translate(-5%, -3%);
+  }
+  to {
+    transform: translate(5%, 4%);
+  }
+}
+
+/* ホバー／キーボードフォーカスでも墨が晴れてカラーが浮かぶ */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .inkVeil {
+    opacity: 0.08;
+  }
+
+  .card:hover .thumbColor {
+    opacity: 1;
+  }
+}
+
+.cardLink:focus-visible .inkVeil {
+  opacity: 0.08;
+}
+
+.cardLink:focus-visible .thumbColor {
+  opacity: 1;
+}
+
+/* ---- 内枠線（ホバー時にふっと浮かぶ） ---- */
+.frameLine {
+  position: absolute;
+  inset: 10px;
+  pointer-events: none;
+  border: 1px solid var(--ink);
+  opacity: 0;
+  transition: opacity 0.35s var(--pw-ease-out);
+}
+
+.card:hover .frameLine,
+.cardLink:focus-visible .frameLine {
+  opacity: 0.35;
 }
 
 /* ---- Card Info (body + typed panel wrapper) ---- */
@@ -181,6 +377,15 @@
 /* ---- Card Body (normal state) ---- */
 .cardBody {
   padding: 12px 16px 16px;
+}
+
+.cardIdx {
+  display: block;
+  font-family: var(--pw-font-en);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--neutral);
+  line-height: 1.6;
 }
 
 .cardTitle {
@@ -257,6 +462,82 @@
   opacity: 0;
 }
 
+/* ============ 02 ツール制作 ／ 03 SNS（準備中プレート） ============ */
+.pending {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 6rem;
+}
+
+.plate {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-soft);
+  padding: 3rem 2rem;
+  min-height: 240px;
+}
+
+.plateVeil {
+  position: absolute;
+  inset: -24%;
+  pointer-events: none;
+  background:
+    radial-gradient(50% 42% at 24% 30%, var(--pw-veil), var(--pw-veil-0) 72%),
+    radial-gradient(46% 40% at 78% 74%, var(--pw-veil), var(--pw-veil-0) 70%);
+  opacity: 0.5;
+  animation: veilDrift 32s var(--pw-ease-io) infinite alternate;
+}
+
+.plateGhost {
+  position: absolute;
+  right: 4%;
+  bottom: -0.24em;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--pw-font-en);
+  font-weight: 800;
+  font-size: clamp(4rem, 8vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--sunk-raise); /* 面 --paper-2 上の沈み */
+}
+
+.plateHead {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.plateBody {
+  position: relative;
+  z-index: 1;
+  margin-top: 2rem;
+}
+
+.chip {
+  display: inline-block;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  padding: 6px 14px;
+}
+
+.plateNote {
+  margin-top: 1rem;
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  max-width: 34em;
+}
+
 /* ---- CTA ---- */
 .cta {
   margin-top: 4rem;
@@ -274,7 +555,7 @@
   padding: 16px 48px;
   border: 1px solid var(--ink);
   overflow: hidden;
-  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+  transition: color 0.4s var(--pw-ease-out),
     border-color 0.4s;
 }
 
@@ -285,7 +566,7 @@
   background: var(--ink);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s var(--pw-ease-out);
 }
 
 .ctaLink:hover {
@@ -302,7 +583,193 @@
   z-index: 1;
 }
 
+/* ============ クリック展開オーバーレイ（FLIP フォーカス） ============ */
+/* Header(1000〜1200) より上・InkTransition(99999) より下。WorkModal と同格 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.overlayScrim {
+  position: absolute;
+  inset: 0;
+  background: var(--pw-scrim);
+  opacity: 0;
+  transition: opacity 0.5s var(--pw-ease-out);
+}
+
+.overlayOpen .overlayScrim {
+  opacity: 1;
+}
+
+/* stage は透過（pointer-events: none）にして背面クリック＝scrim に落とす */
+.stage {
+  position: relative;
+  height: 100%;
+  display: flex;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.stageInner {
+  margin: auto; /* flex + margin auto ＝中央寄せ＆はみ出し時もスクロール可 */
+  width: min(1120px, 92vw);
+  display: grid;
+  grid-template-columns: 58% minmax(0, 1fr);
+  gap: 3rem;
+  align-items: center; /* WebKit: grid stretch×aspect-ratio×absolute子 潰れ回避 */
+  pointer-events: auto;
+}
+
+.stageThumb {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule-soft);
+  transform-origin: top left; /* FLIP の基点（JS 側と一致） */
+  will-change: transform;
+}
+
+.overlayOpen .stageThumb,
+.overlayClosing .stageThumb {
+  transition: transform 0.68s var(--pw-ease-out);
+}
+
+.stageImg {
+  object-fit: cover;
+  object-position: 50% 0%; /* 展開後の自動パンが 0→100% で駆動 */
+}
+
+.stagePanel {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s var(--pw-ease-out) 0.28s,
+    transform 0.55s var(--pw-ease-out) 0.28s;
+}
+
+.overlayOpen .stagePanel {
+  opacity: 1;
+  transform: none;
+}
+
+.overlayClosing .stagePanel {
+  transition-duration: 0.25s, 0.25s;
+  transition-delay: 0s, 0s;
+}
+
+.stageIdx {
+  font-family: var(--pw-font-en);
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  color: var(--neutral);
+}
+
+.stageTitle {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2rem);
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  color: var(--ink-deep);
+  margin-top: 0.5rem;
+}
+
+.stageMeta {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--neutral);
+  margin-top: 0.5rem;
+}
+
+.stageDesc {
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin-top: 1.5rem;
+}
+
+.stagePath {
+  font-family: var(--pw-font-en);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--neutral);
+  margin-top: 1.5rem;
+}
+
+.stageLink {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-deep);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 5px;
+  transition: border-color 0.35s var(--pw-ease-out);
+}
+
+.stageLink:hover {
+  border-color: var(--ink-deep);
+}
+
+.stageLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  font-family: var(--font-body-washi, sans-serif);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  padding: 10px 18px;
+  opacity: 0;
+  transition: opacity 0.4s var(--pw-ease-out) 0.3s,
+    color 0.35s var(--pw-ease-out),
+    border-color 0.35s var(--pw-ease-out);
+}
+
+.overlayOpen .closeBtn {
+  opacity: 1;
+}
+
+.overlayClosing .closeBtn {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+.closeBtn:hover {
+  color: var(--ink-deep);
+  border-color: var(--neutral);
+}
+
+.closeBtn:active {
+  transform: translateY(1px);
+}
+
+.closeBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ---- Responsive ---- */
+@media (max-width: 1080px) {
+  .stageInner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: min(560px, 92vw);
+  }
+}
+
 @media (max-width: 860px) {
   .grid {
     grid-template-columns: minmax(0, 1fr);
@@ -313,11 +780,30 @@
     grid-column: auto;
     margin-top: 0;
   }
+
+  .ghostType {
+    font-size: clamp(5rem, 24vw, 9rem);
+  }
 }
 
 @media (max-width: 767px) {
   .inner {
     padding-block: 5rem 4rem;
+  }
+
+  .blockWeb {
+    margin-top: 3rem;
+  }
+
+  .pending {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 4rem;
+  }
+
+  .plate {
+    padding: 2rem 1.25rem;
+    min-height: auto;
   }
 
   .cta {
@@ -328,5 +814,44 @@
   .ctaLink {
     font-size: 0.9rem;
     padding: 14px 36px;
+  }
+
+  .closeBtn {
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+/* ---- reduced-motion：常時アニメは静止合成（カラー静止表示・ヴェール固定透過） ---- */
+@media (prefers-reduced-motion: reduce) {
+  .inkVeil,
+  .plateVeil {
+    animation: none;
+    opacity: 0.18;
+  }
+
+  .thumbColor {
+    opacity: 1;
+    transition: none;
+  }
+
+  .thumbInner {
+    transition: none;
+  }
+
+  .pickupChar {
+    transition: none;
+  }
+
+  .typedCursor {
+    animation: none;
+  }
+
+  .inner,
+  .overlayScrim,
+  .stagePanel,
+  .closeBtn {
+    transition-duration: 0.01ms;
+    transition-delay: 0s;
   }
 }

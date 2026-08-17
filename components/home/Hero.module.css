@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: var(--color-background);
+  background: var(--paper, var(--color-background));
 }
 
 .stickyInner {
@@ -245,6 +245,86 @@
 }
 
 /* =============================================
+   FV 複合常時アニメ「墨 × 灯」（HeroInkLight）
+   層順は DOM 順で担保：fxBase → 墨canvas → 巨大タイポ → 灯canvas
+   → ビネット → H1スクリム。色は theme-top.css トークンのみ参照。
+   ============================================= */
+.fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fxOn {
+  opacity: 1;
+}
+
+/* 墨の静的フォールバック（WebGL不成立・SP軽量経路・reduced-motion） */
+.fxBase {
+  position: absolute;
+  inset: 0;
+  background-color: var(--paper, var(--color-background));
+  background-image:
+    radial-gradient(ellipse 72% 58% at 76% 28%, var(--washi-orb-a, transparent), transparent 70%),
+    radial-gradient(ellipse 54% 46% at 12% 80%, var(--washi-orb-c, transparent), transparent 72%);
+}
+
+.fxCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 巨大タイポ「仕組」＝地に沈める（full.html 準拠・地+3%L・読ませない・右下裁ち落とし） */
+.fxGiant {
+  position: absolute;
+  right: -0.1em;
+  bottom: -0.18em;
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 600;
+  font-size: clamp(280px, 30vw, 460px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--sunk, var(--color-background));
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ビネット＋下端は地色へ溶かす（次セクションと地続きに） */
+.fxVignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 58%, var(--paper, var(--color-background)) 100%),
+    radial-gradient(120% 90% at 50% 42%, transparent 58%, var(--paper-deep, var(--color-background)) 100%);
+}
+
+/* H1 帯の固定スクリム（可読性の三重防御③＝シェーダ輝度キャップ・エミッタ反発に続く最終防御） */
+.fxScrim {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: min(1120px, 94%);
+  height: 52%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse 72% 58% at 50% 50%, var(--paper, var(--color-background)) 0%, transparent 72%);
+  opacity: 0.34;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx {
+    transition: none;
+  }
+}
+
+/* =============================================
    Responsive
    ============================================= */
 @media (max-width: 767px) {
@@ -292,6 +372,11 @@
 
   .corners {
     display: none;
+  }
+
+  /* 巨大タイポ「仕組」SP縮小（full.html 準拠） */
+  .fxGiant {
+    font-size: clamp(200px, 52vw, 300px);
   }
 }
 

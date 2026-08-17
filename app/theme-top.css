@@ -1,31 +1,48 @@
 /* =============================================================
-   theme-top — トップページ用トークン（黒ベース×差し色白のモノトーン）
+   theme-top — トップページ用トークン（暖色寄りニアブラック×暖色白のモノトーン）
    2026-08-16 あおきさん指示：白（washi）ベースは不採用→黒基調へ回帰。
+   2026-08-17 全体トーン確定：02実測（quoitworks ショット実測）の暖色系へ更新。
+     地 #1f1c1c = oklch(23.0% 0.005 17.5) ／ 面 #2b2325 = oklch(26.6% 0.013 1.2)
+     文字白 #f1eaec = oklch(94.3% 0.008 357.8) ／ 純モノトーン・金なし維持。
 
-   スコープは :root（サイト全体が黒基調＝既存 --color-* と衝突しない）。
-   既存グローバルトークンと重複する値は既存トークンを参照する。
+   スコープは :root。トップの地色系は 02実測の暖色系＝globals.css の
+   --color-*（純ニュートラル）とは別値のため、ここでは実値で定義する
+   （サブページは従来どおり --color-* を参照＝干渉しない）。
    金 --color-accent(#c8a96e) はサブページが参照し得るため globals.css の
    定義を残しつつ、トップの新規要素はここで定義する白系 --accent を使う。
    ============================================================= */
 :root {
-  /* ---- color（黒地×白系のモノトーン） ---- */
-  --paper:       var(--color-background);        /* 地 #0a0a0a */
-  --paper-2:     var(--color-background-light);  /* 地・浮き #111111 */
-  --rule:        var(--color-border-light);      /* 罫線・強 #333333 */
-  --rule-soft:   var(--color-border);            /* 罫線・弱 #222222 */
-  --neutral:     var(--color-foreground-muted);  /* 最弱ラベル #999999 */
-  --muted:       var(--color-secondary-light);   /* サブ文字 #aaaaaa */
-  --ink:         var(--color-foreground);        /* 本文 #f0f0f0 */
-  --ink-deep:    #ffffff;                        /* 見出し白抜き */
-  --accent:      var(--color-foreground);        /* 差し色＝白（金は不使用） */
-  --accent-halo: rgba(240, 240, 240, 0.3);       /* 灯のにじみ＝白 */
+  /* ---- color（暖色ニアブラック×暖色白のモノトーン・02実測系） ---- */
+  --paper:       #1f1c1c;                       /* 地 oklch(23.0% 0.005 17.5) */
+  --paper-2:     #2b2325;                       /* 面（FV/カードのレイズ）oklch(26.6% 0.013 1.2) */
+  --paper-deep:  #141212;                       /* ビネット下限 */
+  --rule:        rgba(241, 234, 236, 0.16);     /* 罫線・強 */
+  --rule-soft:   rgba(241, 234, 236, 0.08);     /* 罫線・弱 */
+  --edge:        #3a3335;                       /* フレーム線（写真の罫線フレーム等） */
+  --neutral:     #8f8789;                       /* 最弱ラベル */
+  --muted:       #a9a0a2;                       /* サブ文字（暖グレー） */
+  --ink:         #f1eaec;                       /* 本文＝暖色白 */
+  --ink-deep:    #f8f4f5;                       /* 見出し（本文より一段明るい暖色白） */
+  --accent:      #f1eaec;                       /* 差し色＝白（金は不使用） */
+  --accent-halo: rgba(241, 234, 236, 0.3);      /* 灯のにじみ＝暖色白 */
 
-  /* ---- 派生アルファトークン（Hero の装飾用・白系） ---- */
-  --washi-radial-tint: rgba(240, 240, 240, 0.08); /* 灯の暈（ヒーロー背景） */
-  --washi-orb-a:       rgba(240, 240, 240, 0.10);
-  --washi-orb-b:       rgba(240, 240, 240, 0.08);
-  --washi-orb-c:       rgba(240, 240, 240, 0.06);
-  --washi-scanline:    rgba(240, 240, 240, 0.02); /* 簀の目（走査線） */
+  /* ---- 沈み巨大タイポ（装飾・読ませない・地+3〜5%L） ---- */
+  --sunk:        #292425;                       /* 地 --paper 上用 oklch(26.6% 0.008 4.0) */
+  --sunk-raise:  #383134;                       /* 面 --paper-2 上用（+5%L） */
+
+  /* ---- 白転調（紙が挟まる）用 ---- */
+  --paper-white:  #ffffff;                      /* 紙＝真っ白 */
+  --sumi:         #1f1c1c;                      /* 紙上の墨＝地色と同値 */
+  --sumi-dim:     #6f6768;                      /* 紙上の補助文字 */
+  --rule-paper:   rgba(31, 28, 28, 0.28);       /* 紙上の罫線 */
+  --shadow-paper: rgba(0, 0, 0, 0.45);          /* 紙の落ち影 */
+
+  /* ---- 派生アルファトークン（Hero の装飾用・暖色白系） ---- */
+  --washi-radial-tint: rgba(241, 234, 236, 0.08); /* 灯の暈（ヒーロー背景） */
+  --washi-orb-a:       rgba(241, 234, 236, 0.10);
+  --washi-orb-b:       rgba(241, 234, 236, 0.08);
+  --washi-orb-c:       rgba(241, 234, 236, 0.06);
+  --washi-scanline:    rgba(241, 234, 236, 0.02); /* 簀の目（走査線） */
 
   /* ---- font（書体は washi 案から継続：見出し=Shippori／本文=Zen Kaku） ---- */
   --font-display-washi: var(--font-shippori-mincho), "Yu Mincho", "Hiragino Mincho ProN", serif;

@@ -332,8 +332,9 @@ export default function PriceRunner() {
         pointerEvents: "none",
         overflow: "hidden",
         zIndex: 10,
-        // キャラSVGは stroke/fill=currentColor — 黒地の白系トークンを継承（色のみ・動き不変）
-        color: "var(--ink, var(--color-foreground))",
+        // キャラSVGは stroke/fill=currentColor — 白地（紙）セクション化に伴い
+        // 墨色トークンを継承（色のみ・動き/発火/契約は不変）
+        color: "var(--sumi, #1f1c1c)",
       }}
     >
       {/* Runner 0 */}
@@ -349,7 +350,7 @@ export default function PriceRunner() {
           fontWeight: 600,
           fontSize: "20px",
           letterSpacing: "0.04em",
-          color: "var(--ink-deep)",
+          color: "var(--sumi, #1f1c1c)", /* 荷札＝紙上の墨（色のみ変更） */
           whiteSpace: "nowrap",
           pointerEvents: "none",
         }}
@@ -367,7 +368,7 @@ export default function PriceRunner() {
           fontWeight: 600,
           fontSize: "20px",
           letterSpacing: "0.04em",
-          color: "var(--ink-deep)",
+          color: "var(--sumi, #1f1c1c)", /* 荷札＝紙上の墨（色のみ変更） */
           whiteSpace: "nowrap",
           pointerEvents: "none",
         }}
@@ -385,7 +386,7 @@ export default function PriceRunner() {
           fontWeight: 600,
           fontSize: "20px",
           letterSpacing: "0.04em",
-          color: "var(--ink-deep)",
+          color: "var(--sumi, #1f1c1c)", /* 荷札＝紙上の墨（色のみ変更） */
           whiteSpace: "nowrap",
           pointerEvents: "none",
         }}

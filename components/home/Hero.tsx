@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import HeroFXLayer from "./HeroFXLayer";
+import HeroInkLight from "./HeroInkLight";
 import HeroRunner from "./HeroRunner";
 import styles from "./Hero.module.css";
 
@@ -297,13 +297,9 @@ export default function Hero({ openingDone }: HeroProps) {
             <span className={styles.floatingLogoJp}>灯敷</span>
           </div>
 
-          {/* Background Layers */}
-          <div className={styles.bg} aria-hidden="true">
-            <div className={styles.radial} />
-            <div data-hero-orb className={`${styles.orb} ${styles.orb1}`} />
-            <div data-hero-orb className={`${styles.orb} ${styles.orb2}`} />
-            <div data-hero-orb className={`${styles.orb} ${styles.orb3}`} />
-          </div>
+          {/* Background — 複合常時アニメ「墨 × 灯」（旧 .bg オーブ＋HeroFXLayer を置換）
+              ignite: HeroRunner 完走で H1 の真上に灯がともる（未完走でも常時アニメ単独成立） */}
+          <HeroInkLight active={openingDone} ignite={runnerDone} />
 
           {/* 3D Container */}
           <div className={styles.container} style={{ visibility: openingDone ? "visible" : "hidden" }}>
@@ -351,9 +347,6 @@ export default function Hero({ openingDone }: HeroProps) {
 
           {/* Scanline Overlay */}
           <div className={styles.scanline} aria-hidden="true" />
-
-          {/* FX Layer */}
-          <HeroFXLayer active={openingDone} />
         </div>
       </section>
     </div>
