@@ -110,12 +110,129 @@
 }
 
 /* =============================================
-   3D Container
+   Content Container — 縦積み（基本）→ PC≥1280 で2カラム
    ============================================= */
 .container {
   position: relative;
   text-align: center;
   z-index: 2;
+  width: min(1360px, 94%);
+}
+
+.colMain {
+  min-width: 0;
+}
+
+/* =============================================
+   宣言ブロック（FV右カラム / 縦積み時はH1群の下）
+   ============================================= */
+.decl {
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 宣言1「コンサルティングでは、／ありません。」 */
+.declLead {
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 500;
+  font-size: clamp(1rem, 0.62rem + 1.05vw, 1.5rem);
+  letter-spacing: 0.1em;
+  line-height: 1.9;
+  font-feature-settings: "palt" 1;
+  color: var(--muted, var(--color-foreground-muted));
+}
+
+/* 否定される語 — 墨の一線で消される */
+.declStrike {
+  position: relative;
+  display: inline-block;
+  color: var(--ink, var(--color-foreground));
+}
+
+.declStrikeLine {
+  position: absolute;
+  left: -0.15em;
+  right: -0.15em;
+  top: 52%;
+  height: 0.09em;
+  min-height: 2px;
+  background: var(--ink-deep, var(--color-foreground));
+  opacity: 0.65;
+  transform: rotate(-1.4deg);
+  pointer-events: none;
+}
+
+/* 否定の断言「ありません。」— 宣言1内の主役 */
+.declNo {
+  display: inline-block;
+  margin-top: 0.2em;
+  font-size: 1.9em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  color: var(--ink-deep, var(--color-foreground));
+}
+
+/* 宣言2「AIスペシャリストです。」— 灯のにじみを一点だけ */
+.declMain {
+  margin-top: clamp(14px, 1.6vw, 22px);
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 600;
+  font-size: clamp(1.3rem, 0.66rem + 1.75vw, 2.25rem);
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep, var(--color-foreground));
+  text-shadow: 0 0 26px var(--accent-halo, rgba(241, 234, 236, 0.3));
+}
+
+/* ボタン「その意味を、見る」→ #value */
+.declBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(26px, 3.2vw, 44px);
+  padding: 13px 26px 13px 30px;
+  font-family: var(--font-body-washi, var(--font-body));
+  font-weight: 500;
+  font-size: 0.92rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-deep, var(--color-foreground));
+  text-decoration: none;
+  border: 1px solid var(--rule, var(--color-border-light));
+  border-radius: 2px;
+  background: transparent;
+  transition: border-color 0.5s ease, background-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.declBtn:hover {
+  border-color: var(--accent-halo, rgba(241, 234, 236, 0.3));
+  background-color: var(--washi-orb-c, rgba(241, 234, 236, 0.06));
+  box-shadow: 0 0 28px var(--washi-orb-a, rgba(241, 234, 236, 0.1));
+}
+
+.declBtn:focus-visible {
+  outline: 1px solid var(--ink, var(--color-foreground));
+  outline-offset: 3px;
+}
+
+.declBtnArrow {
+  width: 11px;
+  height: 14px;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.declBtn:hover .declBtnArrow {
+  transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .declBtn,
+  .declBtnArrow {
+    transition: none;
+  }
 }
 
 /* =============================================
@@ -307,12 +424,13 @@
     radial-gradient(120% 90% at 50% 42%, transparent 58%, var(--paper-deep, var(--color-background)) 100%);
 }
 
-/* H1 帯の固定スクリム（可読性の三重防御③＝シェーダ輝度キャップ・エミッタ反発に続く最終防御） */
+/* H1 帯の固定スクリム（可読性の三重防御③＝シェーダ輝度キャップ・エミッタ反発に続く最終防御）
+   2026-08-18 FV2カラム化：H1＋宣言ブロックの両カラムを覆う幅へ拡大 */
 .fxScrim {
   position: absolute;
   left: 50%;
   top: 44%;
-  width: min(1120px, 94%);
+  width: min(1320px, 96%);
   height: 52%;
   transform: translate(-50%, -50%);
   background: radial-gradient(ellipse 72% 58% at 50% 50%, var(--paper, var(--color-background)) 0%, transparent 72%);
@@ -353,14 +471,15 @@
     margin-top: 28px;
   }
 
+  /* エッジはビューポート四隅基準（2カラム化で container の外へ移設済み） */
   .edgeBl {
     left: 16px;
-    bottom: -40px;
+    bottom: 14px;
   }
 
   .edgeBr {
     right: 16px;
-    bottom: -40px;
+    bottom: 14px;
   }
 
   .floatingLogo {
@@ -391,5 +510,54 @@
   .edgeBr {
     right: 24px;
     bottom: 24px;
+  }
+}
+
+/* =============================================
+   PC 2カラム（≥1280・1440基準）
+   左＝H1実測幅（max-content・折返しなし）: 右＝残り ≒ 8:4〜7:5
+   ※基底ルール（.hr の margin 等）より後に置き、確実に上書きする
+   ============================================= */
+@media (min-width: 1280px) {
+  .container {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    column-gap: clamp(40px, 4vw, 76px);
+    text-align: left;
+  }
+
+  .mainText {
+    white-space: nowrap;
+  }
+
+  .hr {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .decl {
+    margin-top: 0;
+    align-items: flex-start;
+    text-align: left;
+    position: relative;
+    padding-left: clamp(30px, 2.6vw, 44px);
+  }
+
+  /* 左端の墨の縦罫（両端は溶かす） */
+  .decl::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 4%;
+    bottom: 4%;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--rule, rgba(241, 234, 236, 0.16)) 22%,
+      var(--rule, rgba(241, 234, 236, 0.16)) 78%,
+      transparent
+    );
   }
 }

@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroInkLight from "./HeroInkLight";
 import HeroRunner from "./HeroRunner";
+import { useLenis } from "@/components/animation/SmoothScroll";
 import styles from "./Hero.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -54,9 +55,27 @@ export default function Hero({ openingDone }: HeroProps) {
   const entryDoneRef = useRef(false);
   const scrollBoundRef = useRef(false);
 
+  const lenis = useLenis();
+
   const handleRunnerComplete = useCallback(() => {
     setRunnerDone(true);
   }, []);
+
+  // FV右の宣言ボタン →「いくら浮くか」#value へページ内スムーススクロール
+  // （既存実装の踏襲＝Header と同じ Lenis scrollTo。Lenis 不在時はネイティブへ委譲）
+  const handleValueClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      const target = document.getElementById("value");
+      if (!target) return; // 飛び先が無い場合はネイティブ挙動に任せる
+      e.preventDefault();
+      if (lenis) {
+        lenis.scrollTo(target);
+      } else {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    },
+    [lenis]
+  );
 
   // 入場アニメーション（タイトル以外）→ 肩書き/サブ/HR/エッジ/コーナー
   useEffect(() => {
@@ -79,7 +98,7 @@ export default function Hero({ openingDone }: HeroProps) {
       // 初期表示: visibility visible + opacity 0
       const singleSelectors = [
         "[data-hero-main]", "[data-hero-sub]", "[data-hero-sub2]",
-        "[data-hero-hr]",
+        "[data-hero-hr]", "[data-hero-decl]",
         "[data-hero-corners-svg]",
       ];
       singleSelectors.forEach((sel) => {
@@ -119,6 +138,16 @@ export default function Hero({ openingDone }: HeroProps) {
         { opacity: 0, scaleX: 0, transformOrigin: "left" },
         { opacity: 1, scaleX: 1, duration: 0.8, ease: EASE },
       0.2);
+
+      // 宣言ブロック（FV右カラム）— サブ群と同じ質感でわずかに遅れて立ち上がる
+      tl.fromTo("[data-hero-decl]",
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.1, ease: EASE },
+      0.25);
+
+      // 「コンサルティング」を消す墨の一線 — 宣言が立ってから左→右へ引かれる
+      gsap.set("[data-hero-strike]", { scaleX: 0, transformOrigin: "left center" });
+      tl.to("[data-hero-strike]", { scaleX: 1, duration: 0.7, ease: EASE }, 0.95);
 
       // エッジテキスト
       tl.fromTo("[data-hero-corner]",
@@ -167,6 +196,7 @@ export default function Hero({ openingDone }: HeroProps) {
       exitTl.fromTo("[data-hero-sub]", { y: 0 }, { y: 52, ease: "power1.in", duration: 1 }, 0);
       exitTl.fromTo("[data-hero-sub2]", { y: 0 }, { y: 68, ease: "power1.in", duration: 1 }, 0);
       exitTl.fromTo("[data-hero-hr]", { y: 0 }, { y: 80, ease: "power1.in", duration: 1 }, 0);
+      exitTl.fromTo("[data-hero-decl]", { y: 0 }, { y: 56, ease: "power1.in", duration: 1 }, 0);
 
       // H1 — 行単位の時差フェード（上の行から順ににじみ消え、軸コピーの行が最後まで残る）
       exitTl.fromTo(
@@ -180,6 +210,7 @@ export default function Hero({ openingDone }: HeroProps) {
       exitTl.fromTo(
         [
           "[data-hero-sub]", "[data-hero-sub2]", "[data-hero-hr]",
+          "[data-hero-decl]",
           "[data-hero-corner]", "[data-hero-corners-svg]",
         ],
         { opacity: 1 },
@@ -289,30 +320,62 @@ export default function Hero({ openingDone }: HeroProps) {
               ignite: HeroRunner 完走で H1 の真上に灯がともる（未完走でも常時アニメ単独成立） */}
           <HeroInkLight active={openingDone} ignite={runnerDone} />
 
-          {/* Content Container */}
+          {/* Content Container — 2カラム（PC≥1280：左＝H1演出／右＝宣言）・以下は縦積み */}
           <div className={styles.container} style={{ visibility: openingDone ? "visible" : "hidden" }}>
-            <h1 data-hero-main className={styles.mainText} style={{ visibility: "hidden" }}>
-              <LetterSpan text="バラバラな事務作業を、" className={styles.fvLine} />
-              <LetterSpan text="ひとりでに回る" className={styles.fvLine} />
-              <LetterSpan text="仕組みに変えます。" className={styles.fvLine} />
-            </h1>
+            <div className={styles.colMain}>
+              <h1 data-hero-main className={styles.mainText} style={{ visibility: "hidden" }}>
+                <LetterSpan text="バラバラな事務作業を、" className={styles.fvLine} />
+                <LetterSpan text="ひとりでに回る" className={styles.fvLine} />
+                <LetterSpan text="仕組みに変えます。" className={styles.fvLine} />
+              </h1>
 
-            <p data-hero-sub className={styles.sub} style={{ visibility: "hidden" }}>
-              {magChars("業務効率化の設計と実装 — 墨家 / SUMIYAKA")}
-            </p>
+              <p data-hero-sub className={styles.sub} style={{ visibility: "hidden" }}>
+                {magChars("業務効率化の設計と実装 — 墨家 / SUMIYAKA")}
+              </p>
 
-            <p data-hero-sub2 className={styles.sub2} style={{ visibility: "hidden" }}>
-              {magChars("設計から実装・公開まで、すべて一人で。")}
-            </p>
+              <p data-hero-sub2 className={styles.sub2} style={{ visibility: "hidden" }}>
+                {magChars("設計から実装・公開まで、すべて")}
+                {/* 「。」の行末孤立防止＝末尾グループを折返し禁止（QC実測でSP390の孤立を検出） */}
+                <span style={{ whiteSpace: "nowrap" }}>{magChars("一人で。")}</span>
+              </p>
 
-            <div data-hero-hr className={styles.hr} style={{ visibility: "hidden" }} />
-
-            <div data-hero-corner className={styles.edgeBl} style={{ visibility: "hidden" }}>
-              <span className={styles.edgeText}>{magChars("PORTFOLIO 2026")}</span>
+              <div data-hero-hr className={styles.hr} style={{ visibility: "hidden" }} />
             </div>
-            <div data-hero-corner className={styles.edgeBr} style={{ visibility: "hidden" }}>
-              <span className={styles.edgeText}>{magChars("TOKYO, JAPAN")}</span>
+
+            {/* 宣言ブロック（コピーデッキ verbatim・改行位置のみ調整） */}
+            <div data-hero-decl className={styles.decl} style={{ visibility: "hidden" }}>
+              <p className={styles.declLead}>
+                <span className={styles.declStrike}>
+                  コンサルティング
+                  <span data-hero-strike className={styles.declStrikeLine} aria-hidden="true" />
+                </span>
+                では、
+                <br />
+                <span className={styles.declNo}>ありません。</span>
+              </p>
+              <p className={styles.declMain}>AIスペシャリストです。</p>
+              <a href="#value" className={styles.declBtn} onClick={handleValueClick}>
+                <span className={styles.declBtnLabel}>その意味を、見る</span>
+                <svg className={styles.declBtnArrow} viewBox="0 0 12 15" aria-hidden="true">
+                  <path
+                    d="M6 1 V12 M1.5 8.5 L6 13.5 L10.5 8.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
             </div>
+          </div>
+
+          {/* Edge Text — ビューポート四隅基準（2カラム化に伴い container の外へ） */}
+          <div data-hero-corner className={styles.edgeBl} style={{ visibility: "hidden" }}>
+            <span className={styles.edgeText}>{magChars("PORTFOLIO 2026")}</span>
+          </div>
+          <div data-hero-corner className={styles.edgeBr} style={{ visibility: "hidden" }}>
+            <span className={styles.edgeText}>{magChars("TOKYO, JAPAN")}</span>
           </div>
 
           {/* HeroRunner — 文字運搬アニメーション */}

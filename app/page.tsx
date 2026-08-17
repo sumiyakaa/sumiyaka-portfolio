@@ -50,45 +50,70 @@ export default function Home() {
       {/* 5. 制作実績（Pickup） */}
       <PickUpWorks works={pickupWorks} />
 
-      {/* 6. 価格の考え方（PriceRunner が年額を運ぶ・[data-price-amount] 契約維持） */}
-      <PriceAnim className={styles.priceSection}>
-        <PriceRunner />
-        <div className={styles.priceInner}>
-          <div data-price-header className={styles.priceHead}>
-            <h2 className={styles.priceTitle}>
-              いくらかかるかより先に、いくら浮くか。
-            </h2>
-          </div>
+      {/* 6. いくら浮くか（掘り下げ構成・2026-08-18 REVIEW2）
+          - id="value"（FV「その意味を、見る」の飛び先）は PriceAnim が section を
+            描画する都合上、ラッパー div に付与（PriceAnim は変更禁止）
+          - PriceRunner の動き・発火・[data-price-amount] 契約は不変 */}
+      <div id="value" className={styles.valueAnchor}>
+        <PriceAnim className={styles.priceSection}>
+          <PriceRunner />
+          <div className={styles.priceInner}>
+            {/* 1. 大見出し（ページ内最大級の宣言） */}
+            <h2 className={styles.valueLead}>コンサルティングでは、ありません。</h2>
 
-          <div className={styles.priceRows}>
-            <div data-price-card className={styles.priceRow}>
-              <span className={styles.priceLabel}>月20時間の削減</span>
-              <span className={styles.priceLeader} aria-hidden="true" />
-              <span className={styles.priceArrow}>→</span>
-              <span data-price-amount className={styles.priceAmount}>年 約50万円</span>
+            {/* 2. 社長の悩み2つ（声の形の引用） */}
+            <div className={styles.valueVoices}>
+              <p className={styles.valueVoice}>
+                「AIが話題になっている。でも、実際にどうしたらいいのか分からない。」
+              </p>
+              <p className={styles.valueVoice}>
+                「社員にAIを渡した。でも、使い方までは教えられない。」
+              </p>
             </div>
-            <div data-price-card className={styles.priceRow}>
-              <span className={styles.priceLabel}>事務作業の30%を自動化</span>
-              <span className={styles.priceLeader} aria-hidden="true" />
-              <span className={styles.priceArrow}>→</span>
-              <span data-price-amount className={styles.priceAmount}>年 約120万円</span>
-            </div>
-            <div data-price-card className={styles.priceRow}>
-              <span className={styles.priceLabel}>1人分の業務を丸ごと</span>
-              <span className={styles.priceLeader} aria-hidden="true" />
-              <span className={styles.priceArrow}>→</span>
-              <span data-price-amount className={styles.priceAmount}>年 約400万円</span>
-            </div>
-          </div>
 
-          {/* Web制作の料金表は現状 /service にある（C4の /works 移設は P6 で実施予定＝それまでリンク先はサービスページ） */}
-          <p className={styles.priceNote}>
-            価格は、削減額から逆算してご提案します。Web制作の料金は
-            <Link href="/service" className={styles.priceNoteLink}>サービスページ</Link>
-            へ。
-          </p>
-        </div>
-      </PriceAnim>
+            {/* 3. 答え */}
+            <p className={styles.valueAnswer}>
+              助言や資料だけを納めることは、しません。御社の業務を仕組みに変え、社員と一緒に手を動かし、使いこなせるようになるまで教える——そこまでが、私の仕事です。
+            </p>
+
+            {/* 4. 中見出し（既存・[data-price-header] 契約維持） */}
+            <div data-price-header className={styles.priceHead}>
+              <h3 className={styles.priceTitle}>
+                いくらかかるかより先に、いくら浮くか。
+              </h3>
+            </div>
+
+            {/* 5. 逆算3行（既存・[data-price-card]/[data-price-amount] 契約維持） */}
+            <div className={styles.priceRows}>
+              <div data-price-card className={styles.priceRow}>
+                <span className={styles.priceLabel}>月20時間の削減</span>
+                <span className={styles.priceLeader} aria-hidden="true" />
+                <span className={styles.priceArrow}>→</span>
+                <span data-price-amount className={styles.priceAmount}>年 約50万円</span>
+              </div>
+              <div data-price-card className={styles.priceRow}>
+                <span className={styles.priceLabel}>事務作業の30%を自動化</span>
+                <span className={styles.priceLeader} aria-hidden="true" />
+                <span className={styles.priceArrow}>→</span>
+                <span data-price-amount className={styles.priceAmount}>年 約120万円</span>
+              </div>
+              <div data-price-card className={styles.priceRow}>
+                <span className={styles.priceLabel}>1人分の業務を丸ごと</span>
+                <span className={styles.priceLeader} aria-hidden="true" />
+                <span className={styles.priceArrow}>→</span>
+                <span data-price-amount className={styles.priceAmount}>年 約400万円</span>
+              </div>
+            </div>
+
+            {/* 6. 注記（既存）— Web制作の料金表は現状 /service（C4の /works 移設は P6 予定） */}
+            <p className={styles.priceNote}>
+              価格は、削減額から逆算してご提案します。Web制作の料金は
+              <Link href="/service" className={styles.priceNoteLink}>サービスページ</Link>
+              へ。
+            </p>
+          </div>
+        </PriceAnim>
+      </div>
 
       {/* 7. Boundary Easter Egg（位置・動き不変） */}
       <BoundaryFigure />

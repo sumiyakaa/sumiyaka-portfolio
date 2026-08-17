@@ -458,9 +458,11 @@ export default function HeroRunner({ active, onComplete }: HeroRunnerProps) {
       gsap.set(label, { x: startX + scaledW / 2 - 8, y: targetY - 12, opacity: 1 });
       armsUp(svg, item.char, true);
 
-      // Stagger offset
-      const stagger = isMobile ? 0.12 : 0.18;
-      const offset = i * stagger;
+      // 一斉出現（2026-08-18 あおきさん指示＝過去裁定の上書き）:
+      // 旧 i×0.18s（SP 0.12s）の順次出走を廃止し、全27体を同時スタートに変更。
+      // seed による 0〜0.143s の決定的な微差のみ残す（機械的な完全同時を避ける）。
+      // 運搬の経路・速度（runDuration）・イージングは各体そのまま＝不変。
+      const offset = seed(i) * 0.15;
       const runDuration = isMobile ? 1.2 : 1.8;
 
       // Flip figure if coming from right

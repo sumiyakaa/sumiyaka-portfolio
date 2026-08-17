@@ -122,8 +122,14 @@ export default function HeroInkLight({ active, ignite }: HeroInkLightProps) {
     let sim: HeroInkSimAPI | null = null;
     let resizeTimer: number | undefined;
 
-    /* ---- H1 保護矩形（コンテナ正規化・y は画面下向き） ---- */
+    /* ---- H1 保護矩形（コンテナ正規化・y は画面下向き） ----
+       2026-08-18 FV2カラム化に伴う最小調整（理由付き）:
+       ① 保護矩形＝H1＋宣言ブロック [data-hero-decl] の合算。宣言も本文であり
+          可読性の三重防御（反発・減衰）の対象に含めるため。
+       ② 灯（ignite）の x は H1 の実測中心へ追従。H1 が左カラムへ移動しても
+          「H1 の真上に灯がともる」物語を維持するため。 */
     const protect = { x1: 0.2, y1: 0.28, x2: 0.8, y2: 0.72, cx: 0.5, cy: 0.5 };
+    let igniteX = IGNITE_DEF.bx;
 
     function measureProtect() {
       const rc = container!.getBoundingClientRect();
@@ -131,11 +137,26 @@ export default function HeroInkLight({ active, ignite }: HeroInkLightProps) {
       const h1 = sticky?.querySelector("[data-hero-main]");
       if (!h1) return;
       const r = h1.getBoundingClientRect();
+      igniteX = Math.min(0.9, Math.max(0.1, (r.left + r.width / 2 - rc.left) / rc.width));
+      let left = r.left;
+      let top = r.top;
+      let right = r.right;
+      let bottom = r.bottom;
+      const decl = sticky?.querySelector("[data-hero-decl]");
+      if (decl) {
+        const d = decl.getBoundingClientRect();
+        if (d.width && d.height) {
+          left = Math.min(left, d.left);
+          top = Math.min(top, d.top);
+          right = Math.max(right, d.right);
+          bottom = Math.max(bottom, d.bottom);
+        }
+      }
       const pad = 28;
-      protect.x1 = Math.max(0, (r.left - pad - rc.left) / rc.width);
-      protect.y1 = Math.max(0, (r.top - pad - rc.top) / rc.height);
-      protect.x2 = Math.min(1, (r.right + pad - rc.left) / rc.width);
-      protect.y2 = Math.min(1, (r.bottom + pad * 1.6 - rc.top) / rc.height);
+      protect.x1 = Math.max(0, (left - pad - rc.left) / rc.width);
+      protect.y1 = Math.max(0, (top - pad - rc.top) / rc.height);
+      protect.x2 = Math.min(1, (right + pad - rc.left) / rc.width);
+      protect.y2 = Math.min(1, (bottom + pad * 1.6 - rc.top) / rc.height);
       protect.cx = (protect.x1 + protect.x2) / 2;
       protect.cy = (protect.y1 + protect.y2) / 2;
     }
@@ -236,15 +257,17 @@ export default function HeroInkLight({ active, ignite }: HeroInkLightProps) {
       }
     }
 
-    /* 起動時の「一滴」＝右下寄りに墨が落ちて広がる（H1帯の外） */
+    /* 起動時の「一滴」＝右下寄りに墨が落ちて広がる（本文帯の外）
+       2026-08-18 最小調整：旧 (0.79, 0.58) は宣言ブロック（右カラム）と重なるため
+       下帯 (0.76, 0.88) へ移動（可読性防御・演出自体は不変） */
     const BURST_DUR = 0.9;
     function emitBurst(dt: number) {
       if (!sim || burstT >= BURST_DUR) return;
       burstT += dt;
       const u = Math.min(1, burstT / BURST_DUR);
       const decay = Math.pow(Math.max(0, 1 - u), 2);
-      const bx = 0.79;
-      const by = 0.58;
+      const bx = 0.76;
+      const by = 0.88;
       for (let i = 0; i < 4; i++) {
         const ang = (i / 4) * TAU + simT * 2.6;
         sim.splat(bx, 1 - by, Math.cos(ang) * 240 * decay, Math.sin(ang) * 240 * decay, 0, 0.005);
@@ -409,7 +432,8 @@ export default function HeroInkLight({ active, ignite }: HeroInkLightProps) {
       }
       const flRaw = fRaw * dip;
       const fl = flRaw + (Math.max(flRaw, 0.82) - flRaw) * (1 - settle);
-      const x = d.bx * cw + Math.sin(tt * d.w1 * TAU + igniteOrb.f1) * d.ax * mind;
+      // x は H1 実測中心（igniteX）基準＝2カラムでも「H1の真上」を維持
+      const x = igniteX * cw + Math.sin(tt * d.w1 * TAU + igniteOrb.f1) * d.ax * mind;
       const y = d.by * ch + Math.sin(tt * d.w2 * TAU + igniteOrb.f2) * d.ay * mind;
       const R = d.rr * mind * (0.55 + 0.45 * rise) * (1 + 0.05 * Math.sin(tt * 0.23 + igniteOrb.p1));
       drawGlowBall(x, y, R, d.base * fl * env);
@@ -542,12 +566,12 @@ export default function HeroInkLight({ active, ignite }: HeroInkLightProps) {
         return;
       }
       igniteOrb.born = t;
-      // 墨側の余韻：灯がともって空気がわずかに揺れる
+      // 墨側の余韻：灯がともって空気がわずかに揺れる（x は H1 実測中心）
       if (sim) {
-        sim.splat(IGNITE_DEF.bx, 1 - IGNITE_DEF.by, 0, 24, 0.1, 0.014);
+        sim.splat(igniteX, 1 - IGNITE_DEF.by, 0, 24, 0.1, 0.014);
         for (let i = 0; i < 4; i++) {
           const ang = (i / 4) * TAU;
-          sim.splat(IGNITE_DEF.bx, 1 - IGNITE_DEF.by, Math.cos(ang) * 90, Math.sin(ang) * 90, 0, 0.004);
+          sim.splat(igniteX, 1 - IGNITE_DEF.by, Math.cos(ang) * 90, Math.sin(ang) * 90, 0, 0.004);
         }
       }
     }

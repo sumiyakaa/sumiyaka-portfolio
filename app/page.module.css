@@ -1,26 +1,28 @@
 /* =============================================
-   価格の考え方 — 真っ白転調「紙が挟まる」（full.html 手本・2026-08-17）
-   黒い机（地色）の上に白い紙が1枚置かれる見立て。
-   紙は全幅にせず左右に地色を残し、上の黒セクション（制作実績）へ
-   var(--paper-overlap) ぶん重なって差し込まれる。文字は墨色。
+   いくら浮くか — フルブリード白転調＋掘り下げ構成（REVIEW2・2026-08-18）
+   「紙が挟まる」構造（左右の地色・差し込み overlap）は廃止し、
+   画面両端いっぱいの真っ白なセクションへ。上下の黒との境界は直線でくっきり。
+   構成：大見出し（宣言）→ 社長の声2つ → 答え → 中見出し → 逆算3行 → 注記。
    色はトークン（theme-top.css）のみ参照。
    PriceRunner のオーバーレイ都合で position:relative / overflow:hidden は維持
-   （紙の左端からキャラが走り込んで見える＝動きパラメータは不変）
+   （画面左端からキャラが走り込む＝動き・発火・[data-price-amount] 契約は不変）
    ============================================= */
-.priceSection {
-  /* 紙の差し込み量（統合時の調整点＝上の黒セクション側の余白と対で見る） */
-  --paper-overlap: 96px;
 
+/* FV「その意味を、見る」の飛び先（#value）。固定ヘッダー60pxぶん逃がす */
+.valueAnchor {
+  scroll-margin-top: 60px;
+}
+
+.priceSection {
   position: relative;
   overflow: hidden;
-  z-index: 2; /* 上の黒に紙が重なる */
-  width: min(1240px, calc(100% - clamp(40px, 7vw, 120px)));
-  margin: calc(-1 * var(--paper-overlap)) auto 0;
+  z-index: 2;
+  width: 100%;
+  margin: 0;
   background: var(--paper-white);
   color: var(--sumi);
   font-family: var(--font-body-washi, sans-serif);
   line-height: 2;
-  box-shadow: 0 32px 80px -48px var(--shadow-paper);
 }
 
 /* 紙の上ではフォーカスリングも墨色に */
@@ -32,14 +34,73 @@
   max-width: 1120px;
   margin-inline: auto;
   padding-inline: clamp(1.5rem, 5vw, 5rem);
-  padding-block: clamp(4rem, 7vw, 7.5rem);
+  padding-block: clamp(5rem, 9vw, 9rem);
 }
 
-.priceHead {
+/* ---- 1. 大見出し（ページ内最大級の宣言・Shippori Mincho・墨色） ---- */
+.valueLead {
   margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.9rem, 1.05rem + 3.4vw, 3.3rem);
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+}
+
+/* ---- 2. 社長の声2つ（引用・左罫＋字下げ。PC は横並び2声） ---- */
+.valueVoices {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  gap: 1.5rem 3rem;
+}
+
+@media (min-width: 820px) {
+  .valueVoices {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.valueVoice {
+  margin: 0;
+  border-left: 2px solid var(--rule-paper);
+  padding-left: 1.25rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+  line-height: 2.1;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 30em;
+}
+
+/* ---- 3. 答え ---- */
+.valueAnswer {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
+  line-height: 2.3;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 40em;
+}
+
+/* ---- 4. 中見出し（既存・[data-price-header]）。短い墨の罫で転を示す ---- */
+.priceHead {
+  margin: clamp(4.5rem, 9vw, 7rem) 0 0;
+}
+
+.priceHead::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--sumi);
+  margin-bottom: 2rem;
 }
 
 .priceTitle {
+  margin: 0;
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
   font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2.05rem);
@@ -50,7 +111,7 @@
   max-width: 24em;
 }
 
-/* ---- 浮く額 3行（年額側が [data-price-amount]＝PriceRunner の運搬対象） ---- */
+/* ---- 5. 浮く額 3行（年額側が [data-price-amount]＝PriceRunner の運搬対象） ---- */
 .priceRows {
   margin-top: 4rem;
   max-width: 52rem;
@@ -96,6 +157,7 @@
   white-space: nowrap;
 }
 
+/* ---- 6. 注記 ---- */
 .priceNote {
   margin-top: 1.5rem;
   font-size: 0.9rem;
@@ -114,13 +176,6 @@
 .priceNoteLink:hover,
 .priceNoteLink:focus-visible {
   text-decoration-color: var(--sumi);
-}
-
-@media (max-width: 900px) {
-  .priceSection {
-    --paper-overlap: 64px;
-    width: calc(100% - 32px);
-  }
 }
 
 @media (max-width: 640px) {
