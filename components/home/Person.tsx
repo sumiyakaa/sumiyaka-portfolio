@@ -21,8 +21,16 @@ export default function Person() {
             <ScrollReveal as="p" className={styles.display}>
               15歳、作る側へ。
             </ScrollReveal>
+            {/* 15歳エピソード＝2026-08-17 あおきさん本人提供（WP独学・ブログブーム・オリジナルテーマ公開・中学生） */}
             <ScrollReveal as="p" className={styles.bio} delay={0.15}>
+              独学のHTMLとWordPressから始めた。ブログブームのさなか、オリジナルテーマを自作し、ホームページの公開までひとりでやり切った。中学生の頃だ。
+            </ScrollReveal>
+            <ScrollReveal as="p" className={styles.bio} delay={0.2}>
               高校・大学で情報技術を専攻。22歳から7年、大手美容外科クリニックの社内SEとして、止まれば診療が止まるシステムを支えてきた。29歳で独立。
+            </ScrollReveal>
+            {/* AIスペシャリストとしての目標＝§7-4承認済み素材＋§2-4中核メッセージ（人生設計②準拠・開示線内） */}
+            <ScrollReveal as="p" className={styles.bio} delay={0.25}>
+              仕事はこれから、AIにできないことをする側と、AIを使う側に分かれていく。私は、使う側でありたい。AIスペシャリストとして、ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを仕事の軸にしている。
             </ScrollReveal>
           </div>
           <ScrollReveal as="figure" className={styles.portrait} delay={0.2}>

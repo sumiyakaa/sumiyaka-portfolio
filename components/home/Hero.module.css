@@ -30,7 +30,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  will-change: transform;
 }
 
 /* =============================================
@@ -281,14 +280,16 @@
   display: block;
 }
 
-/* 巨大タイポ「仕組」＝地に沈める（full.html 準拠・地+3%L・読ませない・右下裁ち落とし） */
+/* 巨大タイポ「MECHANISM」＝地に沈める（地+3%L・読ませない・右下裁ち落とし）
+   書体は実績の巨大「WORKS」と同族＝Barlow 600。英語9文字（約6.1em幅）に合わせ
+   サイズ/字間を再調整。はみ出しは親 .fx の overflow:hidden で封じる */
 .fxGiant {
   position: absolute;
-  right: -0.1em;
-  bottom: -0.18em;
-  font-family: var(--font-display-washi, var(--font-heading));
+  right: -0.08em;
+  bottom: -0.26em;
+  font-family: var(--font-barlow), "Barlow", var(--font-heading), sans-serif;
   font-weight: 600;
-  font-size: clamp(280px, 30vw, 460px);
+  font-size: clamp(96px, 12.5vw, 240px);
   line-height: 1;
   letter-spacing: 0.02em;
   color: var(--sunk, var(--color-background));
@@ -374,9 +375,9 @@
     display: none;
   }
 
-  /* 巨大タイポ「仕組」SP縮小（full.html 準拠） */
+  /* 巨大タイポ「MECHANISM」SP縮小（9文字≈6.1em幅＝約120vw の左裁ち落とし） */
   .fxGiant {
-    font-size: clamp(200px, 52vw, 300px);
+    font-size: clamp(64px, 20vw, 120px);
   }
 }
 

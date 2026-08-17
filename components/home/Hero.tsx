@@ -155,48 +155,36 @@ export default function Hero({ openingDone }: HeroProps) {
     };
 
     const ctx = gsap.context(() => {
-      // 3D tilt
-      gsap.fromTo(
-        sticky,
-        { rotateX: 0, rotateY: 0, scale: 1, transformPerspective: 800 },
-        {
-          rotateX: 8, rotateY: -3, scale: 0.9, transformPerspective: 800,
-          ease: "power1.in", scrollTrigger: stConfig,
-        }
+      // ===== スクロール退場「墨に沈む」 =====
+      // 3Dチルト（rotateX/rotateY/transformPerspective）は廃止。
+      // FVコンテンツがスクロール量に応じてわずかに沈み（translateY）、
+      // H1 が行単位の時差で墨がにじむように静かに消える。
+      // 使用プロパティは transform / opacity のみ（filter・blend・3D 不使用）。
+      const exitTl = gsap.timeline({ scrollTrigger: stConfig });
+
+      // 沈み — 下の要素ほど深く沈む（3Dなしの奥行き感）
+      exitTl.fromTo("[data-hero-main]", { y: 0 }, { y: 36, ease: "power1.in", duration: 1 }, 0);
+      exitTl.fromTo("[data-hero-sub]", { y: 0 }, { y: 52, ease: "power1.in", duration: 1 }, 0);
+      exitTl.fromTo("[data-hero-sub2]", { y: 0 }, { y: 68, ease: "power1.in", duration: 1 }, 0);
+      exitTl.fromTo("[data-hero-hr]", { y: 0 }, { y: 80, ease: "power1.in", duration: 1 }, 0);
+
+      // H1 — 行単位の時差フェード（上の行から順ににじみ消え、軸コピーの行が最後まで残る）
+      exitTl.fromTo(
+        "[data-hero-line]",
+        { opacity: 1, y: 0 },
+        { opacity: 0, y: 14, ease: "sine.in", duration: 0.5, stagger: 0.18 },
+        0.15
       );
 
-      // メインテキスト — Y: -180px
-      gsap.fromTo("[data-hero-main]", { y: 0 }, {
-        y: -180, ease: "none", scrollTrigger: stConfig,
-      });
-
-      // 肩書き行 — Y: -100px
-      gsap.fromTo("[data-hero-sub]", { y: 0 }, {
-        y: -100, ease: "none", scrollTrigger: stConfig,
-      });
-
-      // サブ — Y: -90px
-      gsap.fromTo("[data-hero-sub2]", { y: 0 }, {
-        y: -90, ease: "none", scrollTrigger: stConfig,
-      });
-
-      // フェードアウト
-      gsap.fromTo(
+      // 周辺要素のフェード（肩書き・サブ・HR・エッジ・コーナー）
+      exitTl.fromTo(
         [
-          "[data-hero-main]", "[data-hero-sub]", "[data-hero-sub2]",
-          "[data-hero-hr]",
+          "[data-hero-sub]", "[data-hero-sub2]", "[data-hero-hr]",
           "[data-hero-corner]", "[data-hero-corners-svg]",
         ],
         { opacity: 1 },
-        {
-          opacity: 0, ease: "power1.in",
-          scrollTrigger: {
-            trigger: scrollArea,
-            start: "30% top",
-            end: "bottom bottom",
-            scrub: 0.5,
-          },
-        }
+        { opacity: 0, ease: "power1.in", duration: 0.6 },
+        0.35
       );
     }, heroRef);
 
@@ -301,7 +289,7 @@ export default function Hero({ openingDone }: HeroProps) {
               ignite: HeroRunner 完走で H1 の真上に灯がともる（未完走でも常時アニメ単独成立） */}
           <HeroInkLight active={openingDone} ignite={runnerDone} />
 
-          {/* 3D Container */}
+          {/* Content Container */}
           <div className={styles.container} style={{ visibility: openingDone ? "visible" : "hidden" }}>
             <h1 data-hero-main className={styles.mainText} style={{ visibility: "hidden" }}>
               <LetterSpan text="バラバラな事務作業を、" className={styles.fvLine} />

@@ -694,8 +694,8 @@ export default function HeroInkLight({ active, ignite }: HeroInkLightProps) {
       <div className={styles.fxBase} />
       {/* 墨：WebGL 流体 */}
       <canvas ref={inkCanvasRef} className={styles.fxCanvas} />
-      {/* 巨大タイポ「仕組」＝地に沈む（読ませない・裁ち落とし） */}
-      <div className={styles.fxGiant}>仕組</div>
+      {/* 巨大タイポ「MECHANISM」＝地に沈む（読ませない・裁ち落とし） */}
+      <div className={styles.fxGiant}>MECHANISM</div>
       {/* 灯：canvas 2D 加算光球 */}
       <canvas ref={glowCanvasRef} className={styles.fxCanvas} />
       {/* ビネット＋下端は地色へ溶かす */}
