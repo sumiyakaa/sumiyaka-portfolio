@@ -259,7 +259,7 @@ export const works: Work[] = [
     thumbnail: "/works/morinoko-kindergarten/thumbnail.webp",
     images: ["/works/morinoko-kindergarten/01.webp"],
     liveUrl: "https://sumiyakastudio.github.io/morinoko-kindergarten/",
-    isPickUp: false,
+    isPickUp: true, // 2026-08-18 あおきさん指示＝CAFE AOKIと入れ替えで6選入り
     // Finder fields
     genre: "教育・スクール",
     siteType: "コーポレートサイト",
@@ -1421,7 +1421,7 @@ export const works: Work[] = [
     thumbnail: "/works/cafe-aoki/thumbnail.webp",
     images: ["/works/cafe-aoki/01.webp"],
     liveUrl: "https://sumiyakastudio.github.io/cafe-aoki/",
-    isPickUp: true,
+    isPickUp: false, // 2026-08-18 あおきさん指示＝もりのこ幼稚園と入れ替えで6選から外す
     // Finder fields
     genre: "カフェ・飲食",
     siteType: "店舗サイト",
