@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import HomeIntro from "@/components/home/HomeIntro";
 import Atari from "@/components/home/Atari";
 import Deguchi from "@/components/home/Deguchi";
@@ -71,10 +72,27 @@ export default function Home() {
               </p>
             </div>
 
-            {/* 3. 答え */}
-            <p className={styles.valueAnswer}>
-              助言や資料だけを納めることは、しません。御社の業務を仕組みに変え、社員と一緒に手を動かし、使いこなせるようになるまで教える——そこまでが、私の仕事です。
-            </p>
+            {/* 3. 答え＋現場写真「対の額」（2026-08-18 あおきさん選定＝案1・墨デュオトーン焼き込み）
+                - 「どんな人か」黒地のオフセット額を白紙に反転＝罫は紙上の罫線色
+                - 写真は実写（クライアント先での導入指導）。原比率1264×948・トリミングなし・CSSフィルタ不使用 */}
+            <div className={styles.valueProof}>
+              <p className={styles.valueAnswer}>
+                助言や資料だけを納めることは、しません。御社の業務を仕組みに変え、社員と一緒に手を動かし、使いこなせるようになるまで教える——そこまでが、私の仕事です。
+              </p>
+              <figure className={styles.proofFig}>
+                <div className={styles.proofFrame}>
+                  <Image
+                    src="/home/teaching.webp"
+                    alt="クライアント先での導入指導の様子"
+                    width={1264}
+                    height={948}
+                    sizes="(max-width: 860px) 86vw, 420px"
+                    className={styles.proofImg}
+                  />
+                </div>
+                <figcaption className={styles.proofCaption}>クライアント先での導入指導</figcaption>
+              </figure>
+            </div>
 
             {/* 4. 中見出し（既存・[data-price-header] 契約維持） */}
             <div data-price-header className={styles.priceHead}>

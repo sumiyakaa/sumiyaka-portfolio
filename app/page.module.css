@@ -85,6 +85,66 @@
   max-width: 40em;
 }
 
+/* ---- 3b. 答え＋現場写真「対の額」（2026-08-18・あおきさん選定＝案1）
+   「どんな人か」(黒地)のオフセット額を白紙に反転＝罫線は --rule-paper。
+   写真は墨デュオトーン焼き込み済み(1264×948 原比率・トリミングなし)＝CSSフィルタ不使用。
+   PC=答えと2カラム(中央揃え)・SP=答えの下に1カラム。
+   右へ張り出す枠(-14px)は priceInner の横paddingの内側に収まる ---- */
+.valueProof {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  gap: 2.5rem 4.5rem;
+  align-items: center;
+}
+
+@media (min-width: 861px) {
+  .valueProof {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+
+.valueProof .valueAnswer {
+  margin-top: 0;
+}
+
+.proofFig {
+  margin: 0;
+  width: min(100%, 420px);
+}
+
+@media (min-width: 861px) {
+  .proofFig {
+    justify-self: end;
+  }
+}
+
+.proofFrame {
+  position: relative;
+}
+
+/* オフセットの罫線フレーム（右下へずらした枠・Personと同寸） */
+.proofFrame::before {
+  content: "";
+  position: absolute;
+  inset: 14px -14px -14px 14px;
+  border: 1px solid var(--rule-paper);
+  pointer-events: none;
+}
+
+.proofImg {
+  width: 100%;
+  height: auto; /* 原比率維持＝object-fit による切り抜きをしない */
+  display: block;
+}
+
+.proofCaption {
+  margin-top: 1.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--sumi-dim);
+  text-align: right;
+}
+
 /* ---- 4. 中見出し（既存・[data-price-header]）。短い墨の罫で転を示す ---- */
 .priceHead {
   margin: clamp(4.5rem, 9vw, 7rem) 0 0;
