@@ -5,10 +5,12 @@ import styles from "./Person.module.css";
 /**
  * どんな人か — an-a.html .sec-person の忠実移植。
  * 経歴文言は正本（an-a.html＝売り込み資料v1.1準拠）どおり一言一句不変。
- * 2026-08-18：写真を新portrait.webpへ差し替え（§14-1 G2「不自然なら別途用意」の実行）。
- * 原画 1200×900＝4:3横長。原比率のまま表示（object-fit トリミングなし・縦長禁止）。
+ * 2026-08-18：写真を新portrait.webpへ差し替え（§14-1 G2「不自然なら別途用意」の実行）
+ * →同日、あおきさん指示「画像を大きく」＝4:5縦位置クロップ portrait-tall.webp へ再差し替え（案Aベース）。
+ * 原画 869×1086＝4:5（設計書の許容「正方形〜4:5」の範囲内・これ以上の縦長は禁止）。
+ * 額(オフセット罫線)・縁の沈み込み・SUMIYAKAキャプション(左下)は現行意匠を維持。
  * 彩度−15%はアセットに焼き込み済み＝CSSフィルタ不使用（全デバイス同一表示・iOS安定）。
- * /about は旧 profile.webp のまま（別アセット＝キャッシュ罠も回避）。
+ * /about は旧 profile.webp のまま（別アセット＝キャッシュ罠も回避）。旧 portrait.webp は未参照で残置。
  */
 export default function Person() {
   return (
@@ -38,11 +40,11 @@ export default function Person() {
           <ScrollReveal as="figure" className={styles.portrait} delay={0.2}>
             <div className={styles.portraitFrame}>
               <Image
-                src="/home/portrait.webp"
+                src="/home/portrait-tall.webp"
                 alt="墨家 / SUMIYAKA ポートレート"
-                width={1200}
-                height={900}
-                sizes="(max-width: 860px) 86vw, 400px"
+                width={869}
+                height={1086}
+                sizes="(max-width: 860px) 86vw, 440px"
                 className={styles.portraitImg}
               />
             </div>

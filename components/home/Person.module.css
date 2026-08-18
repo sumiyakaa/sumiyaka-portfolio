@@ -1,6 +1,7 @@
 /* =============================================
-   どんな人か — 黒のまま＋写真（full.html 手本・2026-08-17／写真差し替え 2026-08-18）
-   左＝見出し/経歴、右＝portrait.webp（1200×900 4:3横長＝原比率のまま）。
+   どんな人か — 黒のまま＋写真（full.html 手本・2026-08-17／写真4:5拡大 2026-08-18 案Aベース）
+   左＝見出し/経歴、右＝portrait-tall.webp（869×1086 4:5縦位置クロップ＝原比率のまま）。
+   あおきさん指示＝「画像を大きく」。額・縁の沈み込み・SUMIYAKA(左下)は維持。
    彩度−15%はアセット焼き込み済み＝CSSフィルタ不使用。
    地色に沈めるグラデ＋オフセット罫線フレーム
    （filter アニメ/blend/3D 不使用＝iOS安定）。
@@ -23,7 +24,8 @@
 
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  /* 写真4:5拡大に合わせ写真列を広げる（1.15/0.85→1.05/0.95・2026-08-18） */
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(2.5rem, 6vw, 6rem);
   align-items: center;
 }
@@ -53,11 +55,11 @@
   max-width: 38em;
 }
 
-/* ---- 写真（縦長禁止＝原比率 1200×900 のまま・トリミングなし） ---- */
+/* ---- 写真（原比率 869×1086＝4:5。設計書許容「正方形〜4:5」の上限＝これ以上の縦長は禁止） ---- */
 .portrait {
   margin: 0;
   justify-self: end;
-  width: min(100%, 400px);
+  width: min(100%, 440px);
 }
 
 .portraitFrame {
@@ -100,7 +102,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.3em;
   color: var(--neutral);
-  text-align: right;
+  text-align: left; /* 左下配置（2026-08-18 あおきさん指示） */
 }
 
 @media (max-width: 860px) {
