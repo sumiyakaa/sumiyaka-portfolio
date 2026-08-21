@@ -80,6 +80,7 @@ const CLIENT_NAME_SIZE = 14;
 const CLIENT_NAME_TRACK = 0.5;
 const CLIENT_RULE_W = 255;
 const CLIENT_RULE_GAP = 8;
+const CLIENT_HONORIFIC_GAP = 4; // 宛名と敬称のあいだ
 
 /* 4) 発行者ブロック */
 const ISSUER_NAME_SIZE = 11;
@@ -740,7 +741,11 @@ interface Prepared {
   dueDate: string;
   clientZip: string;
   clientAddressLines: string[];
+  /** 敬称を含まない宛名。敬称は少し離して別に描く */
   clientName: string;
+  clientHonorific: string;
+  /** 続きページのヘッダー用（敬称込み・1行） */
+  clientFullName: string;
   subject: string;
   meta: MetaRow[];
   issuerName: string;
@@ -786,10 +791,11 @@ function prepare(sheet: Sheet, doc: InvoiceDoc, issuer: Issuer): Prepared {
   if (issueDate) meta.push({ label: "発行日", value: issueDate });
   if (dueDate) meta.push({ label: "支払期日", value: dueDate });
 
-  // 敬称の前は少し空ける（「〇〇株式会社御中」と密着させない）
-  const clientName = [cleanLine(doc.client.name), cleanLine(doc.client.honorific)]
-    .filter(Boolean)
-    .join(" ");
+  // 敬称の前は少し空ける（「〇〇株式会社御中」と密着させない）。
+  // 空白文字ではなく実寸の空きで開けるので、折り返しで敬称だけが次行へ落ちることもない。
+  const clientName = cleanLine(doc.client.name);
+  const clientHonorific = cleanLine(doc.client.honorific);
+  const clientFullName = [clientName, clientHonorific].filter(Boolean).join(" ");
 
   const bank = issuer.bank ?? { name: "", branch: "", type: "", number: "", holder: "" };
   const bankLines: string[] = [];
@@ -814,6 +820,8 @@ function prepare(sheet: Sheet, doc: InvoiceDoc, issuer: Issuer): Prepared {
     clientZip: cleanLine(doc.client.zip),
     clientAddressLines: sheet.wrapClamped(clean(doc.client.address), { size: CLIENT_SMALL, color: SUB }, CLIENT_ADDR_W, 3),
     clientName,
+    clientHonorific,
+    clientFullName,
     subject: cleanLine(doc.subject),
     meta,
     issuerName: cleanLine(issuer.companyName),
@@ -884,7 +892,7 @@ function drawContinuationHeader(sheet: Sheet, data: Prepared): number {
   let baseline = sheet.baselineFromTop(CONTENT_T, 8.5);
   const lines = [
     data.invoiceNo ? `請求書番号　${data.invoiceNo}` : "",
-    data.clientName,
+    data.clientFullName,
   ].filter(Boolean);
   for (const line of lines) {
     sheet.textRight(sheet.fit(line, small, CONTENT_W * 0.55), CONTENT_R, baseline, small);
@@ -920,9 +928,24 @@ function drawParties(
   y -= CLIENT_LINE_H * 0.6; // 1行ぶんの間を空ける（詰めすぎない）
 
   const nameStyle: TextStyle = { size: CLIENT_NAME_SIZE, tracking: CLIENT_NAME_TRACK };
-  const nameLines = sheet.wrapClamped(data.clientName || "—", nameStyle, CLIENT_RULE_W - 2, 2);
-  for (const line of nameLines) {
-    sheet.text(line, CONTENT_L, sheet.baselineFromTop(y, CLIENT_NAME_SIZE), nameStyle);
+  const nameMax = CLIENT_RULE_W - 2;
+  const honorific = data.clientHonorific;
+  const honorificW = honorific ? CLIENT_HONORIFIC_GAP + sheet.measure(honorific, nameStyle) : 0;
+  const clientNameText = data.clientName || "—";
+  let nameLines = sheet.wrapClamped(clientNameText, nameStyle, nameMax, 2);
+  // 敬称は必ず宛名の最終行へ添える。載らないときだけ宛名側の折り返し幅を詰める
+  if (honorificW > 0 && nameMax - honorificW > 40) {
+    const last = nameLines[nameLines.length - 1] ?? "";
+    if (sheet.measure(last, nameStyle) + honorificW > nameMax) {
+      nameLines = sheet.wrapClamped(clientNameText, nameStyle, nameMax - honorificW, 2);
+    }
+  }
+  for (let i = 0; i < nameLines.length; i += 1) {
+    const baseline = sheet.baselineFromTop(y, CLIENT_NAME_SIZE);
+    const drawn = sheet.text(nameLines[i], CONTENT_L, baseline, nameStyle);
+    if (honorific && i === nameLines.length - 1) {
+      sheet.text(honorific, CONTENT_L + drawn + CLIENT_HONORIFIC_GAP, baseline, nameStyle);
+    }
     y -= CLIENT_NAME_SIZE * (ASC + DESC) + 3;
   }
   const clientRuleY = y - CLIENT_RULE_GAP + 3;
