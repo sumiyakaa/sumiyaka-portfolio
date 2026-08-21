@@ -426,7 +426,18 @@ function resolvePart(base: string, target: string): string {
 }
 
 /** xlsx を開き、対象シートの表を返す */
-export function readXlsx(bytes: Uint8Array): { grid: Grid; sheetName: string } {
+interface XlsxParts {
+  /** ブックの並び順のシート一覧 */
+  sheets: { name: string; rid: string }[];
+  /** rId → パーツのパス */
+  rels: Record<string, string>;
+  /** 共有文字列表 */
+  sst: string[];
+  get: (p: string) => string | null;
+}
+
+/** zip を開いて、シート一覧・rels・共有文字列まで取り出す（readXlsx / readXlsxSheets の共通部） */
+function openXlsx(bytes: Uint8Array): XlsxParts {
   let files: Record<string, Uint8Array>;
   try {
     files = unzipSync(bytes);
@@ -479,6 +490,17 @@ export function readXlsx(bytes: Uint8Array): { grid: Grid; sheetName: string } {
     }
   }
 
+  return { sheets, rels, sst: parseSharedStrings(get("xl/sharedStrings.xml")), get };
+}
+
+/**
+ * xlsx から1シートだけ読む。
+ * 「明細」という名前のシートを優先し、無ければ先頭シート。
+ * テンプレートを配って、その形だけを読む用途（＝自分で形を決められる場合）はこちら。
+ */
+export function readXlsx(bytes: Uint8Array): { grid: Grid; sheetName: string } {
+  const { sheets, rels, sst, get } = openXlsx(bytes);
+
   // 「明細」シートを優先し、無ければ先頭シート
   const picked = sheets.find((s) => normalizeHeader(s.name) === "明細") ?? sheets[0];
   let sheetXml: string | null = null;
@@ -488,8 +510,39 @@ export function readXlsx(bytes: Uint8Array): { grid: Grid; sheetName: string } {
     throw new SheetReadError("Excelファイルの中にワークシートが見つかりませんでした。");
   }
 
-  const sst = parseSharedStrings(get("xl/sharedStrings.xml"));
   return { grid: parseSheetXml(sheetXml, sst), sheetName: picked?.name ?? "" };
+}
+
+export interface XlsxSheet {
+  name: string;
+  grid: Grid;
+}
+
+/**
+ * xlsx のシートを全部読む（ブックの並び順）。
+ *
+ * 他社から受け取ったファイルのように**こちらで形を決められない**入力では、
+ * どのシートを使うかを利用者に選ばせる必要がある。そのときはこちらを使う。
+ * 1シートだけでよいなら readXlsx() のほうが意図が伝わる。
+ */
+export function readXlsxSheets(bytes: Uint8Array): XlsxSheet[] {
+  const { sheets, rels, sst, get } = openXlsx(bytes);
+
+  const out: XlsxSheet[] = [];
+  for (const s of sheets) {
+    const xml = s.rid && rels[s.rid] ? get(rels[s.rid]) : null;
+    if (xml) out.push({ name: s.name, grid: parseSheetXml(xml, sst) });
+  }
+
+  // rels をたどれない書き出し方をするツールもあるので、1枚も取れなければ先頭を直に見る
+  if (out.length === 0) {
+    const fallback = get("xl/worksheets/sheet1.xml");
+    if (fallback) out.push({ name: sheets[0]?.name ?? "", grid: parseSheetXml(fallback, sst) });
+  }
+  if (out.length === 0) {
+    throw new SheetReadError("Excelファイルの中にワークシートが見つかりませんでした。");
+  }
+  return out;
 }
 
 /* ------------------------------------------------------------------ *

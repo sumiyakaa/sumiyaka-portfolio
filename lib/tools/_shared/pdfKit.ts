@@ -15,9 +15,10 @@ import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb } from "pdf-lib";
 import type { Color, PDFFont, PDFImage, PDFPage } from "pdf-lib";
 
-/* A4 縦（pt）。座標はここから導き、ベタ書きしない */
-export const A4_W = 595.28;
-export const A4_H = 841.89;
+/* A4 の寸法は pdf-lib 非依存の paper.ts が持つ。
+   画面側（クライアントコンポーネント）が寸法だけ欲しいときは、ここではなく
+   "./paper" から取ること。pdfKit 経由だと pdf-lib が初期バンドルへ入る。 */
+export { A4_H, A4_LANDSCAPE_H, A4_LANDSCAPE_W, A4_W, mmToPt, ptToMm } from "./paper";
 
 /* 色 */
 export const INK = rgb(0.09, 0.09, 0.09);
@@ -458,6 +459,42 @@ export class Sheet {
       this.target.drawLine({ start: { x: x1, y }, end: { x: x2, y }, thickness, color });
     }
     this.report("line", Math.min(x1, x2), y - thickness / 2, Math.abs(x2 - x1), thickness);
+  }
+
+  /**
+   * 任意の2点を結ぶ線。折れ線グラフのように斜めへ引きたいときに使う。
+   * 水平の罫は rule()、垂直の細線は rect() のほうが意図が伝わる。
+   *
+   * dash は破線の刻み（例 [3, 2]）。省略すれば実線。
+   */
+  line(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    thickness: number,
+    color: Color,
+    dash?: number[],
+  ): void {
+    if (this.target) {
+      this.target.drawLine({
+        start: { x: x1, y: y1 },
+        end: { x: x2, y: y2 },
+        thickness,
+        color,
+        ...(dash && dash.length > 0 ? { dashArray: dash } : {}),
+      });
+    }
+    this.report("line", Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
+  }
+
+  /**
+   * 円。折れ線の節点や凡例の丸に使う。x, y は中心・radius は半径。
+   * 監査には外接する矩形として "rect" で記録する（円専用の種別は設けていない）。
+   */
+  dot(x: number, y: number, radius: number, color: Color): void {
+    if (this.target) this.target.drawCircle({ x, y, size: radius, color });
+    this.report("rect", x - radius, y - radius, radius * 2, radius * 2);
   }
 
   image(img: PDFImage, x: number, y: number, width: number, height: number): void {

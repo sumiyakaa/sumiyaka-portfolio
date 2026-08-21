@@ -37,11 +37,28 @@ export function formatRate(rate: number): string {
   return rate === 0 ? "対象外" : `${rate}%`;
 }
 
-/** ファイル名に使えない文字を落とす（PDF/ZIPの命名用） */
+/** 制御文字。ファイル名に置けず、生のまま source に書くと git がバイナリ扱いする */
+const CONTROL_CHARS = new RegExp("[\u0000-\u001f\u007f]", "g");
+
+/** Windows が受け付けない予約名。拡張子が付いていても予約されている */
+const WINDOWS_RESERVED_NAME = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\.|$)/i;
+
+/**
+ * ファイル名に使えない文字を落とす（PDF/ZIPの命名用）。
+ *
+ * ⚠ バックスラッシュも落とす。ZIP の中ではパス区切りとして解釈され、
+ *    意図しない階層ができる（2026-08-22 に取りこぼしを発見して追加）。
+ * ⚠ 制御文字・末尾のドットと空白・Windows の予約名も潰す。
+ *    どれも「保存はできたように見えて、実際は別名になる」種類の事故を起こす。
+ */
 export function safeFileName(value: string): string {
-  return value
-    .replace(/[\/:*?"<>|]/g, "_")
+  const out = value
+    .replace(/[\\/:*?"<>|]/g, "_")
     .replace(/\s+/g, " ")
+    .replace(CONTROL_CHARS, "")  // ← 空白の圧縮より後。タブは上の行で空白へ畳まれている
     .trim()
-    .slice(0, 60);
+    .slice(0, 60)
+    .replace(/[. ]+$/, "");
+
+  return WINDOWS_RESERVED_NAME.test(out) ? `${out}_` : out;
 }
