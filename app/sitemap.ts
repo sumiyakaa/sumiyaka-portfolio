@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 import { getAllWorks } from "@/lib/works";
+import { getAllTools } from "@/lib/toolCatalog";
 
 const BASE_URL = "https://akashiki.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const works = getAllWorks();
+  const tools = getAllTools();
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -24,6 +26,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/tools`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
     {
       url: `${BASE_URL}/works`,
@@ -52,5 +60,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...workPages];
+  const toolPages: MetadataRoute.Sitemap = tools.map((tool) => ({
+    url: `${BASE_URL}/tools/${tool.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...toolPages, ...workPages];
 }

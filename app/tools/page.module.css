@@ -1,0 +1,467 @@
+/* ==========================================================================
+   /tools — 開発したツールのカタログ
+   FV は既存サブページ（/service・/about）と同じ作法を踏襲する。
+   ========================================================================== */
+
+.page {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* ========================================
+   FV — 100vh 全画面（1秒後に 50vh へ縮む）
+   ======================================== */
+.fv {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fvBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fvGrain {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  animation: toolsGrain 0.5s steps(5) infinite;
+}
+
+@keyframes toolsGrain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  30% { transform: translate(3%, -15%); }
+  50% { transform: translate(12%, 9%); }
+  70% { transform: translate(9%, 4%); }
+  90% { transform: translate(-1%, 7%); }
+}
+
+.fvScanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  opacity: 0.02;
+}
+
+.fvContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.fvTitle {
+  font-family: var(--font-heading);
+  font-weight: 100;
+  font-size: clamp(48px, 8vw, 120px);
+  letter-spacing: 0.25em;
+  color: var(--color-foreground);
+  opacity: 0;
+}
+
+.fvSub {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 13px;
+  color: var(--color-foreground);
+  margin-top: 16px;
+  opacity: 0;
+}
+
+.fvHr {
+  width: 60px;
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 24px auto 0;
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+.fvEdgeBl,
+.fvEdgeBr {
+  position: absolute;
+  z-index: 2;
+}
+
+.fvEdgeText {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground);
+}
+
+.fvEdgeBl {
+  bottom: 40px;
+  left: 40px;
+  opacity: 0;
+}
+
+.fvEdgeBr {
+  bottom: 40px;
+  right: 40px;
+  opacity: 0;
+}
+
+/* ========================================
+   リード
+   ======================================== */
+.lead {
+  padding: 7rem 0 5rem;
+}
+
+.leadInner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.leadHead {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+}
+
+.leadBody {
+  margin: 1.6rem 0 0;
+  font-size: 0.88rem;
+  line-height: 2.15;
+  color: var(--color-foreground-muted);
+}
+
+/* ========================================
+   ツール一覧
+   ======================================== */
+.list {
+  padding: 2rem 0 6rem;
+}
+
+.listInner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.listHead {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.listTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.listCount {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+}
+
+.listNote {
+  margin: 0.8rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+}
+
+.cards {
+  list-style: none;
+  margin: 3rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cardLink {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardThumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #101010;
+}
+
+.cardImg {
+  object-fit: cover;
+  object-position: top center;
+  transition: transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.cardImgMono {
+  filter: grayscale(1);
+}
+
+.cardImgColor {
+  opacity: 0;
+  transition:
+    opacity var(--duration-slow) var(--ease-out-expo),
+    transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.cardVeil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(10, 10, 10, 0) 60%, rgba(10, 10, 10, 0.55) 100%);
+  pointer-events: none;
+}
+
+.cardLink:hover .cardImg {
+  transform: scale(1.02);
+}
+
+.cardLink:hover .cardImgColor {
+  opacity: 1;
+}
+
+.cardBody {
+  padding: 2.4rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardNo {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  color: var(--color-accent);
+}
+
+.cardTitle {
+  margin: 0.9rem 0 0;
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.cardEn {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+}
+
+.cardText {
+  margin: 1.3rem 0 0;
+  font-size: 0.82rem;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+}
+
+.cardTags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.4rem 0 0;
+  padding: 0;
+}
+
+.cardTags li {
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+  border: 1px solid var(--color-border-light);
+  padding: 5px 10px;
+}
+
+.cardMore {
+  margin-top: 1.8rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground);
+  transition: color var(--duration-normal) var(--ease-default);
+}
+
+.cardLink:hover .cardMore {
+  color: var(--color-accent);
+}
+
+/* ホバーできない端末では最初からカラーで見せる（墨のままだと画面が読めない） */
+@media (hover: none) {
+  .cardImgColor {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardImg,
+  .cardImgColor,
+  .cardMore {
+    transition: none;
+  }
+}
+
+/* ========================================
+   データを送らない設計
+   ======================================== */
+.why {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background-light);
+  padding: 6rem 0;
+}
+
+.whyInner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.whyTitle {
+  margin: 0 0 2rem;
+  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.05em;
+}
+
+.whyBody {
+  margin: 0 0 1.4rem;
+  font-size: 0.85rem;
+  line-height: 2.15;
+  color: var(--color-foreground-muted);
+}
+
+/* ========================================
+   特注への導線
+   ======================================== */
+.custom {
+  border-top: 1px solid var(--color-border);
+  padding: 6rem 0;
+}
+
+.customInner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 40px;
+  text-align: center;
+}
+
+.customLead {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+}
+
+.customBody {
+  margin: 1.6rem 0 0;
+  font-size: 0.86rem;
+  line-height: 2.1;
+  color: var(--color-foreground-muted);
+  text-align: left;
+}
+
+.customLink {
+  display: inline-block;
+  margin-top: 2.4rem;
+  padding: 0.9rem 2.2rem;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-foreground);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.customLink:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ========================================
+   レスポンシブ
+   ======================================== */
+@media (max-width: 900px) {
+  .cardLink {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cardBody {
+    padding: 2rem 1.5rem;
+  }
+
+  .cardVeil {
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0) 60%, rgba(10, 10, 10, 0.5) 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .leadInner,
+  .listInner,
+  .whyInner,
+  .customInner {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .lead {
+    padding: 5rem 0 3.5rem;
+  }
+
+  .list {
+    padding: 1.5rem 0 4rem;
+  }
+
+  .why,
+  .custom {
+    padding: 4.5rem 0;
+  }
+
+  .fvEdgeBl,
+  .fvEdgeBr {
+    bottom: 24px;
+  }
+
+  .fvEdgeBl {
+    left: 20px;
+  }
+
+  .fvEdgeBr {
+    right: 20px;
+  }
+}

@@ -10,11 +10,14 @@ import BoundaryFigure from "@/components/home/BoundaryFigure";
 import Person from "@/components/home/Person";
 import CtaSection from "@/components/home/CtaSection";
 import { getPickUpWorks } from "@/lib/works";
+import { getPickUpTools } from "@/lib/toolCatalog";
 import styles from "./page.module.css";
 
 export default function Home() {
   // 件数はハードコードせず、作品データから毎回集計する（作品追加で自動追従）
   const pickupWorks = getPickUpWorks();
+  // 02 ツール制作の枠。0件なら PickUpWorks 側が「準備中」プレートに戻る
+  const pickupTools = getPickUpTools();
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -49,7 +52,7 @@ export default function Home() {
       <Deguchi />
 
       {/* 5. 制作実績（Pickup） */}
-      <PickUpWorks works={pickupWorks} />
+      <PickUpWorks works={pickupWorks} tools={pickupTools} />
 
       {/* 6. いくら浮くか（掘り下げ構成・2026-08-18 REVIEW2）
           - id="value"（FV「その意味を、見る」の飛び先）は PriceAnim が section を

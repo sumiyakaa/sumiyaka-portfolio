@@ -4,6 +4,7 @@ import styles from "./Footer.module.css";
 const FOOTER_NAV = [
   { href: "/about", label: "ABOUT" },
   { href: "/service", label: "SERVICE" },
+  { href: "/tools", label: "TOOLS" },
   // 表示ラベルのみ日本語化（URL は /works のまま。Header の NAV_LINKS と揃えること）
   { href: "/works", label: "WEB制作" },
   { href: "/contact", label: "CONTACT" },

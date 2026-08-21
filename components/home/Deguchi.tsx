@@ -31,6 +31,9 @@ export default function Deguchi() {
                 <span className={styles.no}>①</span>業務の自動化・ツール開発
               </h3>
               <p className={styles.branchCopy}>手作業を、そのまま仕組みに変える</p>
+              <Link href="/tools" className={styles.branchLink}>
+                ツールを触る → /tools
+              </Link>
             </ScrollReveal>
             <ScrollReveal as="li" className={styles.branch} delay={0.1}>
               <h3 className={styles.branchTitle}>

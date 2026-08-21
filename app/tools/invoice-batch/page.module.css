@@ -1,0 +1,271 @@
+/* ==========================================================================
+   /tools/invoice-batch — 請求書PDF 一括作成
+   ツールを早く触らせたいので、FVは全画面にせず「畳んだ見出し」にしている。
+   ========================================================================== */
+
+.page {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* ---------------- 見出し ---------------- */
+.head {
+  position: relative;
+  border-bottom: 1px solid var(--color-border);
+  padding: calc(60px + 4.5rem) 0 3rem;
+  overflow: hidden;
+}
+
+.head::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 90% at 12% 0%, rgba(255, 255, 255, 0.045), transparent 70%),
+    radial-gradient(50% 70% at 88% 30%, rgba(200, 169, 110, 0.05), transparent 72%);
+}
+
+.headInner {
+  position: relative;
+  z-index: 1;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--color-foreground-muted);
+}
+
+.crumb a {
+  color: var(--color-foreground-muted);
+  text-decoration: none;
+  transition: color var(--duration-normal) var(--ease-default);
+}
+
+.crumb a:hover {
+  color: var(--color-accent);
+}
+
+.no {
+  margin: 2.2rem 0 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4.2vw, 3.1rem);
+  line-height: 1.24;
+  letter-spacing: 0.04em;
+}
+
+.titleEn {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.8rem;
+  letter-spacing: 0.34em;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+}
+
+.lead {
+  margin: 1.6rem 0 0;
+  max-width: 46em;
+  font-size: 0.92rem;
+  line-height: 2;
+  color: #cfcfcf;
+}
+
+.brPc {
+  display: none;
+}
+
+.badges {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.6rem 0 0;
+  padding: 0;
+}
+
+.badges li {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground-muted);
+  border: 1px solid var(--color-border-light);
+  padding: 6px 12px;
+}
+
+/* ---------------- ツール ---------------- */
+.toolSection {
+  padding: 3.5rem 0 4.5rem;
+}
+
+.toolInner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ---------------- できること／できないこと ---------------- */
+.scope {
+  border-top: 1px solid var(--color-border);
+  padding: 5rem 0;
+  background: var(--color-background-light);
+}
+
+.scopeInner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3.5rem;
+}
+
+.scopeTitle {
+  margin: 0 0 1.8rem;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.scopeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.9rem;
+}
+
+.scopeList h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.scopeList p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.95;
+  color: var(--color-foreground-muted);
+}
+
+.scopeListMuted h3 {
+  color: var(--color-secondary);
+}
+
+/* ---------------- 特注への導線 ---------------- */
+.custom {
+  border-top: 1px solid var(--color-border);
+  padding: 6rem 0;
+}
+
+.customInner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 40px;
+  text-align: center;
+}
+
+.customLead {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+}
+
+.customBody {
+  margin: 1.6rem 0 0;
+  font-size: 0.86rem;
+  line-height: 2.1;
+  color: var(--color-foreground-muted);
+  text-align: left;
+}
+
+.customLink {
+  display: inline-block;
+  margin-top: 2.4rem;
+  padding: 0.9rem 2.2rem;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-foreground);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.customLink:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ---------------- クレジット ---------------- */
+.credit {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px 4rem;
+  font-size: 0.68rem;
+  color: #555555;
+  letter-spacing: 0.04em;
+}
+
+/* ---------------- レスポンシブ ---------------- */
+@media (min-width: 821px) {
+  .brPc {
+    display: inline;
+  }
+}
+
+@media (max-width: 900px) {
+  .scopeInner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .head {
+    padding: calc(60px + 3rem) 0 2.5rem;
+  }
+
+  .headInner,
+  .toolInner,
+  .scopeInner,
+  .customInner,
+  .credit {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .toolSection {
+    padding: 2.5rem 0 3.5rem;
+  }
+
+  .scope,
+  .custom {
+    padding: 4rem 0;
+  }
+}

@@ -20,8 +20,13 @@ AKASHIKI（灯敷）は、Webデザイン・フロントエンド開発を手が
 - Home: https://akashiki.com/
 - About: https://akashiki.com/about
 - Service: https://akashiki.com/service
+- Tools: https://akashiki.com/tools
 - Works: https://akashiki.com/works
 - Contact: https://akashiki.com/contact
+
+## Tools
+ブラウザの中だけで動く業務ツールを公開しています。読み込んだファイルは端末の外に送信されません。
+- 請求書PDF 一括作成: https://akashiki.com/tools/invoice-batch — Excel/CSVの台帳から取引先ごとの請求書PDFを一括生成。適格請求書（インボイス）の記載要件に対応。
 
 ## Workflow
 1. ヒアリング — ご要望・ターゲット層・競合・ご予算・納期をお伺い

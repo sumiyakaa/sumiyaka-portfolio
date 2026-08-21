@@ -12,6 +12,8 @@ const NAV_LINKS = [
   { href: "/", label: "HOME" },
   { href: "/about", label: "ABOUT" },
   { href: "/service", label: "SERVICE" },
+  // 出口の順（①業務の自動化・ツール開発 → ②Web制作）に合わせて TOOLS を先に置く
+  { href: "/tools", label: "TOOLS" },
   // 表示ラベルのみ日本語化（URL は /works のまま。Footer の FOOTER_NAV と揃えること）
   { href: "/works", label: "WEB制作" },
   { href: "/contact", label: "CONTACT" },

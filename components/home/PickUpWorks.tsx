@@ -12,6 +12,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Work } from "@/types/work";
+import type { Tool } from "@/types/tool";
 import {
   createHoverScroll,
   measureTravel,
@@ -37,6 +38,8 @@ const FLIP_TIMEOUT = 950;
 
 interface PickUpWorksProps {
   works: Work[];
+  /** 02 ツール制作の枠に出す自社開発ツール。空なら従来の「準備中」プレートに戻る */
+  tools: Tool[];
 }
 
 function charSpans(text: string, baseDelay = 0) {
@@ -76,7 +79,7 @@ function onceTransform(el: HTMLElement, cb: () => void, timeoutMs = FLIP_TIMEOUT
   window.setTimeout(fire, timeoutMs);
 }
 
-export default function PickUpWorks({ works }: PickUpWorksProps) {
+export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
   const lenis = useLenis();
   const sectionRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -692,23 +695,72 @@ export default function PickUpWorks({ works }: PickUpWorksProps) {
           </div>
         </div>
 
-        {/* ============ 02 ツール制作 ／ 03 SNS（準備中） ============ */}
+        {/* ============ 02 ツール制作 ／ 03 SNS ============ */}
         <div className={styles.pending} data-pickup-pending>
-          <div className={styles.plate} data-pickup-plate>
-            <div className={styles.plateVeil} aria-hidden="true" />
-            <div className={styles.plateGhost} aria-hidden="true">TOOLS</div>
-            <div className={styles.plateHead}>
-              <span className={styles.catIdx}>02</span>
-              <h3 className={styles.catName}>ツール制作</h3>
-              <span className={styles.catEn}>Tools</span>
+          {/* 02＝実物ができたので準備中プレートから実カードへ。
+              ツールが1本も無い間は従来の準備中プレートに戻る（作っていないものは載せない） */}
+          {tools.length > 0 ? (
+            <Link
+              href={`/tools/${tools[0].slug}`}
+              className={`${styles.plate} ${styles.plateTool}`}
+              data-pickup-plate
+            >
+              <div className={styles.plateVeil} aria-hidden="true" />
+              <div className={styles.plateGhost} aria-hidden="true">TOOLS</div>
+              <div className={styles.plateHead}>
+                <span className={styles.catIdx}>02</span>
+                <h3 className={styles.catName}>ツール制作</h3>
+                <span className={styles.catEn}>Tools</span>
+                <span className={styles.catCount}>
+                  {tools.length} TOOL{tools.length > 1 ? "S" : ""}
+                </span>
+              </div>
+
+              {/* 墨明けと同じ作法：filter はアニメせず、静的 grayscale の下地へ
+                  カラーを opacity でクロスフェードする（iOS/WebKit 安全） */}
+              <div className={styles.toolThumb}>
+                <Image
+                  src={tools[0].thumbnail}
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 46vw"
+                  className={`${styles.toolImg} ${styles.toolImgMono}`}
+                />
+                <Image
+                  src={tools[0].thumbnail}
+                  alt={`${tools[0].title} の画面`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 46vw"
+                  className={`${styles.toolImg} ${styles.toolImgColor}`}
+                />
+                <span className={styles.toolFrame} aria-hidden="true" />
+              </div>
+
+              <div className={styles.toolInfo}>
+                <span className={styles.toolNo}>{tools[0].no}</span>
+                <h4 className={styles.toolTitle}>{tools[0].title}</h4>
+                <p className={styles.toolSummary}>{tools[0].summary}</p>
+                <span className={styles.toolMore}>触ってみる →</span>
+              </div>
+            </Link>
+          ) : (
+            <div className={styles.plate} data-pickup-plate>
+              <div className={styles.plateVeil} aria-hidden="true" />
+              <div className={styles.plateGhost} aria-hidden="true">TOOLS</div>
+              <div className={styles.plateHead}>
+                <span className={styles.catIdx}>02</span>
+                <h3 className={styles.catName}>ツール制作</h3>
+                <span className={styles.catEn}>Tools</span>
+              </div>
+              <div className={styles.plateBody}>
+                <span className={styles.chip}>準備中</span>
+                <p className={styles.plateNote}>
+                  日々の作業を静かに引き受ける小さな道具を、見せられるかたちに整えています。
+                </p>
+              </div>
             </div>
-            <div className={styles.plateBody}>
-              <span className={styles.chip}>準備中</span>
-              <p className={styles.plateNote}>
-                日々の作業を静かに引き受ける小さな道具を、見せられるかたちに整えています。
-              </p>
-            </div>
-          </div>
+          )}
 
           <div className={styles.plate} data-pickup-plate>
             <div className={styles.plateVeil} aria-hidden="true" />
