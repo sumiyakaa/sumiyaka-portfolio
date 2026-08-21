@@ -11,7 +11,7 @@ import {
 } from "react";
 import { buildInvoices, checkCompliance } from "@/lib/tools/invoice/calc";
 import { SAMPLE_ISSUER, SAMPLE_LEDGER } from "@/lib/tools/invoice/sample";
-import { formatYen, safeFileName } from "@/lib/tools/invoice/format";
+import { formatYen, safeFileName } from "@/lib/tools/_shared/format";
 import type {
   Issuer,
   LedgerRow,
@@ -244,7 +244,7 @@ export default function InvoiceBatchTool() {
 
   /** フォント（5.4MB）を必要になった時だけ落とす */
   const ensureFont = useCallback(async () => {
-    const { loadJpFont } = await import("@/lib/tools/invoice/font");
+    const { loadJpFont } = await import("@/lib/tools/_shared/font");
     return loadJpFont((loaded, total) => {
       setFontPct(total > 0 ? Math.round((loaded / total) * 100) : null);
     }).finally(() => setFontPct(null));

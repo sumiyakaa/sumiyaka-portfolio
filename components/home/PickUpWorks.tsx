@@ -80,6 +80,11 @@ function onceTransform(el: HTMLElement, cb: () => void, timeoutMs = FLIP_TIMEOUT
 }
 
 export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
+  /* 02 ツール枠は「代表1本＋総数」で見せる。
+     ⚠ 2本以上あるときにリンク先を1本目へ固定すると、件数だけ増えて中身へ辿れなくなる。
+        複数あるならカタログ（/tools）へ送り、1本だけならそのツールへ直接送る。 */
+  const leadTool = tools[0];
+  const toolsHref = tools.length > 1 ? "/tools" : leadTool ? `/tools/${leadTool.slug}` : "/tools";
   const lenis = useLenis();
   const sectionRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -699,9 +704,9 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
         <div className={styles.pending} data-pickup-pending>
           {/* 02＝実物ができたので準備中プレートから実カードへ。
               ツールが1本も無い間は従来の準備中プレートに戻る（作っていないものは載せない） */}
-          {tools.length > 0 ? (
+          {leadTool ? (
             <Link
-              href={`/tools/${tools[0].slug}`}
+              href={toolsHref}
               className={`${styles.plate} ${styles.plateTool}`}
               data-pickup-plate
             >
@@ -720,7 +725,7 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
                   カラーを opacity でクロスフェードする（iOS/WebKit 安全） */}
               <div className={styles.toolThumb}>
                 <Image
-                  src={tools[0].thumbnail}
+                  src={leadTool.thumbnail}
                   alt=""
                   aria-hidden="true"
                   fill
@@ -728,8 +733,8 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
                   className={`${styles.toolImg} ${styles.toolImgMono}`}
                 />
                 <Image
-                  src={tools[0].thumbnail}
-                  alt={`${tools[0].title} の画面`}
+                  src={leadTool.thumbnail}
+                  alt={`${leadTool.title} の画面`}
                   fill
                   sizes="(max-width: 768px) 100vw, 46vw"
                   className={`${styles.toolImg} ${styles.toolImgColor}`}
@@ -738,9 +743,9 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
               </div>
 
               <div className={styles.toolInfo}>
-                <span className={styles.toolNo}>{tools[0].no}</span>
-                <h4 className={styles.toolTitle}>{tools[0].title}</h4>
-                <p className={styles.toolSummary}>{tools[0].summary}</p>
+                <span className={styles.toolNo}>{leadTool.no}</span>
+                <h4 className={styles.toolTitle}>{leadTool.title}</h4>
+                <p className={styles.toolSummary}>{leadTool.summary}</p>
                 <span className={styles.toolMore}>触ってみる →</span>
               </div>
             </Link>

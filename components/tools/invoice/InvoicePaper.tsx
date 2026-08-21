@@ -1,7 +1,7 @@
 "use client";
 
 import type { InvoiceDoc, InvoiceItem, Issuer } from "@/lib/tools/invoice/types";
-import { formatDateJa, formatQty, formatYen } from "@/lib/tools/invoice/format";
+import { formatDateJa, formatQty, formatYen } from "@/lib/tools/_shared/format";
 import styles from "./InvoicePaper.module.css";
 
 /**

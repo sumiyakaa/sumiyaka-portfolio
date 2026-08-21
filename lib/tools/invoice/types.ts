@@ -8,6 +8,8 @@
  *    ゆえに入力はテンプレート形式の1シートに限定し、崩れた台帳は素直にエラーにする。
  */
 
+import type { ToolIssue } from "../_shared/sheetReader";
+
 /** 適用税率。0 は不課税・非課税をまとめて扱う */
 export type TaxRate = 10 | 8 | 0;
 
@@ -48,14 +50,8 @@ export interface LedgerRow {
 }
 
 /** 読み取り・検証で見つかった指摘 */
-export interface ParseIssue {
-  /** 元ファイル上の行番号。ファイル全体の問題なら 0 */
-  line: number;
-  /** 列見出し（分かる場合） */
-  column?: string;
-  level: "error" | "warn";
-  message: string;
-}
+/** 全ツール共通の型を使う（新規ツールは ToolIssue を直接使ってよい） */
+export type ParseIssue = ToolIssue;
 
 export interface ParseResult {
   rows: LedgerRow[];
