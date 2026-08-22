@@ -1,0 +1,790 @@
+/* ==========================================================================
+   EvidenceRenameTool — 電帳法ファイル名 一括リネーム
+   主役は「リネーム前後の対応表」。左に元の名前、右に新しい名前が縦に並び、
+   設定を変えると右側が一斉に書き換わる。
+   ⚠ filter はアニメーションさせない（状態の切り替えは color / border-color だけ）。
+   ⚠ 100vh を全画面レイアウトの前提にしない（対応表の max-height だけ vh を使う）。
+   ========================================================================== */
+
+.tool {
+  --line: #222222;
+  --line-soft: #1a1a1a;
+  --raise: rgba(255, 255, 255, 0.022);
+  --raise-2: rgba(255, 255, 255, 0.045);
+  --gold: var(--color-accent);
+  --bad: #c86e6e;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+/* ---------------- ステータス ---------------- */
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+}
+
+.statusMain {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.statusFile {
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipSample {
+  flex: none;
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--gold);
+  border: 1px solid rgba(200, 169, 110, 0.42);
+  padding: 3px 9px;
+}
+
+.statusStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.statusStats div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.statusStats dt {
+  font-size: 0.63rem;
+  letter-spacing: 0.16em;
+  color: var(--color-foreground-muted);
+}
+
+.statusStats dd {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusStats dd span {
+  margin-left: 3px;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+/* ---- ネットワークへ出ないことの明記 ---- */
+.privacy {
+  margin: 0.85rem 0 0;
+  font-size: 0.73rem;
+  line-height: 1.75;
+  color: var(--color-foreground-muted);
+}
+
+.privacyStrong {
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+/* ---------------- レイアウト ---------------- */
+.layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+  /* 触ってすぐ結果が見えるほうを先に置く */
+  .stage {
+    order: -1;
+  }
+}
+
+/*
+ * ★1180px 以上では操作パネルを 2 列にする。
+ *
+ *   01〜04 を縦に積むと、パネルの高さが対応表の 3 倍以上になり、
+ *   右側に大きな空白が残る（対応表は max-height で頭打ちなので、
+ *   件数を増やしても空白は埋まらない＝構造的な余りだった）。
+ *   01/02 を左、03/04 を右に置くと高さがほぼ半分になり、
+ *   「03 名前の付け方」が対応表の先頭と同じ高さに来るので、
+ *   設定と結果を一目で見比べられる。
+ *
+ *   ⚠ CSS の段組み（columns）は使わない。中に入力欄やドロップ領域があり、
+ *     段またぎの分割が起きると壊れ方が読めないため、素直に入れ子にしている。
+ */
+.panelCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* ---------------- 左：操作パネル ---------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* ⚠ この上書きは .panel の基本定義より後ろに置くこと。
+   メディアクエリは詳細度を上げないので、前に置くと打ち消される。 */
+@media (min-width: 1180px) {
+  .layout {
+    grid-template-columns: 560px minmax(0, 1fr);
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 1.25rem;
+  }
+}
+
+.step {
+  border: 1px solid var(--line);
+  background: var(--raise);
+  padding: 1.25rem 1.1rem 1.35rem;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.stepNum {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.stepNote {
+  margin: 0.85rem 0 0;
+  font-size: 0.71rem;
+  line-height: 1.8;
+  color: var(--color-foreground-muted);
+}
+
+.optionNote {
+  margin: 0.85rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border-left: 2px solid rgba(200, 169, 110, 0.5);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.71rem;
+  line-height: 1.8;
+  color: #b9a888;
+}
+
+/* ---- ドロップゾーン ---- */
+.drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.6rem 1rem;
+  border: 1px dashed #333333;
+  background: rgba(255, 255, 255, 0.012);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.drop:hover,
+.drop:focus-visible {
+  border-color: rgba(200, 169, 110, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  outline: none;
+}
+
+.dropOver {
+  border-color: var(--gold);
+  background: rgba(200, 169, 110, 0.06);
+}
+
+.dropIcon {
+  width: 26px;
+  height: 20px;
+  border: 1px solid #555555;
+  border-top-width: 6px;
+  border-top-color: #444444;
+}
+
+.dropText {
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+.dropSub {
+  font-size: 0.67rem;
+  color: var(--color-foreground-muted);
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ---- ボタン群 ---- */
+.rowButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.48rem 0.85rem;
+  border: 1px solid #333333;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.73rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.ghostButton:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.ghostButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 黒ベタ（白抜き）はページに1か所だけ＝視線の終着点 */
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.72rem 1.1rem;
+  border: 1px solid var(--color-foreground);
+  background: var(--color-foreground);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    background var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.primaryButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.exportRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* ---- 指摘 ---- */
+.issues {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.issues li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.71rem;
+  line-height: 1.6;
+  padding: 0.35rem 0.5rem;
+  border-left: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.issueError {
+  border-left-color: #8d5a5a;
+}
+
+.issueWarn {
+  border-left-color: #6d6146;
+}
+
+.issueLine {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-foreground-muted);
+}
+
+.issueMore {
+  color: var(--color-foreground-muted);
+}
+
+.issueSummary {
+  margin: 0.6rem 0 0;
+  font-size: 0.71rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
+/* ---- 命名オプション ---- */
+.selects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.selectRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.selectRow > span {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground-muted);
+}
+
+/*
+ * ⚠ iOS(WebKit) 対策：暗い地色の select に background と color を当てても、
+ *   WebKit はネイティブ描画のままで**白地のコントロール**を出す。
+ *   そこへ明色の文字が乗るので、選択中の値が読めなくなる。
+ *   Chromium では指定どおり出るため、PCの確認だけでは絶対に見つからない。
+ *   （2026-08-23・T-04 の検品で実機的に確認された事象）
+ *   appearance を外すと矢印もネイティブごと消えるので、背景画像で描き直す。
+ */
+.selectRow select {
+  width: 100%;
+  padding: 0.45rem 1.6rem 0.45rem 0.55rem;
+  border: 1px solid var(--line);
+  -webkit-appearance: none;
+  appearance: none;
+  /* 半透明だと WebKit が下の白地を透かすので、不透明で置く */
+  background-color: #121212;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  border-radius: 0;
+  transition: border-color var(--duration-normal) var(--ease-default);
+}
+
+/* 展開したときの選択肢も暗色で揃える（Windows/Android で白地になるのを防ぐ） */
+.selectRow select option {
+  background-color: #121212;
+  color: var(--color-foreground);
+}
+
+.selectRow select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* ---- 但し書き（§3-8・常時表示） ---- */
+.disclaimer {
+  margin-top: 1.1rem;
+  padding: 0.9rem 0.85rem;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.disclaimer p {
+  margin: 0 0 0.6rem;
+  font-size: 0.68rem;
+  line-height: 1.85;
+  color: #9a9a9a;
+}
+
+.disclaimer p:last-of-type {
+  margin-bottom: 0.85rem;
+}
+
+.discLink {
+  display: block;
+  position: relative;
+  padding-left: 1.1rem;
+  margin-top: 0.4rem;
+  font-size: 0.68rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+  text-decoration: none;
+  transition: color var(--duration-normal) var(--ease-default);
+}
+
+.discLink::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--gold);
+}
+
+.discLink:hover {
+  color: var(--gold);
+}
+
+/* ---- 進行と警告 ---- */
+.busy,
+.message {
+  margin: 0.8rem 0 0;
+  font-size: 0.73rem;
+  line-height: 1.7;
+}
+
+.busy {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.message {
+  color: #c79a9a;
+}
+
+/* エラーではなく状態の案内。枠は同じで色だけ落とす */
+.messageHint {
+  color: var(--color-foreground-muted);
+}
+
+/* ---------------- 右：対応表（主役） ---------------- */
+.stage {
+  min-width: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground-muted);
+}
+
+.legend b {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0 0.75rem 0.55rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  color: var(--color-foreground-muted);
+}
+
+.tableHead span:last-child {
+  min-width: 5.4em;
+  text-align: right;
+}
+
+/* 対応表は「コンテナの高さ上限」の中で縦スクロールする。
+   全画面レイアウト（100vh前提）にはしない＝iOSのアドレスバー問題を踏まない */
+.tableScroll {
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  border-bottom: 1px solid var(--line);
+  -webkit-overflow-scrolling: touch;
+}
+
+.rowList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- 1行 ---- */
+.docItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-bottom: 1px solid var(--line-soft);
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.docItem:hover {
+  background: var(--raise-2);
+}
+
+.docItem:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: -1px;
+}
+
+.rowFrom,
+.rowTo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.rowFrom {
+  color: var(--color-foreground-muted);
+}
+
+.rowTo {
+  letter-spacing: 0.01em;
+}
+
+.rowToMuted {
+  color: #6b6b6b;
+}
+
+.rowArrow {
+  justify-self: center;
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.rowArrow::before {
+  content: "→";
+}
+
+.rowBadge {
+  min-width: 5.4em;
+  text-align: right;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+/* ---- 状態の色（静的な色だけ。filter は使わない） ---- */
+.rowOk .rowTo {
+  color: var(--color-foreground);
+}
+
+.rowWarn .rowTo,
+.rowWarn .rowBadge {
+  color: var(--gold);
+}
+
+.rowMuted .rowFrom,
+.rowMuted .rowTo,
+.rowMuted .rowBadge {
+  color: #6b6b6b;
+}
+
+.rowBad .rowTo,
+.rowBad .rowBadge {
+  color: var(--bad);
+}
+
+/* ---- 開いた詳細 ---- */
+.detail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem 1.25rem;
+  margin: 0;
+  padding: 0.85rem 0.75rem 1rem;
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.detail > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.detailWide {
+  grid-column: 1 / -1;
+}
+
+.detail dt {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground-muted);
+}
+
+.detail dd {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.detailPath {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--gold);
+}
+
+/* ---- 表の下 ---- */
+.moreRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.9rem;
+}
+
+.stageNote {
+  margin: 1rem 0 0;
+  font-size: 0.71rem;
+  line-height: 1.8;
+  color: var(--color-foreground-muted);
+}
+
+.empty {
+  padding: 3.5rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  border: 1px dashed var(--line);
+}
+
+/* ---------------- SP ---------------- */
+@media (max-width: 768px) {
+  .status {
+    padding: 0.9rem 1rem;
+  }
+
+  .statusStats {
+    gap: 1.1rem;
+  }
+
+  .statusStats dd {
+    font-size: 1rem;
+  }
+
+  .step {
+    padding: 1.15rem 1rem 1.3rem;
+  }
+
+  .primaryButton {
+    padding: 0.8rem 1.1rem;
+  }
+}
+
+/* 720px 以下は「元の名前 → 新しい名前」を縦積みにして、矢印を下向きに変える */
+@media (max-width: 720px) {
+  .tableHead {
+    display: none;
+  }
+
+  .docItem {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 0.6rem;
+    padding: 0.7rem 0.65rem;
+  }
+
+  .rowFrom {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rowBadge {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .rowArrow {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .rowArrow::before {
+    content: "↓";
+  }
+
+  .rowTo {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------------- 動きを減らす設定 ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .tool *,
+  .tool *::before,
+  .tool *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
