@@ -1,0 +1,795 @@
+/* ==========================================================================
+   ReconcileTool — 入金消込 突合
+   地は墨（サイト共通の暗色）。主役は「3色の突合リスト」。
+   ⚠ 色を氾濫させない。色が付くのは行の左端の帯とラベルの文字だけで、行の地色は変えない。
+   ⚠ 色だけに意味を持たせない。各行に必ず「自動一致／要確認／未入金」の文字を置く。
+   ⚠ filter はアニメーションさせない（iOS/WebKit で滲みが残る）。変化させるのは色と地だけ。
+   ========================================================================== */
+
+.tool {
+  --line: #222222;
+  --line-soft: #1a1a1a;
+  --raise: rgba(255, 255, 255, 0.022);
+  --raise-2: rgba(255, 255, 255, 0.045);
+  --gold: var(--color-accent);
+  /* 3色。彩度を落として墨の地になじませる */
+  --matched: #5f8f6e;
+  --review: var(--color-accent);
+  --unpaid: #b0574a;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+/* ---------------- ステータス ---------------- */
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+}
+
+.statusMain {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.statusFile {
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 22ch;
+}
+
+.statusSep {
+  color: var(--color-foreground-muted);
+  font-size: 0.75rem;
+}
+
+.chipSample {
+  flex: none;
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--gold);
+  border: 1px solid rgba(200, 169, 110, 0.42);
+  padding: 3px 9px;
+}
+
+.statusStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.statusStats div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.statusStats dt {
+  font-size: 0.63rem;
+  letter-spacing: 0.16em;
+  color: var(--color-foreground-muted);
+}
+
+.statusStats dd {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusStats dd span {
+  margin-left: 2px;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+/* ---------------- レイアウト ---------------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+  /* 触ってすぐ結果が見えるほうを先に置く */
+  .stage {
+    order: -1;
+  }
+}
+
+/* ---------------- 左：操作パネル ---------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.step {
+  border: 1px solid var(--line);
+  background: var(--raise);
+  padding: 1.35rem 1.25rem 1.5rem;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.stepNum {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.stepNote {
+  margin: 0.9rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.8;
+  color: var(--color-foreground-muted);
+}
+
+/* 台帳と明細の指摘をまとめた枠。番号を振らない（01〜04 の手順ではないため） */
+.stepPlain {
+  padding: 0 0.15rem;
+}
+
+.stepTitlePlain {
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground-muted);
+}
+
+/* ---- ドロップゾーン ---- */
+.drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.6rem 1rem;
+  border: 1px dashed #333333;
+  background: rgba(255, 255, 255, 0.012);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.drop:hover,
+.drop:focus-visible {
+  border-color: rgba(200, 169, 110, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  outline: none;
+}
+
+.dropOver {
+  border-color: var(--gold);
+  background: rgba(200, 169, 110, 0.06);
+}
+
+.dropIcon {
+  width: 26px;
+  height: 20px;
+  border: 1px solid #555555;
+  border-top-width: 6px;
+  border-top-color: #444444;
+}
+
+.dropText {
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+}
+
+.dropSub {
+  font-size: 0.68rem;
+  line-height: 1.6;
+  color: var(--color-foreground-muted);
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ---- ボタン群 ---- */
+.rowButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #333333;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.ghostButton:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.62rem 1.1rem;
+  border: 1px solid var(--color-foreground);
+  background: var(--color-foreground);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    background var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.primaryButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---- 読めた列の表示 ---- */
+.layoutInfo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.3rem 0.8rem;
+  margin: 1rem 0 0;
+  padding: 0.8rem 0 0;
+  border-top: 1px solid var(--line-soft);
+  font-size: 0.72rem;
+}
+
+.layoutInfo div {
+  display: contents;
+}
+
+.layoutInfo dt {
+  color: var(--color-foreground-muted);
+  letter-spacing: 0.08em;
+}
+
+.layoutInfo dd {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- 指摘 ---- */
+.issues {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 210px;
+  overflow-y: auto;
+}
+
+.issues li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  padding: 0.35rem 0.5rem;
+  border-left: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.issueError {
+  border-left-color: #8d5a5a;
+}
+
+.issueWarn {
+  border-left-color: #6d6146;
+}
+
+.issueLine {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.issueMore {
+  color: var(--color-foreground-muted);
+}
+
+/* ---- 条件 ---- */
+.selectRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--color-foreground-muted);
+}
+
+/* ⚠ 暗色の <select> は WebKit(iOS) だとネイティブ描画のままで**白地**になり、
+   そこへ明色の文字が乗るので選択中の値が読めなくなる。
+   Chromium(Edge/Chrome)では指定どおり出るため **PC確認では絶対に見つからない**。
+   （2026-08-23 T-04 の検品で実測。appearance を外すと矢印も消えるので描き直す） */
+.selectRow select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0.42rem 1.7rem 0.42rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0; /* iOS が勝手に角を丸めるのを止める */
+  background-color: #121212; /* 半透明ではなく不透明で置く */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+}
+
+.selectRow select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.checkRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  color: var(--color-foreground-muted);
+  cursor: pointer;
+}
+
+.check input {
+  accent-color: var(--gold);
+}
+
+.exportRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+.busy,
+.message {
+  margin: 0.8rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.6;
+}
+
+.busy {
+  color: var(--gold);
+}
+
+.message {
+  color: #c79a9a;
+}
+
+/* ---------------- 右：突合リスト（主役） ---------------- */
+.stage {
+  min-width: 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--color-foreground-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.tab:hover {
+  color: var(--color-foreground);
+  border-color: #333333;
+}
+
+.tabActive {
+  color: var(--color-foreground);
+  border-color: var(--gold);
+  background: var(--raise-2);
+}
+
+.tabCount {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tab_matched .tabCount {
+  color: var(--matched);
+}
+
+.tab_review .tabCount {
+  color: var(--review);
+}
+
+.tab_unpaid .tabCount {
+  color: var(--unpaid);
+}
+
+.docList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.docRow {
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* 行の地色は変えない。色が付くのは左端の帯とラベルの文字だけ */
+.docItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  width: 100%;
+  padding: 0.7rem 0.6rem 0.7rem 0.85rem;
+  border: none;
+  border-left: 4px solid transparent;
+  background: var(--raise);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.docItem:hover,
+.docItem:focus-visible {
+  background: var(--raise-2);
+  outline: none;
+}
+
+.docItemOpen {
+  background: var(--raise-2);
+}
+
+.is_matched {
+  border-left-color: var(--matched);
+}
+
+.is_review {
+  border-left-color: var(--review);
+}
+
+.is_unpaid {
+  border-left-color: var(--unpaid);
+}
+
+.is_matched .rowStatus {
+  color: var(--matched);
+}
+
+.is_review .rowStatus {
+  color: var(--review);
+}
+
+.is_unpaid .rowStatus {
+  color: var(--unpaid);
+}
+
+.rowTop,
+.rowBottom {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.rowStatus {
+  flex: none;
+  width: 4.5em;
+  font-size: 0.73rem;
+  letter-spacing: 0.06em;
+}
+
+.rowReason {
+  flex: none;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+  letter-spacing: 0.04em;
+}
+
+.rowNo {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-foreground-muted);
+}
+
+.rowClient {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowAmount {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* ⚠ 幅は実データで決める。`2026/07/31` は等幅で10文字あり、
+   4.5em では次の摘要と重なって末尾の1桁が読めなくなる（SPでは2行に折れる）。 */
+.rowDate {
+  flex: none;
+  width: 7em;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  color: var(--color-foreground-muted);
+}
+
+.rowDesc {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.73rem;
+  color: var(--color-foreground-muted);
+}
+
+.rowDiff {
+  flex: none;
+  width: 8.5em;
+  text-align: right;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-foreground-muted);
+}
+
+.rowDiffOn {
+  color: var(--review);
+}
+
+/* ---- 開いたときの根拠 ---- */
+.detail {
+  padding: 0.9rem 0.9rem 1.1rem 1.2rem;
+  background: rgba(0, 0, 0, 0.28);
+  border-left: 4px solid var(--line);
+}
+
+.detailNote {
+  margin: 0 0 0.8rem;
+  font-size: 0.76rem;
+  line-height: 1.85;
+}
+
+.detailKeys {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.25rem 0.9rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.72rem;
+}
+
+.detailKeys div {
+  display: contents;
+}
+
+.detailKeys dt {
+  color: var(--color-foreground-muted);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.detailKeys dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.detailTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.7rem;
+  font-size: 0.72rem;
+}
+
+.detailTable caption {
+  text-align: left;
+  padding-bottom: 0.35rem;
+  color: var(--color-foreground-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.detailTable th,
+.detailTable td {
+  padding: 0.3rem 0.5rem 0.3rem 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.detailTable th {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.line {
+  text-align: right;
+  color: var(--color-foreground-muted);
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 3.5rem 1rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--color-foreground-muted);
+  border: 1px dashed var(--line);
+}
+
+.stageNote {
+  margin: 1.1rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
+/* ---------------- SP ---------------- */
+/* A4の紙面が無いので横スクロールは作らない。行を縦へ積む */
+@media (max-width: 768px) {
+  .status {
+    padding: 0.9rem 1rem;
+  }
+
+  .statusStats {
+    gap: 1.1rem;
+  }
+
+  .statusStats dd {
+    font-size: 1rem;
+  }
+
+  .step {
+    padding: 1.2rem 1rem 1.35rem;
+  }
+
+  .statusFile {
+    max-width: 14ch;
+  }
+
+  .rowTop,
+  .rowBottom {
+    flex-wrap: wrap;
+    gap: 0.3rem 0.6rem;
+  }
+
+  .rowClient,
+  .rowDesc {
+    flex: 1 0 100%;
+  }
+
+  .rowAmount,
+  .rowDiff {
+    width: auto;
+    text-align: left;
+  }
+
+  .detailKeys {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+
+  .detailKeys dd {
+    margin-bottom: 0.45rem;
+  }
+
+  .detailTable {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* ---------------- 動きを減らす設定 ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .drop,
+  .ghostButton,
+  .primaryButton,
+  .tab,
+  .docItem {
+    transition: none;
+  }
+}
