@@ -1,0 +1,754 @@
+/* ==========================================================================
+   TableUnifyTool — 列マッピング統合
+   地は墨（サイト共通の暗色）。主役はマッピング盤なので、左の操作パネルは静かに。
+   ⚠ filter はアニメさせない（iOS/WebKit で滲みが残る）。強弱は罫線と字間で作る。
+   ========================================================================== */
+
+.tool {
+  --line: #222222;
+  --line-soft: #1a1a1a;
+  --raise: rgba(255, 255, 255, 0.022);
+  --raise-2: rgba(255, 255, 255, 0.045);
+  --gold: var(--color-accent);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+/* ---------------- ステータス ---------------- */
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+}
+
+.statusMain {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.statusFile {
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipSample {
+  flex: none;
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--gold);
+  border: 1px solid rgba(200, 169, 110, 0.42);
+  padding: 3px 9px;
+}
+
+.statusStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.statusStats div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.statusStats dt {
+  font-size: 0.63rem;
+  letter-spacing: 0.16em;
+  color: var(--color-foreground-muted);
+}
+
+.statusStats dd {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusStats dd span {
+  margin-left: 2px;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+/* ---------------- レイアウト ---------------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+  /* 触ってすぐ結果が見えるほうを先に置く */
+  .stage {
+    order: -1;
+  }
+}
+
+/* ---------------- 左：操作パネル ---------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.step {
+  border: 1px solid var(--line);
+  background: var(--raise);
+  padding: 1.35rem 1.25rem 1.5rem;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.stepNum {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.stepNote {
+  margin: 0.8rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
+.inlineLink {
+  margin-left: 0.4rem;
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200, 169, 110, 0.35);
+}
+
+.inlineLink:hover {
+  border-bottom-color: var(--gold);
+}
+
+/* ---- ドロップゾーン ---- */
+.drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 2rem 1rem;
+  border: 1px dashed #333333;
+  background: rgba(255, 255, 255, 0.012);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.drop:hover,
+.drop:focus-visible {
+  border-color: rgba(200, 169, 110, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  outline: none;
+}
+
+.dropOver {
+  border-color: var(--gold);
+  background: rgba(200, 169, 110, 0.06);
+}
+
+.dropIcon {
+  width: 26px;
+  height: 20px;
+  border: 1px solid #555555;
+  border-top-width: 6px;
+  border-top-color: #444444;
+}
+
+.dropText {
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+}
+
+.dropSub {
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ---- ボタン群 ---- */
+.rowButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #333333;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.ghostButton:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.ghostButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.72rem 1.1rem;
+  border: 1px solid var(--color-foreground);
+  background: var(--color-foreground);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    background var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.primaryButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---- 指摘 ---- */
+.issues {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.issues li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  padding: 0.35rem 0.5rem;
+  border-left: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.issueError {
+  border-left-color: #8d5a5a;
+}
+
+.issueWarn {
+  border-left-color: #6d6146;
+}
+
+.issueLine {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--color-foreground-muted);
+}
+
+.issueMore {
+  color: var(--color-foreground-muted);
+}
+
+.issueSummary {
+  margin: 0.8rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
+/* ---- 選択行 ---- */
+.selectRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  font-size: 0.74rem;
+  color: var(--color-foreground-muted);
+}
+
+/*
+ * ⚠ iOS(WebKit) 対策：`appearance` を外さないと `<select>` がネイティブ描画のままになり、
+ *   白地のコントロールに明色の文字が乗って **中身が読めなくなる**（2026-08-23 WebKit実測で発見）。
+ *   Chromium では黒地で正しく出るため、PCの確認だけでは絶対に見つからない。
+ *   矢印はネイティブごと消えるので、data URI の SVG で描き直す。border-radius:0 は
+ *   iOS が勝手に角を丸めるのを止めるため。
+ */
+.selectRow select,
+.metaRow select,
+.colKind {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.selectRow select,
+.metaRow select {
+  flex: 1;
+  max-width: 220px;
+  padding: 0.4rem 1.6rem 0.4rem 0.5rem;
+  border: 1px solid #333333;
+  background-color: #121212;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+}
+
+/* ---- 出力スキーマの列 ---- */
+.colList {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  max-height: 340px;
+  overflow-y: auto;
+  border-top: 1px solid var(--line-soft);
+}
+
+.colRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.1rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.colMove {
+  display: flex;
+  flex-direction: column;
+}
+
+.colMove button {
+  width: 18px;
+  height: 13px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-foreground-muted);
+  font-size: 0.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.colMove button:hover:not(:disabled) {
+  color: var(--gold);
+}
+
+.colMove button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.colName {
+  min-width: 0;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid #2a2a2a;
+  background: #121212;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+}
+
+.colName:focus {
+  border-color: rgba(200, 169, 110, 0.5);
+  outline: none;
+}
+
+.colKind {
+  padding: 0.32rem 1.35rem 0.32rem 0.3rem;
+  border: 1px solid #2a2a2a;
+  background-color: #121212;
+  color: var(--color-foreground-muted);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+}
+
+.colRequired {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.66rem;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.colDelete {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-foreground-muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.colDelete:hover:not(:disabled) {
+  color: #c79a9a;
+}
+
+.colDelete:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* ---- 書き出しの選択肢 ---- */
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkList label,
+.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--color-foreground-muted);
+  cursor: pointer;
+}
+
+.exportRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.exportRow .primaryButton {
+  width: auto;
+  flex: 1 1 auto;
+}
+
+.busy,
+.message {
+  margin: 0.8rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.6;
+}
+
+.busy {
+  color: var(--gold);
+}
+
+.message {
+  color: #c79a9a;
+}
+
+/* ---------------- 右：マッピング盤とプレビュー ---------------- */
+.stage {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+}
+
+.tabList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.docItem {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  max-width: 260px;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #2a2a2a;
+  background: transparent;
+  color: var(--color-foreground-muted);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    background var(--duration-fast) var(--ease-default);
+}
+
+.docItem:hover {
+  background: var(--raise-2);
+  color: var(--color-foreground);
+}
+
+.docItemActive {
+  border-color: rgba(200, 169, 110, 0.5);
+  background: var(--raise-2);
+  color: var(--color-foreground);
+}
+
+.docName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docCount {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--color-foreground-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.tabActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.sourceMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--line-soft);
+  background: var(--raise);
+}
+
+.metaRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  color: var(--color-foreground-muted);
+}
+
+.empty {
+  margin: 0;
+  padding: 3rem 1rem;
+  border: 1px dashed #2a2a2a;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-foreground-muted);
+}
+
+/* ---- 統合プレビュー ---- */
+.previewHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.previewHead h4 {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.previewHead span {
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.previewScroll {
+  overflow-x: auto;
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid var(--line-soft);
+}
+
+.preview {
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+  font-size: 0.72rem;
+}
+
+.preview th,
+.preview td {
+  padding: 0.35rem 0.7rem;
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.preview th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #141414;
+  font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground);
+}
+
+.preview th[data-origin="source"] {
+  color: var(--color-foreground-muted);
+}
+
+.preview th[data-origin="unmapped"] {
+  color: #8f8266;
+}
+
+.preview td[data-kind="number"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.preview tbody tr:hover td {
+  background: var(--raise-2);
+}
+
+.cellMismatch {
+  text-decoration: underline dotted #8d7a5a;
+  text-underline-offset: 3px;
+}
+
+.spHint {
+  display: none;
+  margin: 0;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+.stageNote {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
+@media (max-width: 900px) {
+  .spHint {
+    display: block;
+  }
+
+  .statusStats {
+    gap: 1rem;
+  }
+
+  .colRow {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "move name delete"
+      "move kind required";
+    row-gap: 0.3rem;
+  }
+
+  .colMove {
+    grid-area: move;
+  }
+
+  .colName {
+    grid-area: name;
+  }
+
+  .colKind {
+    grid-area: kind;
+  }
+
+  .colRequired {
+    grid-area: required;
+  }
+
+  .colDelete {
+    grid-area: delete;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drop,
+  .ghostButton,
+  .primaryButton,
+  .docItem {
+    transition: none;
+  }
+}

@@ -1,0 +1,573 @@
+/* ==========================================================================
+   MappingBoard — 列と列を線で結ぶマッピング盤（T-04 の主役の絵）
+
+   ★ --rowH / --laneW は MappingBoard.tsx の ROW_H / LANE_W と必ず同じ値にする。
+     線の座標は index から計算しているので、ここがズレると線が行の中心から外れる。
+
+   ★ 作りは SP 優先（〜900px＝カードを縦に並べる）→ 901px 以上で3カラムの盤になる。
+     線とレーンは SP では display:none（縦に線を描くと交差して読めなくなる）。
+
+   ★ 使ってよい線の表現は stroke / stroke-width / stroke-dasharray / opacity だけ。
+     filter・mix-blend-mode・3D transform は使わない（共通仕様 §3-6・iOS 安全）。
+   ========================================================================== */
+
+.board {
+  --rowH: 40px;
+  --laneW: 120px;
+  --line: #222222;
+  --line-soft: #1a1a1a;
+  --raise: rgba(255, 255, 255, 0.022);
+  --raise-2: rgba(255, 255, 255, 0.045);
+  --gold: var(--color-accent);
+  --stroke-ok: #6b6b6b;
+  --stroke-review: #8a7748;
+  min-width: 0;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+/* ---------------- 骨格（SP：1カラム） ---------------- */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.4rem;
+}
+
+.headTargets {
+  order: 1;
+}
+.targets {
+  order: 2;
+}
+.headSources {
+  order: 3;
+}
+.sources {
+  order: 4;
+}
+
+.headSources,
+.headTargets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.7rem;
+  min-width: 0;
+  padding: 0 0 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.headTitle {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.headSub {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headLane {
+  display: none;
+}
+
+.headLaneLabel {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  color: var(--color-foreground-muted);
+}
+
+.sources,
+.targets {
+  min-width: 0;
+}
+
+.empty {
+  margin: 0;
+  padding: 1.4rem 0.6rem;
+  border: 1px dashed var(--line);
+  font-size: 0.75rem;
+  color: var(--color-foreground-muted);
+  text-align: center;
+}
+
+/* ---------------- 左：取り込んだファイルの列 ---------------- */
+.sourceRow {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: var(--rowH);
+  margin: 0;
+  padding: 0 0.6rem;
+  border: none;
+  border-bottom: 1px solid var(--line-soft);
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default),
+    opacity var(--duration-fast) var(--ease-default);
+}
+
+.sourceRow:hover:not(:disabled) {
+  background: var(--raise-2);
+}
+
+.sourceRow:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: -1px;
+}
+
+.sourceName {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sourceSample {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sourceUsedMark {
+  flex: none;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  font-family: var(--font-heading);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  color: var(--color-foreground-muted);
+}
+
+.sourceUsed .sourceName {
+  color: var(--color-foreground);
+}
+
+/* 線がつながっている側（右端）に印を置く＝線の付け根が分かる */
+.sourceHighlight {
+  background: var(--raise-2);
+  box-shadow: inset -2px 0 0 var(--gold);
+}
+
+.sourceHighlight .sourceUsedMark {
+  border-color: rgba(200, 169, 110, 0.45);
+  color: var(--gold);
+}
+
+/* ほかの出力列がすでに使っている入力列（＝二重割当を防ぐ） */
+.sourceBlocked,
+.sourceRow:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
+}
+
+/* 出力列を選んでいるあいだは、空いている入力列を明るく見せる */
+.boardPicking .sourceRow:not(:disabled) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.boardPicking .sourceRow:not(:disabled):hover {
+  background: rgba(200, 169, 110, 0.08);
+  box-shadow: inset -2px 0 0 var(--gold);
+}
+
+/* ---------------- 中央：線 ---------------- */
+.lane {
+  display: none;
+  position: relative;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.laneSvg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.line {
+  fill: none;
+  stroke: var(--stroke-ok);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  transition:
+    stroke var(--duration-normal) var(--ease-default),
+    stroke-width var(--duration-normal) var(--ease-default),
+    opacity var(--duration-normal) var(--ease-default);
+}
+
+/* partial / similar ＝要確認。破線で描く */
+.lineReview {
+  stroke: var(--stroke-review);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+
+/* ホバー／フォーカス中の1本だけを濃くする */
+.lineActive {
+  stroke: var(--gold);
+  stroke-width: 2;
+  opacity: 1;
+}
+
+.laneDim .line {
+  opacity: 0.28;
+}
+
+.laneDim .lineActive {
+  opacity: 1;
+}
+
+/* ---------------- 右：出力する管理表の列 ---------------- */
+.targetRow {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+  padding: 0.7rem 0.8rem 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.targetRow:last-child {
+  margin-bottom: 0;
+}
+
+.targetRowActive {
+  background: var(--raise-2);
+}
+
+/* 選択中＝2クリックの1手目。線の付け根（左端）に印を置く */
+.targetRowSelected {
+  background: var(--raise-2);
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+
+.targetPick {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.targetPick:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.targetName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.targetKind,
+.targetRequired,
+.markReview,
+.markPick,
+.markEmpty {
+  flex: none;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  font-family: var(--font-heading);
+  font-size: 0.56rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.targetRequired {
+  border-color: #2e2e2e;
+}
+
+.markReview,
+.markPick {
+  border-color: rgba(200, 169, 110, 0.42);
+  color: var(--gold);
+}
+
+.markEmpty {
+  border-style: dashed;
+}
+
+/*
+ * ⚠ iOS(WebKit) 対策：`appearance` を外さないと `<select>` がネイティブ描画のままになり、
+ *   白地のコントロールに明色の文字が乗って **どの列を割り当てたか読めなくなる**
+ *   （2026-08-23 WebKit実測で発見）。Chromium では黒地で正しく出るため、
+ *   PCの確認だけでは絶対に見つからない。矢印はネイティブごと消えるので描き直す。
+ */
+.select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 0 1.6rem 0 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #101010;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  transition: border-color var(--duration-normal) var(--ease-default);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* 候補が複数あって自動では割り当てていない＝人に選んでほしい */
+.selectWarn {
+  border-color: rgba(200, 169, 110, 0.55);
+  background: rgba(200, 169, 110, 0.05);
+}
+
+/* ---- 固定値の入力 ---- */
+.constEdit {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.constInput {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 32px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--gold);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+}
+
+.constInput:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.miniButton {
+  flex: none;
+  padding: 0.34rem 0.5rem;
+  border: 1px solid #333333;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.miniButton:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* SP のカードにだけ出す、割り当てた入力列の実データ1件 */
+.spSample {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.7rem;
+  color: var(--color-foreground-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------- 盤の下：候補の知らせと操作の案内 ---------------- */
+.notes {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.notes li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  border-left: 2px solid rgba(200, 169, 110, 0.45);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.noteTag {
+  font-family: var(--font-heading);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+  color: var(--gold);
+}
+
+.hint {
+  margin: 0.9rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
+/* ==========================================================================
+   PC（901px 以上）＝3カラムの盤。ここで初めて線が出る
+   ========================================================================== */
+@media (min-width: 901px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) var(--laneW) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, auto);
+    gap: 0;
+  }
+
+  /* 明示配置なので order は効かない＝左・中央・右に戻る */
+  .headSources {
+    grid-area: 1 / 1;
+    padding: 0 0.6rem 0.5rem;
+  }
+
+  .headLane {
+    grid-area: 1 / 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 0.55rem;
+  }
+
+  .headTargets {
+    grid-area: 1 / 3;
+    padding: 0 0.6rem 0.5rem;
+  }
+
+  /* ⚠ 上辺に border を足すと行が1px下がって線とズレる。上だけ外す */
+  .sources {
+    grid-area: 2 / 1;
+    border: 1px solid var(--line);
+    border-top: none;
+  }
+
+  .lane {
+    grid-area: 2 / 2;
+    display: block;
+  }
+
+  .targets {
+    grid-area: 2 / 3;
+    border: 1px solid var(--line);
+    border-top: none;
+  }
+
+  /* 行は正確に var(--rowH)。ここが崩れると線が中心から外れる */
+  .targetRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: var(--rowH);
+    margin-bottom: 0;
+    padding: 0 0.6rem;
+    border: none;
+    border-bottom: 1px solid var(--line-soft);
+    background: transparent;
+  }
+
+  .targetRowActive,
+  .targetRowSelected {
+    background: var(--raise-2);
+  }
+
+  .targetPick {
+    flex: 1 1 auto;
+  }
+
+  .select,
+  .constEdit {
+    flex: 0 1 168px;
+  }
+
+  .select {
+    height: 26px;
+    font-size: 0.72rem;
+  }
+
+  .constInput {
+    height: 26px;
+    font-size: 0.72rem;
+  }
+
+  .miniButton {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.62rem;
+  }
+
+  .spSample {
+    display: none;
+  }
+
+  .empty {
+    padding: 2rem 0.6rem;
+  }
+}
+
+/* ==========================================================================
+   動きを減らす設定：transition は全部切る（線そのものは出す）
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .sourceRow,
+  .targetRow,
+  .line,
+  .select,
+  .constInput,
+  .miniButton {
+    transition: none;
+  }
+}
