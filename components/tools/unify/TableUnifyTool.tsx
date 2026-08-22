@@ -844,6 +844,11 @@ export default function TableUnifyTool() {
                 <span>この端末に保存する</span>
               </label>
             </div>
+
+            {/* 共通仕様 §6＝localStorage へ入れるものは、画面に明記する */}
+            <p className={styles.stepNote}>
+              保存した管理表の形は、この端末の中だけに残ります。送信されません。
+            </p>
           </section>
 
           {/* ---- 3. 書き出す ---- */}

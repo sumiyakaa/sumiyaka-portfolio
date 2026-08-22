@@ -26,8 +26,8 @@ AKASHIKI（灯敷）は、Webデザイン・フロントエンド開発を手が
 
 ## Tools
 ブラウザの中だけで動く業務ツールを公開しています。読み込んだファイルは端末の外に送信されません。
-- 請求書PDF 一括作成: https://akashiki.com/tools/invoice-batch — Excel/CSVの台帳から取引先ごとの請求書PDFを一括生成。適格請求書（インボイス）の記載要件に対応。
-- 入金消込 突合: https://akashiki.com/tools/payment-reconcile — 銀行の入出金明細CSVと請求台帳を突き合わせ、入金済み・要確認・未入金に仕分け。振込名義のゆれ・手数料の差引・合算入金・分割入金にも理由つきで対応。
+- 請求書PDF 一括作成: https://akashiki.com/tools/invoice-batch — Excel/CSVの台帳から取引先ごとの請求書PDFを一括生成。適格請求書（インボイス）の記載項目に対応。
+- 入金消込 突合: https://akashiki.com/tools/payment-reconcile — 銀行の入出金明細CSVと請求台帳を突き合わせ、自動一致・要確認・未入金に仕分け。振込名義のゆれ・手数料の差引・合算入金・分割入金にも理由つきで対応。
 - 電帳法ファイル名 一括リネーム: https://akashiki.com/tools/evidence-rename — 証憑ファイルの束を台帳の取引年月日・取引先・取引金額をもとに一括リネームし、索引簿とあわせてZIPで書き出し。中身のバイト列は変更しない。
 - 列マッピング統合: https://akashiki.com/tools/table-unify — 列の並びも見出し名もバラバラなExcel/CSVを、決めた管理表の形へ揃えて1つに統合。対応づけは機械が下書きし、人が確定できる。
 - 名簿クレンジング: https://akashiki.com/tools/list-cleanup — 顧客名簿の表記ゆれを種類ごとに診断し、選んだ規則だけで一括修正。修正前後の対比と重複行の検出つき。

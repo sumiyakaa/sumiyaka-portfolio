@@ -13,7 +13,7 @@ const OG_URL =
 export const metadata: Metadata = {
   title: "請求書PDF 一括作成 — AKASHIKI Tools",
   description:
-    "Excelの台帳を読み込むと、取引先ごとの請求書PDFがまとめて出ます。適格請求書（インボイス）の記載要件に対応。ファイルはブラウザの中だけで処理され、外部へ送信されません。",
+    "Excelの台帳を読み込むと、取引先ごとの請求書PDFがまとめて出ます。適格請求書（インボイス）の記載項目に対応。ファイルはブラウザの中だけで処理され、外部へ送信されません。",
   alternates: { canonical: "/tools/invoice-batch" },
   openGraph: {
     title: "請求書PDF 一括作成 — AKASHIKI Tools",
@@ -31,7 +31,7 @@ const CAN_DO = [
   },
   {
     title: "適格請求書（インボイス）の形で",
-    body: "登録番号、税率ごとに区分した対価と消費税額、軽減税率の対象である旨。記載要件を満たしているかを画面で確かめられます。",
+    body: "登録番号、税率ごとに区分した対価と消費税額、軽減税率の対象である旨。記載項目が入っているかを画面で確かめられます。適格請求書として有効かどうかの判断は代われません。",
   },
   {
     title: "端数の扱いを、御社の運用に合わせて",
@@ -63,7 +63,7 @@ export default function InvoiceBatchPage() {
     operatingSystem: "Web browser",
     url: "https://akashiki.com/tools/invoice-batch",
     description:
-      "Excelの台帳から取引先ごとの請求書PDFを一括生成するブラウザ内完結のツール。適格請求書（インボイス）の記載要件に対応。",
+      "Excelの台帳から取引先ごとの請求書PDFを一括生成するブラウザ内完結のツール。適格請求書（インボイス）の記載項目に対応。",
     offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
     author: {
       "@type": "Organization",
@@ -102,7 +102,7 @@ export default function InvoiceBatchPage() {
 
           <ul className={styles.badges}>
             <li>ブラウザの中だけで完結</li>
-            <li>適格請求書（インボイス）対応</li>
+            <li>適格請求書の記載項目に対応</li>
             <li>Excel（.xlsx）／ CSV</li>
           </ul>
         </div>

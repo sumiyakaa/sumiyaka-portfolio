@@ -408,6 +408,15 @@
   color: #7a6c52;
 }
 
+/* ✓ が何を確かめたものかを、印の下に必ず添える。
+   確かめているのは記載項目の有無だけで、適格請求書として有効かの判断ではない */
+.checksNote {
+  margin: 0.7rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.7;
+  color: var(--color-foreground-muted);
+}
+
 /* ---- 端数・一覧・書き出し ---- */
 .selectRow {
   display: flex;

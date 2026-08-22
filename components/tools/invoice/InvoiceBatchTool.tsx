@@ -583,22 +583,30 @@ export default function InvoiceBatchTool() {
             </div>
 
             {compliance.length > 0 ? (
-              <ul className={styles.checks}>
-                {compliance.map((check) => (
-                  <li
-                    key={check.key}
-                    className={check.ok ? styles.checkOk : styles.checkNg}
-                  >
-                    <span className={styles.checkMark} aria-hidden="true">
-                      {check.ok ? "✓" : "―"}
-                    </span>
-                    <span className={styles.checkLabel}>{check.label}</span>
-                    {!check.ok && check.hint ? (
-                      <span className={styles.checkHint}>{check.hint}</span>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className={styles.checks}>
+                  {compliance.map((check) => (
+                    <li
+                      key={check.key}
+                      className={check.ok ? styles.checkOk : styles.checkNg}
+                    >
+                      <span className={styles.checkMark} aria-hidden="true">
+                        {check.ok ? "✓" : "―"}
+                      </span>
+                      <span className={styles.checkLabel}>{check.label}</span>
+                      {!check.ok && check.hint ? (
+                        <span className={styles.checkHint}>{check.hint}</span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+                {/* ✓ は記載項目が入っているかを見ているだけで、登録番号が実在の
+                    登録事業者のものかまでは確かめていない（calc.ts は書式のみ判定）。
+                    印だけを見て「要件を満たした」と読まれないよう必ず添える */}
+                <p className={styles.checksNote}>
+                  記載項目が入っているかを機械的に確かめています。適格請求書として有効かどうかの判断は代われません。
+                </p>
+              </>
             ) : null}
           </section>
 

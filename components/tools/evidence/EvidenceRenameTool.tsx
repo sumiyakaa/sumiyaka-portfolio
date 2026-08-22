@@ -581,8 +581,11 @@ export default function EvidenceRenameTool() {
 
       <p className={styles.privacy}>
         証憑も台帳も、この端末の中だけで処理されます。
+        {/* 「一度も接続しない」とは書かない。同じ画面にテンプレートとサンプルZIPの
+            ダウンロードリンクがあり、押せばHTTPが飛ぶ＝厳密には成り立たないため。
+            約束しているのは「読み込んだファイルを送らない」ことなので、そう書く */}
         <span className={styles.privacyStrong}>
-          このツールはネットワークへ一度も接続しません。
+          読み込んだファイルをネットワークへ送信することはありません。
         </span>
       </p>
 
@@ -651,7 +654,7 @@ export default function EvidenceRenameTool() {
 
               <p className={styles.stepNote}>
                 iPhone・iPadでは、iOS 18.4 より前のSafariでフォルダを選べません。
-                その場合は「ファイルを選ぶ」から個別に選んでください。
+                その場合は上の「PDF・画像をここへ」を押して、証憑を個別に選んでください。
               </p>
               <p className={styles.stepNote}>
                 対応する形式は {ACCEPTED_EXTENSIONS.join(" / ")} です。
@@ -868,7 +871,7 @@ export default function EvidenceRenameTool() {
               ) : null}
               {naming.pattern === "serial" ? (
                 <p className={styles.optionNote}>
-                  連番には取引先が入らないため、「名前から取引先を省く」は選べません。
+                  連番には取引先が入らないため、「取引先フォルダ＋名前から取引先を省く」は選べません。
                   内容は索引簿（連番・日付・金額・取引先・備考）で管理します。
                 </p>
               ) : null}
