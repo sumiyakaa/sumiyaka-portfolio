@@ -1,0 +1,378 @@
+/* ==========================================================================
+   MonthlyReportPaper — A4 横（297×210mm）の月次レポート プレビュー
+
+   ★このファイルに寸法の数値を書かない。
+     位置も大きさも色も、すべて layout.ts の PAPER_VARS から
+     CSS 変数（--rp-*）として渡ってくる。1pt = var(--pt)。
+     ＝ 版面を直せば、紙とプレビューが同時に動く。
+
+   ⚠ filter / mix-blend-mode / clip-path は使わない（iOS/WebKit 安全のため）。
+   ========================================================================== */
+
+.paper {
+  /* container query 非対応環境のフォールバック（紙幅 ≈900px 相当） */
+  --pt: 1.069px;
+
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 297 / 210;
+  margin-inline: auto;
+  overflow: hidden;
+  background: var(--rp-paper);
+  color: var(--rp-ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  container-type: inline-size;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+@supports (width: 1cqw) {
+  .paper {
+    /* A4 横の幅 841.89pt を 100cqw に割り付ける */
+    --pt: 0.11878cqw;
+  }
+}
+
+/* ---- ヘッダー ---- */
+.head {
+  position: absolute;
+  top: calc(var(--rp-head-top) * var(--pt));
+  left: calc(var(--rp-l) * var(--pt));
+  width: calc(var(--rp-w) * var(--pt));
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(var(--rp-period-gap) * var(--pt));
+}
+
+.headLeft {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--rp-period-gap) * var(--pt));
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: calc(var(--rp-title-size) * var(--pt));
+  line-height: 1;
+  letter-spacing: calc(var(--rp-title-track) * var(--pt));
+  white-space: nowrap;
+  color: var(--rp-ink);
+}
+
+.period {
+  font-size: calc(var(--rp-period-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-sub);
+  white-space: nowrap;
+}
+
+.headRight {
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.metaLine {
+  margin: 0;
+  font-size: calc(var(--rp-meta-size) * var(--pt));
+  line-height: calc(var(--rp-meta-line) * var(--pt));
+  color: var(--rp-sub);
+  white-space: nowrap;
+}
+
+.headRule {
+  position: absolute;
+  top: calc(var(--rp-rule-top) * var(--pt));
+  left: calc(var(--rp-l) * var(--pt));
+  width: calc(var(--rp-w) * var(--pt));
+  height: calc(var(--rp-rule) * var(--pt));
+  background: var(--rp-ink);
+}
+
+/* ---- KPI ---- */
+.kpis {
+  position: absolute;
+  top: calc(var(--rp-kpi-top) * var(--pt));
+  left: calc(var(--rp-l) * var(--pt));
+  width: calc(var(--rp-w) * var(--pt));
+  height: calc(var(--rp-kpi-h) * var(--pt));
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(var(--rp-kpi-gap) * var(--pt));
+}
+
+.kpi {
+  position: relative;
+  background: var(--rp-band);
+  border-top: calc(var(--rp-rule) * var(--pt)) solid var(--rp-ink);
+  padding-inline: calc(var(--rp-kpi-pad) * var(--pt));
+}
+
+.kpiLabel {
+  position: absolute;
+  top: calc(var(--rp-kpi-label-top) * var(--pt));
+  left: calc(var(--rp-kpi-pad) * var(--pt));
+  font-size: calc(var(--rp-kpi-label-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-sub);
+}
+
+.kpiValue {
+  position: absolute;
+  bottom: calc(var(--rp-kpi-value-bottom) * var(--pt));
+  right: calc(var(--rp-kpi-pad) * var(--pt));
+  font-size: calc(var(--rp-kpi-value-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-ink);
+  white-space: nowrap;
+}
+
+.kpiSub {
+  position: absolute;
+  bottom: calc(var(--rp-kpi-sub-bottom) * var(--pt));
+  right: calc(var(--rp-kpi-pad) * var(--pt));
+  left: calc(var(--rp-kpi-pad) * var(--pt));
+  font-size: calc(var(--rp-kpi-sub-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-sub);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- 主グラフ ---- */
+.chart {
+  position: absolute;
+  top: calc(var(--rp-chart-top) * var(--pt));
+  left: calc(var(--rp-l) * var(--pt));
+  width: calc(var(--rp-w) * var(--pt));
+  height: calc(var(--rp-chart-h) * var(--pt));
+}
+
+.chartHead {
+  height: calc(var(--rp-chart-head-h) * var(--pt));
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(var(--rp-legend-item-gap) * var(--pt));
+}
+
+.chartTitle {
+  font-size: calc(var(--rp-chart-head-size) * var(--pt));
+  line-height: 1;
+  letter-spacing: calc(var(--rp-chart-head-track) * var(--pt));
+  color: var(--rp-sub);
+  white-space: nowrap;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--rp-legend-item-gap) * var(--pt));
+  font-size: calc(var(--rp-legend-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-sub);
+  white-space: nowrap;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--rp-legend-gap) * var(--pt));
+}
+
+.swatch {
+  display: inline-block;
+  width: calc(var(--rp-legend-swatch-w) * var(--pt));
+  height: calc(var(--rp-legend-swatch-h) * var(--pt));
+}
+
+.swatchInk {
+  background: var(--rp-ink);
+}
+
+.swatchBar {
+  background: var(--rp-bar);
+}
+
+.dash {
+  display: inline-block;
+  width: calc(var(--rp-legend-swatch-w) * var(--pt));
+  height: calc(var(--rp-line-thick) * var(--pt));
+}
+
+.dashYoy {
+  /* 破線。紙面の前年同月マーカーと同じ見え方にする */
+  background: repeating-linear-gradient(
+    to right,
+    var(--rp-yoy) 0,
+    var(--rp-yoy) calc(2.2 * var(--pt)),
+    transparent calc(2.2 * var(--pt)),
+    transparent calc(3.8 * var(--pt))
+  );
+}
+
+.dashLine {
+  background: var(--rp-sub);
+}
+
+.chartBody {
+  height: calc((var(--rp-chart-h) - var(--rp-chart-head-h)) * var(--pt));
+}
+
+.chartBody svg {
+  display: block;
+  /*
+   * ⚠ いちばん上の目盛ラベルは目盛線の高さに中央ぞろえで置くので、上へ 3pt ほどはみ出す。
+   *   SVG は既定で viewBox の外を切るため、**画面だけ「1,600」が半分に切れて紙と食い違う**
+   *   （2026-08-23 の検品で実測）。viewBox を広げると紙と縮尺がずれるので、はみ出しを許す。
+   *   紙面 .paper 側が overflow:hidden なので、紙の外へは出ない。
+   */
+  overflow: visible;
+}
+
+/* ---- 下段：ランキングと要約に共通の見出し ---- */
+.blockHead {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: calc(var(--rp-block-head-size) * var(--pt));
+  line-height: 1;
+  letter-spacing: calc(var(--rp-block-head-track) * var(--pt));
+  color: var(--rp-sub);
+  white-space: nowrap;
+}
+
+.blockRule {
+  position: absolute;
+  top: calc(var(--rp-block-rule-top) * var(--pt));
+  left: 0;
+  width: 100%;
+  height: calc(var(--rp-hair) * var(--pt));
+  background: var(--rp-hairline);
+}
+
+/* ---- 下段左：区分別ランキング ---- */
+.rank {
+  position: absolute;
+  top: calc(var(--rp-lower-top) * var(--pt));
+  left: calc(var(--rp-l) * var(--pt));
+  width: calc(var(--rp-rank-w) * var(--pt));
+}
+
+.rankColHead,
+.rankRow {
+  display: grid;
+  grid-template-columns:
+    calc(var(--rp-rank-name-w) * var(--pt))
+    calc(var(--rp-rank-bar-w) * var(--pt))
+    calc(var(--rp-rank-amount-w) * var(--pt))
+    calc(var(--rp-rank-share-w) * var(--pt))
+    calc(var(--rp-rank-yoy-w) * var(--pt));
+  align-items: center;
+}
+
+.rankColHead {
+  position: absolute;
+  top: calc(var(--rp-rank-colhead-top) * var(--pt));
+  left: 0;
+  width: 100%;
+  height: calc(var(--rp-rank-colhead-h) * var(--pt));
+  font-size: calc(var(--rp-rank-colhead-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-sub);
+}
+
+.rankRows {
+  position: absolute;
+  top: calc(var(--rp-rank-rows-top) * var(--pt));
+  left: 0;
+  width: 100%;
+}
+
+.rankRow {
+  height: calc(var(--rp-rank-row-h) * var(--pt));
+  font-size: calc(var(--rp-rank-text-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-ink);
+}
+
+.rankName {
+  padding-right: calc(6 * var(--pt));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rankBarTrack {
+  position: relative;
+  display: block;
+  width: calc(var(--rp-rank-bar-w) * var(--pt));
+  height: calc(var(--rp-rank-bar-h) * var(--pt));
+  background: var(--rp-band);
+}
+
+.rankBarFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  background: var(--rp-bar);
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- 下段右：要約 ---- */
+.summary {
+  position: absolute;
+  top: calc(var(--rp-lower-top) * var(--pt));
+  left: calc((var(--rp-l) + var(--rp-sum-left)) * var(--pt));
+  width: calc(var(--rp-sum-w) * var(--pt));
+}
+
+.summaryBody {
+  position: absolute;
+  top: calc(var(--rp-sum-top) * var(--pt));
+  left: 0;
+  width: 100%;
+}
+
+.summaryLine {
+  margin: 0 0 calc(var(--rp-sum-gap) * var(--pt));
+  font-size: calc(var(--rp-sum-size) * var(--pt));
+  line-height: calc(var(--rp-sum-line) * var(--pt));
+  color: var(--rp-ink);
+  text-align: justify;
+}
+
+.summaryLine:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- フッター ---- */
+.footer {
+  position: absolute;
+  top: calc(var(--rp-footer-top) * var(--pt));
+  left: calc(var(--rp-l) * var(--pt));
+  width: calc(var(--rp-w) * var(--pt));
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(var(--rp-legend-item-gap) * var(--pt));
+  font-size: calc(var(--rp-footer-size) * var(--pt));
+  line-height: 1;
+  color: var(--rp-sub);
+  white-space: nowrap;
+}
