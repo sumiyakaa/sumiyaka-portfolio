@@ -1,0 +1,1096 @@
+/* ==========================================================================
+   ListCleanupTool — 名簿クレンジング（T-05）
+   地は墨（サイト共通の暗色）。主役は右の「修正前 / 修正後」の対比。
+   ⚠ filter はアニメさせない（iOS/WebKit 安全・共通仕様§3-6）。
+      色の変化は background-color と opacity のトランジションだけで作る。
+   ========================================================================== */
+
+.tool {
+  --line: #222222;
+  --line-soft: #1a1a1a;
+  --raise: rgba(255, 255, 255, 0.022);
+  --raise-2: rgba(255, 255, 255, 0.045);
+  --gold: var(--color-accent);
+  --stage-bg: #0d0d0d;
+  --ink-cut: #c78f8f; /* 消えた側 */
+  --ink-add: #d8bd88; /* 入った側 */
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+}
+
+/* ---------------- ステータス ---------------- */
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--raise);
+}
+
+.statusMain {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.statusFile {
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipSample {
+  flex: none;
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--gold);
+  border: 1px solid rgba(200, 169, 110, 0.42);
+  padding: 3px 9px;
+}
+
+.statusStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.statusStats div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.statusStats dt {
+  font-size: 0.63rem;
+  letter-spacing: 0.16em;
+  color: var(--color-foreground-muted);
+}
+
+.statusStats dd {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusStats dd span {
+  margin-left: 2px;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+/* ---------------- レイアウト ---------------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+  /* 触ってすぐ結果が見えるほうを先に置く */
+  .stage {
+    order: -1;
+  }
+}
+
+/* ---------------- 左：操作パネル ---------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.step {
+  border: 1px solid var(--line);
+  background: var(--raise);
+  padding: 1.35rem 1.25rem 1.5rem;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.stepNum {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.stepNote {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.74rem;
+  line-height: 1.8;
+  color: var(--color-foreground-muted);
+}
+
+.stepFine {
+  margin: 0.9rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.8;
+  color: #7f7f7f;
+}
+
+/* ---- ドロップゾーン ---- */
+.drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.7rem 1rem;
+  border: 1px dashed #333333;
+  background: rgba(255, 255, 255, 0.012);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.drop:hover,
+.drop:focus-visible {
+  border-color: rgba(200, 169, 110, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  outline: none;
+}
+
+.dropOver {
+  border-color: var(--gold);
+  background: rgba(200, 169, 110, 0.06);
+}
+
+.dropIcon {
+  width: 26px;
+  height: 20px;
+  border: 1px solid #555555;
+  border-top-width: 6px;
+  border-top-color: #444444;
+}
+
+.dropText {
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+}
+
+.dropSub {
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ---- ボタン ---- */
+.rowButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #333333;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.ghostButton:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.ghostButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.62rem 1.1rem;
+  border: 1px solid var(--color-foreground);
+  background: var(--color-foreground);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    background var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.primaryButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.miniButton {
+  padding: 0.24rem 0.55rem;
+  border: 1px solid #333333;
+  background: transparent;
+  color: var(--color-foreground-muted);
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-normal) var(--ease-default);
+}
+
+.miniButton:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ---- 指摘（読み取りの指摘 ＋ 直さずに知らせるもの） ---- */
+.issues {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.issues li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  line-height: 1.65;
+  padding: 0.4rem 0.55rem;
+  border-left: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.issueError {
+  border-left-color: #8d5a5a;
+}
+
+.issueWarn {
+  border-left-color: #6d6146;
+}
+
+.issueNotice {
+  border-left-color: #3f4c57;
+}
+
+.issueLine {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--color-foreground-muted);
+}
+
+.issueBody {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.issueSample {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.66rem;
+  color: #6f6f6f;
+  word-break: break-all;
+}
+
+.issueMore {
+  color: var(--color-foreground-muted);
+}
+
+/* ---- 02 列の役割 ---- */
+.roleList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.roleItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 8.4rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roleHeader {
+  font-size: 0.74rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roleGuess {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground-muted);
+  border: 1px solid var(--line);
+  padding: 1px 5px;
+}
+
+/*
+ * ⚠ iOS(WebKit) 対策。appearance を外さないと、WebKit は select をネイティブ描画のまま出す。
+ *   暗色の地に白いコントロールが出て、選択中の値が読めなくなる（Chromium では正しく黒地で出るので
+ *   PCの確認では絶対に見つからない）。列の役割はこのセレクトでしか変えられないため、
+ *   放置すると iOS では機能そのものが使えない。
+ *   背景は半透明にせず不透明で置く。矢印はネイティブごと消えるので描き直す。
+ */
+.roleSelect,
+.selectRow select {
+  width: 100%;
+  padding: 0.34rem 1.6rem 0.34rem 0.4rem;
+  border: 1px solid var(--line);
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #121212;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  border-radius: 0;
+}
+
+/* ---- 03 規則 ---- */
+.ruleGroup {
+  margin-top: 1.1rem;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 0.8rem;
+}
+
+.ruleGroupHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.riskTag {
+  font-size: 0.63rem;
+  letter-spacing: 0.14em;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+}
+
+.riskSafe {
+  color: #8fa08a;
+  border-color: #33403a;
+}
+
+.riskCaution {
+  color: #b8a276;
+  border-color: #4a4132;
+}
+
+.riskDanger {
+  color: #c78f8f;
+  border-color: #52393a;
+}
+
+.ruleGroupCount {
+  font-size: 0.66rem;
+  color: var(--color-foreground-muted);
+}
+
+.ruleGroupActions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.ruleList {
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ruleItem {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+}
+
+.ruleLabel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+
+.ruleLabel input {
+  accent-color: var(--gold);
+}
+
+.ruleName {
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+}
+
+.ruleExample {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: #7d7d7d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ruleBadge {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.82rem;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ruleBadge span {
+  margin-left: 2px;
+  font-size: 0.6rem;
+  color: var(--color-foreground-muted);
+}
+
+.ruleDetail {
+  margin: 0.2rem 0 0 1.45rem;
+  font-size: 0.66rem;
+  line-height: 1.7;
+  color: #767676;
+}
+
+.confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.45rem 0 0 1.45rem;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.68rem;
+  line-height: 1.7;
+  color: #dcc6a4;
+  border-left: 2px solid var(--gold);
+  background: rgba(200, 169, 110, 0.07);
+}
+
+/* ---- 04 一覧 ---- */
+.selectRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  font-size: 0.72rem;
+  color: var(--color-foreground-muted);
+}
+
+.selectRow select {
+  width: auto;
+  min-width: 12rem;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--color-foreground-muted);
+  cursor: pointer;
+}
+
+.checkRow input {
+  accent-color: var(--gold);
+}
+
+.rangeRow {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 0.72rem;
+  color: var(--color-foreground-muted);
+}
+
+.rangeRow input {
+  width: 100%;
+  margin-top: 0.35rem;
+  accent-color: var(--gold);
+}
+
+.docList {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  border-top: 1px solid var(--line-soft);
+}
+
+.docItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: baseline;
+  width: 100%;
+  padding: 0.5rem 0.35rem;
+  border: none;
+  border-bottom: 1px solid var(--line-soft);
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.docItem:hover {
+  background: var(--raise-2);
+}
+
+.docItemActive {
+  background: var(--raise-2);
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+
+.docNo {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.docWhere {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docCount {
+  font-size: 0.64rem;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.details {
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 0.8rem;
+}
+
+.summary {
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--color-foreground);
+}
+
+/* ---- 05 書き出し ---- */
+.exportRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.busy,
+.message {
+  margin: 0.8rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.7;
+}
+
+.busy {
+  color: var(--gold);
+}
+
+.message {
+  color: #c79a9a;
+}
+
+/* ==========================================================================
+   右：ステージ（★主役 — ビフォーアフター対比）
+   ========================================================================== */
+.stage {
+  min-width: 0;
+}
+
+.stageBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.stageTitle {
+  margin: 0;
+  font-size: 0.86rem;
+  letter-spacing: 0.1em;
+}
+
+.stageToggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--color-foreground-muted);
+  cursor: pointer;
+}
+
+.toggle input {
+  accent-color: var(--gold);
+}
+
+.compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.55rem;
+}
+
+.pane {
+  min-width: 0;
+}
+
+.paneTitleBefore,
+.paneTitleAfter {
+  margin: 0 0 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.paneTitleBefore::before,
+.paneTitleAfter::before {
+  content: "";
+  width: 14px;
+  height: 2px;
+  background: currentColor;
+}
+
+.paneTitleBefore {
+  color: var(--ink-cut);
+}
+
+.paneTitleAfter {
+  color: var(--ink-add);
+}
+
+.scroll {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  background: var(--stage-bg);
+  overscroll-behavior: contain;
+}
+
+.grid {
+  min-width: 100%;
+  font-size: 0.75rem;
+}
+
+.headRow {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: var(--head-h);
+  background: #141414;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.gutterHead,
+.gutter {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: none;
+  width: 64px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 8px;
+  background: inherit;
+}
+
+.gutterHead {
+  z-index: 4;
+  background: #141414;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  color: var(--color-foreground-muted);
+  border-right: 1px solid #262626;
+}
+
+.gutter {
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cellHead {
+  flex: none;
+  display: block;
+  height: var(--head-h);
+  line-height: var(--head-h);
+  padding: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground-muted);
+}
+
+.row {
+  display: flex;
+  height: var(--row-h);
+  background: var(--stage-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  transition: background var(--duration-normal) var(--ease-default);
+}
+
+.rowFocus {
+  background: #1b1813;
+}
+
+.rowNo {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: #6d6d6d;
+  font-variant-numeric: tabular-nums;
+}
+
+.dupBadge {
+  flex: none;
+  min-width: 18px;
+  padding: 1px 4px;
+  border: 1px solid rgba(200, 169, 110, 0.5);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.dupBadge:hover {
+  background: rgba(200, 169, 110, 0.14);
+}
+
+.cell {
+  flex: none;
+  display: block;
+  height: var(--row-h);
+  line-height: var(--row-h);
+  padding: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* 変わったセル。⚠ 色だけで伝えない＝左端の線と aria-label を併記している */
+.cellChanged {
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: inset 2px 0 0 rgba(200, 169, 110, 0.6);
+}
+
+/* 役割が「触らない」の列は、そもそも規則が当たらないことを薄さで示す */
+.cellSkip {
+  color: #6a6a6a;
+}
+
+.markBefore {
+  background: rgba(199, 143, 143, 0.22);
+  color: #f0d6d6;
+  padding: 1px 1px;
+  border-bottom: 1px solid rgba(199, 143, 143, 0.7);
+}
+
+.markAfter {
+  background: rgba(200, 169, 110, 0.24);
+  color: #f5e6c9;
+  padding: 1px 1px;
+  border-bottom: 1px solid rgba(200, 169, 110, 0.8);
+}
+
+/* 片側に何も無い差分（消えた／入っただけ）の位置を示す細い縦線 */
+.markCaret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin: 0 1px;
+  vertical-align: -0.15em;
+  background: var(--gold);
+}
+
+.gapRow {
+  display: flex;
+  align-items: center;
+  height: var(--row-h);
+  padding-left: 12px;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: #5f5f5f;
+  background: rgba(255, 255, 255, 0.014);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* ---- 凡例・注記 ---- */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin: 0.8rem 0 0;
+  font-size: 0.68rem;
+  color: var(--color-foreground-muted);
+}
+
+.legendBefore,
+.legendAfter {
+  padding: 2px 7px;
+}
+
+.legendBefore {
+  background: rgba(199, 143, 143, 0.22);
+  color: #f0d6d6;
+  border-bottom: 1px solid rgba(199, 143, 143, 0.7);
+}
+
+.legendAfter {
+  background: rgba(200, 169, 110, 0.24);
+  color: #f5e6c9;
+  border-bottom: 1px solid rgba(200, 169, 110, 0.8);
+}
+
+.legendNote {
+  color: #6f6f6f;
+}
+
+.stageNote {
+  margin: 0.7rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.8;
+  color: #7a7a7a;
+}
+
+/* ==========================================================================
+   SP（〜640px）＝左右に並べない。1行につき上下2段の行カードへ切り替える。
+   ⚠ 横スクロールで逃げない（共通仕様§6の「A4を縮めない」と同じ思想）
+   ========================================================================== */
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border: 1px solid var(--line);
+  background: var(--stage-bg);
+  padding: 0.6rem;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.card {
+  border: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.014);
+  padding: 0.6rem 0.7rem 0.7rem;
+}
+
+.cardFocus {
+  border-color: rgba(200, 169, 110, 0.5);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.45rem;
+}
+
+.cardGap {
+  margin: 0;
+  padding: 0.3rem 0.2rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: #5f5f5f;
+}
+
+.cardQuiet {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: #6f6f6f;
+  word-break: break-all;
+}
+
+.cardField {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cardField:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.cardLabel {
+  margin: 0 0 0.25rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground-muted);
+}
+
+.cardBefore,
+.cardAfter {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.7;
+  word-break: break-all;
+}
+
+.cardBefore {
+  color: #d7d0d0;
+}
+
+.cardAfter {
+  color: var(--color-foreground);
+}
+
+.cardSide {
+  flex: none;
+  width: 1.5em;
+  font-size: 0.64rem;
+  line-height: 1.9;
+  text-align: center;
+  border: 1px solid var(--line);
+  color: var(--color-foreground-muted);
+}
+
+.cardBefore .cardSide {
+  color: var(--ink-cut);
+  border-color: rgba(199, 143, 143, 0.4);
+}
+
+.cardAfter .cardSide {
+  color: var(--ink-add);
+  border-color: rgba(200, 169, 110, 0.45);
+}
+
+/* ---------------- SP 全般 ---------------- */
+@media (max-width: 768px) {
+  .status {
+    padding: 0.9rem 1rem;
+  }
+
+  .statusStats {
+    gap: 1.1rem;
+  }
+
+  .statusStats dd {
+    font-size: 1rem;
+  }
+
+  .step {
+    padding: 1.2rem 1rem 1.35rem;
+  }
+
+  .roleItem {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .roleSelect {
+    grid-column: 1 / -1;
+  }
+
+  .ruleLabel {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .ruleExample {
+    grid-column: 1 / -1;
+    margin-left: 1.45rem;
+  }
+}
+
+/* ---------------- 動きを減らす設定 ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .tool *,
+  .tool *::before,
+  .tool *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
