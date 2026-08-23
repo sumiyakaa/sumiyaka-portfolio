@@ -58,6 +58,57 @@ export function measureTravel(
   return (imageHeightInFrames - 1) * hoverScale;
 }
 
+/**
+ * CSSアニメ版の縦流し（transform: translateY 駆動）で「実際に動いている」区間の割合。
+ * キーフレームの 6%〜94% が走行区間で、前後は端で少し溜めるための保持。
+ * ここを見込んで duration を伸ばさないと、実効の巡航速度が CRUISE_SPEED より速くなる。
+ */
+export const PAN_HOLD = 0.88;
+
+/**
+ * CSSアニメ版の縦流しに必要な値のセット。
+ *
+ * 【なぜ objectPosition ではないのか】
+ * createHoverScroll() は objectPosition を毎フレーム書き換える rAF（gsap）で、
+ * そのたびに再ペイントが走る。トップの実績枠は 6 枚が同時に存在するため、
+ * ここだけ「画像の箱を実寸の高さへ開き、transform: translateY() で送る」CSSアニメへ
+ * 置き換えた（合成だけで済み、rAF が1本減る）。
+ * 速度の定義（CRUISE_SPEED＝枠の高さ何個ぶんを1秒で流すか）は共通なので、
+ * 枠の大小にかかわらず体感速度は Works ページのカードと揃う。
+ *
+ * ⚠ createHoverScroll / measureTravel / CRUISE_SPEED / RETURN_DURATION は
+ *   components/works/WorkCard.tsx が使い続けている。既存APIは変更しないこと。
+ */
+export interface PanSpec {
+  /** 動かせる距離。単位＝枠の高さ何個ぶん（measureTravel と同じ） */
+  frames: number;
+  /** 画像の箱の高さ倍率（枠の高さの何倍にするか）＝ 1 + frames */
+  span: number;
+  /** 箱自身の高さに対する送り量の割合（translateY(-shift * 100%) で使う） */
+  shift: number;
+  /** 片道の所要秒数。CRUISE_SPEED と PAN_HOLD から求める */
+  duration: number;
+}
+
+/**
+ * 画像の実寸から、CSSアニメ版の縦流しに渡す値を求める。
+ * 動かす余地が無い（＝ほぼ 16:10）画像では null を返す。
+ */
+export function measurePan(
+  naturalWidth: number,
+  naturalHeight: number,
+): PanSpec | null {
+  const frames = measureTravel(naturalWidth, naturalHeight, 1);
+  if (!(frames > 0.06)) return null;
+  const span = 1 + frames;
+  return {
+    frames,
+    span,
+    shift: frames / span,
+    duration: frames / CRUISE_SPEED / PAN_HOLD,
+  };
+}
+
 export interface HoverScroll {
   /** ホバー開始。加速 → 等速 → 減速して最下部で停止する */
   start: (img: HTMLImageElement) => void;

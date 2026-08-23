@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
 } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,33 +14,98 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Work } from "@/types/work";
 import type { Tool } from "@/types/tool";
-import {
-  createHoverScroll,
-  measureTravel,
-  CRUISE_SPEED,
-  type HoverScroll,
-} from "@/lib/hoverScroll";
+import { measurePan, RETURN_DURATION, type PanSpec } from "@/lib/hoverScroll";
 import { useLenis } from "@/components/animation/SmoothScroll";
 import styles from "./PickUpWorks.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** ホバー時にカードへ掛かる拡大率。下の gsap.to(c, { scale: ... }) と一致させること */
-const CARD_HOVER_SCALE = 1.04;
+/* =============================================================
+   制作実績（Pickup）— 案B改-2「紙片が舞う」／重ね帖
+   2026-08-23 本実装。仕様の正本＝
+   _トップ実績枠_デザイン3案/案B改-2_紙片が舞う.html
+
+   壊してはいけない契約
+   - props（works / tools）の形／`/works/<slug>` `/tools/<slug>` のリンク先
+   - 件数はハードコードしない（works.length / tools.length から出す）
+   - /api/works の schema:1 / count:25（このファイルからは触らない）
+   ============================================================= */
 
 const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
-const TYPE_SPEED = 60;
 
-/** 墨明け（常時アニメB）の順送り間隔ms。works3.html プロトの実測値を踏襲 */
-const INK_INTERVAL = 2600;
+/** 送り（常時アニメA）の周期ms。金の走査点の一往復もこの長さに合わせる */
+const CYCLE = 3200;
 
-/** FLIP 展開の transitionend 保険タイムアウト（CSS .68s より長く） */
-const FLIP_TIMEOUT = 950;
+/** 中央の台が育つ時間ms。CSS の --pw-grow と一致させること */
+const GROW_MS = 1150;
+
+/** 中央の台が札へ戻る時間ms。CSS の --pw-back と一致させること */
+const BACK_MS = 680;
+
+/** FLIP の transitionend 取りこぼし保険（--pw-grow より長く） */
+const FLIP_TIMEOUT = 1500;
+
+/** 舞いながら消える時間ms／飛行時間の何割の地点から消えはじめるか */
+const FADE_MS = 700;
+const FADE_AT = 0.42;
+
+/** ホバーを外したとき先頭へ戻る時間ms（lib/hoverScroll.ts と同値） */
+const RETURN_MS = Math.round(RETURN_DURATION * 1000);
+
+/** 入場（束が集まる）の所要ms。CSS の transition-duration + 最終 delay より長く */
+const ENTER_MS = 1560;
+
+/**
+ * ⚠ しきい値はここ1本に集約する。CSS 側（@media (max-width: 767px) /
+ *    (min-width: 768px)）と必ず一致させること。
+ *    2026-08-23 以前は JS が `window.innerWidth <= 768`、CSS が 860 と 767 で
+ *    切り替わっており、768〜860px の帯でホバー演出だけが動くバグがあった。
+ */
+const SP_QUERY = "(max-width: 767px)";
+
+/** ⚠ タッチ端末で :hover が張り付くのを避ける。マウスのときだけホバー配線する */
+const FINE_QUERY = "(hover: hover) and (pointer: fine)";
+
+const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+
+/** カード側とステージ側の sizes。ステージの下敷きはカードと同じ値＝キャッシュに当てる */
+const CARD_SIZES = "(max-width: 767px) 92vw, (max-width: 1119px) 34vw, 21vw";
+const STAGE_SIZES = "(max-width: 900px) 92vw, 660px";
+
+/**
+ * ★ 札ごとの「癖」（紙の目）。乱数は使わない＝同じ札はいつも同じ舞いかたをする。
+ *   up   … 縦の向きと強さ（負＝上へ舞う／正＝下へ落ちる）
+ *   spin … 傾き（度）。2D の rotate のみ。3D は使わない
+ *   dur  … 飛んでいる時間ms
+ *   wait … 滑り出すまでの遅れms
+ *   far  … 遠さの係数
+ */
+const TEMPER = [
+  { up: -0.78, spin: -9, dur: 1180, wait: 40, far: 1.06 }, /* W-01 高く長く */
+  { up: 0.56, spin: 12, dur: 980, wait: 110, far: 0.92 }, /* W-02 低く速く */
+  { up: -0.46, spin: 7, dur: 1320, wait: 0, far: 1.18 }, /* W-03 最初に出て最も遠くへ */
+  { up: 0.82, spin: -14, dur: 1060, wait: 170, far: 0.98 }, /* W-04 最後に出て深く沈む */
+  { up: -0.62, spin: 10, dur: 1240, wait: 70, far: 1.1 }, /* W-05 */
+  { up: 0.48, spin: -6, dur: 900, wait: 140, far: 0.86 }, /* W-06 低く抜ける */
+];
+
+interface Drift {
+  x: number;
+  y: number;
+  r: number;
+  s: number;
+  dur: number;
+  wait: number;
+}
 
 interface PickUpWorksProps {
   works: Work[];
   /** 02 ツール制作の枠に出す自社開発ツール。空なら従来の「準備中」プレートに戻る */
   tools: Tool[];
+}
+
+function mq(query: string) {
+  return typeof window !== "undefined" && window.matchMedia(query).matches;
 }
 
 function charSpans(text: string, baseDelay = 0) {
@@ -49,7 +115,7 @@ function charSpans(text: string, baseDelay = 0) {
       className={styles.pickupChar}
       style={{ transitionDelay: `${baseDelay + i * 0.03}s` }}
     >
-      {char === " " ? " " : char}
+      {char === " " ? " " : char}
     </span>
   ));
 }
@@ -59,428 +125,672 @@ function workIdx(i: number) {
   return `W-${String(i + 1).padStart(2, "0")}`;
 }
 
-/**
- * transitionend＋タイムアウトの二重化。
- * イベント欠落（タブ非表示等）でも状態機械が固まらない（works3.html 踏襲）
- */
-function onceTransform(el: HTMLElement, cb: () => void, timeoutMs = FLIP_TIMEOUT) {
-  let done = false;
-  function fire() {
-    if (done) return;
-    done = true;
-    el.removeEventListener("transitionend", handler);
-    cb();
+/** その要素がいま「自分の高さの何割」送られているか（縦流しの進捗） */
+function progressFrac(node: HTMLElement | null): number {
+  if (!node) return 0;
+  const h = node.offsetHeight;
+  if (!h) return 0;
+  const t = getComputedStyle(node).transform;
+  if (!t || t === "none") return 0;
+  let y = 0;
+  try {
+    y = new DOMMatrixReadOnly(t).m42;
+  } catch {
+    const m = t.match(/matrix\(([^)]+)\)/);
+    if (m) y = parseFloat(m[1].split(",")[5]);
   }
-  function handler(e: Event) {
-    const te = e as TransitionEvent;
-    if (te.propertyName === "transform" && te.target === el) fire();
-  }
-  el.addEventListener("transitionend", handler);
-  window.setTimeout(fire, timeoutMs);
+  return -y / h;
 }
 
 export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
-  /* 02 ツール枠は「代表1本＋総数」で見せる。
-     ⚠ 2本以上あるときにリンク先を1本目へ固定すると、件数だけ増えて中身へ辿れなくなる。
-        複数あるならカタログ（/tools）へ送り、1本だけならそのツールへ直接送る。 */
-  const leadTool = tools[0];
-  const toolsHref = tools.length > 1 ? "/tools" : leadTool ? `/tools/${leadTool.slug}` : "/tools";
   const lenis = useLenis();
+
+  /* ---- DOM ---- */
   const sectionRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
-  const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const worksWrapRef = useRef<HTMLDivElement>(null);
+  const worksDeckRef = useRef<HTMLUListElement>(null);
+  const toolsWrapRef = useRef<HTMLDivElement>(null);
+  const tickRef = useRef<HTMLSpanElement>(null);
+  const tickGhostRef = useRef<HTMLSpanElement>(null);
+  const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
   const thumbRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const bodyRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const nameRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const subRefs = useRef<(HTMLParagraphElement | null)[]>([]);
-
-  // Heading refs for SELECTED ↔ typed title swap
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const headingTypedRef = useRef<HTMLDivElement>(null);
-  const headingNameRef = useRef<HTMLSpanElement>(null);
-  const headingSubRef = useRef<HTMLParagraphElement>(null);
-
-  const activeRef = useRef(-1);
-  const typeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const headingTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  /* ---- 墨明け（常時アニメB）の状態 ---- */
-  const litRef = useRef(-1);
-  const inkTimerRef = useRef<number | null>(null);
-  const sectionVisibleRef = useRef(false);
-  const reducedMotionRef = useRef(false);
-
-  /* ---- クリック展開（FLIP フォーカス）の状態 ---- */
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const openIndexRef = useRef<number | null>(null);
-  const busyRef = useRef(false);
-  const lastFocusRef = useRef<HTMLElement | null>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const panRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const toolRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const stageInnerRef = useRef<HTMLDivElement>(null);
   const stageThumbRef = useRef<HTMLDivElement>(null);
+  const stagePanRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const detailLinkRef = useRef<HTMLAnchorElement>(null);
-  const stagePanTweenRef = useRef<gsap.core.Tween | null>(null);
 
-  /* ---- Thumbnail scroll ----
-     速度は lib/hoverScroll.ts の CRUISE_SPEED で全作品共通。
-     Worksページのカードと同じモジュールを使う（実装を1本化）。
-     墨明け化でサムネはモノクロ／カラーの2枚重ねになったため、
-     1カードにつき2つのスクローラを同条件で走らせて同期させる
-     （同一画像＝同一実寸なのでタイムラインは完全一致する） */
-  const scrollers = useRef<Record<string, HoverScroll>>({});
+  /* ---- 状態（再描画を起こさないものは全て ref に持つ） ---- */
+  const raisedRef = useRef(0);
+  const timerRef = useRef<number | null>(null);
+  const visibleRef = useRef(false);
+  const hoveringRef = useRef(false);
+  const enteringRef = useRef(false);
+  const reducedRef = useRef(false);
+  const openRef = useRef<number | null>(null);
+  const busyRef = useRef(false);
+  const lastFocusRef = useRef<HTMLElement | null>(null);
+  const panSpecRef = useRef<(PanSpec | null)[]>([]);
+  const panTimerRef = useRef<(number | null)[]>([]);
+  const driftPlanRef = useRef<(Drift | null)[]>([]);
+  /** 開いた瞬間に札が流れていた位置。中央の板へ「続き」として引き継ぐ */
+  const carryRef = useRef(0);
 
-  const getScroller = useCallback((key: string) => {
-    if (!scrollers.current[key]) {
-      scrollers.current[key] = createHoverScroll(CARD_HOVER_SCALE);
-    }
-    return scrollers.current[key];
+  /** ★ 世代トークン。開くたびに +1。遅れて発火する後始末は必ず自分の世代を確かめる。
+      閉じアニメ用の待ちタイマーを1変数で共有すると高さが膨らむ事故を構造的に防ぐ */
+  const genRef = useRef(0);
+  const pendingRef = useRef<number[]>([]);
+
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  /* ---- 02 ツール枠。0本なら従来の「準備中」プレートへ戻る ---- */
+  const hasTools = tools.length > 0;
+
+  /* =========================================================
+     タイマーの世代管理
+     ========================================================= */
+  const later = useCallback((fn: () => void, ms: number) => {
+    const myGen = genRef.current;
+    const id = window.setTimeout(() => {
+      const at = pendingRef.current.indexOf(id);
+      if (at >= 0) pendingRef.current.splice(at, 1);
+      if (myGen !== genRef.current) return; /* 世代が変わっていたら何もしない */
+      fn();
+    }, ms);
+    pendingRef.current.push(id);
+    return id;
   }, []);
 
-  const startScroll = useCallback(
-    (i: number) => {
-      const thumb = thumbRefs.current[i];
-      if (!thumb) return;
-      thumb.querySelectorAll("img").forEach((img, k) => {
-        getScroller(`${i}:${k}`).start(img);
-      });
-    },
-    [getScroller],
-  );
-
-  const stopScroll = useCallback((i: number) => {
-    [0, 1].forEach((k) => scrollers.current[`${i}:${k}`]?.stop());
+  const killPending = useCallback(() => {
+    pendingRef.current.forEach((id) => window.clearTimeout(id));
+    pendingRef.current.length = 0;
   }, []);
 
-  /* ---- 墨明け：墨ヴェールが順に晴れてカラーが浮かぶ（works3 モードB踏襲） ---- */
-  const inkStep = useCallback(() => {
-    const cards = cardRefs.current;
-    const n = works.length;
-    if (n === 0) return;
-    if (litRef.current >= 0) cards[litRef.current]?.classList.remove(styles.lit);
-    litRef.current = (litRef.current + 1) % n;
-    cards[litRef.current]?.classList.add(styles.lit);
-  }, [works.length]);
-
-  const startInk = useCallback(() => {
-    if (
-      reducedMotionRef.current ||
-      inkTimerRef.current !== null ||
-      !sectionVisibleRef.current ||
-      openIndexRef.current !== null
-    ) {
+  /* =========================================================
+     手前へ出す／戻す（transform と opacity だけ）
+     ========================================================= */
+  const placeTick = useCallback((i: number) => {
+    const wrap = worksWrapRef.current;
+    if (!wrap) return;
+    const card = cardRefs.current[i];
+    if (mq(SP_QUERY) || i < 0 || !card) {
+      wrap.classList.remove(styles.hasTick);
       return;
     }
-    inkStep();
-    inkTimerRef.current = window.setInterval(inkStep, INK_INTERVAL);
-  }, [inkStep]);
+    wrap.classList.add(styles.hasTick);
+    const x = `${card.offsetLeft + card.offsetWidth / 2}px`;
+    tickRef.current?.style.setProperty("--pw-tick-x", x);
+    /* ★ 栞の余韻＝同じ位置を、遅れて・ゆっくり追いかける残像（CSS 側で遅らせる） */
+    tickGhostRef.current?.style.setProperty("--pw-tick-x", x);
+  }, []);
 
-  const pauseInk = useCallback(() => {
-    if (inkTimerRef.current !== null) {
-      window.clearInterval(inkTimerRef.current);
-      inkTimerRef.current = null;
+  const setRaisedWorks = useCallback(
+    (i: number, moveTick: boolean) => {
+      cardRefs.current.forEach((c, k) => {
+        if (c) c.classList.toggle(styles.isRaised, k === i);
+      });
+      if (moveTick) placeTick(i);
+    },
+    [placeTick],
+  );
+
+  const setRaisedTools = useCallback((i: number) => {
+    toolRefs.current.forEach((c, k) => {
+      if (c) c.classList.toggle(styles.isRaised, k === i);
+    });
+  }, []);
+
+  /** 走査点の走る距離＝束の実幅。CSS変数で渡す（幅そのものは動かさない） */
+  const measureTrace = useCallback(() => {
+    const wrap = worksWrapRef.current;
+    const deck = worksDeckRef.current;
+    if (!wrap || !deck) return;
+    wrap.style.setProperty("--pw-trace-w", `${deck.offsetWidth}px`);
+    wrap.style.setProperty("--pw-cycle", `${CYCLE}ms`);
+  }, []);
+
+  /* =========================================================
+     ★ 送り（常時アニメ）。止めるときは clearInterval ＋ .isLive を外す。
+        「見えなくする」ではなく本当に止める
+     ========================================================= */
+  const canRun = useCallback(
+    () =>
+      !reducedRef.current &&
+      visibleRef.current &&
+      !document.hidden &&
+      !hoveringRef.current &&
+      !enteringRef.current &&
+      openRef.current === null &&
+      !mq(SP_QUERY),
+    [],
+  );
+
+  const stepDeck = useCallback(() => {
+    const n = works.length;
+    if (n === 0) return;
+    raisedRef.current = (raisedRef.current + 1) % n;
+    setRaisedWorks(raisedRef.current, true);
+  }, [setRaisedWorks, works.length]);
+
+  const startCycle = useCallback(() => {
+    if (timerRef.current !== null) return;
+    if (!canRun()) return;
+    measureTrace();
+    /* 金の走査点はここで初めて animation を得る */
+    worksWrapRef.current?.classList.add(styles.isLive);
+    timerRef.current = window.setInterval(stepDeck, CYCLE);
+  }, [canRun, measureTrace, stepDeck]);
+
+  const stopCycle = useCallback(() => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
     }
+    /* animation の指定ごと外す＝ getAnimations から消える */
+    worksWrapRef.current?.classList.remove(styles.isLive);
   }, []);
 
-  /* ---- Heading typing (SELECTED → work title) ---- */
-  const startHeadingTyping = useCallback(
+  /** 画面外・背面タブでは CSS アニメも本当に止める（paused） */
+  const refresh = useCallback(() => {
+    const dormant = !visibleRef.current || document.hidden;
+    sectionRef.current?.classList.toggle(styles.isDormant, dormant);
+    if (canRun()) startCycle();
+    else stopCycle();
+  }, [canRun, startCycle, stopCycle]);
+
+  /* =========================================================
+     ★ フルスクショの縦流し（transform 駆動の CSS アニメ）
+        本番 hoverScroll.ts の objectPosition 駆動 rAF を置き換えたもの
+     ========================================================= */
+  const panClear = useCallback((i: number) => {
+    const t = panTimerRef.current[i];
+    if (t) {
+      window.clearTimeout(t);
+      panTimerRef.current[i] = null;
+    }
+    const card = cardRefs.current[i];
+    const pan = panRefs.current[i];
+    if (pan) {
+      pan.style.transition = "";
+      pan.style.transform = "";
+    }
+    card?.classList.remove(styles.isPanning);
+  }, []);
+
+  /** いまの位置から先頭へ 0.5秒で戻す。パッと飛ばさない */
+  const panReturn = useCallback(
     (i: number) => {
-      const el = headingNameRef.current;
-      if (!el) return;
-      const text = works[i].title;
-      el.textContent = "";
-      let idx = 0;
-      function tick() {
-        if (activeRef.current !== i) return;
-        if (idx < text.length) {
-          el!.textContent += text[idx];
-          idx++;
-          headingTypeTimerRef.current = setTimeout(tick, TYPE_SPEED);
-        } else {
-          const sub = headingSubRef.current;
-          if (sub) {
-            sub.textContent = works[i].category.join(" / ");
-            gsap.fromTo(sub, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
-          }
-        }
+      const card = cardRefs.current[i];
+      const pan = panRefs.current[i];
+      if (!card) return;
+      const f = progressFrac(pan);
+      const t = panTimerRef.current[i];
+      if (t) {
+        window.clearTimeout(t);
+        panTimerRef.current[i] = null;
       }
-      tick();
+      card.classList.remove(styles.isHover); /* ← ここで CSS アニメが外れる */
+      if (!pan || reducedRef.current || f <= 0.01) {
+        panClear(i);
+        return;
+      }
+      card.classList.add(styles.isPanning); /* 画像の箱は戻りきるまで開けておく */
+      pan.style.transition = "none";
+      pan.style.transform = `translateY(${(-f * 100).toFixed(3)}%)`;
+      void pan.offsetWidth;
+      pan.style.transition = `transform ${RETURN_MS}ms cubic-bezier(0.45, 0, 0.2, 1)`;
+      pan.style.transform = "translateY(0)";
+      panTimerRef.current[i] = window.setTimeout(() => {
+        panTimerRef.current[i] = null;
+        panClear(i);
+      }, RETURN_MS + 80);
     },
-    [works],
+    [panClear],
   );
 
-  /* ---- Card typing ---- */
-  const startTyping = useCallback(
+  /** いま縦流しをしている札の番号（無ければ -1） */
+  const panningIdx = useCallback(() => {
+    for (let k = 0; k < cardRefs.current.length; k += 1) {
+      if (cardRefs.current[k]?.classList.contains(styles.isHover)) return k;
+    }
+    return -1;
+  }, []);
+
+  /* =========================================================
+     ホバー／フォーカス＝別のアニメーションへ移行
+       送りを止め、その1枚を手前で固定し、フルスクショの縦流しを走らせる
+     ========================================================= */
+  const hoverWorksOn = useCallback(
     (i: number) => {
-      const el = nameRefs.current[i];
-      if (!el) return;
-      const text = works[i].title;
-      el.textContent = "";
-      let idx = 0;
-      function tick() {
-        if (activeRef.current !== i) return;
-        if (idx < text.length) {
-          el!.textContent += text[idx];
-          idx++;
-          typeTimerRef.current = setTimeout(tick, TYPE_SPEED);
-        } else {
-          const sub = subRefs.current[i];
-          if (sub) {
-            sub.textContent = works[i].category.join(" / ");
-            gsap.fromTo(sub, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
-          }
-        }
-      }
-      tick();
+      if (openRef.current !== null || enteringRef.current) return;
+      if (mq(SP_QUERY)) return;
+      const card = cardRefs.current[i];
+      if (!card) return;
+      const was = panningIdx();
+      if (was >= 0 && was !== i) panReturn(was); /* 前の1枚は先頭へ戻す */
+      panClear(i); /* 戻り途中なら痕跡を消してから積む */
+      card.classList.add(styles.isPanning);
+      card.classList.add(styles.isHover);
+      hoveringRef.current = true;
+      stopCycle();
+      raisedRef.current = i;
+      setRaisedWorks(i, true);
     },
-    [works],
+    [panClear, panReturn, panningIdx, setRaisedWorks, stopCycle],
   );
 
-  /* ---- Reset ---- */
-  const resetCard = useCallback(
-    (i: number) => {
-      if (typeTimerRef.current) {
-        clearTimeout(typeTimerRef.current);
-        typeTimerRef.current = null;
-      }
-      if (headingTypeTimerRef.current) {
-        clearTimeout(headingTypeTimerRef.current);
-        headingTypeTimerRef.current = null;
-      }
-      stopScroll(i);
+  const hoverWorksOff = useCallback(() => {
+    const was = panningIdx();
+    if (was >= 0) panReturn(was);
+    hoveringRef.current = false;
+    refresh();
+    setRaisedWorks(raisedRef.current, true);
+  }, [panReturn, panningIdx, refresh, setRaisedWorks]);
 
-      const body = bodyRefs.current[i];
-      const panel = panelRefs.current[i];
-      const slot = slotRefs.current[i];
-      const name = nameRefs.current[i];
-      const sub = subRefs.current[i];
+  /* =========================================================
+     ★★ 紙片が舞う — 選ばれなかった5枚の去りかた
+     ========================================================= */
 
-      if (body) {
-        gsap.killTweensOf(body);
-        body.style.opacity = "";
-      }
-      if (panel) {
-        gsap.killTweensOf(panel);
-        panel.style.opacity = "0";
-        panel.style.pointerEvents = "";
-      }
-      if (slot) slot.classList.remove(styles.slotActive);
-      if (name) name.textContent = "";
-      if (sub) {
-        sub.textContent = "";
-        sub.style.opacity = "0";
-      }
+  /** 札 k が、選ばれた札 chosen から見てどう舞うかを決める。
+      左の札は左へ、右の札は右へ。離れている札ほど遠くへ。 */
+  const driftOf = useCallback(
+    (k: number, chosen: number, w: number, h: number): Drift => {
+      const d = k - chosen;
+      const dir = d < 0 ? -1 : 1;
+      const rank = Math.abs(d);
+      const t = TEMPER[k % TEMPER.length];
+      const spread = mq(SP_QUERY) ? 0.62 : 1; /* SPは版面が狭いので振れ幅を抑える */
+      return {
+        x: dir * w * (0.62 + rank * 0.26) * t.far * spread,
+        y: t.up * h * (0.9 + rank * 0.34) * spread,
+        r: t.spin + dir * rank * 1.6 /* 2D の rotate だけ。|r| は 22度以内 */,
+        s: 0.9 - rank * 0.018 /* わずかに縮む＝遠ざかって見える */,
+        dur: t.dur,
+        wait: t.wait,
+      };
+    },
+    [],
+  );
 
-      // Restore heading: show SELECTED, hide typed
-      const heading = headingRef.current;
-      const headingTyped = headingTypedRef.current;
-      const headingName = headingNameRef.current;
-      const headingSub = headingSubRef.current;
-      if (heading) heading.style.visibility = "";
-      if (headingTyped) headingTyped.classList.remove(styles.headingTypedActive);
-      if (headingName) headingName.textContent = "";
-      if (headingSub) {
-        headingSub.textContent = "";
-        headingSub.style.opacity = "0";
-      }
+  const setDriftVars = useCallback(
+    (card: HTMLElement, v: { x: number; y: number; r: number; s: number }) => {
+      card.style.setProperty("--dx", `${v.x.toFixed(1)}px`);
+      card.style.setProperty("--dy", `${v.y.toFixed(1)}px`);
+      card.style.setProperty("--dr", `${v.r.toFixed(2)}deg`);
+      card.style.setProperty("--ds", v.s.toFixed(3));
+    },
+    [],
+  );
 
-      // Undim & reset scale
-      cardRefs.current.forEach((c) => {
-        if (c) {
-          gsap.killTweensOf(c);
-          c.style.opacity = "1";
-          c.style.transform = "";
+  /** 舞い去らせる。transform と opacity だけ。 */
+  const flyAway = useCallback(
+    (chosen: number) => {
+      const base = thumbRefs.current[chosen]?.getBoundingClientRect();
+      if (!base) return;
+      const w = base.width;
+      const h = base.height;
+      const plan: (Drift | null)[] = [];
+      cardRefs.current.forEach((c, k) => {
+        if (!c || k === chosen) {
+          plan[k] = null;
+          return;
         }
+        const v = driftOf(k, chosen, w, h);
+        plan[k] = v;
+        c.style.transition =
+          `transform ${v.dur}ms ${EASE} ${v.wait}ms, ` +
+          `opacity ${FADE_MS}ms cubic-bezier(0.45, 0, 0.2, 1) ${Math.round(
+            v.wait + v.dur * FADE_AT,
+          )}ms`;
+        setDriftVars(c, v);
+        c.classList.add(styles.isDrift);
+        c.style.opacity = "0";
       });
-
-      activeRef.current = -1;
+      driftPlanRef.current = plan;
     },
-    [stopScroll],
+    [driftOf, setDriftVars],
   );
 
-  /* ---- Hover enter ---- */
-  const handleEnter = useCallback(
-    (i: number) => {
-      if (typeof window !== "undefined" && window.innerWidth <= 768) return;
-      if (openIndexRef.current !== null) return;
-      if (activeRef.current === i) return;
-      if (activeRef.current !== -1) resetCard(activeRef.current);
-      activeRef.current = i;
+  /** 呼び戻す。逆再生ではなく「上空のやや外側から降ってきて束へ収まる」。
+      外側の札から先に着地し、選ばれた札のとなりが最後に閉じる。 */
+  const flyBack = useCallback(
+    (chosen: number) => {
+      const base = thumbRefs.current[chosen]?.getBoundingClientRect();
+      const h = base ? base.height : 0;
+      const plan = driftPlanRef.current;
 
-      const slot = slotRefs.current[i];
-      const body = bodyRefs.current[i];
-      const panel = panelRefs.current[i];
-      if (!slot || !body || !panel) return;
+      /* 1) 戻り始点へ瞬間移動（トランジション無し） */
+      cardRefs.current.forEach((c, k) => {
+        const v = plan[k];
+        if (!c || !v) return;
+        c.style.transition = "none";
+        setDriftVars(c, {
+          x: v.x * 0.42,
+          y: -1.15 * h /* どの札も「上空」から降ってくる */,
+          r: -0.5 * v.r,
+          s: 1.06,
+        });
+        c.style.opacity = "0";
+      });
+      void worksDeckRef.current?.offsetWidth; /* ここで一度だけ確定させる */
 
-      // z-index up
-      slot.classList.add(styles.slotActive);
+      /* 2) 外側の札から順に帰す */
+      const order: number[] = [];
+      cardRefs.current.forEach((c, k) => {
+        if (c && plan[k]) order.push(k);
+      });
+      order.sort((a, b) => Math.abs(b - chosen) - Math.abs(a - chosen));
 
-      // Cross-fade: body out → typed panel in
-      gsap.to(body, { opacity: 0, duration: 0.3, ease: "power2.out" });
-      gsap.to(panel, { opacity: 1, duration: 0.4, delay: 0.1, ease: "power2.out" });
-      panel.style.pointerEvents = "auto";
-
-      // Heading swap: hide SELECTED, show typed area
-      const heading = headingRef.current;
-      const headingTyped = headingTypedRef.current;
-      if (heading) heading.style.visibility = "hidden";
-      if (headingTyped) headingTyped.classList.add(styles.headingTypedActive);
-
-      // Dim & shrink siblings, scale up active
-      cardRefs.current.forEach((c, j) => {
+      order.forEach((k, i) => {
+        const c = cardRefs.current[k];
         if (!c) return;
-        if (j === i) {
-          gsap.to(c, { scale: 1.04, duration: 0.5, ease: EASE });
-        } else {
-          gsap.to(c, { opacity: 0.25, scale: 0.96, duration: 0.5, ease: EASE });
-        }
+        const wait = i * 45;
+        c.style.transition =
+          `transform ${BACK_MS - 60}ms ${EASE} ${wait}ms, ` +
+          `opacity 420ms cubic-bezier(0.45, 0, 0.2, 1) ${wait}ms`;
+        c.classList.remove(styles.isDrift); /* ← 通常の transform へ戻る＝「収まる」動き */
+        c.style.opacity = "1";
       });
-
-      // Scroll & type
-      startScroll(i);
-      setTimeout(() => {
-        if (activeRef.current === i) {
-          startTyping(i);
-          startHeadingTyping(i);
-        }
-      }, 250);
     },
-    [resetCard, startScroll, startTyping, startHeadingTyping],
+    [setDriftVars],
   );
 
-  /* ---- Hover leave ---- */
-  const handleLeave = useCallback(
-    (i: number) => {
-      if (typeof window !== "undefined" && window.innerWidth <= 768) return;
-      if (activeRef.current !== i) return;
-      resetCard(i);
-    },
-    [resetCard],
-  );
-
-  /* ---- 展開ステージのサムネ自動パン（開いている間だけ緩やかに往復） ---- */
-  const startStagePan = useCallback(() => {
-    if (reducedMotionRef.current) return;
-    const img = stageThumbRef.current?.querySelector("img");
-    if (!img) return;
-    const run = () => {
-      const travel = measureTravel(img.naturalWidth, img.naturalHeight, 1);
-      if (travel <= 0.01) return;
-      // ホバーパンより遅い巡航（0.6倍）で「眺める」速度にする
-      const dur = Math.max(10, travel / (CRUISE_SPEED * 0.6));
-      const state = { pct: 0 };
-      stagePanTweenRef.current = gsap.to(state, {
-        pct: 100,
-        duration: dur,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        onUpdate: () => {
-          img.style.objectPosition = `50% ${state.pct}%`;
-        },
-      });
-    };
-    if (img.naturalWidth) run();
-    else img.addEventListener("load", run, { once: true });
+  /** 舞いの痕跡をすべて消す（インラインの transition / opacity / 変数 / クラス） */
+  const clearDrift = useCallback(() => {
+    cardRefs.current.forEach((c) => {
+      if (!c) return;
+      c.classList.remove(styles.isDrift);
+      c.style.transition = "";
+      c.style.opacity = "";
+      c.style.removeProperty("--dx");
+      c.style.removeProperty("--dy");
+      c.style.removeProperty("--dr");
+      c.style.removeProperty("--ds");
+    });
+    driftPlanRef.current = [];
   }, []);
 
-  /* ---- クリック展開：open ---- */
+  /* =========================================================
+     クリック展開（FLIP＝実測 rect → transform → 解除）
+     ========================================================= */
+
+  /** ★ 台を「いま画面に見えているところの中央」へ置く。
+      .inner いっぱいに広げて上下中央にすると、版面が背の高いセクションでは
+      台が画面の下へはみ出す。固定ヘッダー（60px）の裏へも入れない。 */
+  const layoutStage = useCallback(() => {
+    const stage = stageRef.current;
+    const stageInner = stageInnerRef.current;
+    const stageThumb = stageThumbRef.current;
+    const inner = innerRef.current;
+    if (!stage || !stageInner || !inner) return;
+    stage.style.height = "auto";
+    stageInner.style.width = "";
+    const innerH = inner.clientHeight;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const safeTop = 76; /* 固定ヘッダー60px ＋ 余白 */
+    const safeBottom = 16;
+    const avail = Math.max(160, vh - safeTop - safeBottom);
+
+    /* ⚠ 背の低いビューポート（ノートPCの横向き・短い窓）では、16:10 の板と
+       文字を足した高さが画面を超えて「詳しく見る →」まで見えなくなる。
+       板の幅を詰めて全部が画面に収まるようにする（2回で収束させる）。
+       ⚠ FLIP の last を測る前に確定させること。順番を変えると着地点がずれる。 */
+    let need = stageInner.offsetHeight;
+    if (stageThumb && need > avail) {
+      for (let pass = 0; pass < 3 && need > avail; pass += 1) {
+        const w = stageInner.offsetWidth;
+        const thumbW = stageThumb.offsetWidth;
+        const thumbH = stageThumb.offsetHeight;
+        if (!w || !thumbW || !thumbH) break;
+        /* 板が台の幅に占める割合（1カラムなら 1、横並びなら 0.54） */
+        const k = thumbW / w;
+        const rest = need - thumbH; /* 文字・罫・ボタンの高さ */
+        const next = Math.max(300, Math.min(w - 1, (avail - rest) / (0.625 * k)));
+        stageInner.style.width = `${Math.round(next)}px`;
+        need = stageInner.offsetHeight;
+      }
+    }
+
+    const h = Math.min(innerH, Math.max(need + 56, 0), avail);
+    const innerTop = inner.getBoundingClientRect().top;
+    let top = Math.round(safeTop + (avail - h) / 2 - innerTop);
+    if (top + h > innerH) top = innerH - h;
+    if (top < 0) top = 0;
+    stage.style.top = `${top}px`;
+    stage.style.height = `${h}px`;
+  }, []);
+
+  /** 展開中は、舞い去った札にキーボードで到達できないようにする */
+  const setCardsTabbable = useCallback((on: boolean) => {
+    cardRefs.current.forEach((c) => {
+      const a = c?.querySelector("a");
+      if (!a) return;
+      if (on) a.removeAttribute("tabindex");
+      else a.setAttribute("tabindex", "-1");
+    });
+  }, []);
+
   const openWork = useCallback(
     (i: number) => {
-      if (busyRef.current || openIndexRef.current !== null) return;
+      if (busyRef.current || openRef.current !== null || enteringRef.current) return;
+
+      genRef.current += 1; /* ★ 前の開閉に属する後始末を全部無効化する */
+      killPending();
+      clearDrift();
+
       lastFocusRef.current = document.activeElement as HTMLElement | null;
-      if (activeRef.current !== -1) resetCard(activeRef.current);
-      pauseInk();
-      openIndexRef.current = i;
+      openRef.current = i;
+      hoveringRef.current = false;
+      stopCycle();
+
+      /* ★ ホバーで流れていた位置を受け取って、台の板へ引き継ぐ（流れを切らない）。
+         ⚠ 台の板はまだ描画されていない（setOpenIndex の前）ので、値だけ持ち越して
+            実際の適用は openIndex を受け取る useLayoutEffect 側で行う */
+      const was = panningIdx();
+      carryRef.current = was === i ? progressFrac(panRefs.current[i]) : 0;
+      cardRefs.current.forEach((c, k) => {
+        panClear(k);
+        c?.classList.remove(styles.isHover);
+      });
+      /* ★ 選ばれた札は isRaised のまま残す。残さないと開いたときと閉じたときで
+         札の矩形が変わり、板の着地点がずれる */
+      raisedRef.current = i;
+      setRaisedWorks(i, true);
+      setCardsTabbable(false);
+
       setOpenIndex(i);
     },
-    [resetCard, pauseInk],
+    [
+      clearDrift,
+      killPending,
+      panClear,
+      panningIdx,
+      setCardsTabbable,
+      setRaisedWorks,
+      stopCycle,
+    ],
   );
 
-  /* ---- クリック展開：close（逆FLIPでカードへ戻る） ---- */
   const closeWork = useCallback(() => {
-    if (busyRef.current || openIndexRef.current === null) return;
-    const overlay = overlayRef.current;
+    if (busyRef.current || openRef.current === null) return;
+    const i = openRef.current;
+    const section = sectionRef.current;
     const stageThumb = stageThumbRef.current;
-    const cardThumb = thumbRefs.current[openIndexRef.current];
+    const stagePan = stagePanRef.current;
+    const cardThumb = thumbRefs.current[i];
+    const card = cardRefs.current[i];
 
     const finish = () => {
+      section?.classList.remove(styles.isOpen, styles.isClosing);
+      if (stageThumb) {
+        stageThumb.style.transform = "";
+        stageThumb.style.transition = "";
+      }
+      if (stagePan) {
+        stagePan.style.transition = "";
+        stagePan.style.transform = "";
+      }
+      if (card) card.style.opacity = "";
       busyRef.current = false;
-      openIndexRef.current = null;
+      openRef.current = null;
       setOpenIndex(null);
-      lastFocusRef.current?.focus();
+      setCardsTabbable(true);
+      const back = lastFocusRef.current;
       lastFocusRef.current = null;
-      startInk();
+      back?.focus();
+      /* ★ 追加エフェクト④：先頭へ戻さない。
+         いま開いていた札を手前に置いたまま送りを再開する */
+      raisedRef.current = i;
+      setRaisedWorks(i, true);
+      refresh();
     };
 
-    if (reducedMotionRef.current || !overlay || !stageThumb || !cardThumb) {
+    if (reducedRef.current || !section || !stageThumb || !cardThumb) {
+      clearDrift();
       finish();
       return;
     }
 
     busyRef.current = true;
-    stagePanTweenRef.current?.kill();
-    stagePanTweenRef.current = null;
-    innerRef.current?.classList.remove(styles.receded);
 
+    /* 板を縮めて、元の札の矩形へ戻す */
     const first = cardThumb.getBoundingClientRect();
     const last = stageThumb.getBoundingClientRect();
-    overlay.classList.remove(styles.overlayOpen);
-    overlay.classList.add(styles.overlayClosing);
+    /* ← .isOpen を外す前に読む（外すとアニメが消えて進捗が取れない） */
+    const sp = progressFrac(stagePan);
+    section.classList.remove(styles.isOpen);
+    section.classList.add(styles.isClosing);
     stageThumb.style.transform =
       `translate(${first.left - last.left}px, ${first.top - last.top}px) ` +
       `scale(${first.width / last.width}, ${first.height / last.height})`;
-    onceTransform(stageThumb, finish);
-  }, [startInk]);
 
-  /* ---- カードクリック：直接遷移を止めて展開フォーカスへ。
-          修飾キー付き（新規タブ等）は a タグ本来の挙動に委ねる ---- */
-  const handleCardClick = useCallback(
-    (e: React.MouseEvent, i: number) => {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      e.preventDefault();
-      openWork(i);
-    },
-    [openWork],
-  );
+    /* ★ 縮みながら、サイトも先頭へ巻き戻る。ここを押さえないと閉じた瞬間に
+       画が先頭へ飛んで見える。戻りきってから札と入れ替わるので、
+       束に収まった札は必ず「上端＝FV」の姿になる */
+    if (stagePan && sp > 0.001) {
+      stagePan.style.transition = "none";
+      stagePan.style.transform = `translateY(${(-sp * 100).toFixed(3)}%)`;
+      void stagePan.offsetWidth;
+      stagePan.style.transition = `transform ${BACK_MS}ms cubic-bezier(0.45, 0, 0.2, 1)`;
+      stagePan.style.transform = "translateY(0)";
+    }
 
-  /* ---- 展開オーバーレイの開演出（FLIP：実測rect→transform→解除） ---- */
+    /* 5枚を呼び戻す（逆再生ではない） */
+    flyBack(i);
+
+    /* 舞い戻りの後始末。世代トークンで守っているので、
+       途中でもう一度開かれても畳み残しは出ない */
+    later(clearDrift, BACK_MS + 5 * 45 + 120);
+
+    /* transitionend ＋ タイムアウトの二重化（イベント欠落でも状態機械が固まらない） */
+    const myGen = genRef.current;
+    let done = false;
+    const fire = () => {
+      if (done) return;
+      done = true;
+      stageThumb.removeEventListener("transitionend", handler);
+      if (myGen !== genRef.current) return;
+      finish();
+    };
+    function handler(e: Event) {
+      const te = e as TransitionEvent;
+      if (te.propertyName === "transform" && te.target === stageThumb) fire();
+    }
+    stageThumb.addEventListener("transitionend", handler);
+    later(fire, FLIP_TIMEOUT);
+  }, [clearDrift, flyBack, later, refresh, setCardsTabbable, setRaisedWorks]);
+
+  /* =========================================================
+     展開オーバーレイの開演出（FLIP：実測rect → transform → 解除）
+     ========================================================= */
   useLayoutEffect(() => {
     if (openIndex === null) return;
-    const overlay = overlayRef.current;
+    const section = sectionRef.current;
+    const stage = stageRef.current;
     const stageThumb = stageThumbRef.current;
     const cardThumb = thumbRefs.current[openIndex];
-    if (!overlay || !stageThumb) return;
+    const card = cardRefs.current[openIndex];
+    if (!section || !stage || !stageThumb) return;
+
+    /* ⚠ body の overflow を触らない。触るとスクロールバーが消えて版面が
+       数px 横へ跳ね、開いた瞬間にセクション全体がずれて見える。
+       Lenis を止め、wheel / touchmove を止めるだけにする（レイアウト不変） */
+    lenis?.stop();
+    const blockScroll = (e: Event) => {
+      if (stageRef.current?.contains(e.target as Node)) return;
+      e.preventDefault();
+    };
+    document.addEventListener("wheel", blockScroll, { passive: false });
+    document.addEventListener("touchmove", blockScroll, { passive: false });
+
+    /* 中央の板でも同じ速度で流す（枠の高さ基準なので板が大きくても体感は揃う）。
+       ・ホバー中の札から開いたとき＝負の animation-delay。札で流れていた位置から
+         「続き」を流すので、流れが切れて先頭へ飛ぶことがない
+       ・ホバーせずに開いたとき＝ +1.15秒。育ちきってから流しはじめる */
+    const spec = panSpecRef.current[openIndex];
+    if (spec) {
+      stageThumb.style.setProperty("--pw-pan-span", spec.span.toFixed(4));
+      stageThumb.style.setProperty("--pw-pan-shift", spec.shift.toFixed(5));
+      stageThumb.style.setProperty("--pw-pan-dur", `${spec.duration.toFixed(2)}s`);
+      const carry = carryRef.current;
+      const p = carry > 0.001 ? Math.min(carry / spec.shift, 1) : -1;
+      const delay = p >= 0 ? -((0.06 + p * 0.88) * spec.duration) : GROW_MS / 1000;
+      stageThumb.style.setProperty("--pw-pan-delay", `${delay.toFixed(3)}s`);
+      stageThumb.classList.add(styles.stageCanPan);
+    } else {
+      stageThumb.classList.remove(styles.stageCanPan);
+      stageThumb.style.removeProperty("--pw-pan-delay");
+    }
+
+    layoutStage();
 
     busyRef.current = true;
-    document.body.style.overflow = "hidden";
-    lenis?.stop();
-    innerRef.current?.classList.add(styles.receded);
 
-    const finishOpen = () => {
-      busyRef.current = false;
-      startStagePan();
-      closeBtnRef.current?.focus();
-    };
-
-    if (reducedMotionRef.current || !cardThumb) {
-      overlay.classList.add(styles.overlayOpen);
+    if (reducedRef.current || !cardThumb) {
+      /* 散らさず即座に最終状態へ（開閉そのものは動く）。
+         ⚠ 選ばれた札もここで消す。消さないと、束はスクリムより前（z 58）に
+            いるので、開いた台の文字の上に元の札が透けて残る（実測） */
+      section.classList.add(styles.isOpen);
+      if (card) card.style.opacity = "0";
+      flyAway(openIndex);
       busyRef.current = false;
       closeBtnRef.current?.focus();
     } else {
       const first = cardThumb.getBoundingClientRect();
       const last = stageThumb.getBoundingClientRect();
       stageThumb.style.transition = "none";
-      stageThumb.style.transformOrigin = "top left";
       stageThumb.style.transform =
         `translate(${first.left - last.left}px, ${first.top - last.top}px) ` +
         `scale(${first.width / last.width}, ${first.height / last.height})`;
-      void stageThumb.offsetWidth; /* reflow */
+      void stageThumb.offsetWidth; /* ここで確定（この後は reflow を挟まない） */
+
+      /* --- ここから先はすべて「次の1フレーム」で同時に始まる --- */
       stageThumb.style.transition = "";
-      overlay.classList.add(styles.overlayOpen);
-      stageThumb.style.transform = "";
-      onceTransform(stageThumb, finishOpen);
+      section.classList.add(styles.isOpen); /* 板が札の上に不透明で乗る＝すけない */
+      if (card) card.style.opacity = "0"; /* 元の札を消す（板と入れ替わる） */
+      stageThumb.style.transform = ""; /* 育つ */
+      flyAway(openIndex); /* 5枚が舞い去る */
+
+      const myGen = genRef.current;
+      let done = false;
+      const fire = () => {
+        if (done) return;
+        done = true;
+        stageThumb.removeEventListener("transitionend", handler);
+        if (myGen !== genRef.current) return;
+        busyRef.current = false;
+        closeBtnRef.current?.focus();
+      };
+      function handler(e: Event) {
+        const te = e as TransitionEvent;
+        if (te.propertyName === "transform" && te.target === stageThumb) fire();
+      }
+      stageThumb.addEventListener("transitionend", handler);
+      later(fire, FLIP_TIMEOUT);
     }
 
     /* Esc で閉じる＋簡易フォーカストラップ（詳しく見る ⇄ 閉じる） */
@@ -489,114 +799,295 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
         closeWork();
         return;
       }
-      if (e.key === "Tab") {
-        const focusables = [detailLinkRef.current, closeBtnRef.current].filter(
-          (el): el is HTMLAnchorElement | HTMLButtonElement => el !== null,
-        );
-        if (focusables.length === 0) return;
-        const idx = focusables.indexOf(
-          document.activeElement as HTMLAnchorElement | HTMLButtonElement,
-        );
-        if (e.shiftKey && idx <= 0) {
-          e.preventDefault();
-          focusables[focusables.length - 1].focus();
-        } else if (!e.shiftKey && idx === focusables.length - 1) {
-          e.preventDefault();
-          focusables[0].focus();
-        }
+      if (e.key !== "Tab") return;
+      /* ⚠ DOM の並び順で持つこと（閉じる → 詳しく見る）。
+         逆順で持つと「詳しく見る」から Tab したときに preventDefault が
+         かからず、台の外（ヘッダーやフッターのリンク）へ抜ける（実測） */
+      const focusables = [closeBtnRef.current, detailLinkRef.current].filter(
+        (el): el is HTMLAnchorElement | HTMLButtonElement => el !== null,
+      );
+      if (focusables.length === 0) return;
+      const idx = focusables.indexOf(
+        document.activeElement as HTMLAnchorElement | HTMLButtonElement,
+      );
+      if (idx < 0) {
+        e.preventDefault();
+        focusables[0].focus();
+      } else if (e.shiftKey && idx === 0) {
+        e.preventDefault();
+        focusables[focusables.length - 1].focus();
+      } else if (!e.shiftKey && idx === focusables.length - 1) {
+        e.preventDefault();
+        focusables[0].focus();
       }
     };
     document.addEventListener("keydown", onKey);
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      stagePanTweenRef.current?.kill();
-      stagePanTweenRef.current = null;
-      document.body.style.overflow = "";
+      document.removeEventListener("wheel", blockScroll);
+      document.removeEventListener("touchmove", blockScroll);
       lenis?.start();
-      innerRef.current?.classList.remove(styles.receded);
       busyRef.current = false;
     };
-  }, [openIndex, lenis, closeWork, startStagePan]);
+  }, [openIndex, lenis, layoutStage, flyAway, closeWork, later]);
 
-  /* ---- 墨明けの可視性ゲート（画面外では順送りタイマーを止める） ---- */
+  /* =========================================================
+     画像の実寸を読んで、縦流しの CSS 変数を渡す
+     ========================================================= */
   useEffect(() => {
-    reducedMotionRef.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const cleanups: (() => void)[] = [];
+    cardRefs.current.forEach((card, i) => {
+      const img = panRefs.current[i]?.querySelector("img");
+      if (!card || !img) return;
+      const apply = () => {
+        const spec = measurePan(img.naturalWidth, img.naturalHeight);
+        panSpecRef.current[i] = spec;
+        if (!spec) return;
+        card.style.setProperty("--pw-pan-span", spec.span.toFixed(4));
+        card.style.setProperty("--pw-pan-shift", spec.shift.toFixed(5));
+        card.style.setProperty("--pw-pan-dur", `${spec.duration.toFixed(2)}s`);
+        card.classList.add(styles.canPan);
+      };
+      if (img.complete && img.naturalWidth) {
+        apply();
+      } else {
+        img.addEventListener("load", apply, { once: true });
+        cleanups.push(() => img.removeEventListener("load", apply));
+      }
+    });
+    return () => cleanups.forEach((fn) => fn());
+  }, [works.length]);
+
+  /* =========================================================
+     可視性ゲート（画面外／背面タブでは本当に止める）
+     ＋ ★ 入場「束が集まる」の発火（一度きり）
+     ========================================================= */
+  useEffect(() => {
+    reducedRef.current = mq(REDUCE_QUERY);
     const section = sectionRef.current;
     if (!section) return;
+
     const io = new IntersectionObserver(
       (entries) => {
-        sectionVisibleRef.current = entries[0]?.isIntersecting ?? false;
-        if (sectionVisibleRef.current) startInk();
-        else pauseInk();
+        visibleRef.current = entries[0]?.isIntersecting ?? false;
+        refresh();
       },
       { rootMargin: "120px 0px" },
     );
     io.observe(section);
+
+    const onVisibility = () => refresh();
+    /* ⚠ 本番にはこれが無かった（実測0件）。タブが背面に回ったら停止する */
+    document.addEventListener("visibilitychange", onVisibility);
+
+    /* ---- 入場 ---- */
+    const wraps = [worksWrapRef.current, toolsWrapRef.current].filter(
+      (el): el is HTMLDivElement => el !== null,
+    );
+    const timers: number[] = [];
+    let enterIo: IntersectionObserver | null = null;
+    const armed = wraps.filter((w) => w.classList.contains(styles.enterPending));
+
+    if (armed.length > 0) {
+      enteringRef.current = true;
+      enterIo = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLDivElement;
+            obs.unobserve(el);
+            el.classList.remove(styles.enterPending);
+            el.classList.add(styles.isEntering);
+            timers.push(
+              window.setTimeout(() => {
+                el.classList.remove(styles.isEntering);
+                if (el === worksWrapRef.current) {
+                  enteringRef.current = false;
+                  raisedRef.current = 0;
+                  setRaisedWorks(0, true);
+                  refresh();
+                }
+                if (el === toolsWrapRef.current) setRaisedTools(0);
+              }, ENTER_MS),
+            );
+          });
+        },
+        { rootMargin: "0px 0px -10% 0px" },
+      );
+      armed.forEach((w) => enterIo?.observe(w));
+    } else {
+      /* 入場を仕掛けていない（すでに画面内／reduced-motion）＝最初から束の姿で置く */
+      enteringRef.current = false;
+      setRaisedWorks(0, true);
+      setRaisedTools(0);
+    }
+
     return () => {
       io.disconnect();
-      pauseInk();
+      enterIo?.disconnect();
+      timers.forEach((t) => window.clearTimeout(t));
+      stopCycle();
     };
-  }, [startInk, pauseInk]);
+  }, [refresh, setRaisedTools, setRaisedWorks, stopCycle]);
 
-  /* ---- Scroll entrance ---- */
+  /* =========================================================
+     入場の仕込み（初回ペイント前）。
+     ⚠ すでに画面内にあるときは仕掛けない（最終状態が一瞬見えてから
+        消えて出直す、というちらつきを避ける）
+     ========================================================= */
+  useLayoutEffect(() => {
+    if (mq(REDUCE_QUERY)) return;
+    const vh = window.innerHeight || 0;
+    [worksWrapRef.current, toolsWrapRef.current].forEach((wrap) => {
+      if (!wrap) return;
+      if (wrap.getBoundingClientRect().top < vh * 0.9) return;
+      wrap.classList.add(styles.enterPending);
+    });
+  }, []);
+
+  /* =========================================================
+     幅の変化（栞・走査点の再計測／SP へ落ちたときの後始末）
+     ========================================================= */
+  useEffect(() => {
+    const wrap = worksWrapRef.current;
+    if (!wrap) return;
+    const onResize = () => {
+      measureTrace();
+      if (openRef.current !== null) {
+        layoutStage();
+        return;
+      }
+      if (mq(SP_QUERY)) {
+        stopCycle();
+        hoveringRef.current = false;
+        cardRefs.current.forEach((c, k) => {
+          panClear(k);
+          c?.classList.remove(styles.isHover);
+        });
+        raisedRef.current = 0;
+        setRaisedWorks(0, false);
+        wrap.classList.remove(styles.hasTick);
+      } else if (!enteringRef.current) {
+        setRaisedWorks(raisedRef.current, true);
+      }
+      refresh();
+    };
+    const ro = new ResizeObserver(onResize);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [layoutStage, measureTrace, panClear, refresh, setRaisedWorks, stopCycle]);
+
+  /* =========================================================
+     見出し・CTA のスクロール入場（GSAP）
+     ⚠ 札とツールカードは GSAP で動かさない。インライン transform を
+        書かれると、送り・押しのけ・舞いの CSS 側 transform を恒久的に
+        上書きしてしまうため。入場は CSS の transition で作っている。
+     ========================================================= */
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    // reduced-motion：入場アニメは行わず最終状態で静止
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (mq(REDUCE_QUERY)) return; /* reduced-motion：最終状態で静止 */
     const ctx = gsap.context(() => {
-      gsap.fromTo("[data-pickup-heading]", { opacity: 0, y: 20 }, {
-        opacity: 1, y: 0, duration: 1.2, ease: EASE,
-        scrollTrigger: { trigger: section, start: "top 80%", once: true },
-      });
-      gsap.fromTo("[data-pickup-card]", { opacity: 0, y: 30 }, {
-        opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: EASE,
-        scrollTrigger: { trigger: section, start: "top 70%", once: true },
-      });
-      gsap.fromTo("[data-pickup-plate]", { opacity: 0, y: 30 }, {
-        opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: EASE,
-        scrollTrigger: { trigger: "[data-pickup-pending]", start: "top 82%", once: true },
-      });
-      gsap.fromTo("[data-pickup-cta]", { opacity: 0 }, {
-        opacity: 1, duration: 1.0, ease: "power2.out",
-        scrollTrigger: { trigger: "[data-pickup-cta]", start: "top 92%", once: true },
-      });
+      gsap.fromTo(
+        "[data-pickup-heading]",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: EASE,
+          scrollTrigger: { trigger: section, start: "top 80%", once: true },
+        },
+      );
+      gsap.fromTo(
+        "[data-pickup-cta]",
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 1.0,
+          ease: "power2.out",
+          scrollTrigger: { trigger: "[data-pickup-cta]", start: "top 92%", once: true },
+        },
+      );
     }, section);
     return () => ctx.revert();
   }, []);
 
+  /* ---- アンマウント時の後始末 ---- */
   useEffect(() => {
-    const activeScrollers = scrollers.current;
+    const panTimers = panTimerRef.current;
+    const pending = pendingRef.current;
     return () => {
-      if (typeTimerRef.current) clearTimeout(typeTimerRef.current);
-      if (headingTypeTimerRef.current) clearTimeout(headingTypeTimerRef.current);
-      Object.values(activeScrollers).forEach((sc) => sc.kill());
+      panTimers.forEach((t) => {
+        if (t) window.clearTimeout(t);
+      });
+      pending.forEach((t) => window.clearTimeout(t));
     };
   }, []);
+
+  /* =========================================================
+     カード操作
+     ========================================================= */
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent, i: number) => {
+      /* 修飾キー付き（新規タブ等）は a タグ本来の挙動に委ねる */
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      openWork(i);
+    },
+    [openWork],
+  );
+
+  const handleCardKeyDown = useCallback(
+    (e: React.KeyboardEvent, i: number) => {
+      /* a 要素は Space で発火しないので明示的に拾う（キーボードだけで開ける） */
+      if (e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        openWork(i);
+      }
+    },
+    [openWork],
+  );
+
+  const handleCardFocus = useCallback(
+    (e: React.FocusEvent<HTMLAnchorElement>, i: number) => {
+      /* ⚠ :focus-visible のときだけ。閉じたあとの focus() 復帰で
+         マウス操作なのに束が固まる事故を避ける */
+      let kb = true;
+      try {
+        kb = e.currentTarget.matches(":focus-visible");
+      } catch {
+        kb = true;
+      }
+      if (kb) hoverWorksOn(i);
+    },
+    [hoverWorksOn],
+  );
+
+  const handleWorksBlur = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+      hoverWorksOff();
+    },
+    [hoverWorksOff],
+  );
 
   const openWorkData = openIndex !== null ? works[openIndex] : null;
 
   return (
     <section ref={sectionRef} className={styles.section}>
-      {/* 巨大タイポ：地に+3〜5%Lで沈める（読ませない・full.html踏襲の左裁ち落とし） */}
+      {/* 巨大タイポ：地に+3〜5%Lで沈める（読ませない・左裁ち落とし） */}
       <div className={styles.ghostType} aria-hidden="true">
         WORKS
       </div>
 
+      {/* 墨のスクリム。真っ黒に落とさない＝ブラックアウトしない */}
+      <div className={styles.scrim} onClick={closeWork} aria-hidden="true" />
+
       <div className={styles.inner} ref={innerRef}>
-        {/* 制作実績 ↔ Typed title swap area（ホバータイピング演出は不変） */}
         <div className={styles.headingWrap} data-pickup-heading>
-          <h2 className={styles.heading} ref={headingRef}>制作実績</h2>
-          <div className={styles.headingTyped} ref={headingTypedRef}>
-            <div className={styles.headingTypedNameWrap}>
-              <span className={styles.headingTypedName} ref={headingNameRef} />
-              <span className={styles.typedCursor} />
-            </div>
-            <p className={styles.headingTypedSub} ref={headingSubRef} />
-          </div>
+          <h2 className={styles.heading}>制作実績</h2>
         </div>
 
         {/* リード（件数は配列から自動集計＝ハードコード禁止） */}
@@ -615,151 +1106,163 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
             <span className={styles.catCount}>{works.length} WORKS</span>
           </div>
 
-          <div className={styles.grid}>
-            {works.map((work, i) => (
-              <div
-                key={work.slug}
-                className={styles.cardSlot}
-                ref={(el) => { slotRefs.current[i] = el; }}
-              >
-                <div
+          <div
+            className={`${styles.deckWrap} ${styles.deckWrapWorks}`}
+            ref={worksWrapRef}
+            onMouseLeave={hoverWorksOff}
+            onBlur={handleWorksBlur}
+          >
+            <ul className={styles.deck} ref={worksDeckRef}>
+              {works.map((work, i) => (
+                <li
+                  key={work.slug}
                   className={styles.card}
-                  ref={(el) => { cardRefs.current[i] = el; }}
-                  onMouseEnter={() => handleEnter(i)}
-                  onMouseLeave={() => handleLeave(i)}
+                  style={{ "--i": i } as CSSProperties}
+                  ref={(el) => {
+                    cardRefs.current[i] = el;
+                  }}
+                  onMouseEnter={() => {
+                    if (mq(FINE_QUERY)) hoverWorksOn(i);
+                  }}
                   data-pickup-card
                 >
-                  {/* aタグのまま（SEO・新規タブ・キーボード操作を保持）、
-                      通常クリックのみ preventDefault して FLIP 展開フォーカスへ */}
+                  {/* a タグのまま（SEO・新規タブ・キーボード操作を保持）、
+                      通常クリックのみ preventDefault して展開フォーカスへ */}
                   <Link
                     href={`/works/${work.slug}`}
                     className={styles.cardLink}
                     aria-haspopup="dialog"
                     onClick={(e) => handleCardClick(e, i)}
+                    onKeyDown={(e) => handleCardKeyDown(e, i)}
+                    onFocus={(e) => handleCardFocus(e, i)}
                   >
                     <div
-                      className={styles.thumbnail}
-                      ref={(el) => { thumbRefs.current[i] = el; }}
+                      className={styles.thumb}
+                      ref={(el) => {
+                        thumbRefs.current[i] = el;
+                      }}
                     >
-                      <div className={styles.thumbInner}>
-                        {/* 墨明け＝静的 grayscale の下地＋カラーの opacity クロスフェード
-                            （filter はアニメしない＝iOS(WebKit)安全） */}
+                      <div
+                        className={styles.pan}
+                        ref={(el) => {
+                          panRefs.current[i] = el;
+                        }}
+                      >
+                        {/* 墨明け＝静的 grayscale の下地＋カラーの opacity
+                            クロスフェード（filter はアニメしない＝iOS 安全） */}
                         <Image
                           src={work.images[0]}
                           alt=""
                           aria-hidden="true"
                           fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1279px) 50vw, 33vw"
+                          sizes={CARD_SIZES}
                           className={`${styles.thumbImg} ${styles.thumbMono}`}
                         />
                         <Image
                           src={work.images[0]}
                           alt={work.title}
                           fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1279px) 50vw, 33vw"
+                          sizes={CARD_SIZES}
                           className={`${styles.thumbImg} ${styles.thumbColor}`}
                         />
                       </div>
-                      <div className={styles.inkVeil} aria-hidden="true" />
-                      <div className={styles.frameLine} aria-hidden="true" />
+                      <span className={styles.inkVeil} aria-hidden="true" />
+                      <span className={styles.frameLine} aria-hidden="true" />
+                      {/* ★ 手前へ出た瞬間、上端を光が一度だけ走る */}
+                      <span className={styles.gleam} aria-hidden="true" />
                     </div>
 
-                    <div className={styles.cardInfo}>
-                      <div
-                        className={styles.cardBody}
-                        ref={(el) => { bodyRefs.current[i] = el; }}
-                      >
-                        <span className={styles.cardIdx}>{workIdx(i)}</span>
-                        <h4 className={styles.cardTitle}>{work.title}</h4>
-                        <p className={styles.cardMeta}>
-                          {work.category.join(" ・ ")}
-                        </p>
-                      </div>
-
-                      <div
-                        className={styles.typedPanel}
-                        ref={(el) => { panelRefs.current[i] = el; }}
-                      >
-                        <div className={styles.typedNameWrap}>
-                          <span
-                            className={styles.typedName}
-                            ref={(el) => { nameRefs.current[i] = el; }}
-                          />
-                          <span className={styles.typedCursor} />
-                        </div>
-                        <p
-                          className={styles.typedSub}
-                          ref={(el) => { subRefs.current[i] = el; }}
-                        />
-                      </div>
+                    <div className={styles.cap}>
+                      <span className={styles.capIdx}>{workIdx(i)}</span>
+                      <span className={styles.capText}>
+                        <span className={styles.capTitle}>{work.title}</span>
+                      </span>
                     </div>
                   </Link>
-                </div>
-              </div>
-            ))}
+                  {/* 金③ 予告罫 */}
+                  <span className={styles.hint} aria-hidden="true" />
+                </li>
+              ))}
+            </ul>
+            {/* 金① 栞（＋その余韻） */}
+            <span className={styles.tickGhost} ref={tickGhostRef} aria-hidden="true" />
+            <span className={styles.tick} ref={tickRef} aria-hidden="true" />
+            {/* 金② 走査点 */}
+            <span className={styles.tracer} aria-hidden="true" />
           </div>
         </div>
 
         {/* ============ 02 ツール制作 ============
             ⚠ 03 SNS の「準備中」プレートは 2026-08-23 に撤去した（あおきさん指示）。
-               中身が無いものを「準備中」と書いて置いておく必要はない、という判断。
-               SNSを載せるときは、実コンテンツができてから枠ごと作り直す */}
-        <div className={styles.pending} data-pickup-pending>
-          {/* 02＝実物ができたので準備中プレートから実カードへ。
-              ツールが1本も無い間は従来の準備中プレートに戻る（作っていないものは載せない） */}
-          {leadTool ? (
-            <Link
-              href={toolsHref}
-              className={`${styles.plate} ${styles.plateTool}`}
-              data-pickup-plate
-            >
-              <div className={styles.plateVeil} aria-hidden="true" />
-              <div className={styles.plateGhost} aria-hidden="true">TOOLS</div>
-              <div className={styles.plateHead}>
-                <span className={styles.catIdx}>02</span>
-                <h3 className={styles.catName}>ツール制作</h3>
-                <span className={styles.catEn}>Tools</span>
-                <span className={styles.catCount}>
-                  {tools.length} TOOL{tools.length > 1 ? "S" : ""}
-                </span>
-              </div>
+               中身が無いものを「準備中」と書いて置いておく必要はない、という判断 */}
+        <div className={styles.blockTools} data-pickup-pending>
+          <div className={styles.catHead} data-pickup-heading>
+            <span className={styles.catIdx}>02</span>
+            <h3 className={styles.catName}>ツール制作</h3>
+            <span className={styles.catEn}>Tools</span>
+            {hasTools && (
+              <span className={styles.catCount}>
+                {tools.length} TOOL{tools.length > 1 ? "S" : ""}
+              </span>
+            )}
+          </div>
 
-              {/* 墨明けと同じ作法：filter はアニメせず、静的 grayscale の下地へ
-                  カラーを opacity でクロスフェードする（iOS/WebKit 安全） */}
-              <div className={styles.toolThumb}>
-                <Image
-                  src={leadTool.thumbnail}
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 46vw"
-                  className={`${styles.toolImg} ${styles.toolImgMono}`}
-                />
-                <Image
-                  src={leadTool.thumbnail}
-                  alt={`${leadTool.title} の画面`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 46vw"
-                  className={`${styles.toolImg} ${styles.toolImgColor}`}
-                />
-                <span className={styles.toolFrame} aria-hidden="true" />
-              </div>
-
-              <div className={styles.toolInfo}>
-                <span className={styles.toolNo}>{leadTool.no}</span>
-                <h4 className={styles.toolTitle}>{leadTool.title}</h4>
-                <p className={styles.toolSummary}>{leadTool.summary}</p>
-                <span className={styles.toolMore}>触ってみる →</span>
-              </div>
-            </Link>
+          {hasTools ? (
+            <div className={styles.deckWrap} ref={toolsWrapRef}>
+              <ul className={`${styles.deck} ${styles.deckTools}`}>
+                {tools.map((tool, i) => (
+                  <li
+                    key={tool.slug}
+                    className={styles.card}
+                    style={{ "--i": i } as CSSProperties}
+                    ref={(el) => {
+                      toolRefs.current[i] = el;
+                    }}
+                    onMouseEnter={() => {
+                      if (mq(FINE_QUERY) && !mq(SP_QUERY)) setRaisedTools(i);
+                    }}
+                    data-pickup-plate
+                  >
+                    <Link href={`/tools/${tool.slug}`} className={styles.cardLink}>
+                      <div className={styles.thumb}>
+                        <div className={styles.pan}>
+                          <Image
+                            src={tool.thumbnail}
+                            alt=""
+                            aria-hidden="true"
+                            fill
+                            sizes={CARD_SIZES}
+                            className={`${styles.thumbImg} ${styles.thumbMono}`}
+                          />
+                          <Image
+                            src={tool.thumbnail}
+                            alt={`${tool.title} の画面`}
+                            fill
+                            sizes={CARD_SIZES}
+                            className={`${styles.thumbImg} ${styles.thumbColor}`}
+                          />
+                        </div>
+                        <span className={styles.inkVeil} aria-hidden="true" />
+                        <span className={styles.frameLine} aria-hidden="true" />
+                      </div>
+                      <div className={styles.cap}>
+                        <span className={styles.capIdx}>{tool.no}</span>
+                        <span className={styles.capText}>
+                          <span className={styles.capTitle}>{tool.title}</span>
+                          <span className={styles.capMeta}>{tool.summary}</span>
+                        </span>
+                      </div>
+                    </Link>
+                    <span className={styles.hint} aria-hidden="true" />
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <div className={styles.plate} data-pickup-plate>
               <div className={styles.plateVeil} aria-hidden="true" />
-              <div className={styles.plateGhost} aria-hidden="true">TOOLS</div>
-              <div className={styles.plateHead}>
-                <span className={styles.catIdx}>02</span>
-                <h3 className={styles.catName}>ツール制作</h3>
-                <span className={styles.catEn}>Tools</span>
+              <div className={styles.plateGhost} aria-hidden="true">
+                TOOLS
               </div>
               <div className={styles.plateBody}>
                 <span className={styles.chip}>準備中</span>
@@ -769,6 +1272,14 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
               </div>
             </div>
           )}
+
+          {hasTools && (
+            <p className={styles.toolsMore}>
+              <Link href="/tools" className={styles.toolsMoreLink}>
+                ツールをすべて見る →
+              </Link>
+            </p>
+          )}
         </div>
 
         <div className={styles.cta} data-pickup-cta>
@@ -776,69 +1287,97 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
             <span className={styles.ctaLinkText}>実績をすべて見る →</span>
           </Link>
         </div>
-      </div>
 
-      {/* ============ クリック展開オーバーレイ（FLIPフォーカス） ============ */}
-      {openWorkData !== null && openIndex !== null && (
+        {/* ============ 中央の台（FLIP で育つ） ============
+            ⚠ 台の器そのものは常に DOM に置く（FLIP の last を測る先）。
+               中身は開いているあいだだけ描画する（縦長の画像ボックスを
+               閉じているあいだ抱えないため／閉じているとき焦点を持たないため） */}
         <div
-          ref={overlayRef}
-          className={styles.overlay}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="pickup-stage-title"
+          ref={stageRef}
+          className={styles.stage}
+          role={openWorkData ? "dialog" : undefined}
+          aria-modal={openWorkData ? true : undefined}
+          aria-labelledby={openWorkData ? "pickup-stage-title" : undefined}
+          aria-hidden={openWorkData ? undefined : true}
+          data-lenis-prevent
         >
-          <div className={styles.overlayScrim} onClick={closeWork} />
-          {/* 小画面ではみ出した場合の内部スクロールを Lenis に奪わせない */}
-          <div className={styles.stage} data-lenis-prevent>
-            <div className={styles.stageInner}>
-              <div ref={stageThumbRef} className={styles.stageThumb}>
-                <Image
-                  key={openWorkData.slug}
-                  src={openWorkData.images[0]}
-                  alt={`${openWorkData.title} のサムネイル（拡大）`}
-                  fill
-                  sizes="(max-width: 1080px) 92vw, 640px"
-                  className={styles.stageImg}
-                />
-              </div>
-              <div className={styles.stagePanel}>
-                <p className={styles.stageIdx}>{workIdx(openIndex)}</p>
-                <h3 className={styles.stageTitle} id="pickup-stage-title">
-                  {openWorkData.title}
-                </h3>
-                <p className={styles.stageMeta}>
-                  {[
-                    openWorkData.genre,
-                    openWorkData.siteType,
-                    openWorkData.pageCount
-                      ? `${openWorkData.pageCount}ページ`
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" ・ ")}
-                </p>
-                <p className={styles.stageDesc}>{openWorkData.description}</p>
-                <p className={styles.stagePath}>{`/works/${openWorkData.slug}`}</p>
-                <Link
-                  ref={detailLinkRef}
-                  href={`/works/${openWorkData.slug}`}
-                  className={styles.stageLink}
-                >
-                  詳しく見る →
-                </Link>
-              </div>
-            </div>
+          <div className={styles.stageInner} ref={stageInnerRef}>
+            {openWorkData !== null && openIndex !== null && (
+              <>
+                <div className={styles.stageTop}>
+                  <button
+                    ref={closeBtnRef}
+                    type="button"
+                    className={styles.closeBtn}
+                    onClick={closeWork}
+                  >
+                    ✕ 閉じる
+                  </button>
+                </div>
+                {/* 金⑤ 展開の金罫 */}
+                <span className={styles.stageRail} aria-hidden="true" />
+                {/* ⚠ 横に広く縦の低い窓（ノートPCの既定がこれ）では、16:10 の板と
+                    文字を縦に積むと「詳しく見る →」まで届かない。その帯だけ
+                    板と文字を横に並べる（.stageBody が flex になる）。
+                    ⚠ grid にしない：WebKit の stretch × aspect-ratio × absolute子
+                      で枠が 0×0 に潰れる罠を踏まないため */}
+                <div className={styles.stageBody}>
+                <div className={styles.stageThumb} ref={stageThumbRef}>
+                  <div className={styles.stagePan} ref={stagePanRef}>
+                    {/* 下敷き＝札と同じ sizes ＝すでに読み終えたものが即座に出る */}
+                    <Image
+                      src={openWorkData.images[0]}
+                      alt=""
+                      aria-hidden="true"
+                      fill
+                      sizes={CARD_SIZES}
+                      className={styles.stageImg}
+                    />
+                    <Image
+                      src={openWorkData.images[0]}
+                      alt={`${openWorkData.title} のサムネイル（拡大）`}
+                      fill
+                      priority
+                      sizes={STAGE_SIZES}
+                      className={styles.stageImg}
+                    />
+                  </div>
+                </div>
+                <div className={styles.stagePanel}>
+                  <p className={styles.stageRule}>
+                    <span>{workIdx(openIndex)}</span>
+                    {openWorkData.year && (
+                      <span className={styles.stageYear}>{openWorkData.year}</span>
+                    )}
+                  </p>
+                  <h3 className={styles.stageTitle} id="pickup-stage-title">
+                    {openWorkData.title}
+                  </h3>
+                  <p className={styles.stageMeta}>
+                    {[
+                      openWorkData.genre,
+                      openWorkData.siteType,
+                      openWorkData.pageCount ? `${openWorkData.pageCount}ページ` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" ・ ")}
+                  </p>
+                  <p className={styles.stageDesc}>{openWorkData.description}</p>
+                  <p className={styles.stagePath}>{`/works/${openWorkData.slug}`}</p>
+                  <Link
+                    ref={detailLinkRef}
+                    href={`/works/${openWorkData.slug}`}
+                    className={styles.stageLink}
+                  >
+                    詳しく見る →
+                  </Link>
+                </div>
+                </div>
+              </>
+            )}
           </div>
-          <button
-            ref={closeBtnRef}
-            type="button"
-            className={styles.closeBtn}
-            onClick={closeWork}
-          >
-            ✕ 閉じる
-          </button>
         </div>
-      )}
+      </div>
     </section>
   );
 }
