@@ -462,12 +462,19 @@
   opacity: 0;
 }
 
-/* ============ 02 ツール制作 ／ 03 SNS（準備中プレート） ============ */
+/* ============ 02 ツール制作 ============
+   2026-08-23：03 SNS の準備中プレートを撤去して1枚だけになった。
+   2カラムのまま置くと右半分が「穴」に見えるので、上の実績グリッドと同じ
+   12カラムへ載せ替え、1枚目のカード（1/8）と同じ左寄せの版面にする。 */
 .pending {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 1.5rem;
   margin-top: 6rem;
+}
+
+.pending > * {
+  grid-column: 1 / 9;
 }
 
 .plate {
@@ -801,6 +808,11 @@
     margin-top: 4rem;
   }
 
+  /* SP は1カラムなので12カラムの左寄せ指定を解除する */
+  .pending > * {
+    grid-column: auto;
+  }
+
   .plate {
     padding: 2rem 1.25rem;
     min-height: auto;
@@ -865,17 +877,11 @@
      filter のトランジションのみ（スクロール連動ではないので iOS でも安全）
    ============================================================ */
 .pending {
-  /* 実カードとSNSプレートで高さを揃えない（準備中が巨大な空箱に見えるのを防ぐ） */
   align-items: start;
 }
 
-/* 高さの違いを「穴」ではなく「段差」に見せる＝上の12カラム変則グリッドと同じ作法。
-   1カラムに落ちる 767px 以下では段差を付けない */
-@media (min-width: 768px) {
-  .pending > :nth-child(2) {
-    margin-top: 6rem;
-  }
-}
+/* ⚠ 2026-08-23：`.pending > :nth-child(2)` の段差（margin-top:6rem）は削除した。
+   03 SNS プレートを撤去して2枚目が存在しなくなったため。 */
 
 .plateTool {
   display: block;

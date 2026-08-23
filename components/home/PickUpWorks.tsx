@@ -700,7 +700,10 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
           </div>
         </div>
 
-        {/* ============ 02 ツール制作 ／ 03 SNS ============ */}
+        {/* ============ 02 ツール制作 ============
+            ⚠ 03 SNS の「準備中」プレートは 2026-08-23 に撤去した（あおきさん指示）。
+               中身が無いものを「準備中」と書いて置いておく必要はない、という判断。
+               SNSを載せるときは、実コンテンツができてから枠ごと作り直す */}
         <div className={styles.pending} data-pickup-pending>
           {/* 02＝実物ができたので準備中プレートから実カードへ。
               ツールが1本も無い間は従来の準備中プレートに戻る（作っていないものは載せない） */}
@@ -766,22 +769,6 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
               </div>
             </div>
           )}
-
-          <div className={styles.plate} data-pickup-plate>
-            <div className={styles.plateVeil} aria-hidden="true" />
-            <div className={styles.plateGhost} aria-hidden="true">SNS</div>
-            <div className={styles.plateHead}>
-              <span className={styles.catIdx}>03</span>
-              <h3 className={styles.catName}>SNS</h3>
-              <span className={styles.catEn}>Social</span>
-            </div>
-            <div className={styles.plateBody}>
-              <span className={styles.chip}>準備中</span>
-              <p className={styles.plateNote}>
-                運用と発信の記録を、この場所へ順に並べていきます。
-              </p>
-            </div>
-          </div>
         </div>
 
         <div className={styles.cta} data-pickup-cta>

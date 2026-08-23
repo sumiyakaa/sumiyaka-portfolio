@@ -14,8 +14,10 @@ const NAV_LINKS = [
   { href: "/service", label: "SERVICE" },
   // 出口の順（①業務の自動化・ツール開発 → ②Web制作）に合わせて TOOLS を先に置く
   { href: "/tools", label: "TOOLS" },
-  // 表示ラベルのみ日本語化（URL は /works のまま。Footer の FOOTER_NAV と揃えること）
-  { href: "/works", label: "WEB制作" },
+  // ナビは英字で統一する（2026-08-23 あおきさん指示＝1つだけ日本語が混ざると統一感が壊れる）。
+  // ⚠ 設計計画書 §14 C1 の「WEB制作」はこの指示で撤回済み。戻さないこと
+  //    URL は /works のまま。Footer の FOOTER_NAV と揃えること
+  { href: "/works", label: "WORKS" },
   { href: "/contact", label: "CONTACT" },
 ] as const;
 
