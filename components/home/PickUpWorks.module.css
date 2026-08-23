@@ -208,23 +208,27 @@
 }
 
 /* --- 金① 栞（しおり）＝いま手前に出ている1枚を指す索引標。
-       札から札へ横に滑る。細罫の尾を引かせて方向を見せる --- */
+       札から札へ横に滑る。細罫の尾を引かせて方向を見せる。
+   ⚠ 2026-08-23 3列2段化：段が2本になったので、栞は「棚の罫の上」ではなく
+     「いま手前に出ている札の真下」へ置く（--pw-tick-y を JS が入れる）。
+     段をまたぐときは滑らせず、いったん消して次の段で灯し直す（JS 側で処理）。 --- */
 .tick,
 .tickGhost {
   display: none;
   position: absolute;
-  bottom: -1px;
+  top: 0;
   left: 0;
   width: 44px;
   height: 2px;
   margin-left: -22px;
+  margin-top: -2px;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(var(--pw-tick-x, 0px));
+  transform: translate(var(--pw-tick-x, 0px), var(--pw-tick-y, 0px));
 }
 
 .tick {
-  z-index: 5;
+  z-index: 9;
   background: linear-gradient(
     90deg,
     var(--pw-accent-fade) 0%,
@@ -238,7 +242,7 @@
    同じ --pw-tick-x を受けるが、遅れて・ゆっくり追いつく残像。
    要素1つ・opacity と transform だけ。常時ループはしない（栞の移動に相乗り） */
 .tickGhost {
-  z-index: 4;
+  z-index: 8;
   background: linear-gradient(90deg, transparent 0%, var(--pw-accent-fade) 50%, transparent 100%);
   transition: transform 1.35s var(--pw-ease-out) 0.07s, opacity 0.6s var(--pw-ease-out);
 }
@@ -271,6 +275,14 @@
    止めるときは animation の指定ごと外す（＝getAnimations から消える） */
 .isLive .tracer {
   animation: pwTrace var(--pw-cycle, 3200ms) var(--pw-ease-io) infinite;
+}
+
+/* ⚠ 2つの束の走査点が同時に走ると画面がうるさい。ツール側は半周ずらす。
+   送りのタイマーも同じく半周（CYCLE / 2 ＝ 1.6秒）ずらしてある（TSX 側）。
+   ⚠ 特異度を .isLive .tracer より1つ上げてある。同点だと animation ショートハンドが
+     animation-delay を 0 に戻してしまい、ずれが効かない。 */
+.isLive.deckWrapTools .tracer {
+  animation-delay: calc(var(--pw-cycle, 3200ms) * -0.5);
 }
 
 @keyframes pwTrace {
@@ -316,9 +328,8 @@
   margin-top: -44%;
 }
 
-.deckTools > .card + .card {
-  margin-top: -56%; /* 02 は従の束。もう一段深く畳む */
-}
+/* ⚠ 2026-08-23 以前は .deckTools だけ -56%（＝より深く畳む＝札が細い）だった。
+   「Web制作に揃えて」（あおきさん指示）により、02 も 01 と同じ深さにした。 */
 
 .cardLink {
   display: block;
@@ -423,16 +434,15 @@
   opacity: 0.1;
 }
 
-/* 02 の束は静止させる（常時動くのは 01 の帖だけ＝主役をひとつに絞る）。
-   ツールの画面は元から暗いので、墨は薄めにしないと真っ黒に潰れる */
-/* ⚠ ツールの画面はもともと暗いUIのスクショなので、実績と同じ濃さの墨を
-   かけると6枚とも真っ黒の矩形に潰れる（1440px で実測）。墨を薄くし、
-   下地の明度を上げて「何の画面か」が分かる程度に残す。 */
-.deckTools .inkVeil {
-  animation: none;
-  opacity: 0.4;
-}
+/* ⚠ 2026-08-23「Web制作に揃えて」（あおきさん指示）により、02 の墨ヴェールは
+   01 と同じ扱いにした（以前は animation:none ＋ opacity:0.4 の別扱い）。
+   02 にも送り（常時アニメ）が入り、手前へ出た1枚は墨が明ける（opacity 0.1）ので、
+   「濃い墨のまま6枚が並び続ける」ことは無くなった。
 
+   ⚠ ただし下地の明度だけは差を残している。理由＝ツールの画面はもともと暗いUIの
+   スクリーンショットで、実績（＝白いWebサイト）と同じ暗さの下地に同じ濃さの墨を
+   かけると6枚とも真っ黒の矩形に潰れる（1440px で実測）。明度だけ上げて
+   「何の画面か」が分かる程度に残す。 */
 .deckTools .thumbMono {
   filter: grayscale(1) contrast(1.06) brightness(1.15);
 }
@@ -596,6 +606,20 @@
   opacity: 0;
 }
 
+/* ⚠ 入場前は札がまだ姿を見せていない。標（栞・走査点）だけが先に光ると
+   「何も無いところに金の線が動く」ように見えるので、入場が始まるまで出さない。
+   ⚠ 02 の束は 01 より下にあるため、01 が入場を終えて送りが回りはじめても
+     02 はまだ enterPending のまま、という時間帯が必ずできる（実測）。 */
+.enterPending .tick,
+.enterPending .tickGhost {
+  opacity: 0 !important;
+}
+
+.enterPending .tracer {
+  animation: none !important;
+  opacity: 0 !important;
+}
+
 .isEntering > .deck > .card {
   transition-duration: 1.05s, 1.05s, 0.5s;
 }
@@ -641,7 +665,14 @@
 }
 
 /* =============================================================
-   768px 以上＝2段×3枚の重ね（横に重ねる。段どうしは重ねない）
+   768px 以上＝★3列2段（1段に3枚 × 2段）
+   2026-08-23 改修：それまで 1120px 以上は「6枚を横一列」だったため、
+   1440px で1枚が 190px しかなかった（あおきさん指摘）。
+   1段を3枚に減らし、重なりも浅くして、1枚を 1.8 倍に拡大した。
+
+   ★ 重なりは残す（「重ね帖」という骨格を捨てない）。
+     隠れる割合＝札幅の 14%（改修前は 21.9%）＝ずっと浅い。
+     3 * 36.6 - 2 * 5.12 = 99.56%（100% を超えない＝3枚目で段が折れる）
    ★ transform は全て translate() rotate() scale() の同じ並びに揃えてある。
      並びが揃っていると、舞い去る紙片への遷移が「関数ごとの補間」になり、
      行列分解を経ずに素直につながる。
@@ -654,14 +685,16 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start; /* stretch させない（縦横比の計算が狂う） */
-    width: 91.5%;
-    --cw: 38.9%; /* 3 * 38.9 - 2 * 8.5 = 99.7% */
-    --ov: -8.5%; /* 重なり量。W / S = 1.28 になるよう決めてある */
+    /* 98% ＝ 押しのけられた「段の右端の1枚」が逃げる余白を右に残す。
+       100% にすると逃げ先が版面の外へ出すぎる（.deckWrap の負マージンぶんを超える） */
+    width: 98%;
+    --cw: 36.6%;
+    --ov: -5.12%; /* 重なり量＝札幅の 14%。押しのけ量もこの 14% と同じ */
   }
 
   .deck > .card {
     flex: 0 0 var(--cw);
-    z-index: calc(var(--i) + 1); /* 横並び＝右ほど手前。各札は左およそ8割が見えている */
+    z-index: calc(var(--i) + 1); /* 横並び＝右ほど手前。各札は左およそ86%が見えている */
     transform: translate(0, 6px) rotate(0deg) scale(0.94);
   }
 
@@ -670,25 +703,41 @@
     margin-left: var(--ov);
   }
 
+  /* 2段目（4〜6枚目）。4枚目で段を折る */
   .deck > .card:nth-child(4) {
     margin-left: 0;
-    margin-top: 30px;
   }
 
+  .deck > .card:nth-child(4),
   .deck > .card:nth-child(5),
   .deck > .card:nth-child(6) {
-    margin-top: 30px;
+    margin-top: clamp(24px, 2.8vw, 38px);
   }
 
   .deck > .card.isRaised {
     transform: translate(0, -8px) rotate(0deg) scale(1.04);
+    z-index: 8; /* 段をまたいで隣の段の札に隠れないようにする */
   }
 
-  /* ★ 手前へ出た1枚は、右隣を「押しのける」。
+  /* ★ 手前へ出た1枚は、同じ段の右隣を「押しのける」。
+     ⚠ :nth-child(4) は段の頭なので対象外（段をまたいで押さない）
      ⚠ :not(.isDrift) が要る。付けないとこの規則が舞い去る紙片の指定に
        特異度で勝ってしまい、「押しのけられた1枚だけ舞わない」事故になる */
   .deck > .card.isRaised + .card:not(:nth-child(4)):not(.isDrift) {
-    transform: translate(21.9%, 6px) rotate(0deg) scale(0.94);
+    transform: translate(14%, 6px) rotate(0deg) scale(0.94);
+  }
+
+  /* 金の栞と走査点は 768px 以上で出す。
+     ⚠ 栞は「棚の罫」ではなく「いま手前に出ている札の真下」に置いている
+       （--pw-tick-y）。2段でも指す先が曖昧にならない。 */
+  .hasTick .tick,
+  .hasTick .tickGhost {
+    display: block;
+  }
+
+  .deckWrapWorks .tracer,
+  .deckWrapTools .tracer {
+    display: block;
   }
 
   /* 重なりで隠れる位置にある文字は、手前に出るまで出さない（切れた字を見せない） */
@@ -721,70 +770,34 @@
     display: block;
   }
 
-  /* 入場の始点。左半分の札は左から、右半分の札は右から寄ってくる＝
-     「散らばっていた紙片が束に集まる」。開いたときの舞い去りかたと同じ筋
-     （左の札は左へ／右の札は右へ）を、逆向きに一度だけ通す。 */
+  /* 入場の始点。3列2段の並びに合わせて、左の列は左から・右の列は右から・
+     2段目は下から寄ってくる＝「散らばっていた紙片が束に集まる」。
+     開いたときの舞い去りかた（列差＝左右／段差＝上下）を、逆向きに一度だけ通す。 */
   .enterPending > .deck > .card:nth-child(1) {
-    transform: translate(-104px, 26px) rotate(-3deg) scale(0.86);
+    transform: translate(-88px, 20px) rotate(-2.8deg) scale(0.88);
   }
   .enterPending > .deck > .card:nth-child(2) {
-    transform: translate(-62px, 42px) rotate(2.4deg) scale(0.86);
+    transform: translate(0px, 34px) rotate(1.8deg) scale(0.88);
   }
   .enterPending > .deck > .card:nth-child(3) {
-    transform: translate(-26px, 18px) rotate(-1.8deg) scale(0.86);
+    transform: translate(88px, 20px) rotate(2.6deg) scale(0.88);
   }
   .enterPending > .deck > .card:nth-child(4) {
-    transform: translate(32px, 36px) rotate(2.2deg) scale(0.86);
+    transform: translate(-78px, 48px) rotate(2.2deg) scale(0.88);
   }
   .enterPending > .deck > .card:nth-child(5) {
-    transform: translate(66px, 22px) rotate(-2.6deg) scale(0.86);
+    transform: translate(0px, 58px) rotate(-1.6deg) scale(0.88);
   }
   .enterPending > .deck > .card:nth-child(6) {
-    transform: translate(108px, 40px) rotate(3deg) scale(0.86);
+    transform: translate(78px, 48px) rotate(-2.8deg) scale(0.88);
   }
 }
 
-/* =============================================================
-   1120px 以上＝6枚を横一列に重ねる（本命の姿）
-   ============================================================= */
-@media (min-width: 1120px) {
-  .deck {
-    flex-wrap: nowrap;
-    width: 96.5%; /* 右端の逃げ（押しのけたぶん）を残す */
-    --cw: 20.35%; /* 6 * 20.35 - 5 * 4.46 = 99.8% */
-    --ov: -4.46%; /* W / S = 1.28 */
-  }
-
-  .deck > .card:nth-child(4),
-  .deck > .card:nth-child(5),
-  .deck > .card:nth-child(6) {
-    margin-top: 0;
-    margin-left: var(--ov);
-  }
-
-  /* 1列なので、4枚目も「押しのけ」の対象へ戻す */
-  .deck > .card.isRaised + .card:nth-child(4):not(.isDrift) {
-    transform: translate(21.9%, 6px) rotate(0deg) scale(0.94);
-  }
-
-  /* 1列＝棚が1本。ここで初めて金の栞と走査点を出す
-     （2段のときは棚の罫が段ごとに分かれ、指す段が違って見えるため出さない） */
-  .hasTick .tick,
-  .hasTick .tickGhost {
-    display: block;
-  }
-
-  .deckWrapWorks .tracer {
-    display: block;
-  }
-}
-
-/* ツールの束は版面の内側に留めて、実績の束を主役に見せる */
-@media (min-width: 1120px) {
-  .deckTools {
-    max-width: 78%;
-  }
-}
+/* ⚠ 2026-08-23 撤去した規則
+   ・@media (min-width: 1120px) の「6枚を横一列」（--cw: 20.35% / --ov: -4.46%）
+     → 3列2段に一本化した（1440px で札が 190px しか無かったため）
+   ・.deckTools { max-width: 78% }（02 の束だけ細かった）
+     → 「Web制作に揃えて」（あおきさん指示）により削除。01 と同じ幅にする */
 
 /* ホバーできない端末では最初からカラーで見せる（画面が読めるように） */
 @media (max-width: 767px) {
@@ -795,10 +808,6 @@
   .inkVeil {
     opacity: 0.3;
     animation: none;
-  }
-
-  .deckTools .inkVeil {
-    opacity: 0.3;
   }
 
   .capIdx {
@@ -1229,91 +1238,50 @@
 }
 
 /* =============================================================
-   CTA
+   各セクションの導線（VIEW ALL WORKS → / VIEW ALL TOOLS →）
+   2026-08-23 あおきさん指示：
+   ・Web制作にも「もっと見る」を置く（それまで無かった）
+   ・ツールの「ツールをすべて見る →」は左寄せ・日本語だった → 英字・右下へ
+   ・2つは完全に同じ見た目・同じ位置にする（片方だけ浮かせない）
+   ⚠ セクション末尾にあった全体CTA「実績をすべて見る →」（.cta / data-pickup-cta）は
+     ここへ統合して撤去した。行き先が /works で VIEW ALL WORKS と重複するため。
+     GSAP の ScrollTrigger からも対象を外してある（TSX 側）。
    ============================================================= */
-.toolsMore {
-  margin-top: 1.25rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: var(--neutral);
+.more {
+  margin-top: clamp(1.4rem, 2.4vw, 2rem);
+  text-align: right; /* ＝セクションの右下 */
 }
 
-.toolsMoreLink {
-  color: inherit;
+.moreLink {
+  display: inline-block;
+  /* 英字は Barlow。字送りは catCount（6 WORKS）と同じ作法に揃える */
+  font-family: var(--pw-font-en);
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--neutral);
   text-decoration: none;
   border-bottom: 1px solid var(--rule);
-  padding-bottom: 4px;
-  white-space: nowrap;
+  padding-bottom: 6px;
+  white-space: nowrap; /* 押せる文字を2行に折らない */
   transition: border-color 0.35s var(--pw-ease-out), color 0.35s var(--pw-ease-out);
 }
 
-/* --- 金⑧ ツール一覧リンクのホバー罫 --- */
+/* --- 金⑧ 一覧リンクのホバー罫（2つとも同じ作法） --- */
 @media (hover: hover) and (pointer: fine) {
-  .toolsMoreLink:hover {
+  .moreLink:hover {
     color: var(--ink);
     border-color: var(--pw-accent);
   }
 }
 
-.toolsMoreLink:focus-visible {
+.moreLink:focus-visible {
   outline: 2px solid var(--pw-accent);
   outline-offset: 3px;
 }
 
-.cta {
-  margin-top: 4rem;
-  text-align: right;
-}
-
-.ctaLink {
-  font-family: var(--font-display-washi, serif);
-  font-weight: 500;
-  font-size: 1rem;
-  letter-spacing: 0.1em;
-  color: var(--ink-deep);
-  position: relative;
-  display: inline-block;
-  padding: 16px 48px;
-  border: 1px solid var(--ink);
-  overflow: hidden;
-  white-space: nowrap;
-  text-decoration: none;
-  transition: color 0.4s var(--pw-ease-out), border-color 0.4s;
-}
-
-.ctaLink::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s var(--pw-ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .ctaLink:hover {
-    color: var(--paper);
-    border-color: var(--ink-deep);
-  }
-
-  .ctaLink:hover::after {
-    transform: scaleX(1);
-  }
-}
-
-.ctaLink:focus-visible {
-  outline: 2px solid var(--pw-accent);
-  outline-offset: 3px;
-}
-
-.ctaLink:active {
+.moreLink:active {
   transform: translateY(1px);
-}
-
-.ctaLinkText {
-  position: relative;
-  z-index: 1;
 }
 
 /* =============================================================
@@ -1371,16 +1339,6 @@
   .plate {
     padding: 2rem 1.25rem;
     min-height: auto;
-  }
-
-  .cta {
-    margin-top: 2.5rem;
-    text-align: center;
-  }
-
-  .ctaLink {
-    font-size: 0.9rem;
-    padding: 14px 36px;
   }
 
   /* 背の低いスマートフォン（320×568／375×667）でも、開いた台の
@@ -1497,8 +1455,7 @@
   .tick,
   .tickGhost,
   .hint,
-  .ctaLink,
-  .ctaLink::after {
+  .moreLink {
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
   }

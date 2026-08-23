@@ -36,6 +36,20 @@ const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 /** 送り（常時アニメA）の周期ms。金の走査点の一往復もこの長さに合わせる */
 const CYCLE = 3200;
 
+/**
+ * ★ ツール枠の送りは、Web制作の送りから半周ずらす。
+ *   2つの束が同時に跳ねると画面がうるさいため（2026-08-23 あおきさん指示）。
+ *   ⚠ CSS 側の走査点も同じだけずらしてある（.isLive.deckWrapTools .tracer）。
+ */
+const TOOLS_PHASE = CYCLE / 2;
+
+/**
+ * ★ 3列2段。SP（767px以下）は1カラムの縦積み。
+ *   ⚠ CSS の @media (min-width: 768px) の --cw / --ov と必ず一致させること。
+ *      舞い去る向きの割り振り（driftOf）がこの列数を前提にしている。
+ */
+const COLS_PC = 3;
+
 /** 中央の台が育つ時間ms。CSS の --pw-grow と一致させること */
 const GROW_MS = 1150;
 
@@ -108,6 +122,21 @@ function mq(query: string) {
   return typeof window !== "undefined" && window.matchMedia(query).matches;
 }
 
+/** いまの並びの列数（3列2段 or SPの1カラム） */
+function colsNow() {
+  return mq(SP_QUERY) ? 1 : COLS_PC;
+}
+
+/** 札 k が、選ばれた札から見て「格子の上で何マス離れているか」 */
+function gridRank(k: number, chosen: number) {
+  const cols = colsNow();
+  if (cols === 1) return Math.abs(k - chosen);
+  return (
+    Math.abs((k % cols) - (chosen % cols)) +
+    Math.abs(Math.floor(k / cols) - Math.floor(chosen / cols))
+  );
+}
+
 function charSpans(text: string, baseDelay = 0) {
   return text.split("").map((char, i) => (
     <span
@@ -151,8 +180,11 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
   const worksWrapRef = useRef<HTMLDivElement>(null);
   const worksDeckRef = useRef<HTMLUListElement>(null);
   const toolsWrapRef = useRef<HTMLDivElement>(null);
+  const toolsDeckRef = useRef<HTMLUListElement>(null);
   const tickRef = useRef<HTMLSpanElement>(null);
   const tickGhostRef = useRef<HTMLSpanElement>(null);
+  const toolsTickRef = useRef<HTMLSpanElement>(null);
+  const toolsTickGhostRef = useRef<HTMLSpanElement>(null);
   const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
   const thumbRefs = useRef<(HTMLDivElement | null)[]>([]);
   const panRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -167,6 +199,13 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
   /* ---- 状態（再描画を起こさないものは全て ref に持つ） ---- */
   const raisedRef = useRef(0);
   const timerRef = useRef<number | null>(null);
+  /** ★ ツール枠の送り。works と同じ周期・半周ずらし（TOOLS_PHASE） */
+  const toolRaisedRef = useRef(0);
+  const toolsTimerRef = useRef<number | null>(null);
+  const toolsDelayRef = useRef<number | null>(null);
+  /** 栞がいまどの段に居るか（段をまたぐときは滑らせず灯し直す） */
+  const tickRowRef = useRef(-1);
+  const toolsTickRowRef = useRef(-1);
   const visibleRef = useRef(false);
   const hoveringRef = useRef(false);
   const enteringRef = useRef(false);
@@ -213,20 +252,79 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
   /* =========================================================
      手前へ出す／戻す（transform と opacity だけ）
      ========================================================= */
-  const placeTick = useCallback((i: number) => {
-    const wrap = worksWrapRef.current;
-    if (!wrap) return;
-    const card = cardRefs.current[i];
-    if (mq(SP_QUERY) || i < 0 || !card) {
-      wrap.classList.remove(styles.hasTick);
-      return;
-    }
-    wrap.classList.add(styles.hasTick);
-    const x = `${card.offsetLeft + card.offsetWidth / 2}px`;
-    tickRef.current?.style.setProperty("--pw-tick-x", x);
-    /* ★ 栞の余韻＝同じ位置を、遅れて・ゆっくり追いかける残像（CSS 側で遅らせる） */
-    tickGhostRef.current?.style.setProperty("--pw-tick-x", x);
-  }, []);
+  /**
+   * 栞を、いま手前に出ている札の真下へ置く。
+   * ⚠ 3列2段なので x だけでなく y も要る。段をまたぐときは横へ滑らせず、
+   *    いったん消して次の段で灯し直す（段の間を斜めに飛ぶと目障りなため）。
+   */
+  const placeTickOn = useCallback(
+    (
+      wrap: HTMLDivElement | null,
+      tick: HTMLSpanElement | null,
+      ghost: HTMLSpanElement | null,
+      rowRef: { current: number },
+      cards: (HTMLLIElement | null)[],
+      i: number,
+    ) => {
+      if (!wrap) return;
+      const card = cards[i];
+      if (mq(SP_QUERY) || i < 0 || !card) {
+        wrap.classList.remove(styles.hasTick);
+        rowRef.current = -1;
+        return;
+      }
+      wrap.classList.add(styles.hasTick);
+      const x = `${card.offsetLeft + card.offsetWidth / 2}px`;
+      const y = `${card.offsetTop + card.offsetHeight}px`;
+      const row = Math.round(card.offsetTop);
+      const jump = rowRef.current >= 0 && rowRef.current !== row;
+      rowRef.current = row;
+      [tick, ghost].forEach((el) => {
+        if (!el) return;
+        if (jump) {
+          el.style.transition = "none";
+          el.style.opacity = "0";
+        }
+        el.style.setProperty("--pw-tick-x", x);
+        el.style.setProperty("--pw-tick-y", y);
+        if (jump) {
+          void el.offsetWidth; /* ここで消灯を確定させてから */
+          el.style.transition = ""; /* クラス側の transition へ戻し */
+          el.style.opacity = ""; /* 新しい段で灯し直す */
+        }
+      });
+    },
+    [],
+  );
+
+  /* ★ 栞の余韻＝同じ位置を、遅れて・ゆっくり追いかける残像（CSS 側で遅らせる） */
+  const placeTick = useCallback(
+    (i: number) => {
+      placeTickOn(
+        worksWrapRef.current,
+        tickRef.current,
+        tickGhostRef.current,
+        tickRowRef,
+        cardRefs.current,
+        i,
+      );
+    },
+    [placeTickOn],
+  );
+
+  const placeToolsTick = useCallback(
+    (i: number) => {
+      placeTickOn(
+        toolsWrapRef.current,
+        toolsTickRef.current,
+        toolsTickGhostRef.current,
+        toolsTickRowRef,
+        toolRefs.current,
+        i,
+      );
+    },
+    [placeTickOn],
+  );
 
   const setRaisedWorks = useCallback(
     (i: number, moveTick: boolean) => {
@@ -238,19 +336,28 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
     [placeTick],
   );
 
-  const setRaisedTools = useCallback((i: number) => {
-    toolRefs.current.forEach((c, k) => {
-      if (c) c.classList.toggle(styles.isRaised, k === i);
-    });
-  }, []);
+  const setRaisedTools = useCallback(
+    (i: number, moveTick: boolean) => {
+      toolRefs.current.forEach((c, k) => {
+        if (c) c.classList.toggle(styles.isRaised, k === i);
+      });
+      if (moveTick) placeToolsTick(i);
+    },
+    [placeToolsTick],
+  );
 
-  /** 走査点の走る距離＝束の実幅。CSS変数で渡す（幅そのものは動かさない） */
+  /** 走査点の走る距離＝束の実幅。CSS変数で渡す（幅そのものは動かさない）。
+      ⚠ 2026-08-23 以降はツール枠にも走査点があるので、2つとも測る */
   const measureTrace = useCallback(() => {
-    const wrap = worksWrapRef.current;
-    const deck = worksDeckRef.current;
-    if (!wrap || !deck) return;
-    wrap.style.setProperty("--pw-trace-w", `${deck.offsetWidth}px`);
-    wrap.style.setProperty("--pw-cycle", `${CYCLE}ms`);
+    const pairs: [HTMLDivElement | null, HTMLUListElement | null][] = [
+      [worksWrapRef.current, worksDeckRef.current],
+      [toolsWrapRef.current, toolsDeckRef.current],
+    ];
+    pairs.forEach(([wrap, deck]) => {
+      if (!wrap || !deck) return;
+      wrap.style.setProperty("--pw-trace-w", `${deck.offsetWidth}px`);
+      wrap.style.setProperty("--pw-cycle", `${CYCLE}ms`);
+    });
   }, []);
 
   /* =========================================================
@@ -276,22 +383,52 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
     setRaisedWorks(raisedRef.current, true);
   }, [setRaisedWorks, works.length]);
 
+  /** ★ ツール枠の送り。6本を通しで巡回する（Web制作と同じ作法） */
+  const stepTools = useCallback(() => {
+    const n = tools.length;
+    if (n === 0) return;
+    toolRaisedRef.current = (toolRaisedRef.current + 1) % n;
+    setRaisedTools(toolRaisedRef.current, true);
+  }, [setRaisedTools, tools.length]);
+
   const startCycle = useCallback(() => {
+    /* works と tools は必ず一緒に回り・一緒に止まる。works 側だけ見れば足りる */
     if (timerRef.current !== null) return;
     if (!canRun()) return;
     measureTrace();
     /* 金の走査点はここで初めて animation を得る */
     worksWrapRef.current?.classList.add(styles.isLive);
     timerRef.current = window.setInterval(stepDeck, CYCLE);
-  }, [canRun, measureTrace, stepDeck]);
+
+    const toolsWrap = toolsWrapRef.current;
+    if (!toolsWrap || tools.length === 0) return;
+    toolsWrap.classList.add(styles.isLive);
+    /* ★ 半周（1.6秒）遅らせてから回しはじめる＝2つの束が同時に跳ねない。
+       ⚠ タイマーが1本増えるが、停止の契約は works と完全に同じ。
+          stopCycle でこの待ちタイマーも必ず落とす（画面外で発火0を保つ） */
+    toolsDelayRef.current = window.setTimeout(() => {
+      toolsDelayRef.current = null;
+      stepTools();
+      toolsTimerRef.current = window.setInterval(stepTools, CYCLE);
+    }, TOOLS_PHASE);
+  }, [canRun, measureTrace, stepDeck, stepTools, tools.length]);
 
   const stopCycle = useCallback(() => {
     if (timerRef.current !== null) {
       window.clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    if (toolsTimerRef.current !== null) {
+      window.clearInterval(toolsTimerRef.current);
+      toolsTimerRef.current = null;
+    }
+    if (toolsDelayRef.current !== null) {
+      window.clearTimeout(toolsDelayRef.current);
+      toolsDelayRef.current = null;
+    }
     /* animation の指定ごと外す＝ getAnimations から消える */
     worksWrapRef.current?.classList.remove(styles.isLive);
+    toolsWrapRef.current?.classList.remove(styles.isLive);
   }, []);
 
   /** 画面外・背面タブでは CSS アニメも本当に止める（paused） */
@@ -391,24 +528,78 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
     setRaisedWorks(raisedRef.current, true);
   }, [panReturn, panningIdx, refresh, setRaisedWorks]);
 
+  /* ★ ツール枠にも送りが入ったので、ホバー中はそこで止める（Web制作と同じ作法）。
+     ⚠ hoveringRef は枠をまたいで1つ。どちらかにマウスが載っているあいだは
+        セクション全体の送りを止める＝読んでいる最中に札が入れ替わらない */
+  const hoverToolsOn = useCallback(
+    (i: number) => {
+      if (openRef.current !== null || enteringRef.current) return;
+      if (mq(SP_QUERY)) return;
+      hoveringRef.current = true;
+      stopCycle();
+      toolRaisedRef.current = i;
+      setRaisedTools(i, true);
+    },
+    [setRaisedTools, stopCycle],
+  );
+
+  const hoverToolsOff = useCallback(() => {
+    hoveringRef.current = false;
+    refresh();
+    setRaisedTools(toolRaisedRef.current, true);
+  }, [refresh, setRaisedTools]);
+
   /* =========================================================
      ★★ 紙片が舞う — 選ばれなかった5枚の去りかた
      ========================================================= */
 
-  /** 札 k が、選ばれた札 chosen から見てどう舞うかを決める。
-      左の札は左へ、右の札は右へ。離れている札ほど遠くへ。 */
+  /**
+   * 札 k が、選ばれた札 chosen から見てどう舞うかを決める。
+   *
+   * ★ 2026-08-23 3列2段化にあわせて組み直した。
+   *   ・横（x）＝**列の差**で決める。左の列の札は左へ、右の列の札は右へ。
+   *     同じ列（＝選ばれた札の真上／真下）の札は、左右へはほとんど振らない
+   *     （紙の目 t.spin の向きへ 0.34 ぶんだけ逃がす程度）
+   *   ・縦（y）＝**段の差**で決める。上の段の札は段ごと上へ抜け、
+   *     下の段の札は段ごと下へ沈む。同じ段の札は、これまでどおり
+   *     札ごとの癖（t.up）にまかせる
+   *   ・傾きは 2D の rotate のみ。|r| は 20度以内に収まる
+   *   乱数は使わない＝同じ札はいつも同じ舞いかたをする。
+   *   四方八方へ散らかすのではなく「列は左右・段は上下」という筋を通すことで、
+   *   和の暗がりの品を壊さずに 2段へ対応させている。
+   */
   const driftOf = useCallback(
     (k: number, chosen: number, w: number, h: number): Drift => {
-      const d = k - chosen;
-      const dir = d < 0 ? -1 : 1;
-      const rank = Math.abs(d);
       const t = TEMPER[k % TEMPER.length];
-      const spread = mq(SP_QUERY) ? 0.62 : 1; /* SPは版面が狭いので振れ幅を抑える */
+      const cols = colsNow();
+
+      if (cols === 1) {
+        /* SP＝1カラムの縦積み。従来どおり通し番号の前後で割る（版面が狭いので抑えめ） */
+        const d = k - chosen;
+        const dir = d < 0 ? -1 : 1;
+        const rank = Math.abs(d);
+        const spread = 0.62;
+        return {
+          x: dir * w * (0.62 + rank * 0.26) * t.far * spread,
+          y: t.up * h * (0.9 + rank * 0.34) * spread,
+          r: t.spin + dir * rank * 1.6,
+          s: 0.9 - rank * 0.018,
+          dur: t.dur,
+          wait: t.wait,
+        };
+      }
+
+      const dc = (k % cols) - (chosen % cols); /* 列の差 */
+      const dr = Math.floor(k / cols) - Math.floor(chosen / cols); /* 段の差 */
+      const hRank = Math.abs(dc);
+      const vRank = Math.abs(dr);
+      const hDir = dc === 0 ? (t.spin < 0 ? -0.34 : 0.34) : Math.sign(dc);
+      const vDir = dr === 0 ? t.up : Math.sign(dr) * (0.74 + Math.abs(t.up) * 0.42);
       return {
-        x: dir * w * (0.62 + rank * 0.26) * t.far * spread,
-        y: t.up * h * (0.9 + rank * 0.34) * spread,
-        r: t.spin + dir * rank * 1.6 /* 2D の rotate だけ。|r| は 22度以内 */,
-        s: 0.9 - rank * 0.018 /* わずかに縮む＝遠ざかって見える */,
+        x: hDir * w * (0.62 + hRank * 0.42) * t.far,
+        y: vDir * h * (0.86 + vRank * 0.52),
+        r: t.spin + Math.sign(dc) * hRank * 1.6 + dr * 2.4,
+        s: 0.9 - (hRank + vRank) * 0.016 /* わずかに縮む＝遠ざかって見える */,
         dur: t.dur,
         wait: t.wait,
       };
@@ -478,12 +669,12 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
       });
       void worksDeckRef.current?.offsetWidth; /* ここで一度だけ確定させる */
 
-      /* 2) 外側の札から順に帰す */
+      /* 2) 外側の札から順に帰す（3列2段では「格子の上での遠さ」で並べる） */
       const order: number[] = [];
       cardRefs.current.forEach((c, k) => {
         if (c && plan[k]) order.push(k);
       });
-      order.sort((a, b) => Math.abs(b - chosen) - Math.abs(a - chosen));
+      order.sort((a, b) => gridRank(b, chosen) - gridRank(a, chosen));
 
       order.forEach((k, i) => {
         const c = cardRefs.current[k];
@@ -908,7 +1099,11 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
                   setRaisedWorks(0, true);
                   refresh();
                 }
-                if (el === toolsWrapRef.current) setRaisedTools(0);
+                if (el === toolsWrapRef.current) {
+                  toolRaisedRef.current = 0;
+                  setRaisedTools(0, true);
+                  refresh(); /* ツール枠にも送りが要る */
+                }
               }, ENTER_MS),
             );
           });
@@ -920,7 +1115,7 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
       /* 入場を仕掛けていない（すでに画面内／reduced-motion）＝最初から束の姿で置く */
       enteringRef.current = false;
       setRaisedWorks(0, true);
-      setRaisedTools(0);
+      setRaisedTools(0, true);
     }
 
     return () => {
@@ -967,22 +1162,40 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
         });
         raisedRef.current = 0;
         setRaisedWorks(0, false);
+        toolRaisedRef.current = 0;
+        setRaisedTools(0, false);
         wrap.classList.remove(styles.hasTick);
+        toolsWrapRef.current?.classList.remove(styles.hasTick);
+        tickRowRef.current = -1;
+        toolsTickRowRef.current = -1;
       } else if (!enteringRef.current) {
         setRaisedWorks(raisedRef.current, true);
+        setRaisedTools(toolRaisedRef.current, true);
       }
       refresh();
     };
     const ro = new ResizeObserver(onResize);
     ro.observe(wrap);
     return () => ro.disconnect();
-  }, [layoutStage, measureTrace, panClear, refresh, setRaisedWorks, stopCycle]);
+  }, [
+    layoutStage,
+    measureTrace,
+    panClear,
+    refresh,
+    setRaisedTools,
+    setRaisedWorks,
+    stopCycle,
+  ]);
 
   /* =========================================================
-     見出し・CTA のスクロール入場（GSAP）
+     見出しのスクロール入場（GSAP）
      ⚠ 札とツールカードは GSAP で動かさない。インライン transform を
         書かれると、送り・押しのけ・舞いの CSS 側 transform を恒久的に
         上書きしてしまうため。入場は CSS の transition で作っている。
+     ⚠ 2026-08-23：`[data-pickup-cta]`（全体CTA「実績をすべて見る →」）は
+        撤去した（各セクション右下の VIEW ALL WORKS / VIEW ALL TOOLS と
+        行き先が重複するため）。**死んだセレクタを残さないよう、この
+        ScrollTrigger も一緒に削除している。**
      ========================================================= */
   useEffect(() => {
     const section = sectionRef.current;
@@ -998,16 +1211,6 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
           duration: 1.2,
           ease: EASE,
           scrollTrigger: { trigger: section, start: "top 80%", once: true },
-        },
-      );
-      gsap.fromTo(
-        "[data-pickup-cta]",
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 1.0,
-          ease: "power2.out",
-          scrollTrigger: { trigger: "[data-pickup-cta]", start: "top 92%", once: true },
         },
       );
     }, section);
@@ -1071,6 +1274,28 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
       hoverWorksOff();
     },
     [hoverWorksOff],
+  );
+
+  const handleToolFocus = useCallback(
+    (e: React.FocusEvent<HTMLAnchorElement>, i: number) => {
+      /* ⚠ :focus-visible のときだけ（マウス操作で束が固まる事故を避ける） */
+      let kb = true;
+      try {
+        kb = e.currentTarget.matches(":focus-visible");
+      } catch {
+        kb = true;
+      }
+      if (kb) hoverToolsOn(i);
+    },
+    [hoverToolsOn],
+  );
+
+  const handleToolsBlur = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+      hoverToolsOff();
+    },
+    [hoverToolsOff],
   );
 
   const openWorkData = openIndex !== null ? works[openIndex] : null;
@@ -1190,6 +1415,13 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
             {/* 金② 走査点 */}
             <span className={styles.tracer} aria-hidden="true" />
           </div>
+
+          {/* ★ セクション右下の導線（02 と完全に同じ見た目・同じ位置） */}
+          <p className={styles.more}>
+            <Link href="/works" className={styles.moreLink}>
+              VIEW ALL WORKS →
+            </Link>
+          </p>
         </div>
 
         {/* ============ 02 ツール制作 ============
@@ -1208,8 +1440,13 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
           </div>
 
           {hasTools ? (
-            <div className={styles.deckWrap} ref={toolsWrapRef}>
-              <ul className={`${styles.deck} ${styles.deckTools}`}>
+            <div
+              className={`${styles.deckWrap} ${styles.deckWrapTools}`}
+              ref={toolsWrapRef}
+              onMouseLeave={hoverToolsOff}
+              onBlur={handleToolsBlur}
+            >
+              <ul className={`${styles.deck} ${styles.deckTools}`} ref={toolsDeckRef}>
                 {tools.map((tool, i) => (
                   <li
                     key={tool.slug}
@@ -1219,11 +1456,15 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
                       toolRefs.current[i] = el;
                     }}
                     onMouseEnter={() => {
-                      if (mq(FINE_QUERY) && !mq(SP_QUERY)) setRaisedTools(i);
+                      if (mq(FINE_QUERY)) hoverToolsOn(i);
                     }}
                     data-pickup-plate
                   >
-                    <Link href={`/tools/${tool.slug}`} className={styles.cardLink}>
+                    <Link
+                      href={`/tools/${tool.slug}`}
+                      className={styles.cardLink}
+                      onFocus={(e) => handleToolFocus(e, i)}
+                    >
                       <div className={styles.thumb}>
                         <div className={styles.pan}>
                           <Image
@@ -1244,6 +1485,8 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
                         </div>
                         <span className={styles.inkVeil} aria-hidden="true" />
                         <span className={styles.frameLine} aria-hidden="true" />
+                        {/* ★ 01 と揃える：手前へ出た瞬間、上端を光が一度だけ走る */}
+                        <span className={styles.gleam} aria-hidden="true" />
                       </div>
                       <div className={styles.cap}>
                         <span className={styles.capIdx}>{tool.no}</span>
@@ -1257,6 +1500,14 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
                   </li>
                 ))}
               </ul>
+              {/* 金① 栞（＋その余韻）／金② 走査点。01 と同じものを 02 にも付ける */}
+              <span
+                className={styles.tickGhost}
+                ref={toolsTickGhostRef}
+                aria-hidden="true"
+              />
+              <span className={styles.tick} ref={toolsTickRef} aria-hidden="true" />
+              <span className={styles.tracer} aria-hidden="true" />
             </div>
           ) : (
             <div className={styles.plate} data-pickup-plate>
@@ -1274,19 +1525,21 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
           )}
 
           {hasTools && (
-            <p className={styles.toolsMore}>
-              <Link href="/tools" className={styles.toolsMoreLink}>
-                ツールをすべて見る →
+            /* ★ 01 と完全に同じ見た目・同じ位置（右下）。
+               2026-08-23 以前は左寄せ・日本語の「ツールをすべて見る →」だった */
+            <p className={styles.more}>
+              <Link href="/tools" className={styles.moreLink}>
+                VIEW ALL TOOLS →
               </Link>
             </p>
           )}
         </div>
 
-        <div className={styles.cta} data-pickup-cta>
-          <Link href="/works" className={styles.ctaLink}>
-            <span className={styles.ctaLinkText}>実績をすべて見る →</span>
-          </Link>
-        </div>
+        {/* ⚠ 2026-08-23：ここにあったセクション末尾の全体CTA
+            （`<div className={styles.cta} data-pickup-cta>` ＋
+             `/works` へ飛ぶ枠付きボタン「実績をすべて見る →」）は撤去した。
+            理由＝行き先が 01 の VIEW ALL WORKS → と同じで、右寄せの導線が
+            3つ縦に並んでしまうため。GSAP の ScrollTrigger も一緒に外してある。 */}
 
         {/* ============ 中央の台（FLIP で育つ） ============
             ⚠ 台の器そのものは常に DOM に置く（FLIP の last を測る先）。
