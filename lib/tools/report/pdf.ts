@@ -511,8 +511,8 @@ export async function renderMonthlyReportPdf(
     fontBytes,
     texts: collectTexts(p),
     title: `${p.title} ${p.period}`.trim(),
-    producer: "akashiki monthly report tool",
-    creator: "akashiki monthly report tool",
+    producer: "AKASHIKI Tools (akashiki.com) — © 灯敷 / SUMIYAKA. Proprietary. https://akashiki.com/tools/terms",
+    creator: "AKASHIKI Tools — 月次レポートPDF",
   });
 
   const page = pdf.addPage([L.PAGE_W, L.PAGE_H]);

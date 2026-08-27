@@ -1,0 +1,32 @@
+/* ==========================================================================
+   TrialNotice — お試し版の上限表示（6本共通・紙テーマの変数を使う）
+   ========================================================================== */
+
+.note {
+  margin: 0.7rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  color: var(--tool-ink-3);
+}
+
+/* 上限に達したとき＝テーマ色の左罫＋薄い色地（面で塗ってよい唯一の色地） */
+.limited {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 2px solid var(--tool-accent);
+  background: var(--tool-accent-soft);
+  color: var(--tool-ink-2);
+}
+
+.link {
+  margin-left: 0.3em;
+  color: var(--tool-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--tool-accent-line);
+  transition: border-color var(--duration-normal) var(--ease-default);
+}
+
+.link:hover {
+  border-color: var(--tool-accent);
+}

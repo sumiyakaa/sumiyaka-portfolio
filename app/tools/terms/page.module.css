@@ -1,0 +1,144 @@
+/* ==========================================================================
+   /tools/terms — 利用条件（紙テーマ・テーマ色は既定の墨）
+   ========================================================================== */
+
+.page {
+  background: var(--tool-paper);
+  color: var(--tool-ink);
+  border-top: 3px solid var(--tool-accent);
+}
+
+.inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.head {
+  border-bottom: 1px solid var(--tool-line);
+  padding: calc(60px + 4rem) 0 3rem;
+}
+
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--tool-ink-3);
+}
+
+.crumb a {
+  color: var(--tool-ink-3);
+  text-decoration: none;
+}
+
+.crumb a:hover {
+  color: var(--tool-ink);
+}
+
+.title {
+  margin: 2rem 0 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+}
+
+.titleEn {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  color: var(--tool-ink-3);
+  text-transform: uppercase;
+}
+
+.lead {
+  margin: 1.6rem 0 0;
+  font-size: 0.92rem;
+  line-height: 2;
+  color: var(--tool-ink-2);
+}
+
+.brPc {
+  display: none;
+}
+
+.body {
+  padding: 3.5rem 0 5rem;
+}
+
+.section + .section {
+  margin-top: 2.6rem;
+}
+
+.h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--tool-line-strong);
+}
+
+.p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 2.05;
+  color: var(--tool-ink-2);
+}
+
+.p + .p {
+  margin-top: 0.7rem;
+}
+
+.link,
+.backLink {
+  color: var(--tool-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--tool-line-strong);
+  transition: border-color var(--duration-normal) var(--ease-default);
+}
+
+.link:hover,
+.backLink:hover {
+  border-color: var(--tool-ink);
+}
+
+.date {
+  margin: 3rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--tool-ink-3);
+}
+
+.back {
+  margin: 2.5rem 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+@media (min-width: 821px) {
+  .brPc {
+    display: inline;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner {
+    padding: 0 20px;
+  }
+
+  .head {
+    padding: calc(60px + 3rem) 0 2.5rem;
+  }
+
+  .body {
+    padding: 2.8rem 0 4rem;
+  }
+}

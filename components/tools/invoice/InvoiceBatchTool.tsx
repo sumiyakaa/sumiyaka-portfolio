@@ -12,6 +12,7 @@ import {
 import { buildInvoices, checkCompliance } from "@/lib/tools/invoice/calc";
 import { SAMPLE_ISSUER, SAMPLE_LEDGER } from "@/lib/tools/invoice/sample";
 import { formatYen, safeFileName } from "@/lib/tools/_shared/format";
+import { useTrialLimit } from "@/lib/tools/_shared/trialLimit";
 import type {
   Issuer,
   LedgerRow,
@@ -19,6 +20,7 @@ import type {
   Rounding,
 } from "@/lib/tools/invoice/types";
 import ToolMark from "@/components/tools/_marks/ToolMark";
+import TrialNotice from "@/components/tools/_shared-ui/TrialNotice";
 import InvoicePaper from "./InvoicePaper";
 import styles from "./InvoiceBatchTool.module.css";
 
@@ -98,6 +100,7 @@ export default function InvoiceBatchTool() {
   const [fontPct, setFontPct] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const trial = useTrialLimit("invoice");
 
   // 保存済みの自社情報があれば復元する（初回描画後・SSRでは触らない）
   useEffect(() => {
@@ -253,6 +256,7 @@ export default function InvoiceBatchTool() {
 
   const exportOne = useCallback(async () => {
     if (!current) return;
+    if (!trial.consume()) return;
     setMessage(null);
     setBusy("PDFを組んでいます…");
     try {
@@ -270,10 +274,11 @@ export default function InvoiceBatchTool() {
     } finally {
       setBusy(null);
     }
-  }, [current, issuer, ensureFont]);
+  }, [current, issuer, ensureFont, trial]);
 
   const exportAll = useCallback(async () => {
     if (docs.length === 0) return;
+    if (!trial.consume()) return;
     setMessage(null);
     setBusy("すべての請求書を組んでいます…");
     try {
@@ -301,7 +306,7 @@ export default function InvoiceBatchTool() {
     } finally {
       setBusy(null);
     }
-  }, [docs, issuer, ensureFont]);
+  }, [docs, issuer, ensureFont, trial]);
 
   return (
     <div className={styles.tool}>
@@ -653,7 +658,7 @@ export default function InvoiceBatchTool() {
                 type="button"
                 className={styles.ghostButton}
                 onClick={exportOne}
-                disabled={!current || busy !== null}
+                disabled={!current || busy !== null || trial.limited}
               >
                 この1件をPDF
               </button>
@@ -661,11 +666,12 @@ export default function InvoiceBatchTool() {
                 type="button"
                 className={styles.primaryButton}
                 onClick={exportAll}
-                disabled={docs.length === 0 || busy !== null}
+                disabled={docs.length === 0 || busy !== null || trial.limited}
               >
                 {docs.length} 件まとめてZIP
               </button>
             </div>
+            <TrialNotice trial={trial} />
 
             {busy ? (
               <p className={styles.busy}>

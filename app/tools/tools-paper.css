@@ -48,6 +48,10 @@
   background: var(--tool-paper);
   color: var(--tool-ink);
   color-scheme: light;
+
+  /* data-tool が無い紙のページ（/tools/terms 等）の既定＝墨。下の [data-tool] が上書きする */
+  --tool-accent: #171717;
+  --tool-accent-rgb: 23, 23, 23;
 }
 
 /* ---- 1本1色（data/tools.ts の accent と同値） ---- */

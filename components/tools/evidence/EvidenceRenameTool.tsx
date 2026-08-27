@@ -50,6 +50,8 @@ import type {
   RenameStatus,
 } from "@/lib/tools/evidence/types";
 import ToolMark from "@/components/tools/_marks/ToolMark";
+import { useTrialLimit } from "@/lib/tools/_shared/trialLimit";
+import TrialNotice from "@/components/tools/_shared-ui/TrialNotice";
 import styles from "./EvidenceRenameTool.module.css";
 
 /**
@@ -231,6 +233,8 @@ export default function EvidenceRenameTool() {
   const [message, setMessage] = useState<string | null>(null);
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [visibleRows, setVisibleRows] = useState(TABLE_INITIAL_ROWS);
+  // お試し版の上限（書き出し＝ZIP・CSVのダウンロードを1回と数える。端末側だけ）
+  const trial = useTrialLimit("evidence");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dirInputRef = useRef<HTMLInputElement>(null);
@@ -476,6 +480,7 @@ export default function EvidenceRenameTool() {
 
   const exportZip = useCallback(async () => {
     if (!canZip) return;
+    if (!trial.consume()) return;
     setMessage(null);
     try {
       const entries = listZipEntries(plan);
@@ -504,10 +509,11 @@ export default function EvidenceRenameTool() {
     } finally {
       setBusy(null);
     }
-  }, [canZip, plan]);
+  }, [canZip, plan, trial]);
 
   const exportCsv = useCallback(
     (kind: "index" | "map") => {
+      if (!trial.consume()) return;
       setMessage(null);
       try {
         const bytes = kind === "index" ? buildIndexCsv(plan) : buildMapCsv(plan);
@@ -523,7 +529,7 @@ export default function EvidenceRenameTool() {
         );
       }
     },
-    [plan],
+    [plan, trial],
   );
 
   /* ---------------- 状態のひとこと ---------------- */
@@ -919,11 +925,12 @@ export default function EvidenceRenameTool() {
                   type="button"
                   className={styles.primaryButton}
                   onClick={exportZip}
-                  disabled={!canZip || busy !== null}
+                  disabled={!canZip || busy !== null || trial.limited}
                 >
                   {canZip ? `${zipCount} 件をZIPで書き出す` : "ZIPで書き出す"}
                 </button>
               </div>
+              <TrialNotice trial={trial} />
 
               {isSample ? (
                 <p className={styles.stepNote}>
@@ -938,7 +945,7 @@ export default function EvidenceRenameTool() {
                   type="button"
                   className={styles.ghostButton}
                   onClick={() => exportCsv("index")}
-                  disabled={busy !== null}
+                  disabled={busy !== null || trial.limited}
                 >
                   {INDEX_CSV_NAME}
                 </button>
@@ -946,7 +953,7 @@ export default function EvidenceRenameTool() {
                   type="button"
                   className={styles.ghostButton}
                   onClick={() => exportCsv("map")}
-                  disabled={busy !== null}
+                  disabled={busy !== null || trial.limited}
                 >
                   {MAP_CSV_NAME}
                 </button>

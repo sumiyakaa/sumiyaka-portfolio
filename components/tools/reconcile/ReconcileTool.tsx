@@ -10,7 +10,9 @@ import {
   type DragEvent,
 } from "react";
 import ToolMark from "@/components/tools/_marks/ToolMark";
+import TrialNotice from "@/components/tools/_shared-ui/TrialNotice";
 import { formatYen, safeFileName } from "@/lib/tools/_shared/format";
+import { useTrialLimit } from "@/lib/tools/_shared/trialLimit";
 import { reconcile } from "@/lib/tools/reconcile/calc";
 import {
   SAMPLE_LEDGER,
@@ -128,6 +130,9 @@ export default function ReconcileTool() {
   const [dragging, setDragging] = useState<"ledger" | "statement" | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  // お試し版の上限（書き出し＝CSVダウンロードを1回と数える。端末側だけで数え、サーバへは送らない）
+  const trial = useTrialLimit("reconcile");
 
   const ledgerInputRef = useRef<HTMLInputElement>(null);
   const statementInputRef = useRef<HTMLInputElement>(null);
@@ -265,6 +270,8 @@ export default function ReconcileTool() {
   /* ---------------- 書き出し ---------------- */
 
   const exportCsv = useCallback(async () => {
+    // お試し版の上限：数えてから書き出す。上限なら何もしない（重い処理の前に止める）
+    if (!trial.consume()) return;
     setMessage(null);
     setBusy("突合表を組んでいます…");
     try {
@@ -279,7 +286,7 @@ export default function ReconcileTool() {
     } finally {
       setBusy(null);
     }
-  }, [result, onlyIssues]);
+  }, [result, onlyIssues, trial]);
 
   /* ---------------- 描画 ---------------- */
 
@@ -614,11 +621,13 @@ export default function ReconcileTool() {
                 type="button"
                 className={styles.primaryButton}
                 onClick={exportCsv}
-                disabled={result.rows.length === 0 || busy !== null}
+                disabled={result.rows.length === 0 || busy !== null || trial.limited}
               >
                 突合表をCSVで書き出す
               </button>
             </div>
+
+            <TrialNotice trial={trial} />
 
             {busy ? <p className={styles.busy}>{busy}</p> : null}
             {message ? <p className={styles.message}>{message}</p> : null}

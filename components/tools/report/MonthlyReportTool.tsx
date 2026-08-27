@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import { formatNumber, formatYen, safeFileName } from "@/lib/tools/_shared/format";
+import { useTrialLimit } from "@/lib/tools/_shared/trialLimit";
 import { buildReport, foldMonthly } from "@/lib/tools/report/calc";
 import { formatMonthJa } from "@/lib/tools/report/display";
 import {
@@ -30,6 +31,7 @@ import type {
   SalesRow,
 } from "@/lib/tools/report/types";
 import ToolMark from "@/components/tools/_marks/ToolMark";
+import TrialNotice from "@/components/tools/_shared-ui/TrialNotice";
 import MonthlyReportPaper from "./MonthlyReportPaper";
 import styles from "./MonthlyReportTool.module.css";
 
@@ -93,6 +95,7 @@ export default function MonthlyReportTool() {
   const [fontPct, setFontPct] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const trial = useTrialLimit("report");
 
   // 保存済みの表題・作成者があれば復元する（初回描画後・SSRでは触らない）
   useEffect(() => {
@@ -203,6 +206,7 @@ export default function MonthlyReportTool() {
 
   const exportPdf = useCallback(async () => {
     if (!doc) return;
+    if (!trial.consume()) return;
     setMessage(null);
     setBusy("レポートを組んでいます…");
     try {
@@ -222,7 +226,7 @@ export default function MonthlyReportTool() {
     } finally {
       setBusy(null);
     }
-  }, [doc, meta, sourceName, rows.length, ensureFont]);
+  }, [doc, meta, sourceName, rows.length, ensureFont, trial]);
 
   const selectedKey = doc?.target.key ?? "";
 
@@ -505,10 +509,11 @@ export default function MonthlyReportTool() {
               type="button"
               className={styles.primaryButton}
               onClick={exportPdf}
-              disabled={!doc || busy !== null}
+              disabled={!doc || busy !== null || trial.limited}
             >
               このレポートをPDFで保存
             </button>
+            <TrialNotice trial={trial} />
 
             {busy ? (
               <p className={styles.busy}>

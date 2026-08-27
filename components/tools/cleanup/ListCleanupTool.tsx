@@ -36,7 +36,9 @@ import {
   type RuleSwitches,
 } from "@/lib/tools/cleanup/types";
 import { formatNumber } from "@/lib/tools/_shared/format";
+import { useTrialLimit } from "@/lib/tools/_shared/trialLimit";
 import ToolMark from "@/components/tools/_marks/ToolMark";
+import TrialNotice from "@/components/tools/_shared-ui/TrialNotice";
 import styles from "./ListCleanupTool.module.css";
 
 /**
@@ -227,6 +229,8 @@ export default function ListCleanupTool() {
   const [message, setMessage] = useState<string | null>(null);
   const [narrow, setNarrow] = useState(false);
   const [storageReady, setStorageReady] = useState(false);
+  /* お試し版の上限（書き出し＝ダウンロード操作だけを数える。共通契約 T-08） */
+  const trial = useTrialLimit("cleanup");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const beforeRef = useRef<HTMLDivElement>(null);
@@ -611,6 +615,8 @@ export default function ListCleanupTool() {
 
   const runExport = useCallback(
     async (kind: "xlsx" | "csv" | "report") => {
+      // お試し版の上限：busy を立てる前・重い処理の前に数える（上限なら中止）
+      if (!trial.consume()) return;
       setMessage(null);
       setBusy("書き出しています…");
       try {
@@ -650,7 +656,7 @@ export default function ListCleanupTool() {
         setBusy(null);
       }
     },
-    [parsed, result, columns],
+    [parsed, result, columns, trial],
   );
 
   /* -------- 指摘（読み取りの指摘 ＋ 直さずに知らせるもの）を1つのリストに -------- */
@@ -1272,7 +1278,7 @@ export default function ListCleanupTool() {
                 type="button"
                 className={styles.primaryButton}
                 onClick={() => void runExport("xlsx")}
-                disabled={busy !== null || parsed.rows.length === 0}
+                disabled={busy !== null || parsed.rows.length === 0 || trial.limited}
               >
                 整えた名簿 .xlsx
               </button>
@@ -1280,7 +1286,7 @@ export default function ListCleanupTool() {
                 type="button"
                 className={styles.ghostButton}
                 onClick={() => void runExport("csv")}
-                disabled={busy !== null || parsed.rows.length === 0}
+                disabled={busy !== null || parsed.rows.length === 0 || trial.limited}
               >
                 名簿 .csv
               </button>
@@ -1288,11 +1294,12 @@ export default function ListCleanupTool() {
                 type="button"
                 className={styles.ghostButton}
                 onClick={() => void runExport("report")}
-                disabled={busy !== null || result.changes.length === 0}
+                disabled={busy !== null || result.changes.length === 0 || trial.limited}
               >
                 修正レポート .csv
               </button>
             </div>
+            <TrialNotice trial={trial} />
 
             <p className={styles.stepFine}>
               .xlsx は「名簿 / 修正一覧 / 重複候補」の3シートです。CSV は Excel

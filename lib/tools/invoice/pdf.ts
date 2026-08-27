@@ -787,8 +787,8 @@ export async function renderInvoicePdf(options: RenderInvoiceOptions): Promise<U
     fontBytes,
     texts: collectUserText(doc, issuer),
     title: `請求書 ${cleanLine(doc.invoiceNo)}`.trim(),
-    producer: "akashiki invoice tool",
-    creator: "akashiki invoice tool",
+    producer: "AKASHIKI Tools (akashiki.com) — © 灯敷 / SUMIYAKA. Proprietary. https://akashiki.com/tools/terms",
+    creator: "AKASHIKI Tools — 請求書PDF 一括作成",
   });
 
   const seal = await embedDataUrl(pdf, issuer.sealDataUrl);

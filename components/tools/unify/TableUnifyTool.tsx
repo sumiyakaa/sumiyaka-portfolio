@@ -34,7 +34,9 @@ import {
   type UnifyOptions,
 } from "@/lib/tools/unify/types";
 import { formatDateJa, formatNumber, formatQty } from "@/lib/tools/_shared/format";
+import { useTrialLimit } from "@/lib/tools/_shared/trialLimit";
 import ToolMark from "@/components/tools/_marks/ToolMark";
+import TrialNotice from "@/components/tools/_shared-ui/TrialNotice";
 import MappingBoard from "./MappingBoard";
 import styles from "./TableUnifyTool.module.css";
 
@@ -160,6 +162,8 @@ export default function TableUnifyTool() {
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  /** お試し版の上限（書き出し＝.xlsx / CSV のダウンロードを数える。端末側のみ） */
+  const trial = useTrialLimit("unify");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const schemaInputRef = useRef<HTMLInputElement>(null);
@@ -539,6 +543,8 @@ export default function TableUnifyTool() {
         setMessage("書き出せる行がありません。");
         return;
       }
+      // お試し版の上限。数えてから書き出す（上限なら数えずに中止）
+      if (!trial.consume()) return;
       setMessage(null);
       setBusy(ext === "xlsx" ? "Excelを組んでいます…" : "CSVを書き出しています…");
       try {
@@ -561,7 +567,7 @@ export default function TableUnifyTool() {
         setBusy(null);
       }
     },
-    [result, workSchema.name],
+    [result, workSchema.name, trial],
   );
 
   /* ---------------- 描画 ---------------- */
@@ -919,7 +925,7 @@ export default function TableUnifyTool() {
                 type="button"
                 className={styles.primaryButton}
                 onClick={() => void exportAs("xlsx")}
-                disabled={busy !== null || result.rows.length === 0}
+                disabled={busy !== null || result.rows.length === 0 || trial.limited}
               >
                 Excel（.xlsx）で書き出す
               </button>
@@ -927,11 +933,12 @@ export default function TableUnifyTool() {
                 type="button"
                 className={styles.ghostButton}
                 onClick={() => void exportAs("csv")}
-                disabled={busy !== null || result.rows.length === 0}
+                disabled={busy !== null || result.rows.length === 0 || trial.limited}
               >
                 CSV
               </button>
             </div>
+            <TrialNotice trial={trial} />
 
             {busy ? <p className={styles.busy}>{busy}</p> : null}
             {message ? <p className={styles.message}>{message}</p> : null}

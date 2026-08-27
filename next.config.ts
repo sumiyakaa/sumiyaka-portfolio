@@ -36,6 +36,25 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      {
+        // /tools＝自社ツール。テキスト・データマイニングの権利留保（TDM Reservation Protocol）と、
+        // AI学習・画像学習の拒否を機械可読にしておく。index/follow は維持（AI検索の流入は歓迎）。
+        // ⚠ 防御ではなく権利表示。完全な複製防止は技術的に不可能（app/tools/layout.tsx 参照）
+        source: "/tools/:path*",
+        headers: [
+          { key: "tdm-reservation", value: "1" },
+          { key: "tdm-policy", value: "https://akashiki.com/tools/terms" },
+          { key: "X-Robots-Tag", value: "index, follow, noai, noimageai" },
+        ],
+      },
+      {
+        source: "/tools",
+        headers: [
+          { key: "tdm-reservation", value: "1" },
+          { key: "tdm-policy", value: "https://akashiki.com/tools/terms" },
+          { key: "X-Robots-Tag", value: "index, follow, noai, noimageai" },
+        ],
+      },
     ];
   },
   images: {
