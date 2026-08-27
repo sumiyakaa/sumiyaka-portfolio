@@ -52,6 +52,10 @@ export default function Deguchi() {
                 <span className={styles.no}>③</span>AI導入の設計・教育
               </h3>
               <p className={styles.branchCopy}>仕組みを回せる状態を、組織に残す</p>
+              {/* 導線（P6-4）＝できること・できないこと・進め方・料金の考え方は /service に置く */}
+              <Link href="/service" className={styles.branchLink}>
+                サービスの詳細 → /service
+              </Link>
             </ScrollReveal>
           </ul>
         </div>

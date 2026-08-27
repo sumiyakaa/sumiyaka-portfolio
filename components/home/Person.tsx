@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import styles from "./Person.module.css";
 
@@ -24,19 +25,24 @@ export default function Person() {
             <ScrollReveal as="p" className={styles.display}>
               15歳、作る側へ。
             </ScrollReveal>
-            {/* 経歴＝2026-08-18 あおきさん提供の正本文＋9歳エピソード（語り口調は3段落目のみ許可）
-                学歴文＝2026-08-18追加（正本「学歴」行準拠＝高校(情報技術科)→理系大学まで情報技術専攻。独学のままの誤認を防ぐ）
+            {/* 経歴＝2026-08-18 あおきさん提供の正本文（語り口調は末尾段落のみ許可）
                 独立文＝2026-08-19追加（正本「29歳〜独立」準拠。年齢感が30代と伝わるように＝あおきさん指示）
-                2026-08-19改稿＝「人体の情報という最上級のプライバシー」＋「だからこそ保守はセキュリティ最重視」（あおきさん指示・文量は抑える） */}
+                2026-08-19改稿＝「人体の情報という最上級のプライバシー」＋「だからこそ保守はセキュリティ最重視」（あおきさん指示・文量は抑える）
+                2026-08-27 P6-4＝トップの情報量を落として導線を確保（あおきさん一任）。
+                  9歳〜15歳〜学歴の段落は /about の年表へ移し、ここは「7年の現場」と「AIを使う側」の2段落＋/about への導線だけにする。
+                  文言は一言一句そのまま（段落の削除と導線の追加のみ） */}
             <ScrollReveal as="p" className={styles.bio} delay={0.15}>
-              9歳、スマホでもゲームでもなく、初めて触れたのはパソコンでした。インターネットやプログラミングはどうやって動いているのか——その関心を実際に手で動かし始めたのが15歳。ブログブームの中でWordPressとHTML/CSS/JavaScriptを独学し、オリジナルテーマを自作、サーバー契約からサイト公開まで自力でやり切って以来、「見るだけ」ではなく「作る側」で過ごしてきました。高校は情報技術科、大学も理系で情報技術を専攻し、プログラミングの基礎を体系立てて学びました。
-            </ScrollReveal>
-            <ScrollReveal as="p" className={styles.bio} delay={0.2}>
               卒業後は、大手美容外科で社内SEとして社内・院内システムの2系統を7年間担当。人体の情報という最上級のプライバシーを扱う医療現場での経験が、業務ヒアリングと堅実な進行の基盤です。だからこそ、システムの保守ではセキュリティを何より重視しています。29歳で独立し、現在に至ります。
             </ScrollReveal>
             {/* AIスペシャリストとしての目標＝§7-4承認済み素材＋§2-4中核メッセージ（人生設計②準拠・開示線内） */}
-            <ScrollReveal as="p" className={styles.bio} delay={0.25}>
+            <ScrollReveal as="p" className={styles.bio} delay={0.2}>
               仕事はこれから、AIにできないことをする側と、AIを使う側に分かれていく。私は、使う側でありたい。AIスペシャリストとして、ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを仕事の軸にしている。
+            </ScrollReveal>
+            {/* 導線（P6-4）＝経歴の物語・年表・信条・引き受けないことは /about に置く */}
+            <ScrollReveal as="p" className={styles.more} delay={0.25}>
+              <Link href="/about" className={styles.moreLink}>
+                経歴と考え方を読む → /about
+              </Link>
             </ScrollReveal>
           </div>
           <ScrollReveal as="figure" className={styles.portrait} delay={0.2}>

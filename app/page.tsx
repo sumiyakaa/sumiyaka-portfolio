@@ -126,9 +126,12 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 6. 注記（既存）— Web制作の料金表は /works#price（C4 実施済み・P6-1） */}
+            {/* 6. 注記（既存）— Web制作の料金表は /works#price（C4 実施済み・P6-1）
+                P6-4＝できないこと・進め方・料金の考え方の本体は /service に置いたので導線を足す */}
             <p className={styles.priceNote}>
-              価格は、削減額から逆算してご提案します。Web制作の料金は
+              価格は、削減額から逆算してご提案します。できないこと・進め方・料金の考え方は
+              <Link href="/service" className={styles.priceNoteLink}>サービスページ</Link>
+              へ、Web制作の料金は
               <Link href="/works#price" className={styles.priceNoteLink}>Web制作ページ</Link>
               へ。
             </p>

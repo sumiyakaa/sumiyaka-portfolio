@@ -55,6 +55,25 @@
   max-width: 38em;
 }
 
+/* ---- 導線（P6-4）＝Deguchi の .branchLink と同じ作法（下線・transform/opacity のみ） ---- */
+.more {
+  margin-top: var(--washi-space-lg, 1.5rem);
+}
+.moreLink {
+  display: inline-block;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-deep);
+  text-decoration: underline;
+  text-underline-offset: 0.45em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--rule);
+  transition: text-decoration-color 0.3s ease;
+}
+.moreLink:hover {
+  text-decoration-color: var(--ink-deep);
+}
+
 /* ---- 写真（原比率 869×1086＝4:5。設計書許容「正方形〜4:5」の上限＝これ以上の縦長は禁止） ---- */
 .portrait {
   margin: 0;
