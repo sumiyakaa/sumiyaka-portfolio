@@ -40,8 +40,12 @@
   margin-top: var(--washi-space-xl, 2.5rem);
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.8rem, 1.2rem + 2.6vw, 3.4rem);
-  letter-spacing: 0.14em;
+  /* 「15歳、作る側へ。」はどの幅でも1行（2026-08-27 あおきさん指示）。
+     文字列は9字固定なので、列幅（1440で約476px・900で約406px・320で272px）に
+     収まる上限へ字送りと最大サイズを詰め、nowrap で折返しを禁止する。 */
+  font-size: clamp(1.7rem, 0.9rem + 2.4vw, 2.9rem);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
   font-feature-settings: "palt" 1;
   color: var(--ink-deep);
   line-height: 1.4;
