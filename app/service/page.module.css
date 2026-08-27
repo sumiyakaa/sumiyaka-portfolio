@@ -1,9 +1,32 @@
-/* ========================================
-   service page — AKASHIKI Portfolio (旧サイト忠実再現)
-   ======================================== */
+/* ==========================================================================
+   /service — AIスペシャリストとしてのサービス（P6・2026-08-27）
+   骨格は WorksPrice.module.css / works .scope 系に揃える：
+     max-width 1080px・上下 padding 96px（Tablet 80px／SP 64px）
+     小ラベル（mono 11px・--color-accent）＋ h2（--font-body 700・clamp(22px, 2.4rem, 34px)）
+     区切り 1px solid --color-border・番号 mono --color-accent
+   互換方針：
+     - vw単位のフォント / filter・backdrop-filter のアニメ / mix-blend-mode /
+       複雑 clip-path / 3D transform / will-change は不使用
+     - 100vh は svh 二段指定（SubPageFVAnim の縮小に合わせ height で指定）
+     - prefers-reduced-motion: reduce に対応（ScrollReveal の inline opacity:0 を解除）
+   ========================================================================== */
+
+.page {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* SP 専用改行 / PC 専用改行 */
+.brSp {
+  display: none;
+}
+
+.brPc {
+  display: none;
+}
 
 /* ========================================
-   FV — 100vh 全画面
+   FV — 100vh 全画面（/tools と同じ作法・回路モチーフ無し）
    ======================================== */
 .fv {
   position: relative;
@@ -16,13 +39,13 @@
   overflow: hidden;
 }
 
-/* ---- Background Layers ---- */
 .fvBg {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
+/* 墨のグレイン（transform のみ・iOS 安全） */
 .fvGrain {
   position: absolute;
   inset: -50%;
@@ -42,6 +65,7 @@
   90% { transform: translate(-1%, 7%); }
 }
 
+/* 罫（静かな走査線） */
 .fvScanline {
   position: absolute;
   inset: 0;
@@ -49,25 +73,40 @@
     0deg,
     transparent,
     transparent 2px,
-    rgba(255,255,255,0.015) 2px,
-    rgba(255,255,255,0.015) 4px
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
   );
   pointer-events: none;
   opacity: 0.02;
 }
 
-/* ---- Content ---- */
 .fvContent {
   position: relative;
   z-index: 2;
   text-align: center;
+  padding: 0 20px;
 }
 
+/* 英字ラベル＝小さく装飾（data-fv-edge でフェードイン） */
+.fvLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--color-accent);
+  margin-bottom: 26px;
+  opacity: 0;
+}
+
+/* 主役＝日本語 h1（letter-spacing は SubPageFVAnim が 0.4em→0.1em へ） */
 .fvTitle {
-  font-family: var(--font-heading);
-  font-weight: 100;
-  font-size: clamp(48px, 8vw, 120px);
-  letter-spacing: 0.25em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 54px;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
   color: var(--color-foreground);
   opacity: 0;
 }
@@ -75,9 +114,11 @@
 .fvSub {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 13px;
-  color: var(--color-foreground);
-  margin-top: 16px;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+  margin-top: 20px;
   opacity: 0;
 }
 
@@ -85,12 +126,11 @@
   width: 60px;
   height: 1px;
   background: var(--color-border-light);
-  margin: 24px auto 0;
+  margin: 26px auto 0;
   transform: scaleX(0);
   transform-origin: center;
 }
 
-/* ---- Edge Text ---- */
 .fvEdgeBl,
 .fvEdgeBr {
   position: absolute;
@@ -118,571 +158,861 @@
 }
 
 /* ========================================
-   制作スタイルセクション（黒背景）
+   セクション共通（WorksPrice と同骨格）
    ======================================== */
-.style {
-  background: var(--color-primary);
-  padding: 120px 80px 60px;
+.section {
+  padding: 96px 40px;
+  border-top: 1px solid var(--color-border);
+  scroll-margin-top: 60px;
 }
 
-.styleInner {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 80px;
-  max-width: 1100px;
+.sectionFirst {
+  border-top: 0;
+}
+
+.inner {
+  max-width: 1080px;
   margin: 0 auto;
 }
 
-/* ---- Left: sticky title ---- */
-.styleLeft {
-  position: relative;
+/* ScrollReveal のラッパー識別（reduced-motion で使用） */
+.reveal {
+  display: block;
 }
 
-.styleTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 57.6px;
-  letter-spacing: 0.15em;
-  color: var(--color-foreground);
-  position: sticky;
-  top: 120px;
-  text-align: center;
-}
-
-/* ---- Right: items ---- */
-.styleRight {
-  display: flex;
-  flex-direction: column;
-}
-
-.styleItem {
-  padding: 40px 0;
-}
-
-.styleItem:first-child {
-  padding-top: 0;
-}
-
-.styleNum {
+.label {
   display: block;
   font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
-  margin-bottom: 12px;
-}
-
-.styleName {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 21.6px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
-  margin-bottom: 16px;
-  display: inline-block;
-  transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              padding 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.styleText {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 16.8px;
-  line-height: 2.0;
-  color: var(--color-foreground);
-  letter-spacing: 0.04em;
-}
-
-.styleDivider {
-  width: 100%;
-  height: 1px;
-  background: var(--color-border);
-}
-
-/* ---- Neg-Pos Invert Hover ---- */
-@media (min-width: 768px) {
-  .styleItem:hover .styleName {
-    color: var(--color-primary);
-    background: #fff;
-    padding: 2px 8px;
-  }
-}
-
-/* ========================================
-   AIO説明セクション（白背景）
-   ======================================== */
-.aio {
-  background: #fff;
-  padding: 160px 80px;
-}
-
-.aioInner {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.aioTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 50.4px;
-  letter-spacing: 0.15em;
-  color: #111;
-  line-height: 1.4;
-}
-
-.aioLead {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 21.6px;
-  color: #111;
-  margin-top: 32px;
-  line-height: 2.0;
-}
-
-.aioBody {
-  margin-top: 40px;
-}
-
-.aioText {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 16.8px;
-  line-height: 2.0;
-  color: #111;
-  letter-spacing: 0.04em;
-  margin-bottom: 16px;
-}
-
-.aioText:last-child {
-  margin-bottom: 0;
-}
-
-.aioList {
-  margin: 16px 0 24px;
-  padding-left: 0;
-}
-
-.aioListItem {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 16.8px;
-  line-height: 2.0;
-  color: #111;
-  letter-spacing: 0.04em;
-  padding-left: 1.2em;
-  position: relative;
-  list-style: none;
-}
-
-.aioListItem::before {
-  content: '—';
-  position: absolute;
-  left: 0;
-  color: #111;
-}
-
-/* ---- Marker Highlight ---- */
-.marker {
-  background: none;
-  color: inherit;
-  background-image: linear-gradient(rgba(255, 120, 90, 0.35), rgba(255, 120, 90, 0.35));
-  background-repeat: no-repeat;
-  background-position: 0 85%;
-  background-size: 100% 40%;
-}
-
-/* ---- AIO Statistics ---- */
-.aioStats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-  margin: 48px 0;
-  padding: 48px 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.aioStat {
-  text-align: center;
-}
-
-.aioStatNum {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 48px;
-  letter-spacing: -0.02em;
-  color: #111;
-  line-height: 1;
-  display: block;
-}
-
-.aioStatUnit {
-  font-size: 20px;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-}
-
-.aioStatLabel {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 13px;
-  color: #555;
-  margin-top: 12px;
-  display: block;
-  line-height: 1.6;
-}
-
-.aioStatLabel small {
   font-size: 11px;
-  color: #999;
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+  margin-bottom: 18px;
+}
+
+/* h2 を伴わないラベル（FAQ） */
+.labelSolo {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(22px, 2.4rem, 34px);
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0 0 32px;
+}
+
+.lead {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  max-width: 40em;
+  margin: 0 0 20px;
+}
+
+.text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+  max-width: 42em;
+  margin: 0;
+}
+
+.subTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 44px 0 12px;
+}
+
+/* 注記（.note）と文中リンク */
+.note {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.95;
+  color: var(--color-foreground-muted);
+  margin: 36px 0 0;
+  max-width: 46em;
+}
+
+.inlineLink {
+  color: var(--color-foreground);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--color-border-light);
+  transition: text-decoration-color var(--duration-normal) var(--ease-default),
+              color var(--duration-normal) var(--ease-default);
+}
+
+.inlineLink:hover,
+.inlineLink:focus-visible {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
+}
+
+/* 矢印リンク（実際に動くツールを触る →） */
+.arrowLink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 40px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border-light);
+  font-family: var(--font-body);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--color-foreground);
+  transition: color var(--duration-normal) var(--ease-default),
+              border-color var(--duration-normal) var(--ease-default);
+}
+
+.arrowLink:hover,
+.arrowLink:focus-visible {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.arrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.arrowLink:hover .arrow {
+  transform: translateX(4px);
 }
 
 /* ========================================
-   料金詳細 + オプション（黒背景）
+   A-2 できること — 3項目（番号付き・3列）
    ======================================== */
-.price {
-  background: var(--color-primary);
-  padding: 160px 80px;
+.doList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px 40px;
+  margin: 40px 0 0;
+  padding: 0;
 }
 
-.priceInner {
-  max-width: 900px;
-  margin: 0 auto 0 calc((100% - 900px) / 3);
+.doItem {
+  border-top: 1px solid var(--color-border);
+  padding-top: 22px;
 }
 
-.priceHead {
-  margin-bottom: 64px;
+.doNum {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
 }
 
-.priceTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 57.6px;
-  letter-spacing: 0.2em;
+.doName {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
   color: var(--color-foreground);
+  margin: 12px 0 0;
 }
 
-.priceHr {
-  width: 40px;
-  height: 1px;
-  background: var(--color-border-light);
-  margin-top: 24px;
+.doDesc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 10px 0 0;
 }
 
-/* ---- Price Items ---- */
-.priceList {
-  display: flex;
-  flex-direction: column;
-}
-
-.priceItem {
-  padding: 32px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.priceItem:first-child {
+/* 第2の柱：AI導入の設計・教育 */
+.pillar {
+  margin-top: 64px;
+  padding-top: 48px;
   border-top: 1px solid var(--color-border);
 }
 
-.priceItemTop {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-}
-
-.priceNum {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 13.2px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
-  flex-shrink: 0;
-}
-
-.priceName {
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 26.4px;
-  letter-spacing: 0.1em;
-  color: #fff;
-}
-
-.priceAmount {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 26.4px;
-  color: #fff;
-  margin-left: auto;
-  white-space: nowrap;
-}
-
-.priceDesc {
+.pillarTitle {
   font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 14.4px;
-  color: var(--color-foreground);
-  margin-top: 8px;
-  padding-left: 27px;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.6;
   letter-spacing: 0.02em;
-}
-
-/* ---- Option ---- */
-.priceOption {
-  margin-top: 80px;
-}
-
-.priceOptionLabel {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 13.2px;
-  letter-spacing: 0.2em;
   color: var(--color-foreground);
-  margin-bottom: 24px;
+  margin: 0;
 }
 
-.priceOptionList {
-  display: flex;
-  flex-direction: column;
-}
-
-.priceOptionItem {
-  display: flex;
-  align-items: baseline;
-  padding: 16px 0;
-  border-bottom: 1px solid #111;
-}
-
-.priceOptionPrefix {
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: 16.8px;
-  color: var(--color-foreground);
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-
-.priceOptionName {
+.pillarBody {
   font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 16.8px;
-  color: var(--color-foreground);
-  letter-spacing: 0.02em;
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+  max-width: 46em;
+  margin: 20px 0 0;
 }
 
-.priceOptionAmount {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 16.8px;
-  color: var(--color-foreground);
-  margin-left: auto;
-  white-space: nowrap;
+/* 4小項目（横並び・works の .flowItem と同じチップ） */
+.pillarList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 28px 0 0;
+  padding: 0;
 }
 
-.priceNote {
+.pillarItem {
+  border: 1px solid var(--color-border-light);
+  background: var(--color-background-light);
+  padding: 9px 14px;
   font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 14.4px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
   color: var(--color-foreground);
-  margin-top: 40px;
-  letter-spacing: 0.02em;
 }
 
 /* ========================================
-   制作の流れセクション（白背景）
+   A-3 できないこと — 題字に「墨の一線」を静的に添える
    ======================================== */
-.process {
-  background: #fff;
-  padding: 160px 80px;
+.dontList {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
 }
 
-.processInner {
-  max-width: 800px;
-  margin: 0 auto;
+.dontItem {
+  display: grid;
+  grid-template-columns: minmax(0, 19em) minmax(0, 1fr);
+  column-gap: 32px;
+  align-items: baseline;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.processHead {
-  margin-bottom: 80px;
+.dontName {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0;
 }
 
-.processTitle {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 57.6px;
-  letter-spacing: 0.2em;
-  color: #111;
-}
-
-.processHr {
-  width: 40px;
-  height: 1px;
-  background: #e0e0e0;
-  margin-top: 24px;
-}
-
-/* ---- Flow ---- */
-.processFlow {
+/* トップFV .declStrikeLine と同じ一線（アニメ無し・水平・読める太さと不透明度） */
+.dontStrike {
   position: relative;
-  padding-left: 48px;
+  display: inline-block;
 }
 
-/* 垂直ライン */
-.processLine {
+.dontStrike::after {
+  content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  background: #e0e0e0;
+  left: -0.15em;
+  right: -0.15em;
+  top: 54%;
+  height: 2px;
+  background: var(--color-foreground);
+  opacity: 0.45;
+  pointer-events: none;
 }
 
-/* ---- Step ---- */
-.processStep {
-  position: relative;
-  padding: 0 0 64px;
+.dontDesc {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 0;
 }
 
-.processStep:last-child {
-  padding-bottom: 0;
+.dontClose {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground);
+  max-width: 42em;
+  margin: 36px 0 0;
 }
 
-.processStep::before {
-  content: '';
-  position: absolute;
-  left: -52px;
-  top: 4px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #e0e0e0;
-  z-index: 1;
+/* ========================================
+   A-4 データの扱い — 文＋大きな数字1枚
+   ======================================== */
+.dataGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 48px 72px;
+  align-items: start;
 }
 
-.processStepNum {
-  display: block;
+.dataText .lead {
+  margin-bottom: 16px;
+}
+
+/* 数字（トップ「言い当て」.statNum に近い見せ方） */
+.stat {
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 28px;
+  margin-top: 46px;
+}
+
+.statNum {
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 800;
+  font-size: 4.4rem;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-foreground);
+  margin: 0;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  max-width: 24em;
+  margin: 14px 0 0;
+}
+
+.statNote {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground);
+  max-width: 26em;
+  margin: 28px 0 0;
+}
+
+.statSrc {
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  color: var(--color-secondary);
+  margin: 22px 0 0;
+}
+
+/* ========================================
+   A-5 進め方 — 縦の番号リスト（works FLOW と同じ番号スタイル）
+   ======================================== */
+.stepList {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: 20px;
+  align-items: baseline;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stepNum {
+  grid-column: 1;
+  grid-row: 1;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+.stepName {
+  grid-column: 2;
+  grid-row: 1;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0;
+}
+
+.stepDesc {
+  grid-column: 2;
+  grid-row: 2;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 6px 0 0;
+}
+
+/* 帯（締めの一文） */
+.band {
+  margin: 40px 0 0;
+  padding: 22px 28px;
+  border: 1px solid var(--color-border);
+  background: var(--color-background-light);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground);
+}
+
+/* ========================================
+   A-6 料金の考え方 — 目安3行（トップ .priceRow の静的簡素版）
+   ======================================== */
+.priceTable {
+  margin-top: 36px;
+  max-width: 640px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.priceRow:first-child {
+  border-top: 1px solid var(--color-border);
+}
+
+.priceLabel {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-foreground);
+  white-space: nowrap;
+}
+
+.priceLeader {
+  flex: 1 1 0;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted var(--color-border-light);
+  transform: translateY(-0.4em);
+}
+
+.priceArrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-secondary);
+}
+
+.priceAmount {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-foreground);
+  white-space: nowrap;
+}
+
+.priceTableNote {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--color-secondary);
+  margin: 12px 0 0;
+}
+
+/* ========================================
+   A-7 FAQ — ネイティブ details/summary（JS不要・iOS安全）
+   ======================================== */
+.faqList {
+  border-top: 1px solid var(--color-border);
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.faqQ {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  column-gap: 16px;
+  align-items: baseline;
+  padding: 22px 0;
+  cursor: pointer;
+  list-style: none;
+  color: var(--color-foreground);
+  transition: color var(--duration-normal) var(--ease-default);
+}
+
+.faqQ::-webkit-details-marker {
+  display: none;
+}
+
+.faqQ::marker {
+  content: "";
+}
+
+.faqQ:hover {
+  color: var(--color-accent);
+}
+
+.faqQ:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+/* 既定マーカーを消し、＋／− を CSS で */
+.faqQ::after {
+  content: "+";
+  grid-column: 3;
   font-family: var(--font-mono);
   font-weight: 300;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: #111;
-  margin-bottom: 8px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-accent);
 }
 
-.processStepName {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 19.2px;
-  letter-spacing: 0.1em;
-  color: #111;
-  margin-bottom: 12px;
+.faqItem[open] .faqQ::after {
+  content: "\2212";
 }
 
-.processStepText {
+.faqNum {
+  grid-column: 1;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+.faqQText {
+  grid-column: 2;
   font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 15.6px;
-  color: #111;
-  line-height: 2.0;
-  letter-spacing: 0.04em;
+  font-weight: 500;
+  font-size: 16.5px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.faqA {
+  padding: 0 40px 26px 44px;
+}
+
+.faqAText {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 2;
+  color: var(--color-foreground-muted);
+  max-width: 46em;
+  margin: 0;
+}
+
+/* ========================================
+   Responsive — PC 広幅（PC 専用改行の有効化）
+   ======================================== */
+@media (min-width: 1280px) {
+  .brPc {
+    display: inline;
+  }
 }
 
 /* ========================================
    Responsive — Tablet (768–1279)
    ======================================== */
 @media (min-width: 768px) and (max-width: 1279px) {
+  .fvTitle {
+    font-size: 42px;
+  }
+
   .fvEdgeBl { left: 24px; bottom: 24px; }
   .fvEdgeBr { right: 24px; bottom: 24px; }
 
-  .style { padding: 120px 40px; }
-  .styleInner {
-    grid-template-columns: 240px 1fr;
-    gap: 60px;
+  .section {
+    padding: 80px 30px;
   }
-  .styleTitle { font-size: 36px; }
 
-  .aio { padding: 120px 40px; }
-  .aioTitle { font-size: 32px; }
+  .doList {
+    gap: 28px 24px;
+  }
 
-  .price { padding: 120px 40px; }
-  .priceInner { margin: 0 auto 0 40px; }
+  .dontItem {
+    grid-template-columns: minmax(0, 15em) minmax(0, 1fr);
+    column-gap: 24px;
+  }
 
-  .process { padding: 120px 40px; }
+  .dataGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  .stat {
+    margin-top: 0;
+    max-width: 560px;
+  }
+
+  .statNum {
+    font-size: 3.8rem;
+  }
 }
 
 /* ========================================
    Responsive — SP (–767)
    ======================================== */
 @media (max-width: 767px) {
+  .brSp {
+    display: block;
+  }
+
   /* FV */
+  .fvLabel {
+    font-size: 10px;
+    margin-bottom: 20px;
+  }
+
   .fvTitle {
-    font-size: clamp(36px, 10vw, 60px);
-    letter-spacing: 0.15em;
+    font-size: 28px;
+    line-height: 1.5;
   }
-  .fvSub { font-size: 12px; }
-  .fvEdgeBl { left: 16px; bottom: 20px; }
-  .fvEdgeBr { right: 16px; bottom: 20px; }
 
-  /* Style — 1カラム化 */
-  .style {
-    padding: 80px 20px;
+  .fvSub {
+    font-size: 12.5px;
+    margin-top: 16px;
   }
-  .styleInner {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  .styleTitle {
-    position: static;
-    font-size: 32px;
-  }
-  .styleItem { padding: 28px 0; }
-  .styleName { font-size: 16px; }
-  .styleText { font-size: 13px; }
 
-  /* AIO */
-  .aio {
-    padding: 80px 20px;
-  }
-  .aioTitle { font-size: 28px; }
-  .aioLead { font-size: 16px; }
-  .aioStats { grid-template-columns: 1fr; gap: 32px; padding: 32px 0; }
-  .aioStatNum { font-size: 36px; }
+  .fvEdgeBl { left: 20px; bottom: 24px; }
+  .fvEdgeBr { right: 20px; bottom: 24px; }
 
-  /* Price */
-  .price {
-    padding: 80px 20px;
+  /* 共通 */
+  .section {
+    padding: 64px 20px;
   }
-  .priceInner {
-    margin: 0;
-    max-width: 100%;
+
+  .title {
+    font-size: 20px;
+    line-height: 1.7;
+    margin-bottom: 26px;
   }
-  .priceTitle { font-size: 36px; }
-  .priceItemTop {
-    flex-wrap: wrap;
+
+  .lead {
+    font-size: 15px;
+    line-height: 1.95;
   }
-  .priceName { font-size: 18px; }
+
+  .text {
+    font-size: 14px;
+    line-height: 1.95;
+  }
+
+  .subTitle {
+    font-size: 17px;
+    margin-top: 36px;
+  }
+
+  .note {
+    font-size: 12.5px;
+    margin-top: 28px;
+  }
+
+  .arrowLink {
+    margin-top: 32px;
+    font-size: 13px;
+  }
+
+  /* できること：1列 */
+  .doList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    margin-top: 28px;
+  }
+
+  .doItem {
+    padding: 22px 0;
+  }
+
+  .doItem:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .doName {
+    font-size: 16px;
+  }
+
+  .doDesc {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .pillar {
+    margin-top: 48px;
+    padding-top: 36px;
+  }
+
+  .pillarTitle {
+    font-size: 19px;
+  }
+
+  .pillarBody {
+    font-size: 14px;
+    line-height: 1.95;
+  }
+
+  .pillarList {
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .pillarItem {
+    padding: 8px 11px;
+    font-size: 13px;
+  }
+
+  /* できないこと：1列 */
+  .dontItem {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 8px;
+    padding: 22px 0;
+  }
+
+  .dontName {
+    font-size: 16px;
+  }
+
+  .dontDesc {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .dontClose {
+    font-size: 14px;
+    margin-top: 28px;
+  }
+
+  /* データ：1列 */
+  .dataGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+
+  .stat {
+    margin-top: 0;
+    padding-top: 24px;
+  }
+
+  .statNum {
+    font-size: 3rem;
+  }
+
+  .statLabel {
+    font-size: 13px;
+  }
+
+  .statNote {
+    font-size: 14px;
+    margin-top: 22px;
+  }
+
+  .statSrc {
+    font-size: 11.5px;
+    margin-top: 18px;
+  }
+
+  /* 進め方 */
+  .step {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 14px;
+    padding: 20px 0;
+  }
+
+  .stepName {
+    font-size: 16px;
+  }
+
+  .stepDesc {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .band {
+    margin-top: 32px;
+    padding: 18px 20px;
+    font-size: 14px;
+    line-height: 1.95;
+  }
+
+  /* 料金の目安 */
+  .priceTable {
+    margin-top: 28px;
+  }
+
+  .priceRow {
+    gap: 10px;
+    padding: 14px 0;
+  }
+
+  .priceLabel {
+    font-size: 14px;
+    white-space: normal;
+  }
+
   .priceAmount {
-    font-size: 18px;
-    width: 100%;
-    margin-left: 27px;
-    margin-top: 8px;
-  }
-  .priceDesc { padding-left: 0; }
-  .priceOptionItem {
-    flex-wrap: wrap;
-  }
-  .priceOptionAmount {
-    width: 100%;
-    margin-left: 26px;
-    margin-top: 4px;
+    font-size: 16px;
   }
 
-  /* Process */
-  .process {
-    padding: 80px 20px;
+  /* FAQ */
+  .faqQ {
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    column-gap: 12px;
+    padding: 18px 0;
   }
-  .processTitle { font-size: 36px; }
-  .processFlow { padding-left: 32px; }
-  .processStep::before { left: -36px; }
-  .processStep { padding-bottom: 48px; }
+
+  .faqQText {
+    font-size: 15px;
+  }
+
+  .faqA {
+    padding: 0 0 22px 36px;
+  }
+
+  .faqAText {
+    font-size: 13.5px;
+    line-height: 1.95;
+  }
+}
+
+/* ========================================
+   Reduced Motion
+   ScrollReveal（GSAP）は inline に opacity:0 / transform を置くため、
+   !important で打ち消して「動かないが必ず見える」状態にする。
+   FV の初期 opacity:0 も同様に解除する。
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .fvLabel,
+  .fvTitle,
+  .fvSub,
+  .fvEdgeBl,
+  .fvEdgeBr {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .fvHr {
+    transform: scaleX(1) !important;
+  }
+
+  .fvGrain {
+    animation: none;
+  }
+
+  .inlineLink,
+  .arrowLink,
+  .arrow,
+  .faqQ {
+    transition: none;
+  }
+
+  .arrowLink:hover .arrow {
+    transform: none;
+  }
 }

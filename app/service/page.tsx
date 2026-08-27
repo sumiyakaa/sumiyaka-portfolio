@@ -1,114 +1,153 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
-import FVCircuitPattern from "@/components/animation/FVCircuitPattern";
+import CtaSection from "@/components/home/CtaSection";
 import styles from "./page.module.css";
 
+/**
+ * /service — AIスペシャリストとしてのサービス（P6・2026-08-27）
+ * 文言は契約ファイル `P6_原稿_service_about.md` A節が正本（一言一句不変）。
+ * 構成：FV → できること → できないこと → データの扱い → 進め方 → 料金の考え方 → FAQ → CTA
+ * 地色はサブページ既定の暗色（--color-primary 系）。白転調は使わない。
+ * 演出は SubPageFVAnim / ScrollReveal のみ（filter・blend・3D・vwフォント不使用）。
+ */
+
+// /api/og は日本語フォント搭載済み。sub は日本語のまま渡す（URL用に符号化するだけ）
+const OG_URL = `/api/og?title=SERVICE&sub=${encodeURIComponent("業務の自動化・AI導入支援")}`;
+
 export const metadata: Metadata = {
-  title: "SERVICE — AKASHIKI | Web制作サービス・料金",
+  title: "SERVICE — AKASHIKI | 業務の自動化・AI導入支援",
   description:
-    "AKASHIKI（灯敷）のWeb制作サービス。LP制作・WordPress構築・AI検索最適化（AIO）を、構成からデザイン、コーディング、公開まで一括対応。料金・制作の流れをご案内します。",
+    "墨家 / SUMIYAKA のサービス。Excel・CSV・PDFのあいだで生まれる転記をなくす業務の自動化・ツール開発と、AIを使いこなせる人材の育成までを含むAI導入の設計・教育。できること・できないこと、進め方、料金の考え方をご案内します。",
   openGraph: {
-    images: [{ url: "/api/og?title=SERVICE&sub=Web%E5%88%B6%E4%BD%9C%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E3%83%BB%E6%96%99%E9%87%91", width: 1200, height: 630 }],
+    images: [{ url: OG_URL, width: 1200, height: 630 }],
   },
 };
 
-const HOW_I_WORK = [
+/* ---------- A-2 できること ---------- */
+const WHAT_I_DO = [
   {
     num: "01",
-    title: "STRATEGY",
-    desc: "制作に入る前に、まず訊く。誰に届けるのか、何を伝えたいのか、競合はどこか。ヒアリングで得た情報を構造化し、訴求軸を定め、ワイヤーフレームに落とし込む。見た目の前に、設計がある。",
+    title: "統合・突合",
+    desc: "形式がバラバラな複数のExcel・CSVを1つの管理表にまとめ、金額や件数の食い違いも自動で照合します。",
   },
   {
     num: "02",
-    title: "FRONT-END",
-    desc: "HTML/CSS/JavaScriptを手書きで組む。Figma/XDのデザインデータを受け取り、ピクセル単位の再現性を担保しながら、表示速度・アクセシビリティ・保守性を同時に達成する。GSAP、CSS 3D Transform、ScrollTriggerを用いたインタラクティブな演出も対応。",
+    title: "帳票の一括作成",
+    desc: "Excelの台帳から、請求書・見積書などのPDFを一括で作成します。",
   },
   {
     num: "03",
-    title: "WORDPRESS",
-    desc: "静的サイトのWordPress化、既存テーマのカスタマイズ、Swellを使ったサイト構築。更新しやすさを第一に設計し、クライアントが自分で運用できる状態で納品する。",
-  },
-  {
-    num: "04",
-    title: "QUALITY ASSURANCE",
-    desc: "納品前にLighthouseスコア、レスポンシブ表示、ブラウザ互換性、リンク切れ、画像最適化を全チェック。公開してから「あれ？」がない状態を作る。納期厳守、進捗は随時共有。",
+    title: "データの下ごしらえ",
+    desc: "会社名の表記ゆれ、重複、住所の分割など、人手で直しているデータの掃除を自動化します。",
   },
 ];
 
-const AIO_SOLUTIONS = [
+const EDUCATION_POINTS = [
+  "業務の棚卸しと、AIの使いどころの設計",
+  "社員の方と一緒に実装",
+  "手順書に落とす",
+  "定着するまで伴走",
+];
+
+/* ---------- A-3 できないこと ---------- */
+const WHAT_I_DONT = [
   {
-    label: "構造化データ（JSON-LD）",
-    desc: "AIが「何者で、何ができるか」を正確に読み取れる形で定義",
+    title: "手書き書類のスキャン画像の読み取り",
+    desc: "読み取り精度を保証できないため、お請けしていません。",
   },
   {
-    label: "セマンティックHTML",
-    desc: "文脈ごとにAIへ伝わるマークアップ設計",
+    title: "人の判断そのものの置き換え",
+    desc: "例外対応や承認の判断は、人に残すべき仕事です。",
   },
   {
-    label: "FAQ Schema",
-    desc: "検索者の意図に直接答えるQ&A構造を各ページに設計",
-  },
-  {
-    label: "llms.txt",
-    desc: "AIクローラーがサイト情報を効率的に読み取るための新標準に対応",
+    title: "全業務の一括自動化",
+    desc: "一度にすべては失敗のもとです。効果の大きい作業から、一つずつ確実に進めます。",
   },
 ];
 
-const PRICE_OPTIONS = [
-  { name: "JS高度演出（GSAP / パララックス / 3D）", amount: "¥30,000〜" },
-  { name: "セクション追加（1セクションあたり）", amount: "¥20,000〜" },
-  { name: "保守・運用サポート（月額）", amount: "¥15,000〜" },
-];
-
+/* ---------- A-5 進め方 ---------- */
 const PROCESS = [
+  { num: "01", title: "ヒアリング", desc: "実際の業務の流れと、お使いのファイルを拝見します" },
+  { num: "02", title: "可否の切り分け", desc: "できること・できないことを、理由とともに明示します" },
+  { num: "03", title: "お見積り", desc: "削減できる時間を一緒に試算し、金額の根拠をお示しします" },
+  { num: "04", title: "構築", desc: "御社のファイルに合わせて仕組みを作ります" },
+  { num: "05", title: "検収", desc: "実際のデータで動作をご確認いただきます" },
+  { num: "06", title: "運用・定着", desc: "社内の方が使いこなせるようになるまで伴走します" },
+];
+
+/* ---------- A-6 料金の目安 ---------- */
+const PRICE_ROWS = [
+  { label: "月20時間の削減", amount: "年 約50万円" },
+  { label: "事務作業の30%を自動化", amount: "年 約120万円" },
+  { label: "1人分の業務を丸ごと", amount: "年 約400万円" },
+];
+
+/* ---------- A-7 FAQ（可視・JSON-LD 共通の正本） ----------
+   link を持つ項目は、可視側で回答文中の phrase を Link 化する。
+   JSON-LD 側は a のテキストのみ（リンク無し）。 */
+type FaqItem = {
+  q: string;
+  a: string;
+  link?: { phrase: string; href: string };
+};
+
+const FAQ: FaqItem[] = [
   {
-    num: "STEP 01",
-    title: "ヒアリング",
-    desc: "ご要望・ターゲット層・競合・ご予算・納期をお伺いします。ヒアリングシートをご用意しておりますので、回答いただくだけで方向性が整理されます。",
+    q: "何から相談すればいいですか？",
+    a: "いま手作業でやっていることを、そのままお聞かせください。「毎月この表を作るのに半日かかる」で十分です。お使いのファイルを拝見しながら、できる・できないを切り分けます。",
   },
   {
-    num: "STEP 02",
-    title: "ラフ提案",
-    desc: "ヒアリング内容をもとに、デザインラフを複数パターンご提案します。この段階では費用は発生しません。方向性の合意が取れたら、1案に絞って詳細を詰めていきます。",
+    q: "小さな会社でも頼めますか？",
+    a: "はい。システム同士が繋がっておらず、人が転記している規模の会社ほど、効果が出やすい仕事です。",
   },
   {
-    num: "STEP 03",
-    title: "デザイン・コーディング",
-    desc: "確定した方向性に基づき、デザインとコーディングを進行します。途中経過は随時共有し、修正対応も含めて丁寧にお作りします。",
+    q: "いま使っているExcelのままで大丈夫ですか？",
+    a: "はい。汎用ソフトに業務を合わせるのではなく、御社のファイルに合わせて仕組みを作ります。新しいシステムの導入を前提にはしません。",
   },
   {
-    num: "STEP 04",
-    title: "確認・修正",
-    desc: "テスト環境でPC/タブレット/スマートフォン全デバイスの表示を確認いただきます。修正は2回まで標準対応。細部まで納得いただける状態を目指します。",
+    q: "データは外部に送られますか？",
+    a: "お渡しする仕組みは、ブラウザの中だけで完結する設計です。データは御社のパソコンから外に出ません。",
   },
   {
-    num: "STEP 05",
-    title: "公開・納品",
-    desc: "最終確認後、本番環境に公開します。WordPress案件の場合は管理画面の操作方法もご案内します。公開後の軽微な修正は1週間以内であれば無償対応いたします。",
+    q: "AIに詳しい社員がいなくても使えますか？",
+    a: "使えるようになるまで教えるところまでが、私の仕事です。手順書を作り、社員の方が自分で回せる状態にしてから手を離します。",
+  },
+  {
+    q: "料金はどのように決まりますか？",
+    a: "削減できる時間と人件費を一緒に試算し、削減額に見合う範囲でお見積りします。初回のお取引に限り、導入事例としてご紹介いただけることを条件に、優待価格をご用意しています。",
+  },
+  {
+    q: "Web制作も頼めますか？",
+    a: "はい。LP・コーポレートサイト・WordPressの制作は、企画から公開まで一人で対応します。実績と料金はWeb制作ページをご覧ください。",
+    link: { phrase: "Web制作ページ", href: "/works" },
   },
 ];
 
-const FAQ_JSONLD = [
-  {
-    q: "LP制作の料金はいくらですか？",
-    a: "LP制作（静的コーディング）は15万円〜、WordPress構築は20万円〜です。ページ数・機能により変動します。",
-  },
-  {
-    q: "制作の流れを教えてください",
-    a: "ヒアリング→ラフ提案→デザイン・コーディング→確認・修正→公開の5ステップで進行します。",
-  },
-  {
-    q: "AI検索最適化（AIO）とは何ですか？",
-    a: "ChatGPTやPerplexity等のAIアシスタントがサイト情報を正確に読み取れるよう、構造化データやセマンティックHTMLを実装する最適化手法です。",
-  },
-];
+/** 回答文中の phrase を Link 化して返す（文言は不変・リンクを被せるだけ） */
+function renderAnswer(item: FaqItem) {
+  if (!item.link) return item.a;
+  const idx = item.a.indexOf(item.link.phrase);
+  if (idx < 0) return item.a;
+  const before = item.a.slice(0, idx);
+  const after = item.a.slice(idx + item.link.phrase.length);
+  return (
+    <>
+      {before}
+      <Link href={item.link.href} className={styles.inlineLink}>
+        {item.link.phrase}
+      </Link>
+      {after}
+    </>
+  );
+}
 
 export default function ServicePage() {
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQ_JSONLD.map((item) => ({
+    mainEntity: FAQ.map((item) => ({
       "@type": "Question",
       name: item.q,
       acceptedAnswer: {
@@ -119,24 +158,29 @@ export default function ServicePage() {
   };
 
   return (
-    <main>
+    <main className={styles.page}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      {/* ========== FV — 100vh ========== */}
-      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.25em">
+      {/* ========== A-1 FV — 100vh（/tools と同じ作法・回路モチーフは使わない） ========== */}
+      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.1em">
         <div className={styles.fvBg}>
           <div className={styles.fvGrain} aria-hidden="true" />
           <div className={styles.fvScanline} aria-hidden="true" />
         </div>
 
-        <FVCircuitPattern />
-
         <div className={styles.fvContent}>
-          <h1 data-fv-title className={styles.fvTitle}>SERVICE</h1>
-          <p data-fv-sub className={styles.fvSub}>提供するサービスと制作の進め方</p>
+          <span data-fv-edge className={styles.fvLabel}>SERVICE</span>
+          <h1 data-fv-title className={styles.fvTitle}>
+            業務を、
+            <br className={styles.brSp} />
+            仕組みに変える。
+          </h1>
+          <p data-fv-sub className={styles.fvSub}>
+            業務の自動化・ツール開発／AI導入の設計と教育
+          </p>
           <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
         </div>
 
@@ -148,198 +192,252 @@ export default function ServicePage() {
         </div>
       </SubPageFVAnim>
 
-      {/* ========== 制作スタイル（黒背景） ========== */}
-      <section className={styles.style} aria-label="制作スタイル">
-        <div className={styles.styleInner}>
-          <div className={styles.styleLeft}>
-            <ScrollReveal>
-              <h2 className={styles.styleTitle}>HOW<br />I<br />WORK</h2>
-            </ScrollReveal>
-          </div>
-          <div className={styles.styleRight}>
-            {HOW_I_WORK.map((item, i) => (
-              <div key={item.num}>
-                <ScrollReveal delay={i * 0.1}>
-                  <article className={styles.styleItem}>
-                    <span className={styles.styleNum}>{item.num}</span>
-                    <h3 className={styles.styleName}>{item.title}</h3>
-                    <p className={styles.styleText}>{item.desc}</p>
-                  </article>
-                </ScrollReveal>
-                {i < HOW_I_WORK.length - 1 && (
-                  <div className={styles.styleDivider} aria-hidden="true" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== AIO説明（白背景） ========== */}
-      <section className={styles.aio} id="aio" aria-label="AI検索最適化">
-        <div className={styles.aioInner}>
-          <ScrollReveal>
-            <h2 className={styles.aioTitle}>AI SEARCH OPTIMIZATION</h2>
+      {/* ========== A-2 できること（WHAT I DO） ========== */}
+      <section
+        id="what-i-do"
+        className={`${styles.section} ${styles.sectionFirst}`}
+        aria-labelledby="service-do-title"
+      >
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>WHAT I DO</span>
+            <h2 id="service-do-title" className={styles.title}>
+              A社のCSVと、B社のExcelと、C社のPDF請求書を、
+              <br className={styles.brPc} />
+              御社の管理表の形に揃えます。
+            </h2>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.1}>
-            <p className={styles.aioLead}>
-              <mark className={styles.marker}>検索の7割が、サイトを訪問せずに完結する時代。</mark>
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.lead}>
+              汎用ソフトに業務を合わせるのではなく、御社がいま実際に使っているファイルに合わせて仕組みを作ります。
             </p>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.15}>
-            <p className={styles.aioText}>
-              Google検索の約69%がゼロクリックで終了。AI Overviewsが表示されるクエリでは、検索1位のクリック率が34.5%低下しています。
-            </p>
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <ol className={styles.doList}>
+              {WHAT_I_DO.map((item) => (
+                <li key={item.num} className={styles.doItem}>
+                  <span className={styles.doNum}>{item.num}</span>
+                  <h3 className={styles.doName}>{item.title}</h3>
+                  <p className={styles.doDesc}>{item.desc}</p>
+                </li>
+              ))}
+            </ol>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.2}>
-            <div className={styles.aioStats}>
-              <div className={styles.aioStat}>
-                <span className={styles.aioStatNum}>4,200<span className={styles.aioStatUnit}>%+</span></span>
-                <span className={styles.aioStatLabel}>AI検索セッション増加率<br /><small>2024年4月起点</small></span>
-              </div>
-              <div className={styles.aioStat}>
-                <span className={styles.aioStatNum}>8<span className={styles.aioStatUnit}>億人</span></span>
-                <span className={styles.aioStatLabel}>ChatGPT 週間アクティブユーザー<br /><small>2025年4月時点</small></span>
-              </div>
-              <div className={styles.aioStat}>
-                <span className={styles.aioStatNum}>3,175<span className={styles.aioStatUnit}>万人</span></span>
-                <span className={styles.aioStatLabel}>国内AI利用者数予測<br /><small>2026年末 / ICT総研</small></span>
-              </div>
-            </div>
+          <ScrollReveal className={styles.reveal} delay={0.2}>
+            <Link href="/tools" className={styles.arrowLink}>
+              実際に動くツールを触る
+              <span className={styles.arrow} aria-hidden="true">→</span>
+            </Link>
           </ScrollReveal>
 
-          <div className={styles.aioBody}>
-            <ScrollReveal delay={0.1}>
-              <p className={styles.aioText}>
-                <mark className={styles.marker}>SEOだけでは、もう届かない。</mark>
+          {/* 第2の柱：AI導入の設計・教育 */}
+          <ScrollReveal className={styles.reveal}>
+            <div className={styles.pillar}>
+              <span className={styles.label}>AI導入の設計・教育</span>
+              <h3 className={styles.pillarTitle}>仕組みを、回せる状態で残す。</h3>
+              <p className={styles.pillarBody}>
+                ツールをお渡しするだけでは、業務は変わりません。どの作業をAIに任せ、どこに人の判断を残すかを一緒に決め、社員の方と並んで手を動かし、手順書に落とし、使いこなせるようになるまで伴走します。ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを主とした活動です。
               </p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.15}>
-              <p className={styles.aioText}>
-                従来のSEO対策で検索1位を取っても、AIが回答を直接生成するため、サイトへの流入が激減する構造に変わりつつあります。これからは「AIに引用される側」に立つ必要があります。
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.2}>
-              <p className={styles.aioLead}>
-                <mark className={styles.marker}>AI検索に対応した設計を、標準で組み込んでいます。</mark>
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.25}>
-              <ul className={styles.aioList}>
-                {AIO_SOLUTIONS.map((item) => (
-                  <li key={item.label} className={styles.aioListItem}>
-                    <strong>{item.label}</strong> — {item.desc}
-                  </li>
+              <ul className={styles.pillarList} aria-label="AI導入の設計・教育で行うこと">
+                {EDUCATION_POINTS.map((point) => (
+                  <li key={point} className={styles.pillarItem}>{point}</li>
                 ))}
               </ul>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.3}>
-              <p className={styles.aioText}>
-                <mark className={styles.marker}>まだ対応しているWeb制作者が少ない今こそ、差別化の武器になります。</mark>
+              <p className={styles.note}>
+                Web制作（LP・コーポレートサイト・WordPress）は、
+                <Link href="/works" className={styles.inlineLink}>Web制作ページ</Link>
+                でご案内しています。
               </p>
-            </ScrollReveal>
-          </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== 料金詳細 + オプション（黒背景） ========== */}
-      <section className={styles.price} aria-label="料金">
-        <div className={styles.priceInner}>
-          <div className={styles.priceHead}>
-            <ScrollReveal>
-              <h2 className={styles.priceTitle}>PRICE</h2>
-            </ScrollReveal>
-            <div className={styles.priceHr} aria-hidden="true" />
-          </div>
-
-          <div className={styles.priceList}>
-            <ScrollReveal delay={0.1}>
-              <div className={styles.priceItem}>
-                <div className={styles.priceItemTop}>
-                  <span className={styles.priceNum}>01</span>
-                  <h3 className={styles.priceName}>LP DESIGN</h3>
-                  <span className={styles.priceAmount}>¥150,000〜</span>
-                </div>
-                <p className={styles.priceDesc}>静的コーディング / レスポンシブ対応 / 5ページまで</p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.15}>
-              <div className={styles.priceItem}>
-                <div className={styles.priceItemTop}>
-                  <span className={styles.priceNum}>02</span>
-                  <h3 className={styles.priceName}>WORDPRESS</h3>
-                  <span className={styles.priceAmount}>¥200,000〜</span>
-                </div>
-                <p className={styles.priceDesc}>テーマ構築 / カスタマイズ / 管理画面設計</p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.2}>
-              <div className={styles.priceItem}>
-                <div className={styles.priceItemTop}>
-                  <span className={styles.priceNum}>03</span>
-                  <h3 className={styles.priceName}>NEXT.JS / WEB APP</h3>
-                  <span className={styles.priceAmount}>ASK</span>
-                </div>
-                <p className={styles.priceDesc}>静的サイトでは実現できない本格Web機能 / 会員制サイト・予約システム・管理画面 / 高速表示・SEO最適化</p>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          <ScrollReveal delay={0.25}>
-            <div className={styles.priceOption}>
-              <p className={styles.priceOptionLabel}>OPTION</p>
-              <div className={styles.priceOptionList}>
-                {PRICE_OPTIONS.map((opt) => (
-                  <div key={opt.name} className={styles.priceOptionItem}>
-                    <span className={styles.priceOptionPrefix}>+</span>
-                    <span className={styles.priceOptionName}>{opt.name}</span>
-                    <span className={styles.priceOptionAmount}>{opt.amount}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+      {/* ========== A-3 できないこと（WHAT I DON'T） ========== */}
+      <section id="what-i-dont" className={styles.section} aria-labelledby="service-dont-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>WHAT I DON&apos;T</span>
+            <h2 id="service-dont-title" className={styles.title}>
+              先に、できないことをお伝えします。
+            </h2>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.3}>
-            <p className={styles.priceNote}>
-              上記は目安です。ページ数・機能・素材の有無により変動します。お気軽にご相談ください。
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.lead}>「何でも自動化できます」とは、言いません。</p>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <ul className={styles.dontList}>
+              {WHAT_I_DONT.map((item) => (
+                <li key={item.title} className={styles.dontItem}>
+                  {/* 題字にトップFVと同じ「墨の一線」を静的に添える（::after・水平） */}
+                  <h3 className={styles.dontName}>
+                    <span className={styles.dontStrike}>{item.title}</span>
+                  </h3>
+                  <p className={styles.dontDesc}>{item.desc}</p>
+                </li>
+              ))}
+            </ul>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.2}>
+            <p className={styles.dontClose}>
+              できる・できないは、最初のヒアリングで正直に切り分けて、理由とともにお伝えします。
             </p>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== 制作の流れ（白背景） ========== */}
-      <section className={styles.process} aria-label="制作の流れ">
-        <div className={styles.processInner}>
-          <div className={styles.processHead}>
-            <ScrollReveal>
-              <h2 className={styles.processTitle}>PROCESS</h2>
+      {/* ========== A-4 データの扱い（DATA） ========== */}
+      <section id="data" className={styles.section} aria-labelledby="service-data-title">
+        <div className={`${styles.inner} ${styles.dataGrid}`}>
+          <div className={styles.dataText}>
+            <ScrollReveal className={styles.reveal}>
+              <span className={styles.label}>DATA</span>
+              <h2 id="service-data-title" className={styles.title}>
+                データはお預かりしません。
+              </h2>
             </ScrollReveal>
-            <div className={styles.processHr} aria-hidden="true" />
+            <ScrollReveal className={styles.reveal} delay={0.1}>
+              <p className={styles.lead}>
+                お渡しする仕組みは、ブラウザの中だけで完結する設計。データは御社のパソコンから外に出ません。
+              </p>
+              <p className={styles.text}>
+                外部のサーバーにデータを送らないため、顧客名簿や売上データもそのまま安心してお使いいただけます。導入前のお試しも、実際のファイルでその場でご確認いただけます。
+              </p>
+            </ScrollReveal>
           </div>
 
-          <div className={styles.processFlow}>
-            <div className={styles.processLine} aria-hidden="true" />
-            {PROCESS.map((step, i) => (
-              <ScrollReveal key={step.num} delay={i * 0.1}>
-                <article className={styles.processStep}>
-                  <span className={styles.processStepNum}>{step.num}</span>
-                  <h3 className={styles.processStepName}>{step.title}</h3>
-                  <p className={styles.processStepText}>{step.desc}</p>
-                </article>
-              </ScrollReveal>
-            ))}
-          </div>
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <div className={styles.stat}>
+              <p className={styles.statNum}>30.0%</p>
+              <p className={styles.statLabel}>
+                クラウドを導入しない理由 第2位「セキュリティ面の不安」（第1位はコスト）
+              </p>
+              <p className={styles.statNote}>
+                この不安には、説明ではなく「データが外に出ない設計」そのもので答えます。
+              </p>
+              <p className={styles.statSrc}>
+                マネーフォワード調べ（2024年3月・法人事業者608名対象）
+              </p>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
+
+      {/* ========== A-5 進め方（PROCESS） ========== */}
+      <section id="process" className={styles.section} aria-labelledby="service-process-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>PROCESS</span>
+            <h2 id="service-process-title" className={styles.title}>進め方</h2>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <ol className={styles.stepList}>
+              {PROCESS.map((step) => (
+                <li key={step.num} className={styles.step}>
+                  <span className={styles.stepNum}>{step.num}</span>
+                  <h3 className={styles.stepName}>{step.title}</h3>
+                  <p className={styles.stepDesc}>{step.desc}</p>
+                </li>
+              ))}
+            </ol>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <p className={styles.band}>
+              ツールをお渡しするだけでなく、AIを使いこなせる人材の育成までを主とした活動をしています。
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========== A-6 料金の考え方（PRICING） ========== */}
+      <section id="pricing" className={styles.section} aria-labelledby="service-pricing-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>PRICING</span>
+            <h2 id="service-pricing-title" className={styles.title}>
+              「いくらかかるか」より先に、
+              <br className={styles.brPc} />
+              「いくら浮くか」。
+            </h2>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.lead}>
+              いま作業にかかっている時間と人件費を一緒に試算し、削減額に見合う範囲でお見積りします。
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <h3 className={styles.subTitle}>目指すのは、「新しく採用しなくても回る」状態。</h3>
+            <p className={styles.text}>
+              浮いた時間で、いまいらっしゃる方が、より価値のある仕事に移れるようにします。
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.2}>
+            <ul className={styles.priceTable} aria-label="削減額の目安">
+              {PRICE_ROWS.map((row) => (
+                <li key={row.label} className={styles.priceRow}>
+                  <span className={styles.priceLabel}>{row.label}</span>
+                  <span className={styles.priceLeader} aria-hidden="true" />
+                  <span className={styles.priceArrow} aria-hidden="true">→</span>
+                  <span className={styles.priceAmount}>{row.amount}</span>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.priceTableNote}>削減額の目安（人件費換算）</p>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.25}>
+            <h3 className={styles.subTitle}>初回のお取引に限り、優待価格をご用意しています。</h3>
+            <p className={styles.text}>
+              導入事例としてご紹介いただけることを条件に、初回のみの優待です。
+            </p>
+            <p className={styles.note}>
+              Web制作の料金は、
+              <Link href="/works#price" className={styles.inlineLink}>Web制作ページ</Link>
+              の料金表をご覧ください。
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========== A-7 よくある質問（FAQ）— ネイティブ details/summary ========== */}
+      <section id="faq" className={styles.section} aria-labelledby="service-faq-label">
+        <div className={styles.inner}>
+          {/* 契約ファイル A-7 に h2 文言は無い（ラベル FAQ のみ）＝文言を足さない */}
+          <ScrollReveal className={styles.reveal}>
+            <span id="service-faq-label" className={`${styles.label} ${styles.labelSolo}`}>FAQ</span>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <div className={styles.faqList}>
+              {FAQ.map((item, i) => (
+                <details key={item.q} className={styles.faqItem}>
+                  <summary className={styles.faqQ}>
+                    <span className={styles.faqNum}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className={styles.faqQText}>{item.q}</span>
+                  </summary>
+                  <div className={styles.faqA}>
+                    <p className={styles.faqAText}>{renderAnswer(item)}</p>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========== A-8 CTA — トップと同一コンポーネントをそのまま再利用 ========== */}
+      <CtaSection />
     </main>
   );
 }
