@@ -126,10 +126,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 6. 注記（既存）— Web制作の料金表は現状 /service（C4の /works 移設は P6 予定） */}
+            {/* 6. 注記（既存）— Web制作の料金表は /works#price（C4 実施済み・P6-1） */}
             <p className={styles.priceNote}>
               価格は、削減額から逆算してご提案します。Web制作の料金は
-              <Link href="/service" className={styles.priceNoteLink}>サービスページ</Link>
+              <Link href="/works#price" className={styles.priceNoteLink}>Web制作ページ</Link>
               へ。
             </p>
           </div>

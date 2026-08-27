@@ -4,6 +4,7 @@ import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import WorksExplorer from "@/components/works/WorksExplorer";
 import WorksAio from "@/components/works/WorksAio";
+import WorksPrice from "@/components/works/WorksPrice";
 import { getAllWorks } from "@/lib/works";
 import styles from "./page.module.css";
 
@@ -90,6 +91,9 @@ export default function WorksPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* ========== 料金（PRICE）— /service から移設（C4・P6-1）。トップから /works#price で到達 ========== */}
+      <WorksPrice />
 
       {/* ========== AIO（AI検索最適化） ========== */}
       <WorksAio />
