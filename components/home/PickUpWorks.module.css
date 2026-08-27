@@ -1250,26 +1250,36 @@
   text-align: right; /* ＝セクションの右下 */
 }
 
+/* ★ 2026-08-27 あおきさん指示「華美にならない程度に、上品にもう少し目立たせる」。
+   細い下線テキスト → 1px の罫で囲った小さな札へ。トップの導線4種
+   （Person .moreLink／Deguchi .branchLink／ここ×2）で同じ骨格を使う。
+   動かすのは罫の色・地の色・transform だけ（filter / box-shadow のアニメは無し）。
+   文言末尾の「→」はテキストのまま＝::after は使わない */
 .moreLink {
-  display: inline-block;
-  /* 英字は Barlow。字送りは catCount（6 WORKS）と同じ作法に揃える */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.55em 1.1em 0.55em 1.2em;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  /* 英字は Barlow。字送りは catCount（6 SITES）と同じ作法に揃える */
   font-family: var(--pw-font-en);
   font-weight: 400;
   font-size: 0.78rem;
   letter-spacing: 0.18em;
-  color: var(--neutral);
+  color: var(--ink);
   text-decoration: none;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 6px;
   white-space: nowrap; /* 押せる文字を2行に折らない */
-  transition: border-color 0.35s var(--pw-ease-out), color 0.35s var(--pw-ease-out);
+  transition: border-color 0.35s var(--pw-ease-out), background-color 0.35s var(--pw-ease-out),
+    transform 0.35s var(--pw-ease-out);
 }
 
-/* --- 金⑧ 一覧リンクのホバー罫（2つとも同じ作法） --- */
+/* --- 金⑧ 一覧リンクのホバー罫（2つとも同じ作法）。金はこの枠だけ解禁 --- */
 @media (hover: hover) and (pointer: fine) {
   .moreLink:hover {
-    color: var(--ink);
     border-color: var(--pw-accent);
+    background: rgba(241, 234, 236, 0.06);
+    transform: translateX(2px);
   }
 }
 

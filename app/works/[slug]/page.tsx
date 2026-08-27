@@ -88,7 +88,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
 
           <div className={styles.heroBreadcrumb}>
             <Link href="/works" className={styles.breadcrumbLink}>
-              WORKS
+              WEB
             </Link>
             <span className={styles.breadcrumbSep}>/</span>
             <span className={styles.breadcrumbCurrent}>{work.title}</span>
@@ -255,7 +255,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
           )}
 
           <Link href="/works" className={styles.navAll}>
-            ALL WORKS
+            ALL SITES
           </Link>
 
           {nextWork ? (

@@ -31,7 +31,7 @@
 - About: https://akashiki.com/about
 - Service: https://akashiki.com/service
 - Tools: https://akashiki.com/tools
-- Works: https://akashiki.com/works
+- Web: https://akashiki.com/works
 - Contact: https://akashiki.com/contact
 
 ## Tools

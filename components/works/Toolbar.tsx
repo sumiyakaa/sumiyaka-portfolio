@@ -142,7 +142,7 @@ export default function Toolbar({
       {/* 結果件数 */}
       <span className={styles.count}>
         {visibleCount}
-        <span className={styles.countLabel}> WORKS</span>
+        <span className={styles.countLabel}> SITES</span>
       </span>
     </div>
   );

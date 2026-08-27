@@ -1328,7 +1328,7 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
             <span className={styles.catIdx}>01</span>
             <h3 className={styles.catName}>Web制作</h3>
             <span className={styles.catEn}>Web</span>
-            <span className={styles.catCount}>{works.length} WORKS</span>
+            <span className={styles.catCount}>{works.length} SITES</span>
           </div>
 
           <div
@@ -1419,7 +1419,7 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
           {/* ★ セクション右下の導線（02 と完全に同じ見た目・同じ位置） */}
           <p className={styles.more}>
             <Link href="/works" className={styles.moreLink}>
-              VIEW ALL WORKS →
+              VIEW ALL SITES →
             </Link>
           </p>
         </div>

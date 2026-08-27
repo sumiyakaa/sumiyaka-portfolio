@@ -142,20 +142,51 @@
   background: var(--ink);
 }
 
+/* 2026-08-27 あおきさん指示「華美にならない程度に、上品にもう少し目立たせる」。
+   細い下線テキスト → 1px の罫で囲った小さな札へ（トップの導線4種で同じ骨格＝
+   Person .moreLink／PickUpWorks .moreLink と同じ）。
+   動かすのは罫の色・地の色・transform だけ（filter / box-shadow のアニメは無し）。
+   文言末尾の「→」はテキストのまま＝::after は使わない */
 .branchLink {
-  display: inline-block;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: 0.9rem;
+  padding: 0.55em 1.1em 0.55em 1.2em;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font-size: 0.86rem;
+  letter-spacing: 0.1em;
   color: var(--ink-deep);
-  text-decoration: underline;
-  text-underline-offset: 0.45em;
-  text-decoration-thickness: 1px;
-  text-decoration-color: var(--rule);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.branchLink:hover {
-  text-decoration-color: var(--ink-deep);
+/* ⚠ タッチ端末では :hover が張り付くので、ホバー由来の演出はこの中へ */
+@media (hover: hover) and (pointer: fine) {
+  .branchLink:hover {
+    border-color: var(--ink-deep);
+    background: rgba(241, 234, 236, 0.06);
+    transform: translateX(2px);
+  }
+}
+
+.branchLink:focus-visible {
+  outline: 2px solid var(--ink-deep);
+  outline-offset: 3px;
+}
+
+.branchLink:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .branchLink {
+    transition: none;
+  }
 }
 
 @media (max-width: 860px) {

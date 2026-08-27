@@ -55,23 +55,49 @@
   max-width: 38em;
 }
 
-/* ---- 導線（P6-4）＝Deguchi の .branchLink と同じ作法（下線・transform/opacity のみ） ---- */
+/* ---- 導線（P6-4）＝Deguchi の .branchLink と同じ作法 ----
+   2026-08-27 あおきさん指示「華美にならない程度に、上品にもう少し目立たせる」。
+   細い下線テキスト → 1px の罫で囲った小さな札へ（トップの導線4種で同じ骨格）。
+   動かすのは罫の色・地の色・transform だけ（filter / box-shadow のアニメは無し）。
+   文言末尾の「→」はテキストのまま＝::after は使わない */
 .more {
-  margin-top: var(--washi-space-lg, 1.5rem);
+  margin-top: var(--washi-space-xl, 2.5rem);
 }
 .moreLink {
-  display: inline-block;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.55em 1.1em 0.55em 1.2em;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font-size: 0.86rem;
+  letter-spacing: 0.1em;
   color: var(--ink-deep);
-  text-decoration: underline;
-  text-underline-offset: 0.45em;
-  text-decoration-thickness: 1px;
-  text-decoration-color: var(--rule);
-  transition: text-decoration-color 0.3s ease;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.moreLink:hover {
-  text-decoration-color: var(--ink-deep);
+/* ⚠ タッチ端末では :hover が張り付くので、ホバー由来の演出はこの中へ */
+@media (hover: hover) and (pointer: fine) {
+  .moreLink:hover {
+    border-color: var(--ink-deep);
+    background: rgba(241, 234, 236, 0.06);
+    transform: translateX(2px);
+  }
+}
+.moreLink:focus-visible {
+  outline: 2px solid var(--ink-deep);
+  outline-offset: 3px;
+}
+.moreLink:active {
+  transform: translateY(1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .moreLink {
+    transition: none;
+  }
 }
 
 /* ---- 写真（原比率 869×1086＝4:5。設計書許容「正方形〜4:5」の上限＝これ以上の縦長は禁止） ---- */
