@@ -36,6 +36,7 @@ import {
   type RuleSwitches,
 } from "@/lib/tools/cleanup/types";
 import { formatNumber } from "@/lib/tools/_shared/format";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import styles from "./ListCleanupTool.module.css";
 
 /**
@@ -875,6 +876,7 @@ export default function ListCleanupTool() {
       {/* ================= ステータス ================= */}
       <div className={styles.status}>
         <div className={styles.statusMain}>
+          <ToolMark tool="cleanup" size={22} className={styles.statusMark} />
           <span className={styles.statusFile}>{parsed.sourceName}</span>
           {isSample ? <span className={styles.chipSample}>サンプル</span> : null}
         </div>

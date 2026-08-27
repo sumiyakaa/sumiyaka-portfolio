@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import InvoiceBatchTool from "@/components/tools/invoice/InvoiceBatchTool";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import { SITE_ORIGIN } from "@/lib/site";
 import styles from "./page.module.css";
 
-// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og.jpg を渡す
+// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og-2.jpg を渡す
+// （版付きファイル名＝白ベース化で差し替えた画像。data/tools.ts の og と同じ値）
 const OG_URL =
   "/api/og?title=INVOICE%20BATCH&sub=Excel%20to%20Invoice%20PDF%20%E2%80%94%20runs%20in%20your%20browser" +
-  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/invoice/og.jpg`)}`;
+  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/invoice/og-2.jpg`)}`;
 
 export const metadata: Metadata = {
   title: "請求書PDF 一括作成 — AKASHIKI Tools",
@@ -72,8 +74,9 @@ export default function InvoiceBatchPage() {
     },
   };
 
+  // data-tools-paper＝紙のテーマ（app/tools/tools-paper.css）／data-tool＝1本1色のテーマ色
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-tools-paper data-tool="invoice">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
@@ -90,9 +93,15 @@ export default function InvoiceBatchPage() {
             <span>INVOICE BATCH</span>
           </nav>
 
-          <p className={styles.no}>T-01</p>
-          <h1 className={styles.title}>請求書PDF 一括作成</h1>
-          <p className={styles.titleEn}>Invoice Batch</p>
+          <div className={styles.headRow}>
+            {/* 図像＝線が引かれていく描画アニメ（見出しでだけ animate） */}
+            <ToolMark tool="invoice" size={68} animate className={styles.headMark} />
+            <div className={styles.headText}>
+              <p className={styles.no}>T-01</p>
+              <h1 className={styles.title}>請求書PDF 一括作成</h1>
+              <p className={styles.titleEn}>Invoice Batch</p>
+            </div>
+          </div>
 
           <p className={styles.lead}>
             Excelの台帳を読み込むと、取引先ごとの請求書PDFがまとめて出ます。

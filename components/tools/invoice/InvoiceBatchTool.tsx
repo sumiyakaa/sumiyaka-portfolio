@@ -18,6 +18,7 @@ import type {
   ParseIssue,
   Rounding,
 } from "@/lib/tools/invoice/types";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import InvoicePaper from "./InvoicePaper";
 import styles from "./InvoiceBatchTool.module.css";
 
@@ -307,6 +308,7 @@ export default function InvoiceBatchTool() {
       {/* ================= ステータス ================= */}
       <div className={styles.status}>
         <div className={styles.statusMain}>
+          <ToolMark tool="invoice" size={22} className={styles.statusMark} />
           <span className={styles.statusFile}>{sourceName}</span>
           {isSample ? <span className={styles.chipSample}>サンプル</span> : null}
         </div>

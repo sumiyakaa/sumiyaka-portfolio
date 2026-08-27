@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
 import FVCircuitPattern from "@/components/animation/FVCircuitPattern";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import { getAllTools } from "@/lib/toolCatalog";
 import { SITE_ORIGIN } from "@/lib/site";
 import styles from "./page.module.css";
 
-// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og.jpg を渡す
+// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og-2.jpg を渡す
+// （T-01 を代表として使う。版付きファイル名＝白ベース化で差し替えた画像）
 const OG_URL =
   "/api/og?title=TOOLS&sub=Tools%20that%20run%20in%20your%20browser" +
-  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/invoice/og.jpg`)}`;
+  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/invoice/og-2.jpg`)}`;
 
 export const metadata: Metadata = {
   title: "TOOLS — AKASHIKI | 業務の道具",
@@ -85,7 +88,12 @@ export default function ToolsPage() {
           <ul className={styles.cards}>
             {tools.map((tool, i) => (
               <ScrollReveal as="li" key={tool.slug} className={styles.card} delay={i * 0.1}>
-                <Link href={`/tools/${tool.slug}`} className={styles.cardLink}>
+                {/* --card-accent＝1本1色のテーマ色（data/tools.ts）。番号・図像・ホバーの罫にだけ使う */}
+                <Link
+                  href={`/tools/${tool.slug}`}
+                  className={styles.cardLink}
+                  style={{ "--card-accent": tool.accent } as CSSProperties}
+                >
                   {/* filter はアニメさせない（iOS/WebKit 安全）。
                       静的グレースケールの下地へカラーを opacity で重ねる */}
                   <div className={styles.cardThumb}>
@@ -107,7 +115,10 @@ export default function ToolsPage() {
                     <span className={styles.cardVeil} aria-hidden="true" />
                   </div>
                   <div className={styles.cardBody}>
-                    <span className={styles.cardNo}>{tool.no}</span>
+                    <span className={styles.cardHead}>
+                      <ToolMark tool={tool.mark} size={26} className={styles.cardMark} />
+                      <span className={styles.cardNo}>{tool.no}</span>
+                    </span>
                     <h3 className={styles.cardTitle}>{tool.title}</h3>
                     <p className={styles.cardEn}>{tool.titleEn}</p>
                     <p className={styles.cardText}>{tool.description}</p>

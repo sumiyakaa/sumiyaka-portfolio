@@ -4,16 +4,23 @@
    設定を変えると右側が一斉に書き換わる。
    ⚠ filter はアニメーションさせない（状態の切り替えは color / border-color だけ）。
    ⚠ 100vh を全画面レイアウトの前提にしない（対応表の max-height だけ vh を使う）。
+
+   ★ 2026-08-27 白ベース化：地は紙（tools-paper.css）。パネルは紙より少し白い #fff で浮かせ、
+     対応表は「白地に罫」。テーマ色（朱）はステップ番号・主ボタン・開いた行・図像・
+     ホバー／フォーカスにだけ置き、面で塗るのは --tool-accent-soft だけ。
+     意味色は --bad（NG）と要確認（琥珀）の2つを白地用の濃さで置く。
    ========================================================================== */
 
 .tool {
-  --line: #222222;
-  --line-soft: #1a1a1a;
-  --raise: rgba(255, 255, 255, 0.022);
-  --raise-2: rgba(255, 255, 255, 0.045);
-  --gold: var(--color-accent);
-  --bad: #c86e6e;
-  color: var(--color-foreground);
+  --line: var(--tool-line);
+  --line-soft: var(--tool-line-soft);
+  --raise: #ffffff; /* パネルは紙より少し白い＝浮く */
+  --raise-2: var(--tool-paper-2);
+  --gold: var(--tool-accent);
+  /* 意味色（白地用）。NG＝未処理でない「ファイルなし／対象外」、要確認＝枝番・切り詰め */
+  --bad: #8f2a24; /* テーマ色の朱(#c14a2e)と見分けるため暗い紅に寄せる */
+  --warn: #b8860b;
+  color: var(--tool-ink);
   font-family: var(--font-body);
 }
 
@@ -26,6 +33,7 @@
   gap: 1rem 2rem;
   padding: 1rem 1.25rem;
   border: 1px solid var(--line);
+  border-top: 2px solid var(--tool-accent); /* 白ベース化: 上辺だけテーマ色（サムネイルの色の署名） */
   background: var(--raise);
 }
 
@@ -36,10 +44,16 @@
   min-width: 0;
 }
 
+/* 図像（小）。色はテーマ色 */
+.statusMark {
+  flex: none;
+  color: var(--tool-accent);
+}
+
 .statusFile {
   font-size: 0.86rem;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -52,7 +66,8 @@
   letter-spacing: 0.22em;
   text-indent: 0.22em;
   color: var(--gold);
-  border: 1px solid rgba(200, 169, 110, 0.42);
+  border: 1px solid var(--tool-accent-line);
+  background: var(--tool-accent-soft);
   padding: 3px 9px;
 }
 
@@ -72,7 +87,7 @@
 .statusStats dt {
   font-size: 0.63rem;
   letter-spacing: 0.16em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .statusStats dd {
@@ -82,13 +97,14 @@
   font-size: 1.15rem;
   line-height: 1;
   letter-spacing: 0.02em;
+  color: var(--tool-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .statusStats dd span {
   margin-left: 3px;
   font-size: 0.68rem;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 /* ---- ネットワークへ出ないことの明記 ---- */
@@ -96,7 +112,7 @@
   margin: 0.85rem 0 0;
   font-size: 0.73rem;
   line-height: 1.75;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .privacyStrong {
@@ -180,6 +196,7 @@
   font-size: 0.92rem;
   font-weight: 400;
   letter-spacing: 0.06em;
+  color: var(--tool-ink);
 }
 
 .stepNum {
@@ -194,17 +211,17 @@
   margin: 0.85rem 0 0;
   font-size: 0.71rem;
   line-height: 1.8;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .optionNote {
   margin: 0.85rem 0 0;
   padding: 0.5rem 0.6rem;
-  border-left: 2px solid rgba(200, 169, 110, 0.5);
-  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid var(--tool-accent-line);
+  background: var(--tool-paper-2);
   font-size: 0.71rem;
   line-height: 1.8;
-  color: #b9a888;
+  color: var(--tool-ink-2);
 }
 
 /* ---- ドロップゾーン ---- */
@@ -216,8 +233,8 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 1.6rem 1rem;
-  border: 1px dashed #333333;
-  background: rgba(255, 255, 255, 0.012);
+  border: 1px dashed var(--tool-line-strong);
+  background: var(--tool-paper-2);
   cursor: pointer;
   transition:
     border-color var(--duration-normal) var(--ease-default),
@@ -226,33 +243,36 @@
 
 .drop:hover,
 .drop:focus-visible {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(var(--tool-accent-rgb), 0.5);
+  background: var(--tool-paper-3);
   outline: none;
 }
 
+/* ドラッグ中＝破線をテーマ色・地を薄い色地 */
 .dropOver {
   border-color: var(--gold);
-  background: rgba(200, 169, 110, 0.06);
+  background: var(--tool-accent-soft);
 }
 
 .dropIcon {
   width: 26px;
   height: 20px;
-  border: 1px solid #555555;
+  border: 1px solid var(--tool-ink-4);
   border-top-width: 6px;
-  border-top-color: #444444;
+  border-top-color: var(--tool-ink-3);
+  background: #ffffff;
 }
 
 .dropText {
   font-size: 0.8rem;
   letter-spacing: 0.03em;
   text-align: center;
+  color: var(--tool-ink);
 }
 
 .dropSub {
   font-size: 0.67rem;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .fileInput {
@@ -273,9 +293,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.48rem 0.85rem;
-  border: 1px solid #333333;
-  background: transparent;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.73rem;
   letter-spacing: 0.05em;
@@ -297,16 +317,16 @@
   cursor: not-allowed;
 }
 
-/* 黒ベタ（白抜き）はページに1か所だけ＝視線の終着点 */
+/* テーマ色のベタはページに1か所だけ＝視線の終着点 */
 .primaryButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   padding: 0.72rem 1.1rem;
-  border: 1px solid var(--color-foreground);
-  background: var(--color-foreground);
-  color: #0a0a0a;
+  border: 1px solid var(--tool-accent);
+  background: var(--tool-accent);
+  color: var(--tool-on-accent);
   font-family: var(--font-body);
   font-size: 0.8rem;
   letter-spacing: 0.06em;
@@ -317,9 +337,10 @@
     color var(--duration-normal) var(--ease-default);
 }
 
+/* ホバー＝filter は使わず、テーマ色の不透明度で変える（契約書§2） */
 .primaryButton:hover:not(:disabled) {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--tool-accent-hover);
+  border-color: var(--tool-accent-hover);
 }
 
 .primaryButton:disabled {
@@ -353,32 +374,33 @@
   line-height: 1.6;
   padding: 0.35rem 0.5rem;
   border-left: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tool-paper-2);
+  color: var(--tool-ink-2);
 }
 
 .issueError {
-  border-left-color: #8d5a5a;
+  border-left-color: var(--bad);
 }
 
 .issueWarn {
-  border-left-color: #6d6146;
+  border-left-color: var(--warn);
 }
 
 .issueLine {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .issueMore {
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .issueSummary {
   margin: 0.6rem 0 0;
   font-size: 0.71rem;
   line-height: 1.7;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 /* ---- 命名オプション ---- */
@@ -398,16 +420,17 @@
 .selectRow > span {
   font-size: 0.66rem;
   letter-spacing: 0.08em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 /*
- * ⚠ iOS(WebKit) 対策：暗い地色の select に background と color を当てても、
- *   WebKit はネイティブ描画のままで**白地のコントロール**を出す。
- *   そこへ明色の文字が乗るので、選択中の値が読めなくなる。
+ * ⚠ iOS(WebKit) 対策：select に background と color を当てても、WebKit は
+ *   ネイティブ描画のままで独自の地色のコントロールを出し、指定した文字色と
+ *   食い違って選択中の値が読めなくなることがある。
  *   Chromium では指定どおり出るため、PCの確認だけでは絶対に見つからない。
  *   （2026-08-23・T-04 の検品で実機的に確認された事象）
  *   appearance を外すと矢印もネイティブごと消えるので、背景画像で描き直す。
+ *   白ベース化後も appearance:none は当て木として残す（矢印は墨 %23171717）。
  */
 .selectRow select {
   width: 100%;
@@ -415,22 +438,22 @@
   border: 1px solid var(--line);
   -webkit-appearance: none;
   appearance: none;
-  /* 半透明だと WebKit が下の白地を透かすので、不透明で置く */
-  background-color: #121212;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  /* 半透明だと WebKit が下の地を透かすので、不透明で置く */
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23171717' stroke-width='1.3'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.76rem;
   border-radius: 0;
   transition: border-color var(--duration-normal) var(--ease-default);
 }
 
-/* 展開したときの選択肢も暗色で揃える（Windows/Android で白地になるのを防ぐ） */
+/* 展開したときの選択肢も白地で揃える */
 .selectRow select option {
-  background-color: #121212;
-  color: var(--color-foreground);
+  background-color: #ffffff;
+  color: var(--tool-ink);
 }
 
 .selectRow select:focus {
@@ -443,14 +466,14 @@
   margin-top: 1.1rem;
   padding: 0.9rem 0.85rem;
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.28);
+  background: var(--tool-paper-2);
 }
 
 .disclaimer p {
   margin: 0 0 0.6rem;
   font-size: 0.68rem;
   line-height: 1.85;
-  color: #9a9a9a;
+  color: var(--tool-ink-3);
 }
 
 .disclaimer p:last-of-type {
@@ -464,7 +487,7 @@
   margin-top: 0.4rem;
   font-size: 0.68rem;
   line-height: 1.7;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-2);
   text-decoration: none;
   transition: color var(--duration-normal) var(--ease-default);
 }
@@ -495,12 +518,12 @@
 }
 
 .message {
-  color: #c79a9a;
+  color: var(--bad);
 }
 
 /* エラーではなく状態の案内。枠は同じで色だけ落とす */
 .messageHint {
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 /* ---------------- 右：対応表（主役） ---------------- */
@@ -515,7 +538,7 @@
   margin-bottom: 0.8rem;
   font-size: 0.68rem;
   letter-spacing: 0.04em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .legend b {
@@ -523,20 +546,23 @@
   font-weight: 300;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
   font-variant-numeric: tabular-nums;
 }
 
+/* 対応表は「白地に罫」。見出し行＋本体で1枚の白い紙に見せる */
 .tableHead {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr) auto;
   gap: 0.5rem;
   align-items: baseline;
-  padding: 0 0.75rem 0.55rem;
-  border-bottom: 1px solid var(--line);
+  padding: 0.6rem 0.75rem 0.55rem;
+  border: 1px solid var(--line);
+  border-bottom: 1px solid var(--tool-line-strong);
+  background: #ffffff;
   font-size: 0.64rem;
   letter-spacing: 0.14em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .tableHead span:last-child {
@@ -549,7 +575,9 @@
 .tableScroll {
   max-height: min(70vh, 640px);
   overflow-y: auto;
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-top: none;
+  background: #ffffff;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -570,7 +598,7 @@
   border: none;
   border-bottom: 1px solid var(--line-soft);
   background: transparent;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.76rem;
   text-align: left;
@@ -589,6 +617,13 @@
   outline-offset: -1px;
 }
 
+/* 開いている行＝左の縦罫 2px をテーマ色・地は薄い色地（契約書§2-3）。
+   border-left だと中身が 2px ずれるので inset の box-shadow で引く */
+.docItem[aria-expanded="true"] {
+  background: var(--tool-accent-soft);
+  box-shadow: inset 2px 0 0 var(--tool-accent);
+}
+
 .rowFrom,
 .rowTo {
   overflow: hidden;
@@ -597,8 +632,9 @@
   min-width: 0;
 }
 
+/* 左＝雑多な元の名前は一段沈め、右＝整った新しい名前を墨で立てる */
 .rowFrom {
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .rowTo {
@@ -606,12 +642,12 @@
 }
 
 .rowToMuted {
-  color: #6b6b6b;
+  color: var(--tool-ink-4);
 }
 
 .rowArrow {
   justify-self: center;
-  color: #4f4f4f;
+  color: var(--tool-ink-4);
   font-size: 0.8rem;
   line-height: 1;
 }
@@ -625,24 +661,25 @@
   text-align: right;
   font-size: 0.64rem;
   letter-spacing: 0.08em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
   white-space: nowrap;
 }
 
 /* ---- 状態の色（静的な色だけ。filter は使わない） ---- */
 .rowOk .rowTo {
-  color: var(--color-foreground);
+  color: var(--tool-ink);
 }
 
+/* 枝番あり／切り詰め＝要確認（琥珀）。テーマ色の朱と混ざらないよう意味色で分ける */
 .rowWarn .rowTo,
 .rowWarn .rowBadge {
-  color: var(--gold);
+  color: var(--warn);
 }
 
 .rowMuted .rowFrom,
 .rowMuted .rowTo,
 .rowMuted .rowBadge {
-  color: #6b6b6b;
+  color: var(--tool-ink-4);
 }
 
 .rowBad .rowTo,
@@ -658,7 +695,8 @@
   margin: 0;
   padding: 0.85rem 0.75rem 1rem;
   border-bottom: 1px solid var(--line-soft);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tool-paper-2);
+  box-shadow: inset 2px 0 0 var(--tool-accent);
 }
 
 .detail > div {
@@ -675,13 +713,14 @@
 .detail dt {
   font-size: 0.62rem;
   letter-spacing: 0.12em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .detail dd {
   margin: 0;
   font-size: 0.76rem;
   line-height: 1.6;
+  color: var(--tool-ink);
   overflow-wrap: anywhere;
 }
 
@@ -702,16 +741,19 @@
   margin: 1rem 0 0;
   font-size: 0.71rem;
   line-height: 1.8;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .empty {
+  margin: 0;
   padding: 3.5rem 1rem;
   text-align: center;
   font-size: 0.8rem;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
-  border: 1px dashed var(--line);
+  color: var(--tool-ink-3);
+  border: 1px dashed var(--tool-line-strong);
+  border-top: none;
+  background: #ffffff;
 }
 
 /* ---------------- SP ---------------- */
@@ -741,6 +783,17 @@
 @media (max-width: 720px) {
   .tableHead {
     display: none;
+  }
+
+  /* 見出し行が消えるので、上の罫を本体側で引く */
+  .tableScroll,
+  .empty {
+    border-top: 1px solid var(--line);
+  }
+
+  .empty {
+    border-top-style: dashed;
+    border-top-color: var(--tool-line-strong);
   }
 
   .docItem {

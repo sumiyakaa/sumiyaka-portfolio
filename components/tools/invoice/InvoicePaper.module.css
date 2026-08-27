@@ -24,10 +24,8 @@
   font-weight: 400;
   line-height: 1.5;
   container-type: inline-size;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.5),
-    0 24px 60px rgba(0, 0, 0, 0.55),
-    0 4px 14px rgba(0, 0, 0, 0.35);
+  /* 白ベース化（2026-08-27）：周りの地が --tool-paper-2 なので影は薄く。紙面の色は変えない */
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
 }
 
 @supports (width: 1cqw) {

@@ -1,16 +1,20 @@
 /* ==========================================================================
    TableUnifyTool — 列マッピング統合
-   地は墨（サイト共通の暗色）。主役はマッピング盤なので、左の操作パネルは静かに。
+   地は紙（tools-paper.css・2026-08-27 白ベース化）。主役はマッピング盤なので、左の操作パネルは静かに。
+   テーマ色（菫 --tool-accent）は ステップ番号／主ボタン／選択中のタブ／図像 と、ホバーの罫にだけ。
+   面で塗るのは --tool-accent-soft だけ。要確認の意味色は琥珀 #b8860b、エラーは #b8432f。
    ⚠ filter はアニメさせない（iOS/WebKit で滲みが残る）。強弱は罫線と字間で作る。
    ========================================================================== */
 
 .tool {
-  --line: #222222;
-  --line-soft: #1a1a1a;
-  --raise: rgba(255, 255, 255, 0.022);
-  --raise-2: rgba(255, 255, 255, 0.045);
-  --gold: var(--color-accent);
-  color: var(--color-foreground);
+  --line: var(--tool-line);
+  --line-soft: var(--tool-line-soft);
+  --raise: #ffffff; /* パネルは紙より少し白い＝浮く */
+  --raise-2: var(--tool-paper-2);
+  --gold: var(--tool-accent);
+  --warn: #b8860b; /* 要確認（琥珀寄り） */
+  --bad: #b8432f; /* エラー・削除 */
+  color: var(--tool-ink);
   font-family: var(--font-body);
 }
 
@@ -23,6 +27,7 @@
   gap: 1rem 2rem;
   padding: 1rem 1.25rem;
   border: 1px solid var(--line);
+  border-top: 2px solid var(--tool-accent); /* 白ベース化: 上辺だけテーマ色（サムネイルの色の署名） */
   background: var(--raise);
 }
 
@@ -33,10 +38,16 @@
   min-width: 0;
 }
 
+/* 図像（サムネイルに映る・テーマ色） */
+.statusMark {
+  flex: none;
+  color: var(--tool-accent);
+}
+
 .statusFile {
   font-size: 0.86rem;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -48,8 +59,9 @@
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-indent: 0.22em;
-  color: var(--gold);
-  border: 1px solid rgba(200, 169, 110, 0.42);
+  color: var(--tool-ink-2);
+  border: 1px solid var(--tool-line-strong);
+  background: var(--tool-paper-2);
   padding: 3px 9px;
 }
 
@@ -149,12 +161,13 @@
 
 .inlineLink {
   margin-left: 0.4rem;
-  color: var(--gold);
+  color: var(--tool-ink);
   text-decoration: none;
-  border-bottom: 1px solid rgba(200, 169, 110, 0.35);
+  border-bottom: 1px solid var(--tool-line-strong);
 }
 
 .inlineLink:hover {
+  color: var(--gold);
   border-bottom-color: var(--gold);
 }
 
@@ -167,8 +180,8 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 2rem 1rem;
-  border: 1px dashed #333333;
-  background: rgba(255, 255, 255, 0.012);
+  border: 1px dashed var(--tool-line-strong);
+  background: var(--tool-paper-2);
   cursor: pointer;
   transition:
     border-color var(--duration-normal) var(--ease-default),
@@ -177,22 +190,22 @@
 
 .drop:hover,
 .drop:focus-visible {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--tool-accent-line);
+  background: var(--tool-paper-3);
   outline: none;
 }
 
 .dropOver {
   border-color: var(--gold);
-  background: rgba(200, 169, 110, 0.06);
+  background: var(--tool-accent-soft);
 }
 
 .dropIcon {
   width: 26px;
   height: 20px;
-  border: 1px solid #555555;
+  border: 1px solid var(--tool-ink-4);
   border-top-width: 6px;
-  border-top-color: #444444;
+  border-top-color: var(--tool-ink-3);
 }
 
 .dropText {
@@ -223,9 +236,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 0.9rem;
-  border: 1px solid #333333;
-  background: transparent;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.74rem;
   letter-spacing: 0.06em;
@@ -253,9 +266,9 @@
   justify-content: center;
   width: 100%;
   padding: 0.72rem 1.1rem;
-  border: 1px solid var(--color-foreground);
-  background: var(--color-foreground);
-  color: #0a0a0a;
+  border: 1px solid var(--tool-accent);
+  background: var(--tool-accent);
+  color: var(--tool-on-accent);
   font-family: var(--font-body);
   font-size: 0.8rem;
   letter-spacing: 0.06em;
@@ -266,9 +279,10 @@
     color var(--duration-normal) var(--ease-default);
 }
 
+/* ホバー＝filter は使わず background だけを動かす（iOS/WebKit 安全） */
 .primaryButton:hover:not(:disabled) {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--tool-accent-hover);
+  border-color: var(--tool-accent-hover);
 }
 
 .primaryButton:disabled {
@@ -296,15 +310,15 @@
   line-height: 1.6;
   padding: 0.35rem 0.5rem;
   border-left: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tool-paper-2);
 }
 
 .issueError {
-  border-left-color: #8d5a5a;
+  border-left-color: var(--bad);
 }
 
 .issueWarn {
-  border-left-color: #6d6146;
+  border-left-color: var(--warn);
 }
 
 .issueLine {
@@ -338,9 +352,9 @@
 /*
  * ⚠ iOS(WebKit) 対策：`appearance` を外さないと `<select>` がネイティブ描画のままになり、
  *   白地のコントロールに明色の文字が乗って **中身が読めなくなる**（2026-08-23 WebKit実測で発見）。
- *   Chromium では黒地で正しく出るため、PCの確認だけでは絶対に見つからない。
- *   矢印はネイティブごと消えるので、data URI の SVG で描き直す。border-radius:0 は
- *   iOS が勝手に角を丸めるのを止めるため。
+ *   Chromium では正しく出るため、PCの確認だけでは絶対に見つからない。
+ *   矢印はネイティブごと消えるので、data URI の SVG で描き直す（白ベース化で矢印は墨 #171717）。
+ *   border-radius:0 は iOS が勝手に角を丸めるのを止めるため。
  */
 .selectRow select,
 .metaRow select,
@@ -348,7 +362,7 @@
   -webkit-appearance: none;
   appearance: none;
   border-radius: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23171717' stroke-width='1.3'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
 }
@@ -358,9 +372,9 @@
   flex: 1;
   max-width: 220px;
   padding: 0.4rem 1.6rem 0.4rem 0.5rem;
-  border: 1px solid #333333;
-  background-color: #121212;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background-color: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.76rem;
 }
@@ -413,23 +427,23 @@
 .colName {
   min-width: 0;
   padding: 0.35rem 0.45rem;
-  border: 1px solid #2a2a2a;
-  background: #121212;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.76rem;
 }
 
 .colName:focus {
-  border-color: rgba(200, 169, 110, 0.5);
+  border-color: var(--tool-accent-line);
   outline: none;
 }
 
 .colKind {
   padding: 0.32rem 1.35rem 0.32rem 0.3rem;
-  border: 1px solid #2a2a2a;
-  background-color: #121212;
-  color: var(--color-foreground-muted);
+  border: 1px solid var(--tool-line);
+  background-color: #ffffff;
+  color: var(--tool-ink-2);
   font-family: var(--font-body);
   font-size: 0.7rem;
 }
@@ -456,7 +470,7 @@
 }
 
 .colDelete:hover:not(:disabled) {
-  color: #c79a9a;
+  color: var(--bad);
 }
 
 .colDelete:disabled {
@@ -503,11 +517,11 @@
 }
 
 .busy {
-  color: var(--gold);
+  color: var(--tool-ink-2);
 }
 
 .message {
-  color: #c79a9a;
+  color: var(--bad);
 }
 
 /* ---------------- 右：マッピング盤とプレビュー ---------------- */
@@ -542,9 +556,9 @@
   gap: 0.5rem;
   max-width: 260px;
   padding: 0.45rem 0.8rem;
-  border: 1px solid #2a2a2a;
-  background: transparent;
-  color: var(--color-foreground-muted);
+  border: 1px solid var(--tool-line);
+  background: #ffffff;
+  color: var(--tool-ink-3);
   font-family: var(--font-body);
   font-size: 0.74rem;
   text-align: left;
@@ -557,13 +571,15 @@
 
 .docItem:hover {
   background: var(--raise-2);
-  color: var(--color-foreground);
+  color: var(--tool-ink);
 }
 
+/* 選択中のタブ＝左の縦罫 2px をテーマ色（box-shadow なので幅が変わらない）＋地は accent-soft */
 .docItemActive {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: var(--raise-2);
-  color: var(--color-foreground);
+  border-color: var(--tool-accent-line);
+  box-shadow: inset 2px 0 0 var(--tool-accent);
+  background: var(--tool-accent-soft);
+  color: var(--tool-ink);
 }
 
 .docName {
@@ -606,7 +622,8 @@
 .empty {
   margin: 0;
   padding: 3rem 1rem;
-  border: 1px dashed #2a2a2a;
+  border: 1px dashed var(--tool-line-strong);
+  background: #ffffff;
   text-align: center;
   font-size: 0.8rem;
   color: var(--color-foreground-muted);
@@ -663,19 +680,20 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #141414;
+  background: var(--tool-paper-2);
   font-weight: 400;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
 }
 
 .preview th[data-origin="source"] {
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
+/* 未割当の列＝要確認の意味色（琥珀） */
 .preview th[data-origin="unmapped"] {
-  color: #8f8266;
+  color: var(--warn);
 }
 
 .preview td[data-kind="number"] {
@@ -688,7 +706,7 @@
 }
 
 .cellMismatch {
-  text-decoration: underline dotted #8d7a5a;
+  text-decoration: underline dotted var(--warn);
   text-underline-offset: 3px;
 }
 

@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import ReconcileTool from "@/components/tools/reconcile/ReconcileTool";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import { SITE_ORIGIN } from "@/lib/site";
 import styles from "./page.module.css";
 
-// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og.jpg を渡す
+// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og-2.jpg を渡す
+// （版付きファイル名＝白ベース化で差し替えた画像。data/tools.ts の og と同じ値）
 const OG_URL =
   "/api/og?title=PAYMENT%20RECONCILE&sub=Bank%20CSV%20x%20Invoice%20Ledger%20%E2%80%94%20runs%20in%20your%20browser" +
-  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/reconcile/og.jpg`)}`;
+  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/reconcile/og-2.jpg`)}`;
 
 export const metadata: Metadata = {
   title: "入金消込 突合 — AKASHIKI Tools",
@@ -72,8 +74,9 @@ export default function PaymentReconcilePage() {
     },
   };
 
+  // data-tools-paper＝紙のテーマ（app/tools/tools-paper.css）／data-tool＝1本1色のテーマ色
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-tools-paper data-tool="reconcile">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
@@ -90,9 +93,15 @@ export default function PaymentReconcilePage() {
             <span>PAYMENT RECONCILE</span>
           </nav>
 
-          <p className={styles.no}>T-02</p>
-          <h1 className={styles.title}>入金消込 突合</h1>
-          <p className={styles.titleEn}>Payment Reconcile</p>
+          <div className={styles.headRow}>
+            {/* 図像＝線が引かれていく描画アニメ（見出しでだけ animate） */}
+            <ToolMark tool="reconcile" size={68} animate className={styles.headMark} />
+            <div className={styles.headText}>
+              <p className={styles.no}>T-02</p>
+              <h1 className={styles.title}>入金消込 突合</h1>
+              <p className={styles.titleEn}>Payment Reconcile</p>
+            </div>
+          </div>
 
           <p className={styles.lead}>
             銀行の入出金明細と請求台帳を読み込むと、自動一致・要確認・未入金の3つに分かれます。

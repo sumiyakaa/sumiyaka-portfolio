@@ -29,6 +29,7 @@ import type {
   ReportOptions,
   SalesRow,
 } from "@/lib/tools/report/types";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import MonthlyReportPaper from "./MonthlyReportPaper";
 import styles from "./MonthlyReportTool.module.css";
 
@@ -230,6 +231,7 @@ export default function MonthlyReportTool() {
       {/* ================= ステータス ================= */}
       <div className={styles.status}>
         <div className={styles.statusMain}>
+          <ToolMark tool="report" size={22} className={styles.statusMark} />
           <span className={styles.statusFile}>{sourceName}</span>
           {isSample ? <span className={styles.chipSample}>サンプル</span> : null}
         </div>

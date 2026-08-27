@@ -1,21 +1,23 @@
 /* ==========================================================================
    ReconcileTool — 入金消込 突合
-   地は墨（サイト共通の暗色）。主役は「3色の突合リスト」。
+   地は紙（tools-paper.css・2026-08-27 白ベース化）。主役は「3色の突合リスト」。
+   テーマ色（松葉 --tool-accent）はステップ番号・主ボタン・選択中のタブ・図像にだけ置く。
    ⚠ 色を氾濫させない。色が付くのは行の左端の帯とラベルの文字だけで、行の地色は変えない。
    ⚠ 色だけに意味を持たせない。各行に必ず「自動一致／要確認／未入金」の文字を置く。
+   ⚠ 要確認はテーマ色に寄せない（松葉＝緑がテーマ色なので、一致の緑と混ざる）。琥珀で独立させる。
    ⚠ filter はアニメーションさせない（iOS/WebKit で滲みが残る）。変化させるのは色と地だけ。
    ========================================================================== */
 
 .tool {
-  --line: #222222;
-  --line-soft: #1a1a1a;
-  --raise: rgba(255, 255, 255, 0.022);
-  --raise-2: rgba(255, 255, 255, 0.045);
-  --gold: var(--color-accent);
-  /* 3色。彩度を落として墨の地になじませる */
-  --matched: #5f8f6e;
-  --review: var(--color-accent);
-  --unpaid: #b0574a;
+  --line: var(--tool-line);
+  --line-soft: var(--tool-line-soft);
+  --raise: #ffffff; /* パネルは紙より少し白い＝浮く */
+  --raise-2: var(--tool-paper-2);
+  --gold: var(--tool-accent);
+  /* 3色（意味色）。白地で読める濃さ。一致＝緑／要確認＝琥珀／未入金＝赤 */
+  --matched: #2f7a55;
+  --review: #b8860b;
+  --unpaid: #b8432f;
   color: var(--color-foreground);
   font-family: var(--font-body);
 }
@@ -29,6 +31,7 @@
   gap: 1rem 2rem;
   padding: 1rem 1.25rem;
   border: 1px solid var(--line);
+  border-top: 2px solid var(--tool-accent); /* 白ベース化: 上辺だけテーマ色（サムネイルの色の署名） */
   background: var(--raise);
 }
 
@@ -38,6 +41,12 @@
   flex-wrap: wrap;
   gap: 0.6rem;
   min-width: 0;
+}
+
+/* 左端の図像（サムネイルに映る）。色はテーマ色 */
+.statusMark {
+  flex: none;
+  color: var(--tool-accent);
 }
 
 .statusFile {
@@ -62,7 +71,7 @@
   letter-spacing: 0.22em;
   text-indent: 0.22em;
   color: var(--gold);
-  border: 1px solid rgba(200, 169, 110, 0.42);
+  border: 1px solid rgba(var(--tool-accent-rgb), 0.42);
   padding: 3px 9px;
 }
 
@@ -182,8 +191,8 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 1.6rem 1rem;
-  border: 1px dashed #333333;
-  background: rgba(255, 255, 255, 0.012);
+  border: 1px dashed var(--tool-line-strong);
+  background: var(--tool-paper);
   cursor: pointer;
   text-align: center;
   transition:
@@ -193,22 +202,22 @@
 
 .drop:hover,
 .drop:focus-visible {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(var(--tool-accent-rgb), 0.5);
+  background: var(--tool-paper-2);
   outline: none;
 }
 
 .dropOver {
   border-color: var(--gold);
-  background: rgba(200, 169, 110, 0.06);
+  background: var(--tool-accent-soft);
 }
 
 .dropIcon {
   width: 26px;
   height: 20px;
-  border: 1px solid #555555;
+  border: 1px solid var(--tool-line-strong);
   border-top-width: 6px;
-  border-top-color: #444444;
+  border-top-color: var(--tool-ink-4);
 }
 
 .dropText {
@@ -240,9 +249,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 0.9rem;
-  border: 1px solid #333333;
-  background: transparent;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.74rem;
   letter-spacing: 0.06em;
@@ -263,9 +272,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.62rem 1.1rem;
-  border: 1px solid var(--color-foreground);
-  background: var(--color-foreground);
-  color: #0a0a0a;
+  border: 1px solid var(--tool-accent);
+  background: var(--tool-accent);
+  color: var(--tool-on-accent);
   font-family: var(--font-body);
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -275,9 +284,10 @@
     border-color var(--duration-normal) var(--ease-default);
 }
 
+/* ホバーは filter を使わず地の濃さだけ変える（iOS/WebKit で安定） */
 .primaryButton:hover:not(:disabled) {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--tool-accent-hover);
+  border-color: var(--tool-accent-hover);
 }
 
 .primaryButton:disabled {
@@ -331,15 +341,16 @@
   line-height: 1.6;
   padding: 0.35rem 0.5rem;
   border-left: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tool-paper-2);
 }
 
+/* 指摘の左帯＝意味色（エラー＝未入金と同じ赤／注意＝要確認と同じ琥珀） */
 .issueError {
-  border-left-color: #8d5a5a;
+  border-left-color: var(--unpaid);
 }
 
 .issueWarn {
-  border-left-color: #6d6146;
+  border-left-color: var(--review);
 }
 
 .issueLine {
@@ -374,8 +385,8 @@
   padding: 0.42rem 1.7rem 0.42rem 0.6rem;
   border: 1px solid var(--line);
   border-radius: 0; /* iOS が勝手に角を丸めるのを止める */
-  background-color: #121212; /* 半透明ではなく不透明で置く */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-color: #ffffff; /* 半透明ではなく不透明で置く */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23171717' stroke-width='1.3'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
   color: var(--color-foreground);
@@ -429,7 +440,7 @@
 }
 
 .message {
-  color: #c79a9a;
+  color: var(--unpaid);
 }
 
 /* ---------------- 右：突合リスト（主役） ---------------- */
@@ -464,13 +475,14 @@
 
 .tab:hover {
   color: var(--color-foreground);
-  border-color: #333333;
+  border-color: var(--tool-line-strong);
 }
 
+/* 選択中のタブ＝罫をテーマ色・地は --tool-accent-soft（面で塗ってよい唯一の色地） */
 .tabActive {
   color: var(--color-foreground);
   border-color: var(--gold);
-  background: var(--raise-2);
+  background: var(--tool-accent-soft);
 }
 
 .tabCount {
@@ -635,8 +647,8 @@
 /* ---- 開いたときの根拠 ---- */
 .detail {
   padding: 0.9rem 0.9rem 1.1rem 1.2rem;
-  background: rgba(0, 0, 0, 0.28);
-  border-left: 4px solid var(--line);
+  background: var(--tool-paper-2);
+  border-left: 4px solid var(--tool-line-strong);
 }
 
 .detailNote {

@@ -34,6 +34,7 @@ import {
   type UnifyOptions,
 } from "@/lib/tools/unify/types";
 import { formatDateJa, formatNumber, formatQty } from "@/lib/tools/_shared/format";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import MappingBoard from "./MappingBoard";
 import styles from "./TableUnifyTool.module.css";
 
@@ -572,6 +573,7 @@ export default function TableUnifyTool() {
       {/* ================= ステータス ================= */}
       <div className={styles.status}>
         <div className={styles.statusMain}>
+          <ToolMark tool="unify" size={22} className={styles.statusMark} />
           <span className={styles.statusFile}>
             {files.length > 0 ? files.map((f) => f.name).join(" / ") : "ファイルがありません"}
           </span>

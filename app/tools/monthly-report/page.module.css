@@ -2,29 +2,34 @@
    /tools/monthly-report — 月次レポートPDF
    ツールを早く触らせたいので、FVは全画面にせず「畳んだ見出し」にしている。
    構成は T-01（/tools/invoice-batch）と同じ。2本並べても手ざわりが揃うように。
+
+   ★ 2026-08-27 白ベース化：地は紙（tools-paper.css）。テーマ色（--tool-accent）は
+     上端の帯・図像・番号・ホバーにだけ使い、面では --tool-accent-soft しか塗らない。
    ========================================================================== */
 
 .page {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--tool-paper);
+  color: var(--tool-ink);
+  border-top: 3px solid var(--tool-accent);
 }
 
 /* ---------------- 見出し ---------------- */
 .head {
   position: relative;
-  border-bottom: 1px solid var(--color-border);
-  padding: calc(60px + 4.5rem) 0 3rem;
+  border-bottom: 1px solid var(--tool-line);
+  padding: calc(60px + 4rem) 0 3rem;
   overflow: hidden;
 }
 
+/* 紙の上の、ごく薄い色の気配（右上）。面で塗らず、気配だけ */
 .head::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(60% 90% at 12% 0%, rgba(255, 255, 255, 0.045), transparent 70%),
-    radial-gradient(50% 70% at 88% 30%, rgba(200, 169, 110, 0.05), transparent 72%);
+    radial-gradient(52% 80% at 90% 0%, rgba(var(--tool-accent-rgb), 0.075), transparent 70%),
+    radial-gradient(40% 60% at 0% 100%, rgba(0, 0, 0, 0.025), transparent 70%);
 }
 
 .headInner {
@@ -43,26 +48,46 @@
   font-weight: 300;
   font-size: 0.68rem;
   letter-spacing: 0.22em;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .crumb a {
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
   text-decoration: none;
   transition: color var(--duration-normal) var(--ease-default);
 }
 
 .crumb a:hover {
-  color: var(--color-accent);
+  color: var(--tool-accent);
+}
+
+/* 図像と見出しの並び */
+.headRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.8rem;
+  margin-top: 2.2rem;
+}
+
+.headMark {
+  flex: none;
+  width: 68px;
+  height: 68px;
+  margin-top: 0.35rem;
+  color: var(--tool-accent);
+}
+
+.headText {
+  min-width: 0;
 }
 
 .no {
-  margin: 2.2rem 0 0;
+  margin: 0;
   font-family: var(--font-heading);
   font-weight: 300;
   font-size: 0.72rem;
   letter-spacing: 0.3em;
-  color: var(--color-accent);
+  color: var(--tool-accent);
 }
 
 .title {
@@ -72,6 +97,7 @@
   font-size: clamp(1.9rem, 4.2vw, 3.1rem);
   line-height: 1.24;
   letter-spacing: 0.04em;
+  color: var(--tool-ink);
 }
 
 .titleEn {
@@ -80,7 +106,7 @@
   font-weight: 300;
   font-size: 0.8rem;
   letter-spacing: 0.34em;
-  color: var(--color-secondary);
+  color: var(--tool-ink-3);
   text-transform: uppercase;
 }
 
@@ -89,7 +115,7 @@
   max-width: 46em;
   font-size: 0.92rem;
   line-height: 2;
-  color: #cfcfcf;
+  color: var(--tool-ink-2);
 }
 
 .brPc {
@@ -108,8 +134,9 @@
 .badges li {
   font-size: 0.7rem;
   letter-spacing: 0.06em;
-  color: var(--color-foreground-muted);
-  border: 1px solid var(--color-border-light);
+  color: var(--tool-ink-2);
+  border: 1px solid var(--tool-line-strong);
+  background: rgba(255, 255, 255, 0.5);
   padding: 6px 12px;
 }
 
@@ -127,9 +154,9 @@
 
 /* ---------------- できること／できないこと ---------------- */
 .scope {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--tool-line);
   padding: 5rem 0;
-  background: var(--color-background-light);
+  background: var(--tool-paper-2);
 }
 
 .scopeInner {
@@ -141,13 +168,18 @@
   gap: 3.5rem;
 }
 
+.scopeCol {
+  min-width: 0;
+}
+
 .scopeTitle {
   margin: 0 0 1.8rem;
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: 0.14em;
   padding-bottom: 0.8rem;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--tool-line-strong);
+  color: var(--tool-ink);
 }
 
 .scopeList {
@@ -164,22 +196,23 @@
   font-size: 0.9rem;
   font-weight: 400;
   letter-spacing: 0.03em;
+  color: var(--tool-ink);
 }
 
 .scopeList p {
   margin: 0;
   font-size: 0.82rem;
   line-height: 1.95;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
 }
 
 .scopeListMuted h3 {
-  color: var(--color-secondary);
+  color: var(--tool-ink-3);
 }
 
 /* ---------------- 特注への導線 ---------------- */
 .custom {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--tool-line);
   padding: 6rem 0;
 }
 
@@ -195,13 +228,14 @@
   font-size: clamp(1.05rem, 2.2vw, 1.45rem);
   line-height: 1.9;
   letter-spacing: 0.04em;
+  color: var(--tool-ink);
 }
 
 .customBody {
   margin: 1.6rem 0 0;
   font-size: 0.86rem;
   line-height: 2.1;
-  color: var(--color-foreground-muted);
+  color: var(--tool-ink-3);
   text-align: left;
 }
 
@@ -209,19 +243,21 @@
   display: inline-block;
   margin-top: 2.4rem;
   padding: 0.9rem 2.2rem;
-  border: 1px solid var(--color-border-light);
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-ink);
+  color: var(--tool-ink);
   font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-decoration: none;
   transition:
     border-color var(--duration-normal) var(--ease-default),
-    color var(--duration-normal) var(--ease-default);
+    color var(--duration-normal) var(--ease-default),
+    background-color var(--duration-normal) var(--ease-default);
 }
 
 .customLink:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--tool-accent);
+  color: var(--tool-accent);
+  background: var(--tool-accent-soft);
 }
 
 /* ---------------- クレジット ---------------- */
@@ -230,7 +266,7 @@
   margin: 0 auto;
   padding: 0 40px 4rem;
   font-size: 0.68rem;
-  color: #555555;
+  color: var(--tool-ink-4);
   letter-spacing: 0.04em;
 }
 
@@ -251,6 +287,17 @@
 @media (max-width: 768px) {
   .head {
     padding: calc(60px + 3rem) 0 2.5rem;
+  }
+
+  .headRow {
+    gap: 1.1rem;
+    margin-top: 1.8rem;
+  }
+
+  .headMark {
+    width: 46px;
+    height: 46px;
+    margin-top: 0.2rem;
   }
 
   .headInner,

@@ -1,14 +1,19 @@
 /* ==========================================================================
    InvoiceBatchTool — 請求書PDF 一括作成
-   地は墨（サイト共通の暗色）。紙だけが白く浮く、という見え方に寄せる。
+   地は紙（app/tools/tools-paper.css）。パネルは紙より少し白く浮かせ、
+   A4 の紙面は一段沈めた地（--tool-paper-2）の上に置いて、紙だけが浮く見え方にする。
+
+   ★ 2026-08-27 白ベース化：テーマ色（--tool-accent＝藍）を置くのは
+     ステップ番号／主ボタン／選択中の行／図像／ホバー・フォーカスの気配だけ。
+     面で塗るのは --tool-accent-soft（選択行・ドラッグ中）だけ。
    ========================================================================== */
 
 .tool {
-  --line: #222222;
-  --line-soft: #1a1a1a;
-  --raise: rgba(255, 255, 255, 0.022);
-  --raise-2: rgba(255, 255, 255, 0.045);
-  --gold: var(--color-accent);
+  --line: var(--tool-line);
+  --line-soft: var(--tool-line-soft);
+  --raise: #ffffff; /* パネルは紙より少し白い＝浮く */
+  --raise-2: var(--tool-paper-2);
+  --gold: var(--tool-accent);
   color: var(--color-foreground);
   font-family: var(--font-body);
 }
@@ -22,6 +27,7 @@
   gap: 1rem 2rem;
   padding: 1rem 1.25rem;
   border: 1px solid var(--line);
+  border-top: 2px solid var(--tool-accent); /* 白ベース化: 上辺だけテーマ色（サムネイルの色の署名） */
   background: var(--raise);
 }
 
@@ -30,6 +36,12 @@
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+}
+
+/* 図像（サムネイルに映る）。テーマ色を置く場所のひとつ */
+.statusMark {
+  flex: none;
+  color: var(--tool-accent);
 }
 
 .statusFile {
@@ -48,7 +60,7 @@
   letter-spacing: 0.22em;
   text-indent: 0.22em;
   color: var(--gold);
-  border: 1px solid rgba(200, 169, 110, 0.42);
+  border: 1px solid var(--tool-accent-line);
   padding: 3px 9px;
 }
 
@@ -154,8 +166,8 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 2rem 1rem;
-  border: 1px dashed #333333;
-  background: rgba(255, 255, 255, 0.012);
+  border: 1px dashed var(--tool-line-strong);
+  background: var(--tool-paper-2);
   cursor: pointer;
   transition:
     border-color var(--duration-normal) var(--ease-default),
@@ -164,22 +176,22 @@
 
 .drop:hover,
 .drop:focus-visible {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(var(--tool-accent-rgb), 0.5);
+  background: var(--tool-paper-3);
   outline: none;
 }
 
 .dropOver {
   border-color: var(--gold);
-  background: rgba(200, 169, 110, 0.06);
+  background: var(--tool-accent-soft);
 }
 
 .dropIcon {
   width: 26px;
   height: 20px;
-  border: 1px solid #555555;
+  border: 1px solid var(--tool-line-strong);
   border-top-width: 6px;
-  border-top-color: #444444;
+  border-top-color: var(--tool-ink-4);
 }
 
 .dropText {
@@ -210,9 +222,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 0.9rem;
-  border: 1px solid #333333;
-  background: transparent;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.74rem;
   letter-spacing: 0.06em;
@@ -239,9 +251,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.62rem 1.1rem;
-  border: 1px solid var(--color-foreground);
-  background: var(--color-foreground);
-  color: #0a0a0a;
+  border: 1px solid var(--tool-accent);
+  background: var(--tool-accent);
+  color: var(--tool-on-accent);
   font-family: var(--font-body);
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -252,9 +264,10 @@
     color var(--duration-normal) var(--ease-default);
 }
 
+/* ホバーは filter を使わず、テーマ色の濃さだけを変える */
 .primaryButton:hover:not(:disabled) {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--tool-accent-hover);
+  border-color: var(--tool-accent-hover);
 }
 
 .primaryButton:disabled {
@@ -282,15 +295,16 @@
   line-height: 1.6;
   padding: 0.35rem 0.5rem;
   border-left: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tool-paper-2);
 }
 
+/* 意味色（白地用）：NG＝#b8432f／要確認＝#b8860b */
 .issueError {
-  border-left-color: #8d5a5a;
+  border-left-color: #b8432f;
 }
 
 .issueWarn {
-  border-left-color: #6d6146;
+  border-left-color: #b8860b;
 }
 
 .issueLine,
@@ -341,8 +355,8 @@
   width: 100%;
   padding: 0.5rem 0.6rem;
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.35);
-  color: var(--color-foreground);
+  background: var(--tool-paper-2);
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.8rem;
   border-radius: 0;
@@ -405,7 +419,7 @@
   grid-column: 2;
   display: block;
   font-size: 0.68rem;
-  color: #7a6c52;
+  color: var(--tool-ink-3);
 }
 
 /* ✓ が何を確かめたものかを、印の下に必ず添える。
@@ -428,27 +442,27 @@
 }
 
 .selectRow select {
-  /* iOS(WebKit) はネイティブ描画のままだと白地になり、明色の文字が読めなくなる */
+  /* iOS(WebKit) のネイティブ描画は地と文字の色を勝手に決めるので外す（当て木として残す） */
   -webkit-appearance: none;
   appearance: none;
-  /* appearance を外すと矢印もネイティブごと消えるので描き直す */
+  /* appearance を外すと矢印もネイティブごと消えるので描き直す（墨 #171717） */
   padding: 0.42rem 1.6rem 0.42rem 0.6rem;
   border: 1px solid var(--line);
-  /* 半透明だと WebKit が下の白地を透かすので、不透明で置く */
-  background-color: #121212;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  /* 半透明だと WebKit が下の地を透かすので、不透明で置く */
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23171717' stroke-width='1.3'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
-  color: var(--color-foreground);
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.78rem;
   border-radius: 0;
 }
 
-/* 展開したときの選択肢も暗色で揃える（Windows/Android で白地になるのを防ぐ） */
+/* 展開したときの選択肢も白地・墨で揃える（OS の既定色に引きずられないようにする） */
 .selectRow select option {
-  background-color: #121212;
-  color: var(--color-foreground);
+  background-color: #ffffff;
+  color: var(--tool-ink);
 }
 
 .docList {
@@ -482,8 +496,9 @@
   background: var(--raise-2);
 }
 
+/* 選択中の行＝左の縦罫 2px をテーマ色・地は --tool-accent-soft */
 .docItemActive {
-  background: var(--raise-2);
+  background: var(--tool-accent-soft);
   box-shadow: inset 2px 0 0 var(--gold);
 }
 
@@ -523,12 +538,15 @@
 }
 
 .message {
-  color: #c79a9a;
+  color: #b8432f;
 }
 
 /* ---------------- 右：プレビュー ---------------- */
+/* 紙が浮くように、周りの地を一段沈める（紙の影は InvoicePaper.module.css） */
 .stage {
   min-width: 0;
+  padding: 1.25rem 1.25rem 1.5rem;
+  background: var(--tool-paper-2);
 }
 
 .stageHead {
@@ -542,9 +560,9 @@
 .navButton {
   width: 34px;
   height: 34px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-size: 0.85rem;
   line-height: 1;
   cursor: pointer;
@@ -612,6 +630,10 @@
 
   .step {
     padding: 1.2rem 1rem 1.35rem;
+  }
+
+  .stage {
+    padding: 1rem 0.75rem 1.25rem;
   }
 
   .fields {

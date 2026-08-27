@@ -9,6 +9,7 @@ import {
   type ChangeEvent,
   type DragEvent,
 } from "react";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import { formatYen, safeFileName } from "@/lib/tools/_shared/format";
 import { reconcile } from "@/lib/tools/reconcile/calc";
 import {
@@ -294,6 +295,7 @@ export default function ReconcileTool() {
       {/* ================= ステータス ================= */}
       <div className={styles.status}>
         <div className={styles.statusMain}>
+          <ToolMark tool="reconcile" size={22} className={styles.statusMark} />
           <span className={styles.statusFile}>{ledgerName}</span>
           {ledgerIsSample ? <span className={styles.chipSample}>サンプル</span> : null}
           <span className={styles.statusSep} aria-hidden="true">

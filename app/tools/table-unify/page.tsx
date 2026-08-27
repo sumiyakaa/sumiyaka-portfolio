@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import TableUnifyTool from "@/components/tools/unify/TableUnifyTool";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import { SITE_ORIGIN } from "@/lib/site";
 import styles from "./page.module.css";
 
-// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og.jpg を渡す
+// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og-2.jpg を渡す
+// （版付きファイル名＝白ベース化で差し替えた画像。data/tools.ts の og と同じ値）
 const OG_URL =
   "/api/og?title=TABLE%20UNIFY&sub=Excel%20and%20CSV%20into%20One%20Table%20%E2%80%94%20runs%20in%20your%20browser" +
-  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/unify/og.jpg`)}`;
+  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/unify/og-2.jpg`)}`;
 
 export const metadata: Metadata = {
   title: "列マッピング統合 — AKASHIKI Tools",
@@ -72,8 +74,9 @@ export default function TableUnifyPage() {
     },
   };
 
+  // data-tools-paper＝紙のテーマ（app/tools/tools-paper.css）／data-tool＝1本1色のテーマ色
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-tools-paper data-tool="unify">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
@@ -90,9 +93,15 @@ export default function TableUnifyPage() {
             <span>TABLE UNIFY</span>
           </nav>
 
-          <p className={styles.no}>T-04</p>
-          <h1 className={styles.title}>列マッピング統合</h1>
-          <p className={styles.titleEn}>Table Unify</p>
+          <div className={styles.headRow}>
+            {/* 図像＝線が引かれていく描画アニメ（見出しでだけ animate） */}
+            <ToolMark tool="unify" size={68} animate className={styles.headMark} />
+            <div className={styles.headText}>
+              <p className={styles.no}>T-04</p>
+              <h1 className={styles.title}>列マッピング統合</h1>
+              <p className={styles.titleEn}>Table Unify</p>
+            </div>
+          </div>
 
           <p className={styles.lead}>
             列の並びも見出し名も違う複数の表を、決めた管理表の形へ揃えて1つにまとめます。

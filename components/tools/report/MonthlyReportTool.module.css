@@ -1,15 +1,17 @@
 /* ==========================================================================
    MonthlyReportTool — 月次レポートPDF
-   地は墨（サイト共通の暗色）。紙だけが白く浮く、という見え方に寄せる。
+   ★ 2026-08-27 白ベース化：地は紙（app/tools/tools-paper.css）。パネルは紙より少し白い #fff で浮かせ、
+     テーマ色（琥珀 --tool-accent）はステップ番号・主ボタン・選択行・図像にだけ置く。
+     紙面（MonthlyReportPaper）は元から白い紙なので色は触らず、周りの .stage を paper-2 に沈めて浮かせる。
    T-01（請求書PDF）と同じ作法で組んでいるので、2本並べても手ざわりが揃う。
    ========================================================================== */
 
 .tool {
-  --line: #222222;
-  --line-soft: #1a1a1a;
-  --raise: rgba(255, 255, 255, 0.022);
-  --raise-2: rgba(255, 255, 255, 0.045);
-  --gold: var(--color-accent);
+  --line: var(--tool-line);
+  --line-soft: var(--tool-line-soft);
+  --raise: #ffffff; /* パネルは紙より少し白い＝浮く */
+  --raise-2: var(--tool-paper-2);
+  --gold: var(--tool-accent);
   color: var(--color-foreground);
   font-family: var(--font-body);
 }
@@ -23,6 +25,7 @@
   gap: 1rem 2rem;
   padding: 1rem 1.25rem;
   border: 1px solid var(--line);
+  border-top: 2px solid var(--tool-accent); /* 白ベース化: 上辺だけテーマ色（サムネイルの色の署名） */
   background: var(--raise);
 }
 
@@ -31,6 +34,12 @@
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+}
+
+/* 図像（サムネイルにも映る）。テーマ色を置く5か所のひとつ */
+.statusMark {
+  flex: none;
+  color: var(--tool-accent);
 }
 
 .statusFile {
@@ -49,7 +58,7 @@
   letter-spacing: 0.22em;
   text-indent: 0.22em;
   color: var(--gold);
-  border: 1px solid rgba(200, 169, 110, 0.42);
+  border: 1px solid var(--tool-accent-line);
   padding: 3px 9px;
 }
 
@@ -157,8 +166,8 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 2rem 1rem;
-  border: 1px dashed #333333;
-  background: rgba(255, 255, 255, 0.012);
+  border: 1px dashed var(--tool-line-strong);
+  background: var(--tool-paper);
   cursor: pointer;
   text-align: center;
   transition:
@@ -168,22 +177,22 @@
 
 .drop:hover,
 .drop:focus-visible {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(var(--tool-accent-rgb), 0.5);
+  background: var(--tool-paper-2);
   outline: none;
 }
 
 .dropOver {
   border-color: var(--gold);
-  background: rgba(200, 169, 110, 0.06);
+  background: var(--tool-accent-soft);
 }
 
 .dropIcon {
   width: 26px;
   height: 20px;
-  border: 1px solid #555555;
+  border: 1px solid var(--tool-ink-4);
   border-top-width: 6px;
-  border-top-color: #444444;
+  border-top-color: var(--tool-ink-3);
 }
 
 .dropText {
@@ -214,9 +223,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 0.9rem;
-  border: 1px solid #333333;
-  background: transparent;
-  color: var(--color-foreground);
+  border: 1px solid var(--tool-line-strong);
+  background: #ffffff;
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.74rem;
   letter-spacing: 0.06em;
@@ -244,9 +253,9 @@
   justify-content: center;
   width: 100%;
   padding: 0.7rem 1.1rem;
-  border: 1px solid var(--color-foreground);
-  background: var(--color-foreground);
-  color: #0a0a0a;
+  border: 1px solid var(--tool-accent);
+  background: var(--tool-accent);
+  color: var(--tool-on-accent);
   font-family: var(--font-body);
   font-size: 0.8rem;
   letter-spacing: 0.06em;
@@ -257,9 +266,10 @@
     color var(--duration-normal) var(--ease-default);
 }
 
+/* ホバーは filter を使わず、地の濃さだけ変える */
 .primaryButton:hover:not(:disabled) {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--tool-accent-hover);
+  border-color: var(--tool-accent-hover);
 }
 
 .primaryButton:disabled {
@@ -294,15 +304,15 @@
   line-height: 1.6;
   padding: 0.35rem 0.5rem;
   border-left: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--tool-paper-2);
 }
 
 .issueError {
-  border-left-color: #8d5a5a;
+  border-left-color: #b8432f;
 }
 
 .issueWarn {
-  border-left-color: #6d6146;
+  border-left-color: #b8860b;
 }
 
 .issueLine {
@@ -353,8 +363,8 @@
   width: 100%;
   padding: 0.5rem 0.6rem;
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.35);
-  color: var(--color-foreground);
+  background: var(--tool-paper-2);
+  color: var(--tool-ink);
   font-family: var(--font-body);
   font-size: 0.8rem;
   border-radius: 0;
@@ -411,8 +421,8 @@
   appearance: none;
   padding: 0.42rem 1.6rem 0.42rem 0.6rem;
   border: 1px solid var(--line);
-  background-color: #121212;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.3'/%3E%3C/svg%3E");
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23171717' stroke-width='1.3'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
   color: var(--color-foreground);
@@ -454,7 +464,7 @@
 }
 
 .docItemActive {
-  background: var(--raise-2);
+  background: var(--tool-accent-soft);
   box-shadow: inset 2px 0 0 var(--gold);
 }
 
@@ -481,12 +491,16 @@
 }
 
 .message {
-  color: #c79a9a;
+  color: #b8432f;
 }
 
 /* ---------------- 右：紙面 ---------------- */
+/* 紙面は元から白い紙。周りを paper-2 に沈めて、紙が浮いて見えるようにする */
 .stage {
   min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--tool-line-soft);
+  background: var(--tool-paper-2);
 }
 
 /* SPのみ表示（横スクロールできることの案内） */
@@ -510,7 +524,8 @@
   text-align: center;
   font-size: 0.82rem;
   color: var(--color-foreground-muted);
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--tool-line-strong);
+  background: #ffffff;
 }
 
 /* ---------------- SP ---------------- */
@@ -535,6 +550,10 @@
     gap: 0.6rem;
   }
 
+  .stage {
+    padding: 1rem;
+  }
+
   /* A4横をそのまま画面幅へ縮めると本文が4px台になって読めない。
      最低幅を確保し、横スクロールで見せる（拡大縮小は端末のピンチに任せる）。
      740px ＝ T-01（520px / 595.28pt）と同じ 0.87px/pt の密度 */
@@ -542,7 +561,8 @@
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.5rem;
+    /* 紙の影（0 2px 14px）が overflow で切れないぶんの余白 */
+    padding: 12px 0 1rem;
   }
 
   .paperScroll > * {

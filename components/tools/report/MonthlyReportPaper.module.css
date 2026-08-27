@@ -25,10 +25,8 @@
   font-weight: 400;
   line-height: 1.5;
   container-type: inline-size;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.5),
-    0 24px 60px rgba(0, 0, 0, 0.55),
-    0 4px 14px rgba(0, 0, 0, 0.35);
+  /* 白ベース化：周りが paper-2 なので、薄い影だけで紙を浮かせる */
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
 }
 
 @supports (width: 1cqw) {

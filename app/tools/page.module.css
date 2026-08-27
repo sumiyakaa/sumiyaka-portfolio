@@ -211,11 +211,13 @@
   color: inherit;
 }
 
+/* ★ 2026-08-27 白ベース化：サムネイルは白い紙のUI。読み込み前の地も紙色にして
+   黒→白のちらつきを出さない（グレースケール下地の見え方と同じ明度） */
 .cardThumb {
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  background: #101010;
+  background: #e6e3dc;
 }
 
 .cardImg {
@@ -257,12 +259,23 @@
   justify-content: center;
 }
 
+/* 図像＋番号。--card-accent は Link に付けた1本1色（data/tools.ts の accent） */
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.cardMark {
+  color: var(--card-accent, var(--color-accent));
+}
+
 .cardNo {
   font-family: var(--font-heading);
   font-weight: 300;
   font-size: 0.68rem;
   letter-spacing: 0.28em;
-  color: var(--color-accent);
+  color: var(--card-accent, var(--color-accent));
 }
 
 .cardTitle {
@@ -316,7 +329,7 @@
 }
 
 .cardLink:hover .cardMore {
-  color: var(--color-accent);
+  color: var(--card-accent, var(--color-accent));
 }
 
 /* ホバーできない端末では最初からカラーで見せる（墨のままだと画面が読めない） */

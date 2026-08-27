@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import EvidenceRenameTool from "@/components/tools/evidence/EvidenceRenameTool";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import { SITE_ORIGIN } from "@/lib/site";
 import styles from "./page.module.css";
 
-// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og.jpg を渡す
+// OGカードのサムネイル。@vercel/og は WebP を描画できないため専用の og-2.jpg を渡す
+// （版付きファイル名＝白ベース化で差し替えた画像。data/tools.ts の og と同じ値）
 const OG_URL =
   "/api/og?title=EVIDENCE%20RENAME&sub=Bulk%20file%20rename%20%2B%20index%20CSV%20%E2%80%94%20runs%20in%20your%20browser" +
-  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/evidence/og.jpg`)}`;
+  `&img=${encodeURIComponent(`${SITE_ORIGIN}/tools/evidence/og-2.jpg`)}`;
 
 export const metadata: Metadata = {
   title: "電帳法ファイル名 一括リネーム — AKASHIKI Tools",
@@ -72,8 +74,9 @@ export default function EvidenceRenamePage() {
     },
   };
 
+  // data-tools-paper＝紙のテーマ（app/tools/tools-paper.css）／data-tool＝1本1色のテーマ色
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-tools-paper data-tool="evidence">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
@@ -90,9 +93,15 @@ export default function EvidenceRenamePage() {
             <span>EVIDENCE RENAME</span>
           </nav>
 
-          <p className={styles.no}>T-03</p>
-          <h1 className={styles.title}>電帳法ファイル名 一括リネーム</h1>
-          <p className={styles.titleEn}>Evidence Rename</p>
+          <div className={styles.headRow}>
+            {/* 図像＝線が引かれていく描画アニメ（見出しでだけ animate） */}
+            <ToolMark tool="evidence" size={68} animate className={styles.headMark} />
+            <div className={styles.headText}>
+              <p className={styles.no}>T-03</p>
+              <h1 className={styles.title}>電帳法ファイル名 一括リネーム</h1>
+              <p className={styles.titleEn}>Evidence Rename</p>
+            </div>
+          </div>
 
           <p className={styles.lead}>
             証憑の束と台帳を読み込むと、国税庁の一問一答が例示している形（20210131_㈱霞商店_110000）に合わせてファイル名を付け替えます。

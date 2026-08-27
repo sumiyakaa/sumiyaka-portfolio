@@ -49,6 +49,7 @@ import type {
   RenamePlan,
   RenameStatus,
 } from "@/lib/tools/evidence/types";
+import ToolMark from "@/components/tools/_marks/ToolMark";
 import styles from "./EvidenceRenameTool.module.css";
 
 /**
@@ -542,6 +543,8 @@ export default function EvidenceRenameTool() {
       {/* ================= ステータス ================= */}
       <div className={styles.status}>
         <div className={styles.statusMain}>
+          {/* 図像（小）＝サムネイルにも映る。テーマ色はここと番号・主ボタンだけ */}
+          <ToolMark tool="evidence" size={22} className={styles.statusMark} />
           <span className={styles.statusFile}>
             {sourceName || "台帳は未読み込み"}
           </span>

@@ -1,0 +1,105 @@
+/* ==========================================================================
+   tools-paper.css — ツールページの「紙」テーマ（2026-08-27 白ベース化）
+
+   考え方＝「墨の館に置かれた、白い紙の道具」。
+   サイト本体は黒のまま。各ツールページの <main data-tools-paper data-tool="…"> の中だけ
+   トークンを紙色へ上書きし、1本1色のテーマカラーを --tool-accent として渡す。
+
+   ★ 色の使いどころ（ごちゃごちゃを防ぐ縛り・6本共通）
+     テーマカラーを置くのは5か所だけ＝ステップ番号／主ボタン／選択中のチップ・タブ／
+     図像（ToolMark）／ページ上端の帯。面で塗るのはパネル見出しの薄い色地
+     （--tool-accent-soft）1つだけ。それ以外は 紙・墨・罫 で組む。
+     金（#c8a96e）はツールページでは使わない（サイト側の記号として温存）。
+
+   ⚠ --color-accent をテーマ色へ差し替えているので、各ツールCSSの --gold: var(--color-accent)
+     は自動的にテーマ色になる。金の生RGB rgba(200,169,110,…) だけは各ツール側で
+     rgba(var(--tool-accent-rgb), …) へ置き換えること。
+   ⚠ 値は data/tools.ts の accent と同値に保つ（カタログ・トップはそちらを参照する）。
+   ========================================================================== */
+
+[data-tools-paper] {
+  /* 紙 */
+  --tool-paper: #fbfaf7;
+  --tool-paper-2: #f3f1ec;
+  --tool-paper-3: #ebe8e1;
+  /* 墨 */
+  --tool-ink: #171717;
+  --tool-ink-2: #3d3c39;
+  --tool-ink-3: #6a6862;
+  --tool-ink-4: #8c8a84;
+  /* 罫 */
+  --tool-line: #dcd8d0;
+  --tool-line-soft: #e9e6df;
+  --tool-line-strong: #c7c2b8;
+
+  /* サイト共通トークンを紙側へ上書き（配下のツールCSSはこれを参照している） */
+  --color-primary: #171717;
+  --color-primary-light: #2b2b2b;
+  --color-secondary: #6a6862;
+  --color-secondary-light: #8c8a84;
+  --color-background: var(--tool-paper);
+  --color-background-light: var(--tool-paper-2);
+  --color-foreground: var(--tool-ink);
+  --color-foreground-muted: var(--tool-ink-3);
+  --color-border: var(--tool-line);
+  --color-border-light: var(--tool-line-strong);
+  --color-accent: var(--tool-accent);
+
+  background: var(--tool-paper);
+  color: var(--tool-ink);
+  color-scheme: light;
+}
+
+/* ---- 1本1色（data/tools.ts の accent と同値） ---- */
+[data-tool="invoice"] {
+  --tool-accent: #2b4c7e;
+  --tool-accent-rgb: 43, 76, 126;
+}
+[data-tool="reconcile"] {
+  --tool-accent: #2f6b4f;
+  --tool-accent-rgb: 47, 107, 79;
+}
+[data-tool="evidence"] {
+  --tool-accent: #c14a2e;
+  --tool-accent-rgb: 193, 74, 46;
+}
+[data-tool="unify"] {
+  --tool-accent: #5a4a9c;
+  --tool-accent-rgb: 90, 74, 156;
+}
+[data-tool="cleanup"] {
+  --tool-accent: #2a86a3;
+  --tool-accent-rgb: 42, 134, 163;
+}
+[data-tool="report"] {
+  --tool-accent: #b5731d;
+  --tool-accent-rgb: 181, 115, 29;
+}
+
+/* 派生（各ツールCSSから参照する） */
+[data-tools-paper] {
+  --tool-accent-soft: rgba(var(--tool-accent-rgb), 0.07);
+  --tool-accent-line: rgba(var(--tool-accent-rgb), 0.38);
+  --tool-accent-ink: rgba(var(--tool-accent-rgb), 0.92);
+  /* 主ボタンの上の文字（紙色）。テーマ色6色すべてで AA 以上のコントラストがある */
+  --tool-on-accent: #fbfaf7;
+  /* 主ボタンのホバー＝白地では「薄く」でなく「濃く」する。
+     color-mix 非対応の古い WebKit ではテーマ色のまま（変化なし＝害なし） */
+  --tool-accent-hover: var(--tool-accent);
+}
+
+@supports (color: color-mix(in srgb, #000 10%, #fff)) {
+  [data-tools-paper] {
+    --tool-accent-hover: color-mix(in srgb, var(--tool-accent) 84%, #000);
+  }
+}
+
+/* 紙の上の選択範囲・フォーカスも紙のトーンに合わせる */
+[data-tools-paper] ::selection {
+  background: rgba(var(--tool-accent-rgb), 0.18);
+}
+
+[data-tools-paper] :focus-visible {
+  outline: 2px solid var(--tool-accent);
+  outline-offset: 2px;
+}
