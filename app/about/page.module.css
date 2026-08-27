@@ -1,9 +1,29 @@
-/* ========================================
-   About Page — Redesigned
-   ======================================== */
+/* =============================================
+   About Page — AIスペシャリスト 墨家 / SUMIYAKA の人物ページ（P6・2026-08-27）
+   地色＝サブページ既定の暗色（--color-primary 系）。白転調なし。
+   各セクションの骨格は components/works/WorksPrice.module.css に揃える：
+     max-width 1080px／上下 96px（SP 64px）／小ラベル（mono 11px・--color-accent）
+     ＋ h2（--font-body 700・clamp(22px, 2.4rem, 34px)）／罫線 1px --color-border／番号は mono・--color-accent
+
+   互換方針：
+   - vw単位のフォントサイズ／filter・backdrop-filter のアニメ／mix-blend-mode／
+     複雑な clip-path／3D transform／will-change は不使用
+   - 100vh は svh の二段指定
+   - grid stretch × aspect-ratio × absolute子 の3点セットは不使用
+   - prefers-reduced-motion: reduce に対応（ScrollReveal の初期 opacity:0 を解除）
+   ============================================= */
+.page {
+  background: var(--color-primary);
+  color: var(--color-foreground);
+}
+
+/* SP専用の改行（PC/タブレットでは出さない） */
+.brSp {
+  display: none;
+}
 
 /* ========================================
-   FV — 100vh
+   FV — 100vh（DynamicInkFluid の上に日本語 h1）
    ======================================== */
 .fv {
   position: relative;
@@ -45,22 +65,42 @@
   position: relative;
   z-index: 2;
   text-align: center;
+  padding: 0 20px;
 }
 
+/* 英字ラベル＝小さな装飾（入場は data-fv-edge の後追いフェード） */
+.fvLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--color-accent);
+  margin-bottom: 22px;
+  opacity: 0;
+}
+
+/* 主役＝日本語 h1（letter-spacing の入場アニメは SubPageFVAnim が 0.4em→0.08em） */
 .fvTitle {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(48px, 10vw, 120px);
-  letter-spacing: 0.2em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(32px, 3.6rem, 56px);
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  font-feature-settings: "palt" 1;
   color: var(--color-foreground);
+  /* インクが明るく出た箇所でも輪郭を保つ保険（フィルタではないので iOS/WebKit でも安全） */
+  text-shadow: 0 0 14px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
   opacity: 0;
 }
 
 .fvSub {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-weight: 300;
-  font-size: 13px;
-  letter-spacing: 0.12em;
+  font-size: 14px;
+  letter-spacing: 0.08em;
   /* コントラスト確保（WCAG AA・通常テキスト4.5:1）
      旧: #888888(--color-secondary) → 地の #0a0a0a に対し 5.58:1 だが、
          背後のインク流体(fluidSim: bgBase 0.039 + brightness 0.25 ≒ #4a4a4a)が
@@ -70,7 +110,7 @@
      text-shadow はインクがさらに明るく出た場合の保険（フィルタではないので iOS/WebKit でも安全）。 */
   color: #d5d5d5;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.75);
-  margin-top: 16px;
+  margin-top: 18px;
   opacity: 0;
 }
 
@@ -101,111 +141,141 @@
 .fvEdgeBr { bottom: 40px; right: 40px; opacity: 0; }
 
 /* ========================================
-   Shared
+   Shared — セクション骨格（WorksPrice と同階層）
    ======================================== */
-.sectionLabel {
+.sec {
+  padding: 0 40px;
+}
+
+.inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 96px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.innerFirst {
+  border-top: 0;
+}
+
+/* ScrollReveal のラッパーに付ける識別用クラス（reduced-motion で使用） */
+.reveal {
+  display: block;
+}
+
+.label {
   display: block;
   font-family: var(--font-mono);
-  font-size: 40px;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-secondary);
-  margin-bottom: 48px;
-}
-
-/* ========================================
-   Profile — Photo + Text 2-column
-   ======================================== */
-.profile {
-  background: var(--color-primary);
-  padding: 140px 80px;
-}
-
-.profileInner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
-}
-
-/* Photo */
-.profilePhoto {
-  position: static;
-}
-
-.photoWrap {
-  position: relative;
-  overflow: hidden;
-}
-
-.photoImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  -webkit-mask-image:
-    linear-gradient(to right,  transparent, black 15%, black 85%, transparent),
-    linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-  -webkit-mask-composite: destination-in;
-  mask-image:
-    linear-gradient(to right,  transparent, black 15%, black 85%, transparent),
-    linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-  mask-composite: intersect;
-}
-
-.photoCaption {
-  margin-top: 16px;
-  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  color: var(--color-secondary);
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+  margin-bottom: 18px;
 }
 
-/* Text */
-.profileText {
-  padding-top: 8px;
-}
-
-.profileLead {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(40px, 5vw, 72px);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
+.title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(22px, 2.4rem, 34px);
+  line-height: 1.6;
+  letter-spacing: 0.02em;
   color: var(--color-foreground);
-  margin-bottom: 12px;
+  margin: 0 0 32px;
 }
 
-.profileLeadSub {
-  font-family: var(--font-heading);
-  font-weight: 200;
-  font-size: 16px;
-  letter-spacing: 0.12em;
-  color: var(--color-secondary);
-  margin-bottom: 48px;
-}
-
-.profileBody {
+.body {
   font-family: var(--font-body);
   font-weight: 300;
   font-size: 15px;
-  line-height: 2.2;
-  letter-spacing: 0.04em;
+  line-height: 2.1;
+  letter-spacing: 0.02em;
   color: var(--color-foreground-muted);
-  margin-bottom: 28px;
+  margin: 0 0 28px;
+  max-width: 42em;
 }
 
-.profileBody:last-of-type {
-  margin-bottom: 0;
+/* ========================================
+   B-2 Profile — 額（Person.module.css の作法）＋本文
+   ======================================== */
+.profileGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: 72px;
+  align-items: start;
+}
+
+/* ---- 写真（800×766・原比率・CSS filter 不使用） ---- */
+.portrait {
+  margin: 0;
+  width: min(100%, 420px);
+  /* 額のオフセット罫線（右下 +14px）がグリッド外へはみ出さないよう余白を確保 */
+  padding: 0 14px 14px 0;
+}
+
+.portraitFrame {
+  position: relative;
+}
+
+/* オフセットの罫線フレーム（右下へずらした枠） */
+.portraitFrame::before {
+  content: "";
+  position: absolute;
+  inset: 14px -14px -14px 14px;
+  border: 1px solid var(--color-border-light);
+  pointer-events: none;
+}
+
+/* 縁を地色に沈める（通常合成のみ・blend不使用） */
+.portraitFrame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top,    var(--color-primary) 0%, transparent 26%),
+    linear-gradient(to bottom, var(--color-primary) 0%, transparent 18%),
+    linear-gradient(to right,  var(--color-primary) 0%, transparent 16%),
+    linear-gradient(to left,   var(--color-primary) 0%, transparent 16%);
+  opacity: 0.9;
+}
+
+.portraitImg {
+  width: 100%;
+  height: auto; /* 原比率維持＝object-fit による切り抜きをしない */
+  display: block;
+}
+
+.portraitCaption {
+  margin-top: 22px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-secondary);
+  text-align: left; /* 左下配置（トップ Person と同じ） */
+}
+
+/* ---- 本文 ---- */
+.profileText {
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.profileLead {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: -8px 0 32px;
+  max-width: 42em;
 }
 
 .profileSns {
   display: flex;
   gap: 24px;
-  margin-top: 40px;
-  padding-top: 32px;
+  margin-top: 8px;
+  padding-top: 28px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -223,54 +293,193 @@
 
 .snsLink svg { flex-shrink: 0; }
 
-.snsLink:hover {
+.snsLink:hover,
+.snsLink:focus-visible {
   color: var(--color-foreground);
 }
 
 /* ========================================
-   Scope — 担当範囲
+   B-3 Stance — ページ最大級の見出し
    ======================================== */
-.scope {
-  background: var(--color-primary);
-  padding: 0 80px 140px;
-}
-
-.scopeInner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding-top: 140px;
-  border-top: 1px solid var(--color-border);
-}
-
-.scopeMain {
-  border: 1px solid var(--color-border);
-  padding: 48px 40px;
-}
-
-.scopeLead {
+.stanceTitle {
   font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 26px;
-  line-height: 1.9;
+  font-weight: 700;
+  font-size: clamp(28px, 3.6rem, 52px);
+  line-height: 1.4;
   letter-spacing: 0.04em;
+  font-feature-settings: "palt" 1;
   color: var(--color-foreground);
+  margin: 0 0 40px;
 }
 
-.scopeNote {
-  margin-top: 20px;
+.stanceBody {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 16px;
+  line-height: 2.2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground-muted);
+  margin: 0 0 28px;
+  max-width: 40em;
+}
+
+.stanceBody:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   B-4 Timeline — 縦の年表
+   左＝年齢/年（mono・accent）／中＝1px の墨線＋点／右＝本文
+   ======================================== */
+.tl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 行間の余白は li の padding ではなく本文側（.tlText）に持たせる。
+   li の padding は grid 行の外側＝中央列（線）が届かず途切れるため */
+.tlItem {
+  display: grid;
+  grid-template-columns: 120px 32px minmax(0, 1fr);
+  column-gap: 12px;
+  padding: 0;
+}
+
+.tlWhen {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  line-height: 32px; /* 本文1行目（16px × 2）の中心に揃える */
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.tlMark {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+/* 縦の細い墨線（各行が受け持つ区間をつなぐ） */
+.tlMark::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: var(--color-border-light);
+}
+
+/* 各行の点 */
+.tlMark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+
+/* 線は最初の点から始まり、最後の点で終わる */
+.tlItem:first-child .tlMark::before {
+  top: 16px;
+}
+
+.tlItem:last-child .tlMark::before {
+  bottom: auto;
+  height: 16px;
+}
+
+.tlText {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 16px;
   line-height: 2;
   letter-spacing: 0.02em;
   color: var(--color-foreground-muted);
+  margin: 0;
+  padding-bottom: 36px; /* 行間（線を途切れさせないため本文側に持つ） */
+  max-width: 40em;
 }
 
+.tlItem:last-child .tlText {
+  padding-bottom: 0;
+}
+
+/* ========================================
+   B-5 Belief — 3枚グリッド（現行の骨格を再利用）
+   ======================================== */
+.beliefGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+}
+
+.beliefCell {
+  min-width: 0;
+}
+
+.beliefCard {
+  padding: 36px 28px;
+  border: 1px solid var(--color-border);
+  margin-left: -1px;
+  height: 100%;
+  transition: background-color 0.4s ease;
+}
+
+.beliefCell:first-child .beliefCard {
+  margin-left: 0;
+}
+
+.beliefCard:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.beliefNum {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: 22px;
+}
+
+.beliefHeading {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: var(--color-foreground);
+  margin: 0 0 14px;
+}
+
+.beliefText {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground-muted);
+  margin: 0;
+}
+
+/* ========================================
+   B-6 Scope — 担当範囲（小見出し2枠＋リンク）
+   ======================================== */
 .scopeSub {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border: 1px solid var(--color-border);
-  border-top: 0;
+  margin-top: 8px;
 }
 
 .scopeCell {
@@ -282,257 +491,318 @@
 }
 
 .scopeItem {
-  padding: 36px 32px;
+  padding: 32px 28px;
 }
 
 .scopeItemHeading {
   font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 17px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
   line-height: 1.6;
-  letter-spacing: 0.04em;
   color: var(--color-foreground);
-  margin-bottom: 14px;
+  margin: 0 0 12px;
 }
 
 .scopeItemText {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 2;
   letter-spacing: 0.02em;
   color: var(--color-foreground-muted);
+  margin: 0;
+}
+
+.moreLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 36px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 6px;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.moreLink:hover,
+.moreLink:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 /* ========================================
-   Belief — Numbered Cards
+   B-7 What I don't — 題字に静的な墨の一線（Hero .declStrikeLine と同じ比率・アニメなし）
    ======================================== */
-.belief {
-  background: var(--color-primary);
-  padding: 0 80px 140px;
-}
-
-.beliefInner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding-top: 140px;
+.dontList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   border-top: 1px solid var(--color-border);
 }
 
-.beliefGrid {
-  position: relative;
+.dontItem {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  column-gap: 32px;
+  align-items: baseline;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.beliefCard {
-  padding: 40px 32px;
-  border: 1px solid var(--color-border);
-  margin-left: -1px;
-  height: 100%;
-  transition: background-color 0.4s ease;
-}
-
-.beliefCard:first-child {
-  margin-left: 0;
-}
-
-.beliefCard:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.beliefNum {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: 58px;
-  font-weight: 100;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.35);
-  line-height: 1;
-  margin-bottom: 24px;
-}
-
-.beliefHeading {
+.dontName {
   font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 22px;
-  line-height: 1.6;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
   color: var(--color-foreground);
-  margin-bottom: 16px;
 }
 
-.beliefText {
+/* 否定される題字 — 墨の一線で消される（静的・読める太さと不透明度） */
+.dontStrike {
+  position: relative;
+  display: inline;
+}
+
+.dontStrike::after {
+  content: "";
+  position: absolute;
+  left: -0.15em;
+  right: -0.15em;
+  top: 52%;
+  height: 0.09em;
+  min-height: 1px;
+  max-height: 2px;
+  background: var(--color-foreground);
+  opacity: 0.5;
+  transform: rotate(-1.4deg);
+  pointer-events: none;
+}
+
+.dontDesc {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 2;
   letter-spacing: 0.02em;
   color: var(--color-foreground-muted);
 }
 
+.principles {
+  margin-top: 32px;
+}
+
+.principle {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.95;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground-muted);
+  margin: 0;
+}
+
 /* ========================================
-   Skill Set
+   B-8 Skill Set — 行グリッド（現行の骨格を再利用）
    ======================================== */
-.skill {
-  background: var(--color-primary);
-  padding: 0 80px 160px;
-}
-
-
-.skillInner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding-top: 140px;
-  border-top: 1px solid var(--color-border);
-}
-
 .skillList {
   display: flex;
   flex-direction: column;
+  border-top: 1px solid var(--color-border);
 }
 
 .skillRow {
   display: grid;
-  grid-template-columns: 48px 200px 1fr;
-  gap: 0 16px;
+  grid-template-columns: 48px 240px minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: baseline;
   padding: 22px 0;
   border-bottom: 1px solid var(--color-border);
 }
 
-.skillRow:first-child {
-  border-top: 1px solid var(--color-border);
-}
-
 .skillNum {
   font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 14px;
+  font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--color-secondary);
-  align-self: center;
+  color: var(--color-accent);
 }
 
 .skillName {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: 0.06em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
   color: var(--color-foreground);
-  align-self: center;
 }
 
 .skillDesc {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 14px;
+  line-height: 1.9;
   letter-spacing: 0.02em;
   color: var(--color-foreground-muted);
-  align-self: center;
-  line-height: 1.8;
 }
 
 /* ========================================
    Responsive — Tablet (768–1279)
    ======================================== */
 @media (min-width: 768px) and (max-width: 1279px) {
+  .fvTitle { font-size: 44px; }
   .fvEdgeBl { left: 24px; bottom: 24px; }
   .fvEdgeBr { right: 24px; bottom: 24px; }
 
-  .profile { padding: 100px 40px; }
-  .profileInner {
-    grid-template-columns: 300px 1fr;
+  .sec { padding: 0 30px; }
+  .inner { padding: 80px 0; }
+
+  .profileGrid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: 48px;
   }
+  .portrait { width: min(100%, 360px); }
 
-  .scope { padding: 0 40px 100px; }
-  .scopeInner { padding-top: 100px; }
-  .scopeMain { padding: 40px 32px; }
-  .scopeLead { font-size: 22px; }
-  .scopeItem { padding: 32px 24px; }
+  .stanceTitle { font-size: 42px; }
 
-  .belief { padding: 0 40px 100px; }
-  .beliefInner { padding-top: 100px; }
+  .tlItem { grid-template-columns: 104px 28px minmax(0, 1fr); }
 
-  .skill { padding: 0 40px 120px; }
-  .skillInner { padding-top: 100px; }
+  .beliefCard { padding: 30px 22px; }
+
+  .scopeItem { padding: 28px 22px; }
+
+  .skillRow { grid-template-columns: 44px 200px minmax(0, 1fr); }
 }
 
 /* ========================================
    Responsive — SP (–767)
    ======================================== */
 @media (max-width: 767px) {
-  .fvTitle {
-    font-size: clamp(32px, 12vw, 56px);
-    letter-spacing: 0.12em;
-  }
-  .fvSub { font-size: 11px; }
+  .brSp { display: inline; }
+
+  .fvLabel { font-size: 10px; margin-bottom: 18px; }
+  .fvTitle { font-size: 30px; line-height: 1.5; }
+  .fvSub { font-size: 12px; margin-top: 16px; }
   .fvEdgeBl { left: 16px; bottom: 20px; }
   .fvEdgeBr { right: 16px; bottom: 20px; }
 
-  /* Profile */
-  .profile { padding: 80px 20px; }
-  .profileInner {
-    grid-template-columns: 1fr;
-    gap: 48px;
+  .sec { padding: 0 20px; }
+  .inner { padding: 64px 0; }
+
+  .title { font-size: 20px; line-height: 1.7; margin-bottom: 26px; }
+  .body { font-size: 14px; line-height: 1.95; margin-bottom: 24px; }
+
+  /* Profile — 1カラム（写真→本文） */
+  .profileGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
   }
-  .profilePhoto {
-    position: static;
-    max-width: 100%;
+  .portrait { width: min(100%, 360px); }
+  .profileLead { font-size: 15px; margin: -4px 0 26px; }
+  .profileSns { flex-direction: column; gap: 12px; padding-top: 24px; }
+
+  /* Stance */
+  .stanceTitle { font-size: 30px; line-height: 1.5; margin-bottom: 28px; }
+  .stanceBody { font-size: 15px; line-height: 2.05; margin-bottom: 22px; }
+
+  /* Timeline — 1カラム（左に線と点、年→本文を縦積み） */
+  .tlItem {
+    grid-template-columns: 20px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+  }
+  .tlWhen {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  .tlMark {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .tlMark::after { top: 10px; }
+  .tlItem:first-child .tlMark::before { top: 10px; }
+  .tlItem:last-child .tlMark::before { height: 10px; }
+  .tlText {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 14px;
+    line-height: 1.95;
+    margin-top: 6px;
+    padding-bottom: 30px;
   }
 
-  .photoImg {
-    width: 100%;
-    height: auto;
+  /* Belief — 縦1列 */
+  .beliefGrid { grid-template-columns: minmax(0, 1fr); }
+  .beliefCard {
+    margin-left: 0;
+    margin-top: -1px;
+    padding: 28px 20px;
   }
-  .profileLead { font-size: clamp(32px, 9vw, 48px); }
-  .profileLeadSub { font-size: 13px; }
-  .profileBody { font-size: 14px; }
-  .profileSns { flex-direction: column; gap: 12px; }
+  .beliefCell:first-child .beliefCard { margin-top: 0; }
+  .beliefHeading { font-size: 16px; }
+  .beliefText { font-size: 13.5px; }
 
   /* Scope */
-  .scope { padding: 0 20px 80px; }
-  .scopeInner { padding-top: 80px; }
-  .scopeMain { padding: 28px 20px; }
-  .scopeLead { font-size: 18px; }
-  .scopeNote { font-size: 14px; }
-  .scopeSub { grid-template-columns: 1fr; }
+  .scopeSub { grid-template-columns: minmax(0, 1fr); }
   .scopeCell + .scopeCell {
     border-left: 0;
     border-top: 1px solid var(--color-border);
   }
-  .scopeItem { padding: 28px 20px; }
-  .scopeItemHeading { font-size: 16px; }
-  .scopeItemText { font-size: 14px; }
+  .scopeItem { padding: 24px 18px; }
+  .scopeItemText { font-size: 13.5px; }
+  .moreLink { margin-top: 30px; font-size: 13px; }
 
-  /* Belief */
-  .belief { padding: 0 20px 80px; }
-  .beliefInner { padding-top: 80px; }
-  .beliefGrid {
-    grid-template-columns: 1fr;
-    gap: 0;
+  /* What I don't — 題字→説明を縦積み */
+  .dontItem {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 6px;
+    padding: 20px 0;
   }
-  .beliefCard {
-    margin-left: 0;
-    margin-top: -1px;
-    padding: 32px 20px;
-  }
-  .beliefCard:first-child { margin-top: 0; }
-  .sectionLabel { font-size: 24px; }
-  .beliefNum { font-size: 36px; margin-bottom: 16px; }
-  .beliefHeading { font-size: 16px; }
+  .dontName { font-size: 15px; }
+  .dontDesc { font-size: 13.5px; line-height: 1.9; }
+  .principles { margin-top: 26px; }
+  .principle { font-size: 12.5px; }
 
-  /* Skill */
-  .skill { padding: 0 20px 80px; }
-  .skillInner { padding-top: 80px; }
+  /* Skill — 番号＋名前の行の下に説明 */
   .skillRow {
-    grid-template-columns: 36px 1fr;
-    gap: 4px;
+    grid-template-columns: 36px minmax(0, 1fr);
+    column-gap: 8px;
+    padding: 18px 0;
   }
+  .skillName { font-size: 15px; }
   .skillDesc {
     grid-column: 1 / -1;
-    padding-left: 36px;
+    padding-left: 44px;
     margin-top: 4px;
+    font-size: 13.5px;
+  }
+}
+
+/* =============================================
+   Reduced Motion
+   ScrollReveal は GSAP で inline に opacity:0 / transform を置くため、
+   !important で打ち消して「動かないが必ず見える」状態にする。
+   （FV の入場は SubPageFVAnim＝JS 駆動のため、opacity は必ず 1 に到達する）
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .fvGrain {
+    animation: none;
+  }
+
+  .beliefCard,
+  .snsLink,
+  .moreLink {
+    transition: none;
   }
 }

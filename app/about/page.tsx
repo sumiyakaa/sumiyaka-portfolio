@@ -1,60 +1,142 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
 import DynamicInkFluid from "@/components/webgl/DynamicInkFluid";
-import BeliefFigures from "@/components/about/BeliefFigures";
+import CtaSection from "@/components/home/CtaSection";
 import styles from "./page.module.css";
 
+/**
+ * /about — AIスペシャリスト 墨家 / SUMIYAKA の人物ページ（P6・2026-08-27）
+ * 文言の正本＝`P6_原稿_service_about.md` B節（B-0〜B-10）。一言一句変えない（改行のみ自由）。
+ * 構成：FV（DynamicInkFluid 維持）→ PROFILE → STANCE → TIMELINE → BELIEF →
+ *       SCOPE OF WORK → WHAT I DON'T → SKILL SET → CTA（トップ CtaSection をそのまま再利用）
+ * モーションは ScrollReveal（＋既存 SubPageFVAnim）のみ。旧 BeliefFigures は不使用。
+ */
+
+// /api/og は日本語フォント搭載済み（Geist + Noto Sans JP）。sub は日本語のまま渡す
+const OG_SUB = "業務効率化の設計と実装 — 墨家 / SUMIYAKA";
+
 export const metadata: Metadata = {
-  title: "ABOUT — AKASHIKI | Web Designer SUMIYAKA",
+  title: "ABOUT — AKASHIKI | 墨家 / SUMIYAKA",
   description:
-    "SUMIYAKA（墨家）— 7年間の医療IT運営経験を経て、Webデザイン・フロントエンド開発に転身。企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。",
+    "墨家 / SUMIYAKA — 大手美容外科クリニックで社内・院内SEを7年。止まれば診療が止まるシステムを守ってきた現場の当事者が、業務を仕組みに変える。経歴・考え方・担当範囲・できないこと。",
   openGraph: {
-    images: [{ url: "/api/og?title=ABOUT&sub=Web+Designer+SUMIYAKA", width: 1200, height: 630 }],
+    images: [
+      {
+        url: `/api/og?title=ABOUT&sub=${encodeURIComponent(OG_SUB)}`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
+/* ---- B-4 年表 ---- */
+const TIMELINE = [
+  {
+    when: "9歳",
+    text: "初めて触れたのは、スマホでもゲームでもなく、パソコンでした。インターネットやプログラミングはどう動いているのか——関心の始まり。",
+  },
+  {
+    when: "15歳",
+    text: "ブログブームの中で、WordPressとHTML/CSS/JavaScriptを独学。オリジナルテーマを自作し、サーバー契約からサイト公開まで自力でやり切って以来、「見るだけ」ではなく「作る側」に。手を動かして、約15年になります。",
+  },
+  {
+    when: "専攻",
+    text: "高校（情報技術科）から理系大学まで、情報技術を専攻。我流ではなく、体系立てて学んだ土台。22歳で大学卒業。",
+  },
+  {
+    when: "22〜29歳",
+    text: "大手美容外科クリニックで社内・院内SEを7年。止まれば診療が止まるシステムの導入・運用・障害対応。",
+  },
+  {
+    when: "2022年12月",
+    text: "ChatGPT公開初日に登録。会社員として、仕事の仕組みが変わり始めるのを現場で体験。",
+  },
+  {
+    when: "29歳〜",
+    text: "独立。業務効率化の設計と実装、Web制作、AI導入の設計・教育を、一人で。",
+  },
+];
+
+/* ---- B-5 信条 ---- */
 const BELIEFS = [
   {
     num: "01",
-    heading: "再現ではなく、解釈する",
-    text: "デザインデータの意図を正確に汲み取り、画面上で最も効果的に機能する形に落とし込む。ピクセル単位の再現性と、その先にある「なぜこの配置なのか」への理解を両立させる。",
+    heading: "主張は、証拠で裏取りする",
+    text: "「効果があります」とは言いません。削減できる時間を一緒に試算し、数字で示せることだけを約束します。盛らない。裏取りする。誤りは、自分で訂正する。",
   },
   {
     num: "02",
     heading: "納品して終わりにしない",
-    text: "表示速度、更新のしやすさ、アクセシビリティ。公開後に何が起きるかまで考えて作る。丁寧なヒアリングと現実的なスケジュール提案で、納期を守り抜く。",
+    text: "仕組みを渡した日が、始まりです。社員の方が自分で回せるようになるまで教え、手順書を残し、定着してから手を離します。",
   },
   {
     num: "03",
     heading: "仕組みで速く、手で仕上げる",
-    text: "効率的な制作基盤を持つことと、一つひとつの成果物に手をかけることは両立する。構造から考え、設計で差別化し、最後のピクセルまで人が確認する。",
+    text: "まず動くものを作り、実際のファイルで確かめながらブラッシュアップする。構造から考え、設計で差をつけ、最後は人の目で一つひとつ確認します。",
   },
 ];
 
+/* ---- B-7 引き受けないこと ---- */
+const DONTS = [
+  { name: "手書き書類のスキャン画像の読み取り", desc: "読み取り精度を保証できないため。" },
+  { name: "人の判断そのものの置き換え", desc: "例外対応や承認は、人に残すべき仕事です。" },
+  { name: "全業務の一括自動化", desc: "効果の大きい作業から、一つずつ確実に。" },
+];
+
+/* ---- B-8 スキル ---- */
 const SKILLS = [
-  { num: "01", name: "HTML / CSS", desc: "セマンティック構造、レスポンシブ、CSS Grid/Flexbox、アニメーション" },
-  { num: "02", name: "JAVASCRIPT", desc: "GSAP / ScrollTrigger、DOM操作、検索・絞り込み、スライダー" },
-  { num: "03", name: "REACT / NEXT.JS", desc: "App Router、Server Components、SSG/ISR、コンポーネント設計" },
-  { num: "04", name: "TYPESCRIPT", desc: "型安全な開発、インターフェース設計、React連携" },
-  { num: "05", name: "WORDPRESS", desc: "テーマカスタマイズ、静的サイトのWP化、Swell構築" },
-  { num: "06", name: "FIGMA / XD", desc: "デザインデータからの忠実なコーディング、デザイン制作" },
-  { num: "07", name: "SEO / AIO", desc: "構造化データ、セマンティックHTML、AI検索最適化設計" },
+  {
+    num: "01",
+    name: "業務設計・ヒアリング",
+    desc: "実際の業務の流れとファイルから、転記が生まれる「あいだ」を見つけ、自動化の順番を決める",
+  },
+  {
+    num: "02",
+    name: "業務ツール開発",
+    desc: "Excel・CSV・PDFの統合・突合・帳票生成・データ整備。ブラウザの中だけで完結する設計",
+  },
+  {
+    num: "03",
+    name: "AI導入の設計・教育",
+    desc: "AIに任せる作業と人に残す判断の切り分け、手順書化、社内で回せるようになるまでの伴走",
+  },
+  {
+    num: "04",
+    name: "Web制作",
+    desc: "HTML/CSS/JavaScript、React/Next.js、WordPress、STUDIO、Figma。企画から公開まで",
+  },
+  {
+    num: "05",
+    name: "AIO・構造化データ",
+    desc: "AI検索・AIアシスタントに正確に読まれるための、セマンティックHTMLと構造化データ",
+  },
+  {
+    num: "06",
+    name: "システム運用・セキュリティ",
+    desc: "院内システムの導入・運用・障害対応を7年。止めない運用と、情報を守る設計",
+  },
 ];
 
 export default function AboutPage() {
   return (
-    <main>
-      {/* ========== FV ========== */}
-      <SubPageFVAnim className={styles.fv}>
+    <main className={styles.page}>
+      {/* ========== B-1 FV（DynamicInkFluid・読み込み方とフォールバックは現行維持） ========== */}
+      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.08em">
         <DynamicInkFluid />
         <div className={styles.fvBg}>
           <div className={styles.fvGrain} aria-hidden="true" />
         </div>
         <div className={styles.fvContent}>
-          <h1 data-fv-title className={styles.fvTitle}>ABOUT</h1>
-          <p data-fv-sub className={styles.fvSub}>Web Designer / Front-end Developer</p>
+          {/* 英字は小さな装飾（入場は SubPageFVAnim のエッジ群と同じ後追いフェード） */}
+          <span data-fv-edge className={styles.fvLabel} aria-hidden="true">ABOUT</span>
+          <h1 data-fv-title className={styles.fvTitle}>
+            机上ではなく、<br className={styles.brSp} />現場から。
+          </h1>
+          <p data-fv-sub className={styles.fvSub}>業務効率化の設計と実装 — 墨家 / SUMIYAKA</p>
           <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
         </div>
         <div className={styles.fvEdgeBl}>
@@ -65,125 +147,215 @@ export default function AboutPage() {
         </div>
       </SubPageFVAnim>
 
-      {/* ========== Profile — 写真 + 経歴 2カラム ========== */}
-      <section className={styles.profile}>
-        <div className={styles.profileInner}>
-          <ScrollReveal className={styles.profilePhoto}>
-            <div className={styles.photoWrap}>
-              <Image
-                src="/about/profile.webp"
-                alt="SUMIYAKA"
-                width={800}
-                height={766}
-                className={styles.photoImg}
-                priority
-              />
-            </div>
-            <p className={styles.photoCaption}>SUMIYAKA — 墨家</p>
+      {/* ========== B-2 PROFILE — 写真（トップ Person の額）＋本文の2カラム ========== */}
+      <section className={styles.sec} aria-labelledby="about-profile-title">
+        <div className={`${styles.inner} ${styles.innerFirst}`}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>PROFILE</span>
           </ScrollReveal>
 
-          <div className={styles.profileText}>
-            <ScrollReveal>
-              <p className={styles.profileLead}>
-                仕組みで<br />解決する。
-              </p>
-              <p className={styles.profileLeadSub}>という思考回路。</p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.1}>
-              <p className={styles.profileBody}>
-                美容外科クリニックで院内サーバーの構築・管理、予約導線の設計、業務マニュアルの体系化、症例写真データの管理基盤構築を担当。医療情報と個人情報を扱う現場で求められたのは、一切の曖昧さを排した正確性と、絶対に止めない安定性でした。
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.15}>
-              <p className={styles.profileBody}>
-                その回路はそのまま、Web制作に引き継がれています。LP制作、WordPress構築、既存サイトの改善。表層から構造まで、一貫して手がけます。
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.2}>
-              <div className={styles.profileSns}>
-                <a href="https://github.com/sumiyakastudio" target="_blank" rel="noopener noreferrer" className={styles.snsLink}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-                  sumiyakastudio
-                </a>
+          <div className={styles.profileGrid}>
+            <ScrollReveal as="figure" className={`${styles.reveal} ${styles.portrait}`} delay={0.1}>
+              {/* 額＝オフセット罫線＋縁の沈み込み（Person.module.css と同じ作法・CSS filter 不使用） */}
+              <div className={styles.portraitFrame}>
+                <Image
+                  src="/about/profile.webp"
+                  alt="SUMIYAKA"
+                  width={800}
+                  height={766}
+                  sizes="(max-width: 767px) 92vw, (max-width: 1279px) 34vw, 420px"
+                  className={styles.portraitImg}
+                  priority
+                />
               </div>
+              <figcaption className={styles.portraitCaption}>SUMIYAKA — 墨家</figcaption>
             </ScrollReveal>
+
+            <div className={styles.profileText}>
+              <ScrollReveal className={styles.reveal}>
+                <h2 id="about-profile-title" className={styles.title}>
+                  事故が許されない現場で、システムを7年守ってきました。
+                </h2>
+                <p className={styles.profileLead}>
+                  机上のコンサルティングではなく、「現場の当事者」としての経験がもとになっています。
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal className={styles.reveal} delay={0.1}>
+                <p className={styles.body}>
+                  大手美容外科クリニックで、社内・院内システムの2系統を7年間担当しました。予約・電子カルテ・会計——止まれば診療が止まるシステムの導入・運用・障害対応。人体の情報という最上級のプライバシーを扱う現場で求められたのは、一切の曖昧さを排した正確性と、絶対に止めない安定性でした。
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal className={styles.reveal} delay={0.15}>
+                <p className={styles.body}>
+                  そこで見てきたのは、システムが「無い」現場ではなく、システム同士が「繋がっていない」現場です。だから人が転記し、照合し、月末に半日を失う。技術が好きだから、ではなく、業務が止まる現場を見てきたから——それが、いま私がこの仕事をしている理由です。
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal className={styles.reveal} delay={0.2}>
+                <p className={styles.body}>
+                  会社員として現場の業務を回していた2022年12月、ChatGPTの公開初日に登録しました。仕事の仕組みが根本から変わっていくのを当事者として目の当たりにし、その後29歳で独立。以来、業務効率化の設計と実装を仕事にしています。
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal className={styles.reveal} delay={0.25}>
+                <div className={styles.profileSns}>
+                  <a
+                    href="https://github.com/sumiyakastudio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.snsLink}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                    </svg>
+                    sumiyakastudio
+                  </a>
+                </div>
+              </ScrollReveal>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ========== Scope — 担当範囲（実績の担当範囲と「できることの追加」を節で分ける） ========== */}
-      <section className={styles.scope}>
-        <div className={styles.scopeInner}>
-          <ScrollReveal>
-            <span className={styles.sectionLabel}>SCOPE OF WORK</span>
+      {/* ========== B-3 STANCE — このページ最大級の見出し ========== */}
+      <section className={styles.sec} aria-labelledby="about-stance-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>STANCE</span>
+            <h2 id="about-stance-title" className={styles.stanceTitle}>AIを使う側に、立つ。</h2>
           </ScrollReveal>
-
-          <ScrollReveal>
-            <div className={styles.scopeMain}>
-              <p className={styles.scopeLead}>
-                企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。分業も外注もありません。
-              </p>
-              <p className={styles.scopeNote}>
-                Works に掲載しているものは、すべてこの体制で手がけたものです。作品によって担当した範囲が違う、ということはありません。
-              </p>
-            </div>
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.stanceBody}>
+              AIにできることはAIに、という流れは、これから加速していきます。その中で仕事は二つに分かれる。AIにできないことをする側か、AIを使う側になり、AIと融合して仕事をするか。私は、後者でありたい。
+            </p>
           </ScrollReveal>
-
-          <div className={styles.scopeSub}>
-            <ScrollReveal className={styles.scopeCell} delay={0.1}>
-              <div className={styles.scopeItem}>
-                <h2 className={styles.scopeItemHeading}>対応できる媒体</h2>
-                <p className={styles.scopeItemText}>
-                  静的サイト、WordPress、STUDIO、Figma。制作物はすべて静的データで持っているため、いずれの媒体へも丸ごと移せます。
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal className={styles.scopeCell} delay={0.15}>
-              <div className={styles.scopeItem}>
-                <h2 className={styles.scopeItemHeading}>支給データからの実装</h2>
-                <p className={styles.scopeItemText}>
-                  デザインが既にある場合は、Figma／XD からの実装だけを承ることもできます。これは対応できる範囲の話で、上に書いた実績の担当範囲とは別のものです。
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <p className={styles.stanceBody}>
+              単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。ツールを渡すだけでは業務は変わらない。だから、AIを使いこなせる人材の育成までを仕事の軸に置いています。
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== Belief — 信条カード ========== */}
-      <section className={styles.belief}>
-        <div className={styles.beliefInner}>
-          <ScrollReveal>
-            <span className={styles.sectionLabel}>BELIEF</span>
+      {/* ========== B-4 TIMELINE — 縦の年表 ========== */}
+      <section className={styles.sec} aria-label="年表">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>TIMELINE</span>
           </ScrollReveal>
-          <div className={styles.beliefGrid} data-belief-grid>
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <ol className={styles.tl}>
+              {TIMELINE.map((row) => (
+                <li key={row.when} className={styles.tlItem}>
+                  <span className={styles.tlWhen}>{row.when}</span>
+                  <span className={styles.tlMark} aria-hidden="true" />
+                  <p className={styles.tlText}>{row.text}</p>
+                </li>
+              ))}
+            </ol>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========== B-5 BELIEF — 3枚グリッド（現行の骨格を再利用） ========== */}
+      <section className={styles.sec} aria-label="信条">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>BELIEF</span>
+          </ScrollReveal>
+          <div className={styles.beliefGrid}>
             {BELIEFS.map((item, i) => (
-              <ScrollReveal key={item.num} delay={i * 0.1}>
-                <article className={styles.beliefCard} data-belief-card>
+              <ScrollReveal key={item.num} className={`${styles.reveal} ${styles.beliefCell}`} delay={i * 0.1}>
+                <article className={styles.beliefCard}>
                   <span className={styles.beliefNum}>{item.num}</span>
                   <h2 className={styles.beliefHeading}>{item.heading}</h2>
                   <p className={styles.beliefText}>{item.text}</p>
                 </article>
               </ScrollReveal>
             ))}
-            <BeliefFigures />
           </div>
         </div>
       </section>
 
-      {/* ========== Skill Set ========== */}
-      <section className={styles.skill}>
-        <div className={styles.skillInner}>
-          <ScrollReveal>
-            <span className={styles.sectionLabel}>SKILL SET</span>
+      {/* ========== B-6 SCOPE OF WORK — 担当範囲 ========== */}
+      <section className={styles.sec} aria-labelledby="about-scope-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>SCOPE OF WORK</span>
+            <h2 id="about-scope-title" className={styles.title}>企画から公開まで、すべて私一人で。</h2>
+          </ScrollReveal>
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.body}>
+              Web制作も、業務ツールも、企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。分業も外注もありません。Works に掲載しているものは、すべてこの体制で手がけたものです。作品によって担当した範囲が違う、ということはありません。
+            </p>
+          </ScrollReveal>
+
+          <div className={styles.scopeSub}>
+            <ScrollReveal className={`${styles.reveal} ${styles.scopeCell}`} delay={0.15}>
+              <div className={styles.scopeItem}>
+                <h3 className={styles.scopeItemHeading}>対応できる媒体</h3>
+                <p className={styles.scopeItemText}>
+                  静的サイト、WordPress、STUDIO、Figma。制作物はすべて静的データで持っているため、いずれの媒体へも丸ごと移せます。
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal className={`${styles.reveal} ${styles.scopeCell}`} delay={0.2}>
+              <div className={styles.scopeItem}>
+                <h3 className={styles.scopeItemHeading}>支給データからの実装</h3>
+                <p className={styles.scopeItemText}>
+                  デザインが既にある場合は、Figma／XD からの実装だけを承ることもできます。これは対応できる範囲の話で、上に書いた実績の担当範囲とは別のものです。
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <ScrollReveal className={styles.reveal} delay={0.25}>
+            <Link href="/works" className={styles.moreLink}>
+              Web制作の実績を見る <span aria-hidden="true">→</span>
+            </Link>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========== B-7 WHAT I DON'T — 引き受けないこと（題字に静的な墨の一線） ========== */}
+      <section className={styles.sec} aria-labelledby="about-dont-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>WHAT I DON&apos;T</span>
+            <h2 id="about-dont-title" className={styles.title}>引き受けないこと。</h2>
+          </ScrollReveal>
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <ul className={styles.dontList}>
+              {DONTS.map((item) => (
+                <li key={item.name} className={styles.dontItem}>
+                  <span className={styles.dontName}>
+                    <span className={styles.dontStrike}>{item.name}</span>
+                  </span>
+                  <span className={styles.dontDesc}>{item.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </ScrollReveal>
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <div className={styles.principles}>
+              <p className={styles.principle}>作っていないものは、載せません。</p>
+              <p className={styles.principle}>お客様の仕組みの中身は、公開しません。</p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========== B-8 SKILL SET — 行グリッド（現行の骨格を再利用） ========== */}
+      <section className={styles.sec} aria-label="スキル">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>SKILL SET</span>
           </ScrollReveal>
           <div className={styles.skillList}>
             {SKILLS.map((item, i) => (
-              <ScrollReveal key={item.num} delay={i * 0.06}>
+              <ScrollReveal key={item.num} className={styles.reveal} delay={i * 0.06}>
                 <div className={styles.skillRow}>
                   <span className={styles.skillNum}>{item.num}</span>
                   <span className={styles.skillName}>{item.name}</span>
@@ -194,6 +366,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* ========== B-9 CTA — トップの CtaSection をそのまま再利用（改変なし） ========== */}
+      <CtaSection />
     </main>
   );
 }
