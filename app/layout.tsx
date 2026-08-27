@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description:
-    "バラバラな事務作業を、ひとりでに回る仕組みに変えます。業務の自動化・ツール開発、Web制作、AI導入の設計・教育。設計から実装・公開まで、すべて一人で対応します。灯敷（AKASHIKI）／墨家。",
+    "AIスペシャリスト 墨家 / SUMIYAKA。御社の仕事のやり方をAIに教え込み、社員の方が自分で回せる状態まで伴走します。業務の自動化・ツール開発、Web制作も、設計から公開まで一人で。灯敷（AKASHIKI）。",
   // og:image 等の相対URLの解決基準。実際に到達できるオリジンでないとOGカードが取得されない。
   // canonical / sitemap は akashiki.com のまま（ブランドの本命ドメイン）。
   metadataBase: new URL(SITE_ORIGIN),
@@ -74,13 +74,13 @@ export const metadata: Metadata = {
     siteName: "墨家 / SUMIYAKA — 灯敷（AKASHIKI）",
     title: "墨家 / SUMIYAKA — バラバラな事務作業を、ひとりでに回る仕組みに変えます。",
     description:
-      "バラバラな事務作業を、ひとりでに回る仕組みに変えます。業務の自動化・ツール開発、Web制作、AI導入の設計・教育。設計から実装・公開まで、すべて一人で対応します。",
+      "AIスペシャリスト 墨家 / SUMIYAKA。御社の仕事のやり方をAIに教え込み、社員の方が自分で回せる状態まで伴走します。業務の自動化・ツール開発、Web制作も、設計から公開まで一人で。",
     // canonical と同様、"./" でページ自身のURLに解決させる。
     url: "./",
     images: [
       {
-        // /api/og は日本語フォント搭載済み（Geist + Noto Sans JP）。トップは英字ブランド表記を意図的に維持
-        url: "/api/og?title=AKASHIKI&sub=Web+Design+%26+Development+Portfolio",
+        // /api/og は日本語フォント搭載済み（Geist + Noto Sans JP）。題字は英字ブランド表記・sub は P9 の宣言（旧 Web Design & Development Portfolio は撤去）
+        url: `/api/og?title=AKASHIKI&sub=${encodeURIComponent("新人を育てるように、御社のAIを育てます。")}`,
         width: 1200,
         height: 630,
         alt: "墨家 / SUMIYAKA — 灯敷（AKASHIKI）",
@@ -91,6 +91,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@sumiyakastudio",
     creator: "@sumiyakastudio",
+    description:
+      "AIスペシャリスト 墨家 / SUMIYAKA。御社の仕事のやり方をAIに教え込み、社員の方が自分で回せる状態まで伴走します。業務の自動化・ツール開発、Web制作も、設計から公開まで一人で。",
   },
   alternates: {
     // "./" は metadataBase を基準に「そのページ自身のURL」へ解決される。
@@ -122,22 +124,48 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "灯敷（AKASHIKI）",
-              alternateName: "墨家 / SUMIYAKA",
-              url: "https://akashiki.com",
-              description:
-                "業務効率化の設計と実装。業務の自動化・ツール開発、Web制作、AI導入の設計・教育を、設計から実装・公開まで一人で一貫して提供。",
-              sameAs: ["https://github.com/sumiyakastudio"],
-              contactPoint: {
-                "@type": "ContactPoint",
-                contactType: "customer service",
-                url: "https://akashiki.com/contact",
-                availableLanguage: ["Japanese"],
+            // P9（2026-08-27）＝Organization の description 置換＋Person を同じ <script> 配列に追加
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "灯敷（AKASHIKI）",
+                alternateName: "墨家 / SUMIYAKA",
+                url: "https://akashiki.com",
+                description:
+                  "AIスペシャリスト。中小企業の仕事のやり方をAIに教え込み、社員が自分で回せる状態まで伴走する。業務の自動化・ツール開発、Web制作、AI導入の設計・教育を、設計から実装・公開まで一人で一貫して提供。",
+                sameAs: ["https://github.com/sumiyakastudio"],
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  contactType: "customer service",
+                  url: "https://akashiki.com/contact",
+                  availableLanguage: ["Japanese"],
+                },
               },
-            }),
+              {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                name: "墨家 / SUMIYAKA",
+                alternateName: "SUMIYAKA",
+                url: "https://akashiki.com/about",
+                jobTitle: "AIスペシャリスト",
+                description:
+                  "中小企業の仕事のやり方をAIに教え込み、社員が自分で回せる状態まで伴走する。大手美容外科クリニックで社内・院内SEを7年。設計から実装・公開まで一人で。",
+                knowsAbout: [
+                  "AI導入の設計・教育",
+                  "業務の自動化・ツール開発",
+                  "Excel・CSV・PDFの統合と帳票生成",
+                  "Web制作",
+                  "システム運用・セキュリティ",
+                ],
+                worksFor: {
+                  "@type": "Organization",
+                  name: "灯敷（AKASHIKI）",
+                  url: "https://akashiki.com",
+                },
+                sameAs: ["https://github.com/sumiyakastudio"],
+              },
+            ]),
           }}
         />
         <InkTransitionProvider>

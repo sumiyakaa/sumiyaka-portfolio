@@ -61,11 +61,11 @@ export default function Hero({ openingDone }: HeroProps) {
     setRunnerDone(true);
   }, []);
 
-  // FV右の宣言ボタン →「いくら浮くか」#value へページ内スムーススクロール
+  // FV右の宣言ボタン →「働き方」#way へページ内スムーススクロール（P9・2026-08-27＝旧 #value）
   // （既存実装の踏襲＝Header と同じ Lenis scrollTo。Lenis 不在時はネイティブへ委譲）
   const handleValueClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
-      const target = document.getElementById("value");
+      const target = document.getElementById("way");
       if (!target) return; // 飛び先が無い場合はネイティブ挙動に任せる
       e.preventDefault();
       if (lenis) {
@@ -354,7 +354,7 @@ export default function Hero({ openingDone }: HeroProps) {
                 <span className={styles.declNo}>ありません。</span>
               </p>
               <p className={styles.declMain}>AIスペシャリストです。</p>
-              <a href="#value" className={styles.declBtn} onClick={handleValueClick}>
+              <a href="#way" className={styles.declBtn} onClick={handleValueClick}>
                 <span className={styles.declBtnLabel}>その意味を、見る</span>
                 <svg className={styles.declBtnArrow} viewBox="0 0 12 15" aria-hidden="true">
                   <path

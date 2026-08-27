@@ -38,8 +38,12 @@ export default function Person() {
             <ScrollReveal as="p" className={styles.bio} delay={0.2}>
               仕事はこれから、AIにできないことをする側と、AIを使う側に分かれていく。私は、使う側でありたい。AIスペシャリストとして、ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを仕事の軸にしている。
             </ScrollReveal>
+            {/* P9（2026-08-27）＝3段落目「人と人のつながり」（正本 T-6・安心材料） */}
+            <ScrollReveal as="p" className={styles.bio} delay={0.25}>
+              それでも、仕事は人と人との間に生まれる。効率だけでは推し量れないもの——顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。AIで速くなった分は、そこに使いたい。
+            </ScrollReveal>
             {/* 導線（P6-4）＝経歴の物語・年表・信条・引き受けないことは /about に置く */}
-            <ScrollReveal as="p" className={styles.more} delay={0.25}>
+            <ScrollReveal as="p" className={styles.more} delay={0.3}>
               <Link href="/about" className={styles.moreLink}>
                 経歴と考え方を読む → /about
               </Link>

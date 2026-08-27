@@ -2,13 +2,14 @@
    いくら浮くか — フルブリード白転調＋掘り下げ構成（REVIEW2・2026-08-18）
    「紙が挟まる」構造（左右の地色・差し込み overlap）は廃止し、
    画面両端いっぱいの真っ白なセクションへ。上下の黒との境界は直線でくっきり。
-   構成：大見出し（宣言）→ 社長の声2つ → 答え → 中見出し → 逆算3行 → 注記。
+   構成（P9・2026-08-27）：中見出し（h2）→ 逆算3行 → 注記。
+   大見出し（宣言）・社長の声2つ・答え＋写真は「働き方」(components/home/Way) へ移設済み。
    色はトークン（theme-top.css）のみ参照。
    PriceRunner のオーバーレイ都合で position:relative / overflow:hidden は維持
    （画面左端からキャラが走り込む＝動き・発火・[data-price-amount] 契約は不変）
    ============================================= */
 
-/* FV「その意味を、見る」の飛び先（#value）。固定ヘッダー60pxぶん逃がす */
+/* #value（旧 FV ボタンの飛び先。P9 で FV は #way へ。id は不変）。固定ヘッダー60pxぶん逃がす */
 .valueAnchor {
   scroll-margin-top: 60px;
 }
@@ -37,117 +38,9 @@
   padding-block: clamp(5rem, 9vw, 9rem);
 }
 
-/* ---- 1. 大見出し（ページ内最大級の宣言・Shippori Mincho・墨色） ---- */
-.valueLead {
-  margin: 0;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 600;
-  font-size: clamp(1.9rem, 1.05rem + 3.4vw, 3.3rem);
-  line-height: 1.6;
-  letter-spacing: 0.05em;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-}
-
-/* ---- 2. 社長の声2つ（引用・左罫＋字下げ。PC は横並び2声） ---- */
-.valueVoices {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-  display: grid;
-  gap: 1.5rem 3rem;
-}
-
-@media (min-width: 820px) {
-  .valueVoices {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.valueVoice {
-  margin: 0;
-  border-left: 2px solid var(--rule-paper);
-  padding-left: 1.25rem;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 500;
-  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
-  line-height: 2.1;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 30em;
-}
-
-/* ---- 3. 答え ---- */
-.valueAnswer {
-  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
-  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-  line-height: 2.3;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 40em;
-}
-
-/* ---- 3b. 答え＋現場写真「対の額」（2026-08-18・あおきさん選定＝案1）
-   「どんな人か」(黒地)のオフセット額を白紙に反転＝罫線は --rule-paper。
-   写真は墨デュオトーン焼き込み済み(1264×948 原比率・トリミングなし)＝CSSフィルタ不使用。
-   PC=答えと2カラム(中央揃え)・SP=答えの下に1カラム。
-   右へ張り出す枠(-14px)は priceInner の横paddingの内側に収まる ---- */
-.valueProof {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-  display: grid;
-  gap: 2.5rem 4.5rem;
-  align-items: center;
-}
-
-@media (min-width: 861px) {
-  .valueProof {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  }
-}
-
-.valueProof .valueAnswer {
-  margin-top: 0;
-}
-
-.proofFig {
-  margin: 0;
-  width: min(100%, 420px);
-}
-
-@media (min-width: 861px) {
-  .proofFig {
-    justify-self: end;
-  }
-}
-
-.proofFrame {
-  position: relative;
-}
-
-/* オフセットの罫線フレーム（右下へずらした枠・Personと同寸） */
-.proofFrame::before {
-  content: "";
-  position: absolute;
-  inset: 14px -14px -14px 14px;
-  border: 1px solid var(--rule-paper);
-  pointer-events: none;
-}
-
-.proofImg {
-  width: 100%;
-  height: auto; /* 原比率維持＝object-fit による切り抜きをしない */
-  display: block;
-}
-
-.proofCaption {
-  margin-top: 1.2rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  color: var(--sumi-dim);
-  text-align: right;
-}
-
-/* ---- 4. 中見出し（既存・[data-price-header]）。短い墨の罫で転を示す ---- */
+/* ---- 1. 中見出し（既存・[data-price-header]・P9 で h2 に昇格＝先頭なので margin-top 0）。短い墨の罫で転を示す ---- */
 .priceHead {
-  margin: clamp(4.5rem, 9vw, 7rem) 0 0;
+  margin: 0;
 }
 
 .priceHead::before {
@@ -171,7 +64,7 @@
   max-width: 24em;
 }
 
-/* ---- 5. 浮く額 3行（年額側が [data-price-amount]＝PriceRunner の運搬対象） ---- */
+/* ---- 2. 浮く額 3行（年額側が [data-price-amount]＝PriceRunner の運搬対象） ---- */
 .priceRows {
   margin-top: 4rem;
   max-width: 52rem;
@@ -217,7 +110,7 @@
   white-space: nowrap;
 }
 
-/* ---- 6. 注記 ---- */
+/* ---- 3. 注記 ---- */
 .priceNote {
   margin-top: 1.5rem;
   font-size: 0.9rem;

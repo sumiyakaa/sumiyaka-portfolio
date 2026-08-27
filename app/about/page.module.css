@@ -296,7 +296,10 @@
 .snsLink:hover,
 .snsLink:focus-visible {
   color: var(--color-foreground);
-  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2） */
+}
+
+.snsLink:focus-visible {
+  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2）— キーボード時のみ */
   outline-offset: 3px;
 }
 
@@ -535,7 +538,10 @@
 .moreLink:focus-visible {
   border-color: var(--color-accent);
   color: var(--color-accent);
-  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2） */
+}
+
+.moreLink:focus-visible {
+  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2）— キーボード時のみ */
   outline-offset: 3px;
 }
 

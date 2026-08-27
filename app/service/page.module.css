@@ -345,11 +345,23 @@
   margin: 10px 0 0;
 }
 
-/* 第2の柱：AI導入の設計・教育 */
+/* 柱（第1＝AI導入の設計・教育／第2＝業務の自動化・ツール開発） */
 .pillar {
   margin-top: 64px;
   padding-top: 48px;
   border-top: 1px solid var(--color-border);
+}
+
+/* 第1の柱は h2＋lead の直下に続くので罫を持たない */
+.pillarFirst {
+  margin-top: 36px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* 連続する段落の間隔（第1の柱の3段落） */
+.pillarBody + .pillarBody {
+  margin-top: 12px;
 }
 
 .pillarTitle {
@@ -389,6 +401,100 @@
   font-size: 14px;
   letter-spacing: 0.04em;
   color: var(--color-foreground);
+}
+
+/* ========================================
+   A-2 3段階ブロック — 左に丸数字（washi 600・大きめ）／右に題字＋補足
+   ①にだけ小タグ（1px 罫・角丸2px・淡色）。行間は 1px 罫。
+   ======================================== */
+.stage {
+  margin-top: 56px;
+}
+
+.stageTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0 0 14px;
+}
+
+.stageList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.stageRow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  column-gap: 20px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 丸数字（.statNum と同じ washi フォールバック） */
+.stageMark {
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--color-foreground);
+}
+
+.stageBody {
+  min-width: 0;
+}
+
+.stageHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.stageName {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+}
+
+.stageTag {
+  display: inline-block;
+  border: 1px solid var(--color-border-light);
+  border-radius: 2px;
+  padding: 2px 8px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.stageSub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 4px 0 0;
+}
+
+.stageClose {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground);
+  max-width: 42em;
+  margin: 28px 0 0;
 }
 
 /* ========================================
@@ -456,6 +562,59 @@
 }
 
 /* ========================================
+   A-3b AIへの不安（TRUST）— A-3 と同じ罫の行・番号付き（一線は添えない）
+   ======================================== */
+.trustList {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.trustItem {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 18em) minmax(0, 1fr);
+  column-gap: 32px;
+  align-items: baseline;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.trustNum {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+.trustName {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0;
+}
+
+.trustDesc {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 0;
+}
+
+.trustClose {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--color-foreground);
+  max-width: 42em;
+  margin: 36px 0 0;
+}
+
+/* ========================================
    A-4 データの扱い — 文＋大きな数字1枚
    ======================================== */
 .dataGrid {
@@ -467,6 +626,11 @@
 
 .dataText .lead {
   margin-bottom: 16px;
+}
+
+/* 本文段落の連続（A-4 追記段落） */
+.dataText .text + .text {
+  margin-top: 16px;
 }
 
 /* 数字（トップ「言い当て」.statNum に近い見せ方） */
@@ -752,6 +916,15 @@
     column-gap: 24px;
   }
 
+  .trustItem {
+    grid-template-columns: 48px minmax(0, 13em) minmax(0, 1fr);
+    column-gap: 24px;
+  }
+
+  .stageRow {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
   .dataGrid {
     grid-template-columns: minmax(0, 1fr);
     gap: 40px;
@@ -878,6 +1051,43 @@
     font-size: 13px;
   }
 
+  .pillarFirst {
+    margin-top: 28px;
+  }
+
+  /* 3段階ブロック */
+  .stage {
+    margin-top: 44px;
+  }
+
+  .stageTitle {
+    font-size: 17px;
+  }
+
+  .stageRow {
+    grid-template-columns: 44px minmax(0, 1fr);
+    column-gap: 12px;
+    padding: 18px 0;
+  }
+
+  .stageMark {
+    font-size: 28px;
+  }
+
+  .stageName {
+    font-size: 16px;
+  }
+
+  .stageSub {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .stageClose {
+    font-size: 14px;
+    margin-top: 24px;
+  }
+
   /* できないこと：1列 */
   .dontItem {
     grid-template-columns: minmax(0, 1fr);
@@ -895,6 +1105,37 @@
   }
 
   .dontClose {
+    font-size: 14px;
+    margin-top: 28px;
+  }
+
+  /* AIへの不安：番号＋題字を1行目、本文を2行目に */
+  .trustItem {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 14px;
+    row-gap: 8px;
+    padding: 22px 0;
+  }
+
+  .trustNum {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .trustName {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 16px;
+  }
+
+  .trustDesc {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .trustClose {
     font-size: 14px;
     margin-top: 28px;
   }

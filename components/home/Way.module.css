@@ -1,0 +1,404 @@
+/* =============================================
+   働き方（THE WAY・#way）— フルブリード白（P9・2026-08-27）
+   FV の黒から白へ落ちる最初の紙。作法は「いくら浮くか」(app/page.module.css .priceSection) と同じ：
+   画面両端いっぱいの真っ白・上下の黒との境界は直線。
+   .valueLead / .valueVoices / .valueVoice / .valueProof / .valueAnswer /
+   .proofFig / .proofFrame / .proofImg / .proofCaption は app/page.module.css から
+   そのまま移設（見た目を変えない）。
+   色はトークン（theme-top.css）のみ参照。出現は ScrollReveal のみ＝独自アニメ無し。
+   filter / backdrop-filter / blend / 3D / vw フォントは不使用。
+   ============================================= */
+
+/* FV「その意味を、見る」の飛び先（#way）。固定ヘッダー60pxぶん逃がす */
+.section {
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  width: 100%;
+  margin: 0;
+  scroll-margin-top: 60px;
+  background: var(--paper-white);
+  color: var(--sumi);
+  font-family: var(--font-body-washi, sans-serif);
+  line-height: 2;
+}
+
+/* 紙の上ではフォーカスリングも墨色に */
+.section :global(*:focus-visible) {
+  outline-color: var(--sumi);
+}
+
+.inner {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 5vw, 5rem);
+  padding-block: clamp(5rem, 9vw, 9rem);
+}
+
+/* ---- 0. 英字ラベル（装飾・aria-hidden） ---- */
+.label {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-heading, sans-serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--sumi-dim);
+}
+
+/* ---- 1. 大見出し（ページ内最大級の宣言・Shippori Mincho・墨色）＝移設 ---- */
+.valueLead {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.9rem, 1.05rem + 3.4vw, 3.3rem);
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+}
+
+/* ---- 1b. リード（宣言の直下） ---- */
+.lead {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
+  line-height: 2.3;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 40em;
+}
+
+/* ---- 1c. キッカー（.valueLead より一段小さい宣言） ---- */
+.kicker {
+  margin: clamp(3rem, 6vw, 5rem) 0 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 1rem + 1.2vw, 1.9rem);
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+}
+
+/* ---- 2. 社長の声2つ（引用・左罫＋字下げ。PC は横並び2声）＝移設 ---- */
+.valueVoices {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  gap: 1.5rem 3rem;
+}
+
+@media (min-width: 820px) {
+  .valueVoices {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.valueVoice {
+  margin: 0;
+  border-left: 2px solid var(--rule-paper);
+  padding-left: 1.25rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+  line-height: 2.1;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 30em;
+}
+
+/* ---- 3. 答え＝移設 ---- */
+.valueAnswer {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
+  line-height: 2.3;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 40em;
+}
+
+/* ---- 3b. 答え＋現場写真「対の額」（2026-08-18・あおきさん選定＝案1）＝移設
+   「どんな人か」(黒地)のオフセット額を白紙に反転＝罫線は --rule-paper。
+   写真は墨デュオトーン焼き込み済み(1264×948 原比率・トリミングなし)＝CSSフィルタ不使用。
+   PC=答えと2カラム(中央揃え)・SP=答えの下に1カラム。
+   右へ張り出す枠(-14px)は inner の横paddingの内側に収まる ---- */
+.valueProof {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  gap: 2.5rem 4.5rem;
+  align-items: center;
+}
+
+@media (min-width: 861px) {
+  .valueProof {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+
+.valueProof .valueAnswer {
+  margin-top: 0;
+}
+
+.proofFig {
+  margin: 0;
+  width: min(100%, 420px);
+}
+
+@media (min-width: 861px) {
+  .proofFig {
+    justify-self: end;
+  }
+}
+
+.proofFrame {
+  position: relative;
+}
+
+/* オフセットの罫線フレーム（右下へずらした枠・Personと同寸） */
+.proofFrame::before {
+  content: "";
+  position: absolute;
+  inset: 14px -14px -14px 14px;
+  border: 1px solid var(--rule-paper);
+  pointer-events: none;
+}
+
+.proofImg {
+  width: 100%;
+  height: auto; /* 原比率維持＝object-fit による切り抜きをしない */
+  display: block;
+}
+
+.proofCaption {
+  margin-top: 1.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--sumi-dim);
+  text-align: right;
+}
+
+/* ---- 4. 中見出し（3工程／3段階の小見出し）。短い墨の罫で転を示す＝priceHead と同じ作法 ---- */
+.head {
+  margin: clamp(4.5rem, 9vw, 7rem) 0 0;
+}
+
+.head::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--sumi);
+  margin-bottom: 2rem;
+}
+
+.headTitle {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2.05rem);
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  line-height: 1.8;
+  max-width: 24em;
+}
+
+/* ---- 5. 3工程（PC 3カラム／SP 1カラム・各カードは上罫） ---- */
+.steps {
+  list-style: none;
+  margin: 3rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2.5rem 2.5rem;
+}
+
+@media (min-width: 861px) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 3rem;
+    align-items: start;
+  }
+
+  /* 3等分の等質感を崩す段差（Deguchi の枝インデントと同じ語彙・audit B-5） */
+  .step:nth-child(2) {
+    margin-top: 1.5rem;
+  }
+
+  .step:nth-child(3) {
+    margin-top: 3rem;
+  }
+}
+
+.step {
+  border-top: 1px solid var(--rule-paper);
+  padding-top: 1.5rem;
+}
+
+/* 番号＝小さな等幅（PickUpWorks .catIdx 風・紙上は --sumi-dim） */
+.stepNo {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-weight: 400;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--sumi-dim);
+}
+
+.stepTitle {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem);
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  line-height: 1.7;
+}
+
+.stepBody {
+  margin: 0.9rem 0 0;
+  font-size: 0.95rem;
+  line-height: 2;
+  color: var(--sumi);
+}
+
+/* ---- 6. 3段階（縦3行・左に丸数字・右に題字＋補足・①にタグ） ---- */
+.stages {
+  list-style: none;
+  margin: 3rem 0 0;
+  padding: 0;
+  max-width: 52rem;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem 1.5rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--rule-paper);
+}
+
+.stage:first-child {
+  border-top: 1px solid var(--rule-paper);
+}
+
+.stageNo {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem);
+  line-height: 1.4;
+  color: var(--sumi);
+  min-width: 1.6em;
+}
+
+.stageBody {
+  min-width: 0;
+}
+
+.stageTitle {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
+  letter-spacing: 0.04em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  line-height: 1.8;
+}
+
+.stageNote {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.9;
+  color: var(--sumi-dim);
+}
+
+/* ①の行にだけ添える小さなタグ */
+.stageTag {
+  display: inline-block;
+  margin-left: 0.75em;
+  padding: 0.1em 0.6em;
+  border: 1px solid var(--rule-paper);
+  border-radius: 2px;
+  font-family: var(--font-body-washi, sans-serif);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  line-height: 1.8;
+  color: var(--sumi-dim);
+  vertical-align: 0.15em;
+  white-space: nowrap;
+}
+
+/* ---- 7. 締めの段落 ---- */
+.close {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
+  line-height: 2.3;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 40em;
+}
+
+/* ---- 8. 導線（P6-4 の「1px 罫の枠ボタン」と同じ骨格＝Deguchi .branchLink／Person .moreLink の紙上版）
+   動かすのは罫の色・地の色・transform だけ（filter / box-shadow のアニメは無し）。
+   文言末尾の「→」はテキストのまま＝::after は使わない ---- */
+.more {
+  margin: 2.5rem 0 0;
+}
+
+.moreLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.55em 1.1em 0.55em 1.2em;
+  border: 1px solid var(--rule-paper);
+  border-radius: 2px;
+  font-size: 0.86rem;
+  letter-spacing: 0.1em;
+  color: var(--sumi);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ⚠ タッチ端末では :hover が張り付くので、ホバー由来の演出はこの中へ */
+@media (hover: hover) and (pointer: fine) {
+  .moreLink:hover {
+    border-color: var(--sumi);
+    background: rgba(31, 28, 28, 0.04);
+    transform: translateX(2px);
+  }
+}
+
+.moreLink:focus-visible {
+  outline: 2px solid var(--sumi);
+  outline-offset: 3px;
+}
+
+.moreLink:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moreLink {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .stage {
+    gap: 0.5rem 1rem;
+  }
+
+  .stageTag {
+    display: inline-block;
+    margin-left: 0.6em; /* 題字の最終行に並んだときも密着しない（audit B-1） */
+    margin-top: 0.5rem;
+  }
+}
+
+/* h2 の句単位折返し（語の途中で折れない） */
+.phrase {
+  display: inline-block;
+}

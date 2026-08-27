@@ -7,7 +7,8 @@ import styles from "./Deguchi.module.css";
  * できること（3つの出口） — an-a.html .sec-exits の忠実移植。
  * リード行「ひとつの軸から、三つの出口へ。」は既存 MagneticType を
  * 装飾行として流用（動きのパラメータは不変）。
- * 出口②に AIO 1行＋「実績を見る → /works」リンク。
+ * 出口③（Web制作）に AIO 1行＋「実績を見る → /works」リンク。
+ * P9（2026-08-27）＝3枝の順序と文言を正本 T-4 どおりに置換（構造・クラス・枠ボタンは既存のまま）。
  */
 export default function Deguchi() {
   return (
@@ -28,16 +29,28 @@ export default function Deguchi() {
           <ul className={styles.branchList}>
             <ScrollReveal as="li" className={styles.branch}>
               <h3 className={styles.branchTitle}>
-                <span className={styles.no}>①</span>業務の自動化・ツール開発
+                <span className={styles.no}>①</span>AI導入の設計・教育
+              </h3>
+              <p className={styles.branchCopy}>
+                御社の仕事をAIに教え、社員の方が回せる状態で残す
+              </p>
+              {/* 導線（P6-4）＝できること・できないこと・進め方・料金の考え方は /service に置く */}
+              <Link href="/service" className={styles.branchLink}>
+                サービスの詳細 → /service
+              </Link>
+            </ScrollReveal>
+            <ScrollReveal as="li" className={styles.branch} delay={0.1}>
+              <h3 className={styles.branchTitle}>
+                <span className={styles.no}>②</span>業務の自動化・ツール開発
               </h3>
               <p className={styles.branchCopy}>手作業を、そのまま仕組みに変える</p>
               <Link href="/tools" className={styles.branchLink}>
                 ツールを触る → /tools
               </Link>
             </ScrollReveal>
-            <ScrollReveal as="li" className={styles.branch} delay={0.1}>
+            <ScrollReveal as="li" className={styles.branch} delay={0.2}>
               <h3 className={styles.branchTitle}>
-                <span className={styles.no}>②</span>Web制作
+                <span className={styles.no}>③</span>Web制作
               </h3>
               <p className={styles.branchCopy}>
                 集客・問い合わせ・予約という業務を、仕組みに変える
@@ -45,16 +58,6 @@ export default function Deguchi() {
               <p className={styles.branchAio}>AIO — AI検索最適化を、全案件に標準搭載。</p>
               <Link href="/works" className={styles.branchLink}>
                 実績を見る → /works
-              </Link>
-            </ScrollReveal>
-            <ScrollReveal as="li" className={styles.branch} delay={0.2}>
-              <h3 className={styles.branchTitle}>
-                <span className={styles.no}>③</span>AI導入の設計・教育
-              </h3>
-              <p className={styles.branchCopy}>仕組みを回せる状態を、組織に残す</p>
-              {/* 導線（P6-4）＝できること・できないこと・進め方・料金の考え方は /service に置く */}
-              <Link href="/service" className={styles.branchLink}>
-                サービスの詳細 → /service
               </Link>
             </ScrollReveal>
           </ul>

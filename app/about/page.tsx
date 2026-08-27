@@ -9,7 +9,7 @@ import styles from "./page.module.css";
 
 /**
  * /about — AIスペシャリスト 墨家 / SUMIYAKA の人物ページ（P6・2026-08-27）
- * 文言の正本＝`P6_原稿_service_about.md` B節（B-0〜B-10）。一言一句変えない（改行のみ自由）。
+ * 文言の正本＝`P9_原稿_top_service_about.md` B節（差分）＋`P6_原稿_service_about.md` B節（B-0〜B-10）。一言一句変えない（改行のみ自由）。
  * 構成：FV（DynamicInkFluid 維持）→ PROFILE → STANCE → TIMELINE → BELIEF →
  *       SCOPE OF WORK → WHAT I DON'T → SKILL SET → CTA（トップ CtaSection をそのまま再利用）
  * モーションは ScrollReveal（＋既存 SubPageFVAnim）のみ。旧 BeliefFigures は不使用。
@@ -21,7 +21,7 @@ const OG_SUB = "業務効率化の設計と実装 — 墨家 / SUMIYAKA";
 export const metadata: Metadata = {
   title: "ABOUT — AKASHIKI | 墨家 / SUMIYAKA",
   description:
-    "墨家 / SUMIYAKA — 大手美容外科クリニックで社内・院内SEを7年。止まれば診療が止まるシステムを守ってきた現場の当事者が、業務を仕組みに変える。経歴・考え方・担当範囲・できないこと。",
+    "墨家 / SUMIYAKA — AIスペシャリスト。大手美容外科クリニックで社内・院内SEを7年。止まれば診療が止まるシステムを守ってきた現場の当事者が、御社の仕事をAIに教え、社員の方が回せる状態まで伴走する。経歴・考え方・担当範囲・できないこと。",
   openGraph: {
     images: [
       {
@@ -57,7 +57,7 @@ const TIMELINE = [
   },
   {
     when: "29歳〜",
-    text: "独立。業務効率化の設計と実装、Web制作、AI導入の設計・教育を、一人で。",
+    text: "独立。AI導入の設計・教育、業務効率化の設計と実装、Web制作を、一人で。",
   },
 ];
 
@@ -71,12 +71,12 @@ const BELIEFS = [
   {
     num: "02",
     heading: "納品して終わりにしない",
-    text: "仕組みを渡した日が、始まりです。社員の方が自分で回せるようになるまで教え、手順書を残し、定着してから手を離します。",
+    text: "仕組みを渡した日が、始まりです。社員の方が自分で回せるようになるまで教え、手順書を残し、定着してから手を離します。ゴールは、私が要らなくなることです。",
   },
   {
     num: "03",
     heading: "仕組みで速く、手で仕上げる",
-    text: "まず動くものを作り、実際のファイルで確かめながらブラッシュアップする。構造から考え、設計で差をつけ、最後は人の目で一つひとつ確認します。",
+    text: "まず動くものを作り、実際のファイルで確かめながらブラッシュアップする。構造から考え、設計で差をつけ、最後は人の目で一つひとつ確認します。AIが作ったものも、同じです。最後は必ず、私の目で確認します。",
   },
 ];
 
@@ -91,18 +91,18 @@ const DONTS = [
 const SKILLS = [
   {
     num: "01",
-    name: "業務設計・ヒアリング",
-    desc: "実際の業務の流れとファイルから、転記が生まれる「あいだ」を見つけ、自動化の順番を決める",
+    name: "AI導入の設計・教育",
+    desc: "御社の仕事をAIに教え込む実装。AIに任せる作業と人に残す判断の切り分け、手順書化、社内で回せるようになるまでの伴走",
   },
   {
     num: "02",
-    name: "業務ツール開発",
-    desc: "Excel・CSV・PDFの統合・突合・帳票生成・データ整備。ブラウザの中だけで完結する設計",
+    name: "業務設計・ヒアリング",
+    desc: "実際の現場で業務の流れとファイルを見て、転記が生まれる「あいだ」と、AIに任せられる作業を見つけ、順番を決める",
   },
   {
     num: "03",
-    name: "AI導入の設計・教育",
-    desc: "AIに任せる作業と人に残す判断の切り分け、手順書化、社内で回せるようになるまでの伴走",
+    name: "業務ツール開発",
+    desc: "Excel・CSV・PDFの統合・突合・帳票生成・データ整備。ブラウザの中だけで完結する設計",
   },
   {
     num: "04",
@@ -117,7 +117,7 @@ const SKILLS = [
   {
     num: "06",
     name: "システム運用・セキュリティ",
-    desc: "院内システムの導入・運用・障害対応を7年。止めない運用と、情報を守る設計",
+    desc: "院内システムの導入・運用・障害対応を7年。AIに何を渡し、何を渡さないか——止めない運用と、情報を守る設計",
   },
 ];
 
@@ -236,6 +236,17 @@ export default function AboutPage() {
               単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。ツールを渡すだけでは業務は変わらない。だから、AIを使いこなせる人材の育成までを仕事の軸に置いています。
             </p>
           </ScrollReveal>
+          {/* P9 B-3 段落3・4（FDE の注釈はここだけ。欧文も和文段落と同じフォント指定のまま） */}
+          <ScrollReveal className={styles.reveal} delay={0.2}>
+            <p className={styles.stanceBody}>
+              海外では、こうした働き方を Forward Deployed Engineer（FDE）と呼び始めています。AIの技術と、お客様ごとの業務の両方を知っていて、現場に入って一緒に作る人。私はそれを、中小企業の規模で、一人でやっています。
+            </p>
+          </ScrollReveal>
+          <ScrollReveal className={styles.reveal} delay={0.25}>
+            <p className={styles.stanceBody}>
+              それでも、仕事は人と人との間に生まれるものだと思っています。効率だけでは推し量れないもの——顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。AIで速くなった分は、そこに使いたい。
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -289,6 +300,10 @@ export default function AboutPage() {
           <ScrollReveal className={styles.reveal} delay={0.1}>
             <p className={styles.body}>
               Web制作も、業務ツールも、企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。分業も外注もありません。Works に掲載しているものは、すべてこの体制で手がけたものです。作品によって担当した範囲が違う、ということはありません。
+            </p>
+            {/* P9 B-6 追記（body の直後・同じ段落スタイル） */}
+            <p className={styles.body}>
+              AI導入も同じです。業務の棚卸しから、実装、教育、定着まで、途中で担当が変わることはありません。
             </p>
           </ScrollReveal>
 

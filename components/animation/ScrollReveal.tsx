@@ -28,6 +28,8 @@ export default function ScrollReveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // prefers-reduced-motion: 初期の非表示化もスクロール発火も行わない（要素は最初から見えたまま）
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const directionMap = {
       up: { y: 40, x: 0 },

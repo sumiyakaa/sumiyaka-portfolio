@@ -6,9 +6,10 @@ import CtaSection from "@/components/home/CtaSection";
 import styles from "./page.module.css";
 
 /**
- * /service — AIスペシャリストとしてのサービス（P6・2026-08-27）
- * 文言は契約ファイル `P6_原稿_service_about.md` A節が正本（一言一句不変）。
- * 構成：FV → できること → できないこと → データの扱い → 進め方 → 料金の考え方 → FAQ → CTA
+ * /service — AIスペシャリストとしてのサービス（P6・2026-08-27 → P9・2026-08-27）
+ * 文言は契約ファイル `P9_原稿_top_service_about.md` A節（差分）＋ `P6_原稿_service_about.md` A節が正本（一言一句不変）。
+ * 構成：FV → できること（第1の柱＝AI導入の設計・教育／第2の柱＝業務の自動化・ツール開発）
+ *       → できないこと → AIへの不安（TRUST） → データの扱い → 進め方 → 料金の考え方 → FAQ → CTA
  * 地色はサブページ既定の暗色（--color-primary 系）。白転調は使わない。
  * 演出は SubPageFVAnim / ScrollReveal のみ（filter・blend・3D・vwフォント不使用）。
  */
@@ -19,13 +20,47 @@ const OG_URL = `/api/og?title=SERVICE&sub=${encodeURIComponent("業務の自動�
 export const metadata: Metadata = {
   title: "SERVICE — AKASHIKI | 業務の自動化・AI導入支援",
   description:
-    "墨家 / SUMIYAKA のサービス。Excel・CSV・PDFのあいだで生まれる転記をなくす業務の自動化・ツール開発と、AIを使いこなせる人材の育成までを含むAI導入の設計・教育。できること・できないこと、進め方、料金の考え方をご案内します。",
+    "墨家 / SUMIYAKA のサービス。御社の仕事のやり方をAIに教え込み、社員の方が自分で回せる状態まで伴走するAI導入の設計・教育と、Excel・CSV・PDFのあいだの転記をなくす業務の自動化・ツール開発。できること・できないこと、AIへの不安への答え、進め方、料金の考え方をご案内します。",
   openGraph: {
     images: [{ url: OG_URL, width: 1200, height: 630 }],
   },
 };
 
-/* ---------- A-2 できること ---------- */
+/* ---------- A-2 できること：第1の柱（AI導入の設計・教育） ---------- */
+const EDUCATION_BODY = [
+  "最初にやるのは、実際に作業している場所で業務を見ることです。ヒアリングで出てくるのは業務の半分で、残りは机の横で見て初めて分かります。誰が、どのファイルを、どの順で触っているか。そこから、AIに任せる作業と、人に残す判断を切り分けます。",
+  "AIには、御社の仕事のやり方を一つずつ教え込みます。一つの作業だけを速くするのではなく、情報を集めてから、揃えて、出すまでの一連の流れで。点で入れたAIは、いつもどおりの日は動いても、想定外の日に止まります。",
+  "ツールをお渡しするだけでは、業務は変わりません。どの作業をAIに任せ、どこに人の判断を残すかを一緒に決め、社員の方と並んで手を動かし、手順書に落とし、使いこなせるようになるまで伴走します。ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを主とした活動です。",
+];
+
+const EDUCATION_POINTS = [
+  "実際の現場で、業務の棚卸し",
+  "AIに任せる作業と、人に残す判断の切り分け",
+  "社員の方と一緒に実装し、手順書に落とす",
+  "自分たちで回せるようになるまで伴走",
+];
+
+/* 3段階（左に丸数字・右に題字＋補足・①にだけタグ） */
+const STAGES = [
+  {
+    mark: "①",
+    title: "社員が、生成AIを個人で使っている",
+    sub: "文章の下書き、調べもの、壁打ち",
+    tag: "ほとんどの会社",
+  },
+  {
+    mark: "②",
+    title: "社内のデータや既存システムと繋がった、業務専用のAIがある",
+    sub: "見積・請求・台帳の照合などが、御社のファイルで動く",
+  },
+  {
+    mark: "③",
+    title: "AIがあることを前提に、仕事の進め方そのものを組み直している",
+    sub: "人は判断に集中し、集める・揃える・出すはAIが担う",
+  },
+];
+
+/* ---------- A-2 できること：第2の柱（業務の自動化・ツール開発） ---------- */
 const WHAT_I_DO = [
   {
     num: "01",
@@ -44,13 +79,6 @@ const WHAT_I_DO = [
   },
 ];
 
-const EDUCATION_POINTS = [
-  "業務の棚卸しと、AIの使いどころの設計",
-  "社員の方と一緒に実装",
-  "手順書に落とす",
-  "定着するまで伴走",
-];
-
 /* ---------- A-3 できないこと ---------- */
 const WHAT_I_DONT = [
   {
@@ -67,12 +95,36 @@ const WHAT_I_DONT = [
   },
 ];
 
+/* ---------- A-3b AIへの不安（TRUST） ---------- */
+const TRUST = [
+  {
+    num: "01",
+    title: "AIに丸投げしません",
+    desc: "AIが作ったものは、最後に必ず私の目で確認します。数字・宛名・金額のような、間違えてはいけない箇所ほど、人が見ます。",
+  },
+  {
+    num: "02",
+    title: "暴走とデータ流出は、専門知識で防ぎます",
+    desc: "AIに何を渡し、何を渡さないか。どこまで自動で動かし、どこで止めるか。これは気合ではなく設計の問題で、専門の知識が要ります。私は大手医療機関で正社員として7年、人体の情報という最上級のプライバシーを扱うシステムのデータ保守とセキュリティを担ってきました。",
+  },
+  {
+    num: "03",
+    title: "私自身が、そう使っています",
+    desc: "自分の仕事でAIを使うときも、同じ基準で線を引いています。御社にお渡しするのは、私が自分で守っている使い方です。",
+  },
+  {
+    num: "04",
+    title: "効率だけでは、測れないものがある",
+    desc: "仕事は、人と人との間に生まれます。AIで速くなった分は、お客様と向き合う時間に返す。そのための道具だと考えています。",
+  },
+];
+
 /* ---------- A-5 進め方 ---------- */
 const PROCESS = [
-  { num: "01", title: "ヒアリング", desc: "実際の業務の流れと、お使いのファイルを拝見します" },
+  { num: "01", title: "ヒアリング", desc: "実際に作業している場所で、業務の流れとお使いのファイルを拝見します" },
   { num: "02", title: "可否の切り分け", desc: "できること・できないことを、理由とともに明示します" },
   { num: "03", title: "お見積り", desc: "削減できる時間を一緒に試算し、金額の根拠をお示しします" },
-  { num: "04", title: "構築", desc: "御社のファイルに合わせて仕組みを作ります" },
+  { num: "04", title: "構築", desc: "御社のファイルと判断の基準に合わせて、仕組みとAIを作ります" },
   { num: "05", title: "検収", desc: "実際のデータで動作をご確認いただきます" },
   { num: "06", title: "運用・定着", desc: "社内の方が使いこなせるようになるまで伴走します" },
 ];
@@ -84,7 +136,7 @@ const PRICE_ROWS = [
   { label: "1人分の業務を丸ごと", amount: "年 約400万円" },
 ];
 
-/* ---------- A-7 FAQ（可視・JSON-LD 共通の正本） ----------
+/* ---------- A-7 FAQ（可視・JSON-LD 共通の正本・計9問） ----------
    link を持つ項目は、可視側で回答文中の phrase を Link 化する。
    JSON-LD 側は a のテキストのみ（リンク無し）。 */
 type FaqItem = {
@@ -97,6 +149,10 @@ const FAQ: FaqItem[] = [
   {
     q: "何から相談すればいいですか？",
     a: "いま手作業でやっていることを、そのままお聞かせください。「毎月この表を作るのに半日かかる」で十分です。お使いのファイルを拝見しながら、できる・できないを切り分けます。",
+  },
+  {
+    q: "AIを入れたいのですが、何から手をつければいいか分かりません。",
+    a: "まず、御社がいまどの段階にいるかを一緒に確認します。①社員が個人で使っている ②業務専用のAIがある ③AI前提で仕事を組み直している。ほとんどの会社は①で、それは自然なことです。①から②へ進む最初の一つを、一緒に決めます。",
   },
   {
     q: "小さな会社でも頼めますか？",
@@ -113,6 +169,10 @@ const FAQ: FaqItem[] = [
   {
     q: "AIに詳しい社員がいなくても使えますか？",
     a: "使えるようになるまで教えるところまでが、私の仕事です。手順書を作り、社員の方が自分で回せる状態にしてから手を離します。",
+  },
+  {
+    q: "AIが間違えたら、どうなりますか？",
+    a: "AIが作ったものは、最後に必ず人の目で確認する工程を組み込みます。数字や金額のように間違えてはいけない箇所ほど、人が見る設計にします。どこまで自動で動かし、どこで止めるかは、最初に一緒に決めます。",
   },
   {
     q: "料金はどのように決まりますか？",
@@ -179,7 +239,7 @@ export default function ServicePage() {
             仕組みに変える。
           </h1>
           <p data-fv-sub className={styles.fvSub}>
-            業務の自動化・ツール開発／AI導入の設計と教育
+            AI導入の設計と教育／業務の自動化・ツール開発
           </p>
           <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
         </div>
@@ -202,56 +262,92 @@ export default function ServicePage() {
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>WHAT I DO</span>
             <h2 id="service-do-title" className={styles.title}>
-              A社のCSVと、B社のExcelと、C社のPDF請求書を、
-              <br className={styles.brPc} />
-              御社の管理表の形に揃えます。
+              御社の仕事を、AIに教える。
             </h2>
           </ScrollReveal>
 
           <ScrollReveal className={styles.reveal} delay={0.1}>
             <p className={styles.lead}>
-              汎用ソフトに業務を合わせるのではなく、御社がいま実際に使っているファイルに合わせて仕組みを作ります。
+              汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、社員の方と並んで手を動かし、私がいなくても回る状態まで持っていく。それが、私の主とする仕事です。
             </p>
           </ScrollReveal>
 
+          {/* 第1の柱：AI導入の設計・教育 */}
           <ScrollReveal className={styles.reveal} delay={0.15}>
+            <div className={`${styles.pillar} ${styles.pillarFirst}`}>
+              <span className={styles.label}>AI導入の設計・教育</span>
+              {EDUCATION_BODY.map((para) => (
+                <p key={para} className={styles.pillarBody}>{para}</p>
+              ))}
+              <ul className={styles.pillarList} aria-label="AI導入の設計・教育で行うこと">
+                {EDUCATION_POINTS.map((point) => (
+                  <li key={point} className={styles.pillarItem}>{point}</li>
+                ))}
+              </ul>
+            </div>
+          </ScrollReveal>
+
+          {/* 3段階ブロック（第1の柱の中） */}
+          <ScrollReveal className={styles.reveal}>
+            <div className={styles.stage}>
+              <h3 className={styles.stageTitle}>御社は、いまどの段階ですか。</h3>
+              <ol className={styles.stageList}>
+                {STAGES.map((s) => (
+                  <li key={s.mark} className={styles.stageRow}>
+                    <span className={styles.stageMark}>{s.mark}</span>
+                    <div className={styles.stageBody}>
+                      <p className={styles.stageHead}>
+                        <span className={styles.stageName}>{s.title}</span>
+                        {s.tag && <span className={styles.stageTag}>{s.tag}</span>}
+                      </p>
+                      <p className={styles.stageSub}>{s.sub}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <p className={styles.stageClose}>
+                ほとんどの会社が①で、それは自然なことです。①から②へ進む最初の一つを、一緒に決めるところから始めます。
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* 第2の柱：業務の自動化・ツール開発 */}
+          <ScrollReveal className={styles.reveal}>
+            <div className={styles.pillar}>
+              <span className={styles.label}>業務の自動化・ツール開発</span>
+              <h3 className={styles.pillarTitle}>
+                A社のCSVと、B社のExcelと、C社のPDF請求書を、
+                <br className={styles.brPc} />
+                御社の管理表の形に揃えます。
+              </h3>
+              <p className={styles.pillarBody}>
+                汎用ソフトに業務を合わせるのではなく、御社がいま実際に使っているファイルに合わせて仕組みを作ります。
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.1}>
             <ol className={styles.doList}>
               {WHAT_I_DO.map((item) => (
                 <li key={item.num} className={styles.doItem}>
                   <span className={styles.doNum}>{item.num}</span>
-                  <h3 className={styles.doName}>{item.title}</h3>
+                  <h4 className={styles.doName}>{item.title}</h4>
                   <p className={styles.doDesc}>{item.desc}</p>
                 </li>
               ))}
             </ol>
           </ScrollReveal>
 
-          <ScrollReveal className={styles.reveal} delay={0.2}>
+          <ScrollReveal className={styles.reveal} delay={0.15}>
             <Link href="/tools" className={styles.arrowLink}>
               実際に動くツールを触る
               <span className={styles.arrow} aria-hidden="true">→</span>
             </Link>
-          </ScrollReveal>
-
-          {/* 第2の柱：AI導入の設計・教育 */}
-          <ScrollReveal className={styles.reveal}>
-            <div className={styles.pillar}>
-              <span className={styles.label}>AI導入の設計・教育</span>
-              <h3 className={styles.pillarTitle}>仕組みを、回せる状態で残す。</h3>
-              <p className={styles.pillarBody}>
-                ツールをお渡しするだけでは、業務は変わりません。どの作業をAIに任せ、どこに人の判断を残すかを一緒に決め、社員の方と並んで手を動かし、手順書に落とし、使いこなせるようになるまで伴走します。ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを主とした活動です。
-              </p>
-              <ul className={styles.pillarList} aria-label="AI導入の設計・教育で行うこと">
-                {EDUCATION_POINTS.map((point) => (
-                  <li key={point} className={styles.pillarItem}>{point}</li>
-                ))}
-              </ul>
-              <p className={styles.note}>
-                Web制作（LP・コーポレートサイト・WordPress）は、
-                <Link href="/works" className={styles.inlineLink}>Web制作ページ</Link>
-                でご案内しています。
-              </p>
-            </div>
+            <p className={styles.note}>
+              Web制作（LP・コーポレートサイト・WordPress）は、
+              <Link href="/works" className={styles.inlineLink}>Web制作ページ</Link>
+              でご案内しています。
+            </p>
           </ScrollReveal>
         </div>
       </section>
@@ -292,6 +388,42 @@ export default function ServicePage() {
         </div>
       </section>
 
+      {/* ========== A-3b AIへの不安（TRUST）— A-3 と同じ番号付き項目の作法 ========== */}
+      <section id="trust" className={styles.section} aria-labelledby="service-trust-title">
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <span className={styles.label}>TRUST</span>
+            <h2 id="service-trust-title" className={styles.title}>
+              AIへの不安に、先にお答えします。
+            </h2>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.lead}>
+              「AIに任せて大丈夫か」という不安は、正しい不安です。私がどう線を引いているかを、先に書いておきます。
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <ol className={styles.trustList}>
+              {TRUST.map((item) => (
+                <li key={item.num} className={styles.trustItem}>
+                  <span className={styles.trustNum}>{item.num}</span>
+                  <h3 className={styles.trustName}>{item.title}</h3>
+                  <p className={styles.trustDesc}>{item.desc}</p>
+                </li>
+              ))}
+            </ol>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.2}>
+            <p className={styles.trustClose}>
+              ほかに不安に思うことがあれば、最初のご相談でそのままお聞かせください。
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* ========== A-4 データの扱い（DATA） ========== */}
       <section id="data" className={styles.section} aria-labelledby="service-data-title">
         <div className={`${styles.inner} ${styles.dataGrid}`}>
@@ -308,6 +440,9 @@ export default function ServicePage() {
               </p>
               <p className={styles.text}>
                 外部のサーバーにデータを送らないため、顧客名簿や売上データもそのまま安心してお使いいただけます。導入前のお試しも、実際のファイルでその場でご確認いただけます。
+              </p>
+              <p className={styles.text}>
+                AI導入でも、考え方は同じです。御社の環境の中で動く形を優先し、外に出す必要があるデータは、出す前に必ず一緒に決めます。
               </p>
             </ScrollReveal>
           </div>
@@ -400,6 +535,13 @@ export default function ServicePage() {
             <h3 className={styles.subTitle}>初回のお取引に限り、優待価格をご用意しています。</h3>
             <p className={styles.text}>
               導入事例としてご紹介いただけることを条件に、初回のみの優待です。
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.3}>
+            <h3 className={styles.subTitle}>導入後は、月額の伴走も。</h3>
+            <p className={styles.text}>
+              仕組みが定着したあとも、月額でお付き合いを続けることができます。新しい業務への広げ方、社員の方からの質問、AIの更新への追従を、引き続き私が見ます。
             </p>
             <p className={styles.note}>
               Web制作の料金は、
