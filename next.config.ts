@@ -3,6 +3,10 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
+  // /api/og はサーバー側で public/ のフォントを fs で読む。Vercel の関数バンドルに確実に同梱させる。
+  outputFileTracingIncludes: {
+    "/api/og": ["./public/og/**", "./public/tools/fonts/**"],
+  },
   // 正規ドメインは akashiki.com。www と旧 vercel.app は 308 で集約する。
   // ※プレビュー用の sumiyaka-portfolio-<hash>.vercel.app はホスト名が一致しないため対象外。
   async redirects() {

@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     url: "./",
     images: [
       {
-        // OG画像は /api/og が日本語フォント未搭載（Satoriデフォルトのみ）のため英字を維持
+        // /api/og は日本語フォント搭載済み（Geist + Noto Sans JP）。トップは英字ブランド表記を意図的に維持
         url: "/api/og?title=AKASHIKI&sub=Web+Design+%26+Development+Portfolio",
         width: 1200,
         height: 630,

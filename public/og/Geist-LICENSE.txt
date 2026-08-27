@@ -1,0 +1,8 @@
+Geist (Geist-Regular.ttf)
+Copyright (c) 2023 Vercel, in collaboration with basement.studio
+Licensed under the SIL Open Font License, Version 1.1
+https://github.com/vercel/geist-font/blob/main/LICENSE.TXT
+
+This copy is the same file bundled with @vercel/og (the previous default font of /api/og).
+It is kept in the repository so that /api/og renders Latin text exactly as before,
+while Japanese text falls back to Noto Sans JP (public/tools/fonts/NotoSansJP-Regular.ttf, OFL).
