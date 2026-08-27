@@ -172,7 +172,7 @@ export default function ServicePage() {
         </div>
 
         <div className={styles.fvContent}>
-          <span data-fv-edge className={styles.fvLabel}>SERVICE</span>
+          <span data-fv-edge className={styles.fvLabel} aria-hidden="true">SERVICE</span>
           <h1 data-fv-title className={styles.fvTitle}>
             業務を、
             <br className={styles.brSp} />

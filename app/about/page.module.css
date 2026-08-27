@@ -246,7 +246,7 @@
 
 .portraitCaption {
   margin-top: 22px;
-  font-family: var(--font-mono);
+  font-family: var(--font-ibm-plex-mono), var(--font-noto-sans-jp), monospace; /* 和文が混ざるので等幅の後ろに Noto を置く（audit #4） */
   font-size: 11px;
   font-weight: 300;
   letter-spacing: 0.2em;
@@ -296,6 +296,8 @@
 .snsLink:hover,
 .snsLink:focus-visible {
   color: var(--color-foreground);
+  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2） */
+  outline-offset: 3px;
 }
 
 /* ========================================
@@ -347,7 +349,7 @@
 }
 
 .tlWhen {
-  font-family: var(--font-mono);
+  font-family: var(--font-ibm-plex-mono), var(--font-noto-sans-jp), monospace; /* 和文が混ざるので等幅の後ろに Noto を置く（audit #4） */
   font-size: 13px;
   letter-spacing: 0.08em;
   line-height: 32px; /* 本文1行目（16px × 2）の中心に揃える */
@@ -533,6 +535,8 @@
 .moreLink:focus-visible {
   border-color: var(--color-accent);
   color: var(--color-accent);
+  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2） */
+  outline-offset: 3px;
 }
 
 /* ========================================
@@ -566,7 +570,7 @@
 /* 否定される題字 — 墨の一線で消される（静的・読める太さと不透明度） */
 .dontStrike {
   position: relative;
-  display: inline;
+  display: inline-block; /* 折返し時に ::after の基準箱が割れないよう /service と同じ inline-block（audit #7） */
 }
 
 .dontStrike::after {

@@ -270,7 +270,7 @@ export default function AboutPage() {
               <ScrollReveal key={item.num} className={`${styles.reveal} ${styles.beliefCell}`} delay={i * 0.1}>
                 <article className={styles.beliefCard}>
                   <span className={styles.beliefNum}>{item.num}</span>
-                  <h2 className={styles.beliefHeading}>{item.heading}</h2>
+                  <h3 className={styles.beliefHeading}>{item.heading}</h3>
                   <p className={styles.beliefText}>{item.text}</p>
                 </article>
               </ScrollReveal>

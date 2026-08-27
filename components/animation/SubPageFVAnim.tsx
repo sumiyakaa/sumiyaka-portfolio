@@ -38,6 +38,30 @@ export default function SubPageFVAnim({
     const fv = fvRef.current;
     if (!fv) return;
 
+    // prefers-reduced-motion（2026-08-27 P6 検収 audit の指摘）
+    // 各ページの CSS は opacity/transform を !important で解除しているが、
+    // letter-spacing と height は GSAP のインライン値が勝って動いてしまう。
+    // OS の「動きを減らす」が有効なら、終端値を即座に置いてトゥイーンを一切走らせない。
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      if (shrink) fv.style.height = "50vh";
+      const title = fv.querySelector<HTMLElement>("[data-fv-title]");
+      if (title) {
+        title.style.opacity = "1";
+        title.style.letterSpacing = targetLetterSpacing;
+      }
+      fv.querySelectorAll<HTMLElement>("[data-fv-sub], [data-fv-edge]").forEach((el) => {
+        el.style.opacity = "1";
+      });
+      fv.querySelectorAll<HTMLElement>("[data-fv-hr]").forEach((el) => {
+        el.style.transform = "scaleX(1)";
+      });
+      ScrollTrigger.refresh();
+      return;
+    }
+
     const ctx = gsap.context(() => {
       // FV縮小: 1秒後に開始、0.5秒で完了（1.5秒時点）
       if (shrink) {

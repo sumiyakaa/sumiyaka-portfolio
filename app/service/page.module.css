@@ -182,7 +182,7 @@
 
 .label {
   display: block;
-  font-family: var(--font-mono);
+  font-family: var(--font-ibm-plex-mono), var(--font-noto-sans-jp), monospace; /* 和文が混ざるので等幅の後ろに Noto を置く（audit #4） */
   font-size: 11px;
   letter-spacing: 0.16em;
   color: var(--color-accent);
@@ -259,6 +259,12 @@
   text-decoration-color: var(--color-accent);
 }
 
+/* フォーカスリング（audit #2）＝色変化だけでは不可視。outline は transition 対象外＝即時表示 */
+.inlineLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
 /* 矢印リンク（実際に動くツールを触る →） */
 .arrowLink {
   display: inline-flex;
@@ -279,6 +285,11 @@
 .arrowLink:focus-visible {
   color: var(--color-accent);
   border-bottom-color: var(--color-accent);
+}
+
+.arrowLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .arrow {
@@ -659,7 +670,7 @@
 }
 
 .faqQ:focus-visible {
-  outline: 1px solid var(--color-accent);
+  outline: 2px solid var(--color-accent);
   outline-offset: 4px;
 }
 
