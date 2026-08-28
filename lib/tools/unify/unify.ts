@@ -371,7 +371,7 @@ export function unify(
     issues.push({
       line: 0,
       level: "warn",
-      message: `ほか ${hidden} 件、対応づいていない出力列があります。`,
+      message: `ほか ${hidden} 件、対応づけられていない出力列があります。`,
     });
   }
 

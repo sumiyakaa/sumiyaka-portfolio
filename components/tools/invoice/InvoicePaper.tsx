@@ -185,7 +185,7 @@ export default function InvoicePaper({
             {hiddenCount > 0 ? (
               <tr className={styles.moreRow}>
                 <td colSpan={5}>
-                  ほか {hiddenCount} 明細（PDFには全件が入ります）
+                  ほか {hiddenCount} 行（PDFには全件が入ります）
                 </td>
               </tr>
             ) : null}

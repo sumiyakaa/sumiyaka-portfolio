@@ -72,7 +72,7 @@ export default function Toolbar({
         <input
           type="search"
           className={styles.searchInput}
-          placeholder="キーワードで検索..."
+          placeholder="キーワードで検索…"
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
         />

@@ -890,7 +890,7 @@ export default function TableUnifyTool() {
                   checked={options.keepUnmapped}
                   onChange={(e) => setOptions((o) => ({ ...o, keepUnmapped: e.target.checked }))}
                 />
-                <span>対応づかなかった列も末尾に残す</span>
+                <span>対応づけられなかった列も末尾に残す</span>
               </label>
               <label>
                 <input

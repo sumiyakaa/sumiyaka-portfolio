@@ -11,7 +11,7 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "WEB — AKASHIKI | Web制作",
   description:
-    "LP・コーポレートサイト・WordPress・多言語サイトなど、Web制作の全実績を掲載。企画・設計からデザイン・コーディング・公開まで、すべて私一人で一貫して対応します。AI検索最適化（AIO）は全案件に標準搭載。カテゴリ・使用技術で絞り込み可能。",
+    "LP・コーポレートサイト・ブランドサイト・多言語サイトなど、Web制作の全実績を掲載。企画・設計からデザイン・コーディング・公開まで、すべて私一人で一貫して対応します。AI検索最適化（AIO）は全案件に標準搭載。カテゴリ・使用技術で絞り込み可能。",
   openGraph: {
     images: [{ url: `/api/og?title=WEB&sub=${encodeURIComponent("Web制作の実績")}`, width: 1200, height: 630 }],
   },
@@ -31,7 +31,7 @@ export default function WorksPage() {
         <div className={styles.fvContent}>
           <h1 data-fv-title className={styles.fvTitle}>WEB制作</h1>
           <p data-fv-sub className={styles.fvSub}>
-            LP・コーポレート・WordPress・多言語 —{" "}
+            LP・コーポレート・ブランド・多言語 —{" "}
             {works.length}作品
           </p>
           <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
@@ -148,7 +148,7 @@ export default function WorksPage() {
               Web制作のほかに、社内の事務作業を仕組みに変える仕事もしています。
             </h2>
             <p className={styles.bridgeText}>
-              業務の自動化と、AI導入の支援。
+              業務の自動化と、AIを使いこなせる人材の育成。
               <br className={styles.brSp} />
               「毎月この転記に何日もかかっている」——そういう作業を、ひとりでに回る形に変えます。
             </p>

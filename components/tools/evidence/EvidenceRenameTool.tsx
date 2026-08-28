@@ -361,7 +361,7 @@ export default function EvidenceRenameTool() {
         Array.from(items).some((item) => item.webkitGetAsEntry?.()?.isDirectory)
       ) {
         setMessage(
-          "フォルダのドロップには対応していません。『フォルダごと選ぶ』からお選びください。",
+          "フォルダのドロップには対応していません。「フォルダごと選ぶ」からお選びください。",
         );
         return;
       }
@@ -935,7 +935,7 @@ export default function EvidenceRenameTool() {
               {isSample ? (
                 <p className={styles.stepNote}>
                   サンプルは対応表の見本です。ZIPで書き出すには、実際のファイルを読み込んでください。
-                  （「サンプル一式（ZIP）」を落として解凍し、中の「証憑」フォルダを 01
+                  （「サンプル一式（ZIP）」をダウンロードして解凍し、中の「証憑」フォルダを 01
                   で、「記入済み台帳.xlsx」を 02 で読み込むと最後まで試せます）
                 </p>
               ) : null}
@@ -1104,7 +1104,7 @@ export default function EvidenceRenameTool() {
 
           <p className={styles.stageNote}>
             設定を変えると、右側の名前がその場で書き換わります。
-            行をクリックすると、台帳のどの行と結び付いたかを開けます。
+            行をクリックすると、台帳のどの行と結びついたかを開けます。
           </p>
         </div>
       </div>

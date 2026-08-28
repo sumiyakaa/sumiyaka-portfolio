@@ -167,7 +167,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
             >
               <dt className={styles.metaDt}>担当範囲</dt>
               <dd className={styles.metaDd}>
-                企画・設計・デザイン・コーディング・実装・公開（すべて一人）
+                企画・設計・デザイン・コーディング・実装・公開（すべて私一人）
               </dd>
             </ScrollReveal>
           </dl>
@@ -217,7 +217,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
                   ))}
                   {group.truncatedCount > 0 && (
                     <span className={styles.chipMore}>
-                      他 {group.truncatedCount} 件
+                      ほか {group.truncatedCount} 件
                     </span>
                   )}
                 </div>

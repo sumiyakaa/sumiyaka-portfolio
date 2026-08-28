@@ -17,7 +17,7 @@ export default function ActiveFilterChips({
   return (
     <div
       className={styles.container}
-      aria-label="適用中の検索条件とフィルタ"
+      aria-label="適用中の検索条件とフィルター"
       role="region"
     >
       <span className={styles.label}>適用中</span>

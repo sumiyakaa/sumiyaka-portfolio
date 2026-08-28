@@ -168,7 +168,7 @@ export default function PaymentReconcilePage() {
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
             <p className={styles.customBody}>
-              実際の消込には、まだ先があります。支店名や営業所名まで入った振込名義の寄せ込み、
+              実際の消込には、まだ先があります。支店名や営業所名まで入った振込名義の名寄せ、
               いくつもの口座にまたがった明細、過去の入金実績から当てにいく照合、
               販売管理システムから出てくる台帳の形。
               そこを読み解いて御社の形に合わせる部分は、一社ずつ作ります。

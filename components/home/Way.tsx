@@ -26,7 +26,7 @@ export default function Way() {
             <span className={styles.phrase}>御社のAIを育てます。</span>
           </h2>
           <p className={styles.lead}>
-            AIを「導入」して終わりにはしません。御社の仕事のやり方をAIに一つずつ教え込み、社員の方と並んで手を動かし、私がいなくても回る状態まで持っていく。そこまでが、私の仕事です。
+            AIの「導入」は、入口にすぎません。御社の仕事のやり方をAIに一つずつ教え込み、社員の方と並んで手を動かし、私がいなくても回る状態まで持っていきます。
           </p>
           <p className={styles.kicker}>コンサルティングでは、ありません。</p>
         </ScrollReveal>
@@ -45,7 +45,7 @@ export default function Way() {
             - 写真は実写（クライアント先での導入指導）。原比率1264×948・トリミングなし・CSSフィルタ不使用 */}
         <ScrollReveal className={styles.valueProof} delay={0.1}>
           <p className={styles.valueAnswer}>
-            助言や資料だけを納めることは、しません。御社の業務を仕組みに変え、社員と一緒に手を動かし、使いこなせるようになるまで教える——そこまでが、私の仕事です。
+            助言や資料だけを納めることは、しません。御社の業務を仕組みに変え、社員の方と一緒に手を動かし、使いこなせるようになるまで教える——そこまでが、私の仕事です。
           </p>
           <figure className={styles.proofFig}>
             <div className={styles.proofFrame}>
@@ -92,7 +92,7 @@ export default function Way() {
 
         {/* 5. 3段階（縦3行・左に丸数字・右に題字＋補足・①にタグ） */}
         <ScrollReveal className={styles.head}>
-          <h3 className={styles.headTitle}>多くの会社は、いまここで止まっています。</h3>
+          <h3 className={styles.headTitle}>ほとんどの会社は、いまここで止まっています。</h3>
         </ScrollReveal>
         <ol className={styles.stages}>
           <ScrollReveal as="li" className={styles.stage}>
@@ -132,7 +132,7 @@ export default function Way() {
         {/* 6. 締め＋導線（/service） */}
         <ScrollReveal>
           <p className={styles.close}>
-            ①で止まるのは、自然なことです。②③へ進むには、御社の業務を知っていて、AIも作れる人が要る。私がお手伝いするのは、①から③へ進む道です。
+            ①で止まるのは、自然なことです。②や③へ進むには、御社の業務を知っていて、AIに教えられる人が要る。私がお手伝いするのは、①から③へ進む道のりです。
           </p>
           <p className={styles.more}>
             <Link href="/service" className={styles.moreLink}>

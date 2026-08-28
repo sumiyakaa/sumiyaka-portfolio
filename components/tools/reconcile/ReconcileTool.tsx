@@ -597,7 +597,7 @@ export default function ReconcileTool() {
 
             <p className={styles.stepNote}>
               読み込んだ台帳と明細は、この端末の中だけで処理され、どこにも送信されません。
-              入金のデータは保存せず、上の条件だけがこの端末の中だけに残ります。
+              入金のデータは保存せず、上の条件だけがこの端末に残ります。
             </p>
           </section>
 

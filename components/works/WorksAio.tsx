@@ -39,7 +39,7 @@ const AIO_STATS = [
     num: "8",
     unit: "億人",
     label: "ChatGPT 週間アクティブユーザー",
-    note: "2025年4月時点",
+    note: "2025年10月時点",
   },
   {
     num: "3,175",

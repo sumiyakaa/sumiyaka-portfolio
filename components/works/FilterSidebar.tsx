@@ -115,7 +115,7 @@ export default function FilterSidebar({
             className={styles.clearBtn}
             onClick={onClearFilters}
           >
-            すべて解除
+            すべてクリア
           </button>
         </div>
       )}

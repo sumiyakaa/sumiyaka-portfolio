@@ -536,8 +536,8 @@ export const getExploreEmptyStateContent = (
       title: "条件に一致する作品が見つかりませんでした",
       description:
         `検索語「${trimmedQuery}」と選択中の条件に一致する作品はありません。` +
-        " 検索語やフィルタ条件を少しゆるめて、再度お試しください。",
-      actionLabel: "探索条件をリセット",
+        " 検索語や絞り込み条件を少しゆるめて、再度お試しください。",
+      actionLabel: "条件をリセット",
       actionKind: "reset-explore",
     };
   }
@@ -556,7 +556,7 @@ export const getExploreEmptyStateContent = (
   return {
     title: "条件に一致する作品が見つかりませんでした",
     description:
-      "選択したフィルタ条件に一致する作品はありません。" +
+      "選択した絞り込み条件に一致する作品はありません。" +
       " 条件を減らすか、いったんクリアして一覧を見直せます。",
     actionLabel: "条件をクリア",
     actionKind: "clear-filters",

@@ -76,7 +76,7 @@ const BELIEFS = [
   {
     num: "03",
     heading: "仕組みで速く、手で仕上げる",
-    text: "まず動くものを作り、実際のファイルで確かめながらブラッシュアップする。構造から考え、設計で差をつけ、最後は人の目で一つひとつ確認します。AIが作ったものも、同じです。最後は必ず、私の目で確認します。",
+    text: "まず動くものを作り、実際のファイルで確かめながらブラッシュアップする。構造から考え、設計で差をつけ、最後は人の目で一つひとつ確認します。AIが作ったものも、例外ではありません。",
   },
 ];
 
@@ -195,7 +195,7 @@ export default function AboutPage() {
 
               <ScrollReveal className={styles.reveal} delay={0.2}>
                 <p className={styles.body}>
-                  会社員として現場の業務を回していた2022年12月、ChatGPTの公開初日に登録しました。仕事の仕組みが根本から変わっていくのを当事者として目の当たりにし、その後29歳で独立。以来、業務効率化の設計と実装を仕事にしています。
+                  会社員として現場の業務を回していた2022年12月、ChatGPTの公開初日に登録しました。仕事の仕組みが根本から変わっていくのを当事者として目の当たりにし、その後29歳で独立。以来、AI導入の設計・教育と、業務効率化の設計と実装を仕事にしています。
                 </p>
               </ScrollReveal>
 
@@ -228,7 +228,7 @@ export default function AboutPage() {
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.1}>
             <p className={styles.stanceBody}>
-              AIにできることはAIに、という流れは、これから加速していきます。その中で仕事は二つに分かれる。AIにできないことをする側か、AIを使う側になり、AIと融合して仕事をするか。私は、後者でありたい。
+              AIにできることはAIに、という流れは、これから加速していきます。その中で仕事は二つに分かれる。AIにできないことをする側か、AIを使う側に立ち、AIと融合して仕事をする側か。私は、後者でありたい。
             </p>
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.15}>

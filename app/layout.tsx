@@ -133,7 +133,7 @@ export default function RootLayout({
                 alternateName: "墨家 / SUMIYAKA",
                 url: "https://akashiki.com",
                 description:
-                  "AIスペシャリスト。中小企業の仕事のやり方をAIに教え込み、社員が自分で回せる状態まで伴走する。業務の自動化・ツール開発、Web制作、AI導入の設計・教育を、設計から実装・公開まで一人で一貫して提供。",
+                  "AIスペシャリスト。中小企業の仕事のやり方をAIに教え込み、社員が自分で回せる状態まで伴走する。AI導入の設計・教育、業務の自動化・ツール開発、Web制作を、企画から実装・公開まで一人で一貫して提供。",
                 sameAs: ["https://github.com/sumiyakastudio"],
                 contactPoint: {
                   "@type": "ContactPoint",

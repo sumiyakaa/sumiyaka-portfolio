@@ -172,7 +172,7 @@ export default function EvidenceRenamePage() {
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
             <p className={styles.customBody}>
-              実務で手が止まるのは、名前を付ける一工程よりも、その手前にあります。
+              実務で手が止まるのは、名前を付ける一工程よりも、その前後にあります。
               メールの添付を集める、1つのPDFを取引ごとに分ける、会計ソフトの仕訳と突き合わせる。
               そこは会社ごとに形が違うので、一社ずつ作ります。
               証憑に限らず、毎月くり返している事務作業があれば、同じやり方で仕組みに変えられます。
@@ -187,7 +187,7 @@ export default function EvidenceRenamePage() {
       </section>
 
       <p className={styles.credit}>
-        ファイル名の例は国税庁『電子帳簿保存法一問一答【電子取引関係】』問19・問50 に拠ります。
+        ファイル名の例は国税庁「電子帳簿保存法一問一答【電子取引関係】」問19・問50に拠ります。
       </p>
     </main>
   );
