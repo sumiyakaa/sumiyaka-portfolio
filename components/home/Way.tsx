@@ -78,7 +78,7 @@ export default function Way() {
             <span className={styles.stepNo}>02</span>
             <h4 className={styles.stepTitle}>御社の仕事を、AIに教える</h4>
             <p className={styles.stepBody}>
-              汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、御社専用の仕組みに育てます。一つの作業だけでなく、情報を集めてから出すまでの一連の流れで。
+              汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、御社専用の仕組みに育てます。一つの作業だけでなく、情報を集めてから出すまでの一連の流れを、まるごと任せられる形にします。
             </p>
           </ScrollReveal>
           <ScrollReveal as="li" className={styles.step} delay={0.2}>
