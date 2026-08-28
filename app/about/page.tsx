@@ -16,7 +16,7 @@ import styles from "./page.module.css";
  */
 
 // /api/og は日本語フォント搭載済み（Geist + Noto Sans JP）。sub は日本語のまま渡す
-const OG_SUB = "業務効率化の設計と実装 — 墨家 / SUMIYAKA";
+const OG_SUB = "AI導入の設計と教育 — 墨家 / SUMIYAKA";
 
 export const metadata: Metadata = {
   title: "ABOUT — AKASHIKI | 墨家 / SUMIYAKA",
@@ -136,7 +136,7 @@ export default function AboutPage() {
           <h1 data-fv-title className={styles.fvTitle}>
             机上ではなく、<br className={styles.brSp} />現場から。
           </h1>
-          <p data-fv-sub className={styles.fvSub}>業務効率化の設計と実装 — 墨家 / SUMIYAKA</p>
+          <p data-fv-sub className={styles.fvSub}>AI導入の設計と教育 — 墨家 / SUMIYAKA</p>
           <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
         </div>
         <div className={styles.fvEdgeBl}>

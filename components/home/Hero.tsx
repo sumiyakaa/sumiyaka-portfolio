@@ -330,7 +330,7 @@ export default function Hero({ openingDone }: HeroProps) {
               </h1>
 
               <p data-hero-sub className={styles.sub} style={{ visibility: "hidden" }}>
-                {magChars("業務効率化の設計と実装 — 墨家 / SUMIYAKA")}
+                {magChars("AI導入の設計と教育 — 墨家 / SUMIYAKA")}
               </p>
 
               <p data-hero-sub2 className={styles.sub2} style={{ visibility: "hidden" }}>

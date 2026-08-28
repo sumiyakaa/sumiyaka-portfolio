@@ -105,11 +105,11 @@ export default function WorksPage() {
             ABOUT THESE SITES
           </span>
           <p className={styles.noticeText}>
-            本ページに掲載しているサイトは、すべて
+            本ページに掲載しているサイトは、
             <span className={styles.noticeStrong}>
               実際の案件をベースに制作したもの
             </span>
-            です。掲載にあたっては、クライアントを特定できる情報と、権利上掲載できない素材のみを差し替えています。
+            です（自社で使うために作った AKASHIKI WORKS FINDER と AOKI MITUMORI の2件を除きます）。掲載にあたっては、クライアントを特定できる情報と、権利上掲載できない素材のみを差し替えています。
           </p>
         </div>
       </section>
