@@ -259,73 +259,53 @@
   color: var(--sumi);
 }
 
-/* ---- 6. 3段階（縦3行・左に丸数字・右に題字＋補足・①にタグ） ---- */
-.stages {
+/* ---- 6. 安心して任せられるか（問い＝声の形の引用／答え＝本文／3行＝短い罫の一覧） ---- */
+.trustAsk {
+  margin: 2rem 0 0;
+  border-left: 2px solid var(--rule-paper);
+  padding-left: 1.25rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+  line-height: 2.1;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 36em;
+}
+
+.trustAnswer {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
+  line-height: 2.3;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+  max-width: 40em;
+}
+
+.trustList {
   list-style: none;
-  margin: 3rem 0 0;
+  margin: 2.5rem 0 0;
   padding: 0;
   max-width: 52rem;
-}
-
-.stage {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 0.75rem 1.5rem;
-  padding-block: 1.5rem;
-  border-bottom: 1px solid var(--rule-paper);
-}
-
-.stage:first-child {
   border-top: 1px solid var(--rule-paper);
 }
 
-.stageNo {
+.trustItem {
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--rule-paper);
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem);
-  line-height: 1.4;
-  color: var(--sumi);
-  min-width: 1.6em;
-}
-
-.stageBody {
-  min-width: 0;
-}
-
-.stageTitle {
-  margin: 0;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 600;
-  font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
+  font-size: clamp(1.02rem, 1rem + 0.3vw, 1.2rem);
   letter-spacing: 0.04em;
   font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  line-height: 1.8;
-}
-
-.stageNote {
-  margin: 0.35rem 0 0;
-  font-size: 0.92rem;
   line-height: 1.9;
-  color: var(--sumi-dim);
+  color: var(--sumi);
 }
 
-/* ①の行にだけ添える小さなタグ */
-.stageTag {
-  display: inline-block;
-  margin-left: 0.75em;
-  padding: 0.1em 0.6em;
-  border: 1px solid var(--rule-paper);
-  border-radius: 2px;
-  font-family: var(--font-body-washi, sans-serif);
-  font-weight: 400;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  line-height: 1.8;
+.trustItem::before {
+  content: "—";
+  margin-right: 0.75em;
   color: var(--sumi-dim);
-  vertical-align: 0.15em;
-  white-space: nowrap;
 }
 
 /* ---- 7. 締めの段落 ---- */
@@ -387,15 +367,7 @@
 }
 
 @media (max-width: 640px) {
-  .stage {
-    gap: 0.5rem 1rem;
-  }
 
-  .stageTag {
-    display: inline-block;
-    margin-left: 0.6em; /* 題字の最終行に並んだときも密着しない（audit B-1） */
-    margin-top: 0.5rem;
-  }
 }
 
 /* h2 の句単位折返し（語の途中で折れない） */

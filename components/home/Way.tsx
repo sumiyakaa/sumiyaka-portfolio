@@ -90,49 +90,34 @@ export default function Way() {
           </ScrollReveal>
         </ol>
 
-        {/* 5. 3段階（縦3行・左に丸数字・右に題字＋補足・①にタグ） */}
+        {/* 5. 安心して任せられるか（セキュリティと信頼＝経歴から・D-T） */}
         <ScrollReveal className={styles.head}>
-          <h3 className={styles.headTitle}>ほとんどの会社は、いまここで止まっています。</h3>
+          <h3 className={styles.headTitle}>安心して、任せられますか。</h3>
         </ScrollReveal>
-        <ol className={styles.stages}>
-          <ScrollReveal as="li" className={styles.stage}>
-            <span className={styles.stageNo}>①</span>
-            <div className={styles.stageBody}>
-              <p className={styles.stageTitle}>
-                社員が、生成AIを個人で使っている
-                <span className={styles.stageTag}>ほとんどの会社</span>
-              </p>
-              <p className={styles.stageNote}>文章の下書き、調べもの、壁打ち</p>
-            </div>
+        <ScrollReveal delay={0.05}>
+          <p className={styles.trustAsk}>
+            AI導入をためらう理由の多くは、機能ではなく不安です。何も考えずに使えば、情報は外に漏れる。セキュリティの知識がないままAIでプログラムを組めば、動いてはいても穴が残る。想定外が起きたとき、誰が対処するのか。
+          </p>
+          <p className={styles.trustAnswer}>
+            私は大手美容外科クリニックで、社内・院内システムとサーバーの保守を7年間担当しました。止まれば診療が止まり、漏れれば人体の情報という最上級のプライバシーが漏れる現場です。高校・大学で体系立てて学んだ情報技術と、その現場で身についた「止めない・漏らさない」作り方に、最新のAIを掛け合わせて仕事をしています。
+          </p>
+        </ScrollReveal>
+        <ul className={styles.trustList}>
+          <ScrollReveal as="li" className={styles.trustItem}>
+            AIに何を渡し、何を渡さないかを、先に決める
           </ScrollReveal>
-          <ScrollReveal as="li" className={styles.stage} delay={0.1}>
-            <span className={styles.stageNo}>②</span>
-            <div className={styles.stageBody}>
-              <p className={styles.stageTitle}>
-                社内のデータや既存システムと繋がった、業務専用のAIがある
-              </p>
-              <p className={styles.stageNote}>
-                見積・請求・台帳の照合などが、御社のファイルで動く
-              </p>
-            </div>
+          <ScrollReveal as="li" className={styles.trustItem} delay={0.1}>
+            どこまで自動で動かし、どこで止めるかを、設計する
           </ScrollReveal>
-          <ScrollReveal as="li" className={styles.stage} delay={0.2}>
-            <span className={styles.stageNo}>③</span>
-            <div className={styles.stageBody}>
-              <p className={styles.stageTitle}>
-                AIがあることを前提に、仕事の進め方そのものを組み直している
-              </p>
-              <p className={styles.stageNote}>
-                人は判断に集中し、集める・揃える・出すはAIが担う
-              </p>
-            </div>
+          <ScrollReveal as="li" className={styles.trustItem} delay={0.2}>
+            想定外が起きたときの対処を、社員の方が自分でできる状態にする
           </ScrollReveal>
-        </ol>
+        </ul>
 
-        {/* 6. 締め＋導線（/service） */}
+        {/* 6. 締め（AI歴＝2022年12月から仕事で・4年目）＋導線（/service） */}
         <ScrollReveal>
           <p className={styles.close}>
-            ①で止まるのは、自然なことです。②や③へ進むには、御社の業務を知っていて、AIに教えられる人が要る。私がお手伝いするのは、①から③へ進む道のりです。
+            私自身、2022年12月のChatGPT公開初日から、仕事でAIを使い続けて4年目です。医療機関の中で使う以上、何を渡さないかから決めました。御社にお渡しするのは、私が自分で守ってきた使い方です。
           </p>
           <p className={styles.more}>
             <Link href="/service" className={styles.moreLink}>
