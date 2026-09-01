@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import styles from "./Way.module.css";
 
@@ -10,6 +9,8 @@ import styles from "./Way.module.css";
  * 宣言「コンサルティングでは、ありません。」・社長の声2つ・答え＋現場写真は
  * 「いくら浮くか」(#value) から移設（見た目は page.module.css の旧クラスをそのまま複製）。
  * 出現は既存 ScrollReveal のみ＝新しいアニメーションは作らない。
+ * P10（2026-09-02）＝末尾の /service 枠ボタンは直後の Steps（#steps）へ移設した
+ * （同じ導線を隣接して2回置かない）。それ以外の文言・構成は不変。
  */
 export default function Way() {
   return (
@@ -114,15 +115,10 @@ export default function Way() {
           </ScrollReveal>
         </ul>
 
-        {/* 6. 締め（AI歴＝2022年12月から仕事で・4年目）＋導線（/service） */}
+        {/* 6. 締め（AI歴＝2022年12月から仕事で・4年目）。導線は Steps 末尾へ（P10） */}
         <ScrollReveal>
           <p className={styles.close}>
             私自身、2022年12月のChatGPT公開初日から、仕事でAIを使い続けて4年目です。医療機関の中で使う以上、何を渡さないかから決めました。御社にお渡しするのは、私が自分で守ってきた使い方です。
-          </p>
-          <p className={styles.more}>
-            <Link href="/service" className={styles.moreLink}>
-              進め方と、できないこと → /service
-            </Link>
           </p>
         </ScrollReveal>
       </div>

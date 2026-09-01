@@ -1,6 +1,7 @@
 import Link from "next/link";
 import HomeIntro from "@/components/home/HomeIntro";
 import Way from "@/components/home/Way";
+import Steps from "@/components/home/Steps";
 import Atari from "@/components/home/Atari";
 import Deguchi from "@/components/home/Deguchi";
 import PickUpWorks from "@/components/home/PickUpWorks";
@@ -46,6 +47,12 @@ export default function Home() {
       {/* 2. 働き方（P9・2026-08-27）＝FV「その意味を、見る」の飛び先 #way。
           FV の黒から白へ落ちる最初の紙。宣言・2声・答え＋写真は「いくら浮くか」から移設 */}
       <Way />
+
+      {/* 2c. 三段（P10・2026-09-02）＝Way の紙をそのまま続ける。
+          一段目＝御社専用の道具（オフライン）／二段目＝その道具をAIに使わせる／三段目＝社員の方が自分で作れる。
+          /service の「御社は、いまどの段階ですか。」(①②③) と同じ梯子を提供側から見せたもの。
+          Way 末尾にあった /service への枠ボタンはこのセクションの末尾へ移設した */}
+      <Steps />
 
       {/* 2b. マーキー帯A＝削除（2026-08-16 あおきさん指示「FV下のスクロール文字はAI臭の典型のため削除」。帯Bの扱いは確認中） */}
 

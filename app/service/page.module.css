@@ -488,6 +488,25 @@
   margin: 4px 0 0;
 }
 
+/* 「私がすること」＝各段でこちらが何を提供するか（P10・2026-09-02）。
+   ①②③（相手の現在地）と、トップ #steps の一・二・三（提供の三段）を接続する行 */
+.stageMine {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--color-foreground);
+  border-left: 1px solid var(--color-border);
+  padding-left: 14px;
+  margin: 12px 0 0;
+}
+.stageMineLabel {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  color: var(--color-foreground-muted);
+  margin-bottom: 2px;
+}
 .stageClose {
   font-family: var(--font-body);
   font-size: 15px;

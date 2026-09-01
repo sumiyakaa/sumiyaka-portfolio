@@ -7,6 +7,9 @@ import DynamicInkFluid from "@/components/webgl/DynamicInkFluid";
 import CtaSection from "@/components/home/CtaSection";
 import styles from "./page.module.css";
 
+/* P10（2026-09-02）＝STANCE 段落2の末尾を「三段」の説明へ置換（トップ Person・/service PROCESS 帯との三重を解消）／
+   段落4はトップ Person 3段落目と一字一句同じだったため、語順を変えて反復感を消した。正本＝`P10_原稿_三段.md` A10節 */
+
 /**
  * /about — AIスペシャリスト 墨家 / SUMIYAKA の人物ページ（P6・2026-08-27）
  * 文言の正本＝`P9_原稿_top_service_about.md` B節（差分）＋`P6_原稿_service_about.md` B節（B-0〜B-10）。一言一句変えない（改行のみ自由）。
@@ -233,7 +236,7 @@ export default function AboutPage() {
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.15}>
             <p className={styles.stanceBody}>
-              単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。ツールを渡すだけでは業務は変わらない。だから、AIを使いこなせる人材の育成までを仕事の軸に置いています。
+              単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。だから仕事を三段に分けています。御社専用の道具をお渡しする、その道具をAIに使わせる、社員の方が自分で作れるようにする。どの段からでも始められるようにしているのは、AIを使いこなせる人材の育成までを軸に置いているからです。
             </p>
           </ScrollReveal>
           {/* P9 B-3 段落3・4（FDE の注釈はここだけ。欧文も和文段落と同じフォント指定のまま） */}
@@ -244,7 +247,7 @@ export default function AboutPage() {
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.25}>
             <p className={styles.stanceBody}>
-              それでも、仕事は人と人との間に生まれるものだと思っています。効率だけでは推し量れないもの——顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。AIで速くなった分は、そこに使いたい。
+              それでも、仕事は人と人との間に生まれるものだと思っています。顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。効率では測れないものが、最後に残ります。AIで速くなった分は、そこに使いたい。
             </p>
           </ScrollReveal>
         </div>

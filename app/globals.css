@@ -224,13 +224,22 @@ body.is-locked {
 /* =============================================
    日本語 改行品質 — SP限定の禁則処理（PC/タブレットは不変）
    prose要素のみ対象。アニメ用の1文字span・nav/UIラベルは非対象。
+
+   ⚠ 2026-09-02（P10）修正：`word-break: keep-all` を外した。
+   keep-all は「語が空白で区切られる言語（韓国語など）」向けの指定で、
+   和文に当てると一文まるごとが1語扱いになり改行位置が無くなる。
+   すると保険の `overflow-wrap: anywhere` が主たる改行手段になってしまい、
+   **禁則を無視した任意位置で折れる**（行頭に「。」「、」が来る）。
+   実測＝SP 390px / WebKit で行頭禁則違反がトップだけで9件（#steps 5・#way 2・言い当て 2）。
+   和文は本来「文字間のどこでも折ってよい／ただし禁則に従う」なので、
+   `word-break: normal`（既定）＋ `line-break: strict` が正しい組み合わせ。
+   `overflow-wrap` は長い英数字・URL だけを救う `break-word` に落とす。
    ============================================= */
 @media (max-width: 767px) {
   p, li,
   h1, h2, h3, h4, h5, h6,
   dd, dt, figcaption, blockquote {
-    word-break: keep-all;      /* 和文を語の途中で折らない（CJK最適） */
-    line-break: strict;        /* 句読点・括弧の禁則を厳格化 */
-    overflow-wrap: anywhere;   /* 極端な狭幅時のみ任意位置で折る保険 */
+    line-break: strict;          /* 句読点・括弧の禁則を厳格化 */
+    overflow-wrap: break-word;   /* 長い英数字・URLがはみ出すときだけ折る */
   }
 }
