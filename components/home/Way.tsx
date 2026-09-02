@@ -1,5 +1,8 @@
 import Image from "next/image";
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import CountUp from "@/components/animation/CountUp";
+import DrawRule from "@/components/animation/DrawRule";
+import InViewGate from "@/components/animation/InViewGate";
 import styles from "./Way.module.css";
 
 /**
@@ -65,61 +68,109 @@ export default function Way() {
 
         {/* 4. 3工程（PC 3カラム／SP 1カラム） */}
         <ScrollReveal className={styles.head}>
+          <DrawRule className={styles.headRule} duration={0.6} delay={0.1} />
           <h3 className={styles.headTitle}>やることは、三つです。</h3>
         </ScrollReveal>
-        <ol className={styles.steps}>
+        {/* P11・2026-09-03＝3枚が常にゆっくり上下に揺れる（あおきさん指示）。
+            ⚠ 揺れは内側の .float に当てる。.step は ScrollReveal が transform を持っており、
+              同じ要素に CSS アニメを当てるとインラインstyleより強いので出現演出を壊す。
+            ⚠ 既定は paused。InViewGate が画面内のあいだだけ .stepsLive を付ける＝
+              見えていない間・背面タブでは本当に止まる。 */}
+        <InViewGate as="ol" className={styles.steps} activeClassName={styles.stepsLive}>
           <ScrollReveal as="li" className={styles.step}>
-            <span className={styles.stepNo}>01</span>
-            <h4 className={styles.stepTitle}>現場に入る</h4>
-            <p className={styles.stepBody}>
-              ヒアリング室ではなく、実際に作業している机の横で。誰が、どのファイルを、どの順で触っているか。本人も言葉にできない手順は、見に行けば分かります。
-            </p>
+            <div className={styles.float}>
+              <span className={styles.stepNo}>01</span>
+              <h4 className={styles.stepTitle}>現場に入る</h4>
+              <p className={styles.stepBody}>
+                ヒアリング室ではなく、実際に作業している机の横で。誰が、どのファイルを、どの順で触っているか。本人も言葉にできない手順は、見に行けば分かります。
+              </p>
+            </div>
           </ScrollReveal>
           <ScrollReveal as="li" className={styles.step} delay={0.1}>
-            <span className={styles.stepNo}>02</span>
-            <h4 className={styles.stepTitle}>御社の仕事を、AIに教える</h4>
-            <p className={styles.stepBody}>
-              汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、御社専用の仕組みに育てます。一つの作業だけでなく、情報を集めてから出すまでの一連の流れを、まるごと任せられる形にします。
-            </p>
+            <div className={styles.float}>
+              <span className={styles.stepNo}>02</span>
+              <h4 className={styles.stepTitle}>御社の仕事を、AIに教える</h4>
+              <p className={styles.stepBody}>
+                汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、御社専用の仕組みに育てます。一つの作業だけでなく、情報を集めてから出すまでの一連の流れを、まるごと任せられる形にします。
+              </p>
+            </div>
           </ScrollReveal>
           <ScrollReveal as="li" className={styles.step} delay={0.2}>
-            <span className={styles.stepNo}>03</span>
-            <h4 className={styles.stepTitle}>社員の方が回せる状態で、手を離す</h4>
-            <p className={styles.stepBody}>
-              一緒に実装し、手順書に落とし、使いこなせるようになるまで伴走します。ゴールは、私が要らなくなることです。
-            </p>
+            <div className={styles.float}>
+              <span className={styles.stepNo}>03</span>
+              <h4 className={styles.stepTitle}>社員の方が回せる状態で、手を離す</h4>
+              <p className={styles.stepBody}>
+                一緒に実装し、手順書に落とし、使いこなせるようになるまで伴走します。ゴールは、私が要らなくなることです。
+              </p>
+            </div>
           </ScrollReveal>
-        </ol>
+        </InViewGate>
 
-        {/* 5. 安心して任せられるか（セキュリティと信頼＝経歴から・D-T） */}
+        {/* 5. 安心して任せられるか（セキュリティと信頼＝経歴から・D-T）
+            P11「減量」2026-09-03＝問いは3つの短文へ、経歴は下の「経歴票」へ、
+            約束3行は横並びの短句へ。文量を落として、要点だけが残るようにした。 */}
         <ScrollReveal className={styles.head}>
+          <DrawRule className={styles.headRule} duration={0.6} delay={0.1} />
           <h3 className={styles.headTitle}>安心して、任せられますか。</h3>
         </ScrollReveal>
         <ScrollReveal delay={0.05}>
           <p className={styles.trustAsk}>
-            AI導入をためらう理由の多くは、機能ではなく不安です。何も考えずに使えば、情報は外に漏れる。セキュリティの知識がないままAIでプログラムを組めば、動いてはいても穴が残る。想定外が起きたとき、誰が対処するのか。
-          </p>
-          <p className={styles.trustAnswer}>
-            私は大手美容外科クリニックで、社内・院内システムとサーバーの保守を7年間担当しました。止まれば診療が止まり、漏れれば人体の情報という最上級のプライバシーが漏れる現場です。高校・大学で体系立てて学んだ情報技術と、その現場で身についた「止めない・漏らさない」作り方に、最新のAIを掛け合わせて仕事をしています。
+            ためらう理由は、たいてい機能ではなく不安です。
+            <span className={styles.trustAskLine}>情報は、漏れないか。</span>
+            <span className={styles.trustAskLine}>作ったものに、穴は残らないか。</span>
+            <span className={styles.trustAskLine}>想定外が起きたとき、誰が対処するのか。</span>
           </p>
         </ScrollReveal>
+
+        {/* 経歴票（奥付のような小さな台帳）＝P11・2026-09-03 で作り直し。
+            旧：「7」を86pxまで大きくして見出しにしていたが、経歴は統計値ではないので
+            数字を主役にするのは形が合わない（あおきさん指摘）。項目と値の台帳に改め、
+            本文の1文目（クリニック名と担当）は票に移して重複を消した。 */}
+        <ScrollReveal className={styles.trustProof} delay={0.05}>
+          <dl className={styles.record}>
+            <DrawRule className={styles.recordRule} delay={0.1} />
+            <div className={styles.recordRow}>
+              <dt className={styles.recordKey}>現場</dt>
+              <dd className={styles.recordVal}>大手美容外科クリニック</dd>
+            </div>
+            <div className={styles.recordRow}>
+              <dt className={styles.recordKey}>担当</dt>
+              <dd className={styles.recordVal}>院内システム・サーバー保守</dd>
+            </div>
+            <div className={styles.recordRow}>
+              <dt className={styles.recordKey}>在籍</dt>
+              <dd className={`${styles.recordVal} ${styles.recordTerm}`}>
+                <CountUp value={7} duration={1} delay={0.35} suffix="年" />
+              </dd>
+            </div>
+          </dl>
+          <p className={styles.trustAnswer}>
+            止まれば診療が止まり、漏れれば人体の情報という最上級のプライバシーが漏れる現場でした。そこで身についた「止めない・漏らさない」作り方に、AIを掛けています。
+          </p>
+        </ScrollReveal>
+
         <ul className={styles.trustList}>
-          <ScrollReveal as="li" className={styles.trustItem}>
-            AIに何を渡し、何を渡さないかを、先に決める
+          <ScrollReveal as="li" className={styles.trustItem} direction="right">
+            <DrawRule className={styles.trustItemRule} duration={0.5} delay={0.15} />
+            何を渡し、何を渡さないかを、先に決める
           </ScrollReveal>
-          <ScrollReveal as="li" className={styles.trustItem} delay={0.1}>
+          <ScrollReveal as="li" className={styles.trustItem} direction="right" delay={0.08}>
+            <DrawRule className={styles.trustItemRule} duration={0.5} delay={0.25} />
             どこまで自動で動かし、どこで止めるかを、設計する
           </ScrollReveal>
-          <ScrollReveal as="li" className={styles.trustItem} delay={0.2}>
-            想定外が起きたときの対処を、社員の方が自分でできる状態にする
+          <ScrollReveal as="li" className={styles.trustItem} direction="right" delay={0.16}>
+            <DrawRule className={styles.trustItemRule} duration={0.5} delay={0.35} />
+            想定外の対処を、社員の方ができる状態にする
           </ScrollReveal>
         </ul>
 
-        {/* 6. 締め（AI歴＝2022年12月から仕事で・4年目）。導線は Steps 末尾へ（P10） */}
-        <ScrollReveal>
-          <p className={styles.close}>
-            私自身、2022年12月のChatGPT公開初日から、仕事でAIを使い続けて4年目です。医療機関の中で使う以上、何を渡さないかから決めました。御社にお渡しするのは、私が自分で守ってきた使い方です。
-          </p>
+        {/* 6. 締め（AI歴＝2022年12月から仕事で・4年目／2026年12月に「4年」へ更新）。
+            導線は Steps 末尾へ（P10） */}
+        <ScrollReveal as="p" className={styles.close}>
+          <span className={styles.closeDate}>2022.12 —</span>
+          <span className={styles.closeText}>
+            ChatGPT公開初日から、仕事で使い続けて4年目。医療機関の中で使う以上、何を渡さないかから決めました。
+          </span>
         </ScrollReveal>
       </div>
     </section>

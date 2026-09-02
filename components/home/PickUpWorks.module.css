@@ -381,18 +381,27 @@
 
 .canPan.isHover .pan {
   animation: pwPan var(--pw-pan-dur, 12s) linear infinite alternate;
+  /* ★ 2026-09-03（P11）＝頭と末尾の「溜め」を 0.4秒で固定したことにより、
+     溜めの割合（キーフレームの %）が札ごとに変わる。@keyframes の % には var() を
+     書けないので、実寸を読んだ時点で JS が札ごとの規則を作り、その名前をここに入れる
+     （PickUpWorks.tsx の writePanKeyframes）。
+     ⚠ --pw-pan-name が未設定だと animation-name は none になる＝流れない。
+       .canPan は名前を入れた後にしか付かないので、その順序を崩さないこと。 */
+  animation-name: var(--pw-pan-name);
   will-change: transform; /* ⚠ 実際に動いている要素・動いている間だけ */
 }
 
+/* 予備（JS が名前を入れられなかった場合の見た目の保険）。
+   溜めは割合のままなので、長い作品では動き出しが遅くなる＝本来は使われない。 */
 @keyframes pwPan {
   0%,
-  6% {
+  2% {
     transform: translateY(0);
-  } /* 頭で少し溜める */
-  94%,
+  }
+  98%,
   100% {
     transform: translateY(calc(var(--pw-pan-shift, 0) * -100%));
-  } /* 末尾でも溜める */
+  }
 }
 
 .thumbImg {
@@ -738,17 +747,18 @@
     display: block;
   }
 
-  /* 重なりで隠れる位置にある文字は、手前に出るまで出さない（切れた字を見せない） */
+  /* ★ 2026-09-03（P11・あおきさん指示）＝6枚とも題字を常時出す。
+     旧：重なりで切れる字を見せないため、手前に出た1枚だけ表示していた
+     （`opacity: 0` → `.isRaised` で 1）。3列2段に組み替えて重なりが
+     21.9%→14% と浅くなり、隠しておく理由が薄れたので解除した。
+     ⚠ 隠れないよう、束の中で右隣に札がある4枚だけ帯の右余白を重なりぶん広げる
+       （下の .cap の指定）。手前の1枚（.isRaised）は押しのけるので対象外。 */
   .capText {
-    opacity: 0;
-    transform: translateY(3px);
+    opacity: 1;
+    transform: none;
     transition: opacity 0.55s var(--pw-ease-out), transform 0.55s var(--pw-ease-out);
   }
 
-  .isRaised .capText {
-    opacity: 1;
-    transform: none;
-  }
 
   /* ⚠ 束にしたぶん札は幅 190px 前後まで細くなる。番号を横に置いたままだと
      長い作品名（BLUE WOODS No.1 POP-UP SHOP／電帳法ファイル名 一括リネーム）が
@@ -788,6 +798,19 @@
   }
   .enterPending > .deck > .card:nth-child(6) {
     transform: translate(78px, 48px) rotate(-2.8deg) scale(0.88);
+  }
+}
+
+/* ★ 2026-09-03（P11・題字の常時表示にともなう補正）
+   768〜859px の帯でだけ、手前の1枚に「押しのけ」られた札の作品名の行末が、
+   右隣の札の下へ潜る（実測＝AOKI BEAUTY CLINIC NO2 が 21px）。重なり14%＋押しのけ14%が
+   同時にかかるのがこの帯の狭い札幅だけ効くため。該当帯に限り、右隣が重なる4枚
+   （段の最後＝3枚目・6枚目以外）の帯の右を空ける。
+   ⚠ 860px 以上は実測で潜り0のため触らない（ツールの副題を無駄に短くしないため）。
+   ⚠ 空けすぎると題字が3行になり、その札だけ高くなって段が揃わなくなる。20% で2行を維持。 */
+@media (min-width: 768px) and (max-width: 859px) {
+  .deck > .card:not(:nth-child(3)):not(:nth-child(6)) .capText {
+    padding-right: 20%;
   }
 }
 
@@ -1018,6 +1041,8 @@
 .isOpen .stageCanPan .stagePan {
   animation: pwPan var(--pw-pan-dur, 12s) linear var(--pw-pan-delay, 1.15s) infinite
     alternate;
+  /* 台は札と同じキーフレームを使う（JS が同じ名前を入れる）＝溜めも送り量も揃う */
+  animation-name: var(--pw-pan-name);
   will-change: transform;
 }
 

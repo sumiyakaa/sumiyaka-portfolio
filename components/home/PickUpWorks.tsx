@@ -155,6 +155,51 @@ function workIdx(i: number) {
 }
 
 /** その要素がいま「自分の高さの何割」送られているか（縦流しの進捗） */
+/**
+ * 札ごとの縦流しキーフレームを差し込む（P11・2026-09-03）。
+ *
+ * 溜めを「秒」で固定すると、溜めの割合（＝キーフレームの %）が札ごとに変わる。
+ * CSS の @keyframes は % に var() を書けないので、実寸を読んだ時点で JS が作る。
+ * 名前は札ごとに固定（pwPanCard0〜）なので、再測定しても増殖しない。
+ *
+ * ⚠ CSS Modules 側の `pwPan` はハッシュ名になるため、ここで作る名前とは衝突しない。
+ * ⚠ 呼び出し側は、この名前を `--pw-pan-name` に入れてから .canPan を付けること
+ *   （CSS 側は animation-name: var(--pw-pan-name) で、未設定なら none になる）。
+ */
+const PAN_KEYFRAMES_STYLE_ID = "pw-pan-keyframes";
+
+function writePanKeyframes(name: string, spec: PanSpec): boolean {
+  if (typeof document === "undefined") return false;
+  let style = document.getElementById(
+    PAN_KEYFRAMES_STYLE_ID,
+  ) as HTMLStyleElement | null;
+  if (!style) {
+    style = document.createElement("style");
+    style.id = PAN_KEYFRAMES_STYLE_ID;
+    document.head.appendChild(style);
+  }
+  const sheet = style.sheet;
+  if (!sheet) return false;
+  const head = (spec.hold * 100).toFixed(3);
+  const tail = (100 - spec.hold * 100).toFixed(3);
+  const to = (spec.shift * -100).toFixed(3);
+  // 同名の古い規則は消してから入れ直す（実寸の再取得・再マウントで重ならないように）
+  for (let k = sheet.cssRules.length - 1; k >= 0; k -= 1) {
+    const rule = sheet.cssRules[k];
+    if (rule instanceof CSSKeyframesRule && rule.name === name) sheet.deleteRule(k);
+  }
+  try {
+    sheet.insertRule(
+      `@keyframes ${name}{0%,${head}%{transform:translateY(0)}` +
+        `${tail}%,100%{transform:translateY(${to}%)}}`,
+      sheet.cssRules.length,
+    );
+  } catch {
+    return false;
+  }
+  return true;
+}
+
 function progressFrac(node: HTMLElement | null): number {
   if (!node) return 0;
   const h = node.offsetHeight;
@@ -924,12 +969,18 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
        ・ホバーせずに開いたとき＝ +1.15秒。育ちきってから流しはじめる */
     const spec = panSpecRef.current[openIndex];
     if (spec) {
+      // 台は札と同じキーフレーム（＝同じ溜め・同じ送り量）をそのまま使う
+      stageThumb.style.setProperty("--pw-pan-name", `pwPanCard${openIndex}`);
       stageThumb.style.setProperty("--pw-pan-span", spec.span.toFixed(4));
       stageThumb.style.setProperty("--pw-pan-shift", spec.shift.toFixed(5));
       stageThumb.style.setProperty("--pw-pan-dur", `${spec.duration.toFixed(2)}s`);
       const carry = carryRef.current;
       const p = carry > 0.001 ? Math.min(carry / spec.shift, 1) : -1;
-      const delay = p >= 0 ? -((0.06 + p * 0.88) * spec.duration) : GROW_MS / 1000;
+      // 走行区間は hold%〜(100-hold)%。溜めが札ごとに変わるので定数で書かない
+      const delay =
+        p >= 0
+          ? -((spec.hold + p * (1 - spec.hold * 2)) * spec.duration)
+          : GROW_MS / 1000;
       stageThumb.style.setProperty("--pw-pan-delay", `${delay.toFixed(3)}s`);
       stageThumb.classList.add(styles.stageCanPan);
     } else {
@@ -1035,6 +1086,11 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
         const spec = measurePan(img.naturalWidth, img.naturalHeight);
         panSpecRef.current[i] = spec;
         if (!spec) return;
+        // ⚠ キーフレームと名前を先に用意してから .canPan を付ける
+        //    （animation-name: var(--pw-pan-name) なので、未設定だと none になる）
+        const name = `pwPanCard${i}`;
+        if (!writePanKeyframes(name, spec)) return;
+        card.style.setProperty("--pw-pan-name", name);
         card.style.setProperty("--pw-pan-span", spec.span.toFixed(4));
         card.style.setProperty("--pw-pan-shift", spec.shift.toFixed(5));
         card.style.setProperty("--pw-pan-dur", `${spec.duration.toFixed(2)}s`);

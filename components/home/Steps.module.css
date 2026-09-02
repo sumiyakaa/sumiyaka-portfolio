@@ -1,8 +1,13 @@
 /* =============================================
-   三段（THREE STEPS・#steps）— P10・2026-09-02
+   三段（THREE STEPS・#steps）— P10・2026-09-02 ／ **P11「減量」で作り直し・2026-09-03**
    Way（#way）の直後に続く紙。作法は Way.module.css と同一で、
    新しい色境界を作らない（FVの黒 → 紙 → Atari の黒、というトップのリズムを変えない）。
-   縦の3行＝左に「一 / 二 / 三」、右に題字＋タグ＋本文。行間は 1px の紙罫。
+
+   P11 の造り：
+     - 大きな算用数字（1/2/3）を左に置き、右に「小さな前置き → 大きな題字 → 小さな本文」。
+       文字サイズの差を大きく取って、単調な等幅3行をやめる。
+     - 罫は「数字の上＝2px の墨／本文の上＝1px の紙罫」の二段重ね＝一本の直線にしない。
+     - PC では段ごとに右へ 3rem ずつ寄せる（＝梯子を昇る形）。SP は寄せない。
    色はトークン（theme-top.css）のみ参照。出現は ScrollReveal のみ＝独自アニメ無し。
    filter / backdrop-filter / blend / 3D / vw フォントは不使用。
    ============================================= */
@@ -42,13 +47,13 @@
   color: var(--sumi-dim);
 }
 
-/* ---- 見出し（Way の .headTitle より一段大きい＝章の頭） ---- */
+/* ---- 見出し（章の頭＝このセクションで最大） ---- */
 .title {
   margin: 0;
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.6rem, 1.1rem + 2.2vw, 2.6rem);
-  line-height: 1.65;
+  font-size: clamp(1.7rem, 1.1rem + 2.6vw, 2.9rem);
+  line-height: 1.6;
   letter-spacing: 0.05em;
   font-feature-settings: "palt" 1;
   color: var(--sumi);
@@ -60,44 +65,76 @@
 }
 
 .lead {
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
-  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-  line-height: 2.3;
+  margin: clamp(1.6rem, 3vw, 2.4rem) 0 0;
+  font-size: clamp(0.98rem, 0.94rem + 0.3vw, 1.12rem);
+  line-height: 2.15;
   font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 40em;
+  color: var(--sumi-dim);
+  max-width: 38em;
 }
 
-/* ---- 三段（縦3行・上下を紙罫で仕切る） ---- */
+/* リードの結論だけ墨で立てる（同じ段落の中で濃淡を作る） */
+.leadStrong {
+  color: var(--sumi);
+}
+
+/* ---- 三段（大きな数字＋段差） ---- */
 .list {
   list-style: none;
-  margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+  margin: clamp(2.4rem, 4.5vw, 3.4rem) 0 0;
   padding: 0;
-  border-top: 1px solid var(--rule-paper);
 }
 
 .row {
   display: grid;
-  grid-template-columns: 3.5rem minmax(0, 1fr);
-  column-gap: 1.5rem;
+  grid-template-columns: clamp(3rem, 8vw, 5.5rem) minmax(0, 1fr);
+  column-gap: clamp(1rem, 2.5vw, 2rem);
   align-items: start;
-  padding-block: clamp(1.8rem, 3vw, 2.6rem);
-  border-bottom: 1px solid var(--rule-paper);
 }
 
-@media (max-width: 640px) {
-  .row {
-    grid-template-columns: 2.4rem minmax(0, 1fr);
-    column-gap: 1rem;
+.row + .row {
+  margin-top: clamp(2.2rem, 4vw, 3.2rem);
+}
+
+/* PC＝段ごとに右へ寄せて「昇る」形にする（SP は寄せない） */
+@media (min-width: 861px) {
+  .row:nth-child(2) {
+    margin-left: 3rem;
+  }
+
+  .row:nth-child(3) {
+    margin-left: 6rem;
   }
 }
 
-/* 「一 / 二 / 三」＝墨の大きな漢数字 */
-.mark {
+/* 罫は二段重ね＝数字の上は太い墨、本文の上は細い紙罫。
+   P11・2026-09-03＝どちらも DrawRule（左から引かれる実体の要素）に置き換えた */
+.numCell {
+  display: block;
+}
+
+.ruleThick {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--sumi);
+  margin-bottom: 1.1rem;
+}
+
+.ruleThin {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--rule-paper);
+  margin-bottom: 1.1rem;
+}
+
+.num {
+  display: block;
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.8rem, 1.3rem + 1.4vw, 2.4rem);
-  line-height: 1.4;
+  font-size: clamp(2.6rem, 1.8rem + 3.6vw, 4.6rem);
+  line-height: 1;
   letter-spacing: 0;
   color: var(--sumi);
 }
@@ -106,102 +143,153 @@
   min-width: 0;
 }
 
-.head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.9rem;
+/* 前置き（旧・枠つきタグ）＝小さく薄い1行に落とす */
+.tag {
   margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  line-height: 1.9;
+  color: var(--sumi-dim);
 }
 
+/* 題字＝本文との差を大きく取る */
 .name {
+  margin: 0.4rem 0 0;
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.15rem, 1.05rem + 0.5vw, 1.45rem);
-  line-height: 1.7;
+  font-size: clamp(1.3rem, 1.1rem + 1vw, 1.85rem);
+  line-height: 1.6;
   letter-spacing: 0.05em;
   font-feature-settings: "palt" 1;
   color: var(--sumi);
 }
 
-.tag {
-  display: inline-block;
-  border: 1px solid var(--rule-paper);
-  border-radius: 2px;
-  padding: 0.15em 0.7em;
-  font-size: 0.72rem;
-  line-height: 1.8;
-  letter-spacing: 0.06em;
-  color: var(--sumi-dim);
-}
-
 .text {
-  margin: 1rem 0 0;
-  font-size: 0.95rem;
-  line-height: 2.1;
+  margin: 1.1rem 0 0;
+  font-size: 0.93rem;
+  line-height: 2.05;
   font-feature-settings: "palt" 1;
   color: var(--sumi);
-  max-width: 44em;
+  max-width: 40em;
 }
 
-/* ---- 一段目の実測ブロック（上罫の小さな囲み） ---- */
+/* ---- 1段目の実測ブロック（薄い墨地の囲み＝紙の中の「別紙」） ---- */
 .figure {
   margin-top: clamp(1.6rem, 3vw, 2.2rem);
-  border-top: 2px solid var(--sumi);
-  padding-top: 1.2rem;
+  background: rgba(31, 28, 28, 0.045);
+  padding: clamp(1.2rem, 2.4vw, 1.8rem) clamp(1.2rem, 2.4vw, 2rem);
   max-width: 34rem;
+}
+
+/* 枠の性質を示す小さな札（実測 / 例 / お渡しするもの）。
+   ⚠ 数値を出すのは実測のある1段目だけ。この札で「これは実測か・例か」を明示する。 */
+.figureTag {
+  margin: 0 0 0.9rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  line-height: 1.8;
+  color: var(--sumi-dim);
 }
 
 .figureHead {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.4rem 0.9rem;
+  gap: 0.3rem 1rem;
   margin: 0;
+}
+
+/* 2・3段目の頭。数字ではなく語を置くので、1段目の数字より一段小さい明朝 */
+.figureLead {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.15rem, 1rem + 0.8vw, 1.6rem);
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
+}
+
+/* 「20時間 → 4時間」＝約8割の出どころが面で分かるように置く一行 */
+.figureRatio {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  line-height: 1.9;
+  color: var(--sumi-dim);
 }
 
 .figureNum {
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.7rem, 1.2rem + 1.6vw, 2.4rem);
-  line-height: 1.2;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.2rem);
+  line-height: 1.1;
   letter-spacing: 0.02em;
   color: var(--sumi);
 }
 
 .figureLabel {
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
   color: var(--sumi-dim);
 }
 
 .figureBody {
-  margin: 0.9rem 0 0;
-  font-size: 0.92rem;
-  line-height: 2;
+  margin: 0.8rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.95;
   color: var(--sumi);
 }
 
 .figureNote {
-  margin: 0.7rem 0 0;
-  font-size: 0.8rem;
-  line-height: 1.9;
+  margin: 0.6rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.85;
   color: var(--sumi-dim);
 }
 
-/* ---- 締め ---- */
+/* ---- 締め（段落を重ねず、太い墨罫の下に一言だけ置く） ----
+   P11・2026-09-03＝上罫は DrawRule。罫の幅は締めの一文と同じ 26em に揃える */
+.closeBlock {
+  margin: clamp(2.8rem, 5.5vw, 4rem) 0 0;
+  /* 締めの一文（26em × 28px＝728px）と同じ幅で罫を引く。
+     ここは地の文サイズなので em ではなく rem で指定する */
+  max-width: 45.5rem;
+}
+
+.closeRule {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--sumi);
+  margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem);
+}
+
 .close {
-  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
-  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-  line-height: 2.3;
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.75rem);
+  line-height: 1.95;
+  letter-spacing: 0.04em;
   font-feature-settings: "palt" 1;
   color: var(--sumi);
-  max-width: 40em;
+  max-width: 26em;
+}
+
+.closeSub {
+  margin: 1.2rem 0 0;
+  font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1.05rem);
+  line-height: 2.1;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi-dim);
+  max-width: 34em;
 }
 
 /* ---- 導線（Way .moreLink と同じ「1px 罫の枠ボタン」） ---- */
 .more {
-  margin: 2.5rem 0 0;
+  margin: 2.2rem 0 0;
 }
 
 .moreLink {

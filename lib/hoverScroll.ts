@@ -59,11 +59,19 @@ export function measureTravel(
 }
 
 /**
- * CSSアニメ版の縦流し（transform: translateY 駆動）で「実際に動いている」区間の割合。
- * キーフレームの 6%〜94% が走行区間で、前後は端で少し溜めるための保持。
- * ここを見込んで duration を伸ばさないと、実効の巡航速度が CRUISE_SPEED より速くなる。
+ * CSSアニメ版の縦流しで、頭と末尾に置く「溜め」の長さ。
+ *
+ * ★秒で固定すること。**割合で固定してはいけない。**
+ * 2026-09-02 まではキーフレーム側に 6%／94% と割合で書いていたため、一周の長い
+ * （＝画像が縦に長い）作品ほど溜めも比例して伸びていた。実測 2026-09-03＝
+ * AOKI BEAUTY CLINIC NO2（縦横比 21:1・一周43.3秒）で溜めが **2.60秒**あり、
+ * 「この札だけホバーしても流れない」という指摘になった（他の5枚は0.58〜1.27秒）。
+ * 秒で固定したので、どの札もホバーから 0.4秒で動き出す。巡航速度は不変。
+ *
+ * ⚠ 溜めの割合が札ごとに変わる＝キーフレームを札ごとに作る必要がある。
+ *   PickUpWorks.tsx の writePanKeyframes() が `measurePan()` の hold から差し込む。
  */
-export const PAN_HOLD = 0.88;
+export const PAN_HOLD_SEC = 0.4;
 
 /**
  * CSSアニメ版の縦流しに必要な値のセット。
@@ -86,8 +94,13 @@ export interface PanSpec {
   span: number;
   /** 箱自身の高さに対する送り量の割合（translateY(-shift * 100%) で使う） */
   shift: number;
-  /** 片道の所要秒数。CRUISE_SPEED と PAN_HOLD から求める */
+  /** 片道の所要秒数＝走行時間（frames ÷ CRUISE_SPEED）＋ 頭と末尾の溜め（PAN_HOLD_SEC × 2） */
   duration: number;
+  /**
+   * duration に対する溜めの割合（0〜0.5）。キーフレームの
+   * `0%, hold%` と `(100-hold)%, 100%` に入れる。札ごとに変わる。
+   */
+  hold: number;
 }
 
 /**
@@ -101,11 +114,14 @@ export function measurePan(
   const frames = measureTravel(naturalWidth, naturalHeight, 1);
   if (!(frames > 0.06)) return null;
   const span = 1 + frames;
+  // 走行時間は速度で決まる（作品ごとに変わる）。溜めは前後とも固定秒。
+  const duration = frames / CRUISE_SPEED + PAN_HOLD_SEC * 2;
   return {
     frames,
     span,
     shift: frames / span,
-    duration: frames / CRUISE_SPEED / PAN_HOLD,
+    duration,
+    hold: PAN_HOLD_SEC / duration,
   };
 }
 

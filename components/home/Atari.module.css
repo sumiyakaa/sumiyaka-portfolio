@@ -47,9 +47,23 @@
   gap: 2.5rem 1.5rem;
 }
 
+/* 句ごとの出現用（transform を効かせるため inline-block）。
+   P11・2026-09-03＝折り返しは句の切れ目でだけ起きる＝語の途中で折れない */
+.qPhrase {
+  display: inline-block;
+}
+
 .stat {
-  border-top: 1px solid var(--rule);
-  padding-top: 1.5rem;
+  padding-top: 0;
+}
+
+/* 上罫＝DrawRule（左から引かれる）。border-top から実体の要素へ置き換えた */
+.statRule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--rule);
+  margin-bottom: 1.5rem;
 }
 
 .stat:nth-child(1) {

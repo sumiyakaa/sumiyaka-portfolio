@@ -1,33 +1,60 @@
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import CountUp from "@/components/animation/CountUp";
+import DrawRule from "@/components/animation/DrawRule";
 import styles from "./Atari.module.css";
 
 /**
  * 言い当て — an-a.html .sec-insight の忠実移植。
  * 文言・統計値（60.8% / 48.2%）・出典表記は正本（an-a.html）どおり。
+ *
+ * P11（2026-09-03・あおきさん指示「アニメーションが欲しい」）で動きを追加：
+ *  - 問いは「A社／B社／C社」を一つずつ置いてから、最後に問いが着地する（散らばりの実演）
+ *  - 答えは2拍に割る
+ *  - 統計は罫が引かれてから数字が 0 から書き入れられる（CountUp / DrawRule）
+ * 文言・数値・出典は一言一句そのまま。動き以外は変えていない。
  */
 export default function Atari() {
   return (
     <section className={styles.section}>
       <div className={styles.wrap}>
-        <ScrollReveal>
-          <h2 className={styles.q}>
-            A社のCSVと、B社のExcelと、C社のPDFを、人が手で転記していませんか。
-          </h2>
-        </ScrollReveal>
-        <ScrollReveal delay={0.1}>
-          <p className={styles.answer}>
-            システムが無いのではなく、繋がっていない。だから人が転記している。
-          </p>
-        </ScrollReveal>
+        {/* 句ごとに現れる＝3社のデータが別々に置かれ、最後に問いが立つ */}
+        <h2 className={styles.q}>
+          <ScrollReveal as="span" className={styles.qPhrase}>
+            A社のCSVと、
+          </ScrollReveal>
+          <ScrollReveal as="span" className={styles.qPhrase} delay={0.14}>
+            B社のExcelと、
+          </ScrollReveal>
+          <ScrollReveal as="span" className={styles.qPhrase} delay={0.28}>
+            C社のPDFを、
+          </ScrollReveal>
+          <ScrollReveal as="span" className={styles.qPhrase} delay={0.5}>
+            人が手で転記していませんか。
+          </ScrollReveal>
+        </h2>
+        <p className={styles.answer}>
+          <ScrollReveal as="span" className={styles.qPhrase} delay={0.1}>
+            システムが無いのではなく、繋がっていない。
+          </ScrollReveal>
+          <ScrollReveal as="span" className={styles.qPhrase} delay={0.32}>
+            だから人が転記している。
+          </ScrollReveal>
+        </p>
         <div className={styles.stats}>
           <ScrollReveal className={styles.stat}>
-            <p className={styles.statNum}>60.8%</p>
+            <DrawRule className={styles.statRule} delay={0.1} />
+            <p className={styles.statNum}>
+              <CountUp value={60.8} decimals={1} suffix="%" delay={0.35} />
+            </p>
             <p className={styles.statLabel}>
               システム化しても負担が減らない理由 第1位「データの二重入力が発生」
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.15} className={styles.stat}>
-            <p className={styles.statNum}>48.2%</p>
+            <DrawRule className={styles.statRule} delay={0.25} />
+            <p className={styles.statNum}>
+              <CountUp value={48.2} decimals={1} suffix="%" delay={0.5} />
+            </p>
             <p className={styles.statLabel}>
               負担が大きい業務 第1位「データの入力・集計・照合」
             </p>
