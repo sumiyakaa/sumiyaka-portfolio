@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
@@ -349,19 +350,40 @@ export default function ServicePage() {
           {/* 見本＝主張のすぐ後ろに現物を置く（2026-09-05 追加）。囲みは .pillarItem と同じ作法 */}
           <ScrollReveal className={styles.reveal} delay={0.15}>
             <div className={styles.sample}>
-              <span className={styles.label}>SAMPLE</span>
-              <h4 className={styles.sampleTitle}>お渡しする形のまま、見本を公開しています。</h4>
-              <p className={styles.sampleDesc}>
-                首都圏の中堅製造業100社を架空データで調べた、リサーチ・リスト作成の見本です。取得条件の決め方、重複の判定、証跡の残し方、品質チェックの数値まで、実際の納品物と同じ形でご覧いただけます。
-              </p>
+              <div className={styles.sampleBody}>
+                <span className={styles.label}>SAMPLE</span>
+                <h4 className={styles.sampleTitle}>お渡しする形のまま、見本を公開しています。</h4>
+                <p className={styles.sampleDesc}>
+                  首都圏の中堅製造業100社を架空データで調べた、リサーチ・リスト作成の見本です。取得条件の決め方、重複の判定、証跡の残し方、品質チェックの数値まで、実際の納品物と同じ形でご覧いただけます。
+                </p>
+                <a
+                  href="https://sumiyakastudio.github.io/research-list-sample/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${styles.arrowLink} ${styles.sampleLink}`}
+                >
+                  リサーチ・リスト作成の見本を見る
+                  <span className={styles.arrow} aria-hidden="true">→</span>
+                </a>
+              </div>
+
+              {/* 見本の現物。画像自体もリンクにする（本文のリンクと同じ行き先） */}
               <a
                 href="https://sumiyakastudio.github.io/research-list-sample/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${styles.arrowLink} ${styles.sampleLink}`}
+                className={styles.sampleShot}
+                tabIndex={-1}
+                aria-hidden="true"
               >
-                リサーチ・リスト作成の見本を見る
-                <span className={styles.arrow} aria-hidden="true">→</span>
+                <Image
+                  src="/service/research-list-sample.webp"
+                  alt=""
+                  width={1546}
+                  height={818}
+                  sizes="(max-width: 900px) 100vw, 600px"
+                  className={styles.sampleShotImg}
+                />
               </a>
             </div>
           </ScrollReveal>
