@@ -8,7 +8,7 @@ import type { Work } from "@/types/work";
  * 出ることはない。公開後にこの1行へ正式URLを入れれば、それだけで導線と表記が出る。
  */
 const REBUILD_URLS = {
-  // 2026-09-05 公開（noindex, nofollow・Freeプラン）
+  // 2026-09-05 公開（noindex・Freeプラン）
   "aoki-seitai": "https://aoki-seitai.studio.site",
   // 2026-09-04 公開（noindex, nofollow・Freeプラン）
   "aoki-travel": "https://aoki-travel.studio.site",
