@@ -4,6 +4,7 @@ import { getWorkBySlug } from "@/lib/works";
 import {
   getDetailMetaFacts,
   getDetailChipGroups,
+  getDetailRebuild,
   hasDetailSummary,
   hasDetailChallenge,
 } from "@/lib/detail";
@@ -21,6 +22,8 @@ export default async function InterceptedWorkPage({ params }: PageProps) {
 
   const metaFacts = getDetailMetaFacts(work);
   const chipGroups = getDetailChipGroups(work);
+  // 移植版。公開URLが未設定なら null＝下のブロックごと描画しない
+  const rebuild = getDetailRebuild(work);
 
   return (
     <WorkModal slug={slug}>
@@ -134,6 +137,52 @@ export default async function InterceptedWorkPage({ params }: PageProps) {
           </div>
         </div>
       ))}
+
+      {/* Rebuild — 同じデザインを別プラットフォームで組み直した版。
+          rebuild が null＝公開URL未設定のときはブロックごと出さない */}
+      {rebuild && (
+        <div style={{ marginTop: 32, padding: 20, border: "1px solid #e0e0e0", background: "#fafafa" }}>
+          <span style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 300, letterSpacing: "0.2em", color: "#999", marginBottom: 10 }}>REBUILD</span>
+          <p style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, letterSpacing: "0.04em", color: "#111", lineHeight: 1.6, marginBottom: 10 }}>
+            {/* 前後の空白を JSX の行トリムに委ねると落ちるので、文字列側で持つ */}
+            {`同じデザインを ${rebuild.platform} で再構築`}
+          </p>
+          {rebuild.note !== "" && (
+            <p style={{ fontFamily: "var(--font-body)", fontWeight: 300, fontSize: 13, lineHeight: 1.9, color: "#555" }}>
+              {rebuild.note}
+            </p>
+          )}
+          {rebuild.facts.length > 0 && (
+            <ul style={{ margin: "14px 0 0", padding: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              {rebuild.facts.map((fact) => (
+                <li key={fact} style={{ fontFamily: "var(--font-body)", fontWeight: 300, fontSize: 12, lineHeight: 1.8, color: "#555", paddingLeft: 14, textIndent: -14 }}>
+                  — {fact}
+                </li>
+              ))}
+            </ul>
+          )}
+          <a
+            href={rebuild.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              marginTop: 16,
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              color: "#111",
+              border: "1px solid #ddd",
+              padding: "10px 20px",
+              textDecoration: "none",
+            }}
+          >
+            {`${rebuild.platform} 版を見る ↗`}
+          </a>
+        </div>
+      )}
 
       {/* Action buttons — bottom */}
       <div style={{ display: "flex", gap: 16, marginTop: 40, flexWrap: "wrap" }}>

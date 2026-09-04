@@ -10,6 +10,7 @@ import {
   getDetailDesignFacts,
   getDetailChipGroups,
   getDetailBooleanFlags,
+  getDetailRebuild,
   hasDetailSummary,
   hasDetailChallenge,
   hasDetailDesignSection,
@@ -73,6 +74,8 @@ export default async function WorkDetailPage({ params }: PageProps) {
   const chipGroups = getDetailChipGroups(work);
   const booleanFlags = getDetailBooleanFlags(work);
   const showDesign = hasDetailDesignSection(work);
+  // 移植版。公開URLが未設定なら null＝下の節ごと描画しない
+  const rebuild = getDetailRebuild(work);
 
   return (
     <main>
@@ -135,6 +138,48 @@ export default async function WorkDetailPage({ params }: PageProps) {
                 </div>
               </ScrollReveal>
             )}
+          </div>
+        </section>
+      )}
+
+      {/* ── Rebuild（同じデザインを別プラットフォームで組み直した版） ──
+          rebuild が null＝公開URL未設定のときは節ごと出さない */}
+      {rebuild && (
+        <section className={styles.rebuildSection}>
+          <div className={styles.rebuildInner}>
+            <ScrollReveal>
+              <span className={styles.sectionLabel}>REBUILD</span>
+              {/* 前後の空白を JSX の行トリムに委ねると落ちるので、文字列側で持つ */}
+              <h2 className={styles.rebuildTitle}>
+                {`同じデザインを ${rebuild.platform} で再構築`}
+              </h2>
+              {rebuild.note !== "" && (
+                <p className={styles.rebuildText}>{rebuild.note}</p>
+              )}
+            </ScrollReveal>
+
+            {rebuild.facts.length > 0 && (
+              <ScrollReveal delay={0.1}>
+                <ul className={styles.rebuildFacts}>
+                  {rebuild.facts.map((fact) => (
+                    <li key={fact} className={styles.rebuildFact}>
+                      {fact}
+                    </li>
+                  ))}
+                </ul>
+              </ScrollReveal>
+            )}
+
+            <ScrollReveal delay={0.2}>
+              <a
+                href={rebuild.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.rebuildLink}
+              >
+                {`${rebuild.platform} 版を見る ↗`}
+              </a>
+            </ScrollReveal>
           </div>
         </section>
       )}

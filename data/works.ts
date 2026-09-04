@@ -1,5 +1,17 @@
 import type { Work } from "@/types/work";
 
+/**
+ * 移植版（別プラットフォームで組み直した版）の公開URL。ここが唯一の正本。
+ *
+ * 公開前は空文字にしておく。作品ページ側は URL が空なら移植版の節を丸ごと出さないため、
+ * 未公開の暫定URL（編集中の内容が反映される STUDIO のライブプレビュー等）が本番へ
+ * 出ることはない。公開後にこの1行へ正式URLを入れれば、それだけで導線と表記が出る。
+ */
+const REBUILD_URLS = {
+  // 2026-09-04 公開（noindex, nofollow・Freeプラン）
+  "aoki-travel": "https://aoki-travel.studio.site",
+} satisfies Record<string, string>;
+
 export const works: Work[] = [
   // -------------------------------------------------------------------------
   // 1. AOKI TRAVEL (Finder: aoki-travel / work-26)
@@ -67,6 +79,18 @@ export const works: Work[] = [
     hasForm: true,
     detailUrl: null,
     siteUrl: "https://sumiyakastudio.github.io/aoki-travel/",
+    // ノーコード移植版（STUDIO）。REBUILD_URLS が空のあいだは作品ページに表示されない
+    rebuildPlatform: "STUDIO",
+    rebuildUrl: REBUILD_URLS["aoki-travel"],
+    rebuildNote:
+      "この作品は HTML / CSS / JavaScript で書いた静的サイトである。同じデザインがノーコードでも成立するかを確かめるため、静的版の実測値（配色・余白・文字サイズ・動きの秒数）をそのまま基準にして、STUDIO 上で同じ画面を組み直した。完全な複製ではなく、下に挙げた差は残っている。",
+    rebuildFacts: [
+      "移植元：静的 HTML / CSS / JavaScript・全11ページ（GitHub Pages で公開）",
+      "移植した範囲：TOP とツアー一覧の2ページ（全11ページ中）",
+      "STUDIO 版の構成：1,302ノード",
+      "ファーストビューの動画4本ローテーション（5秒ごとに1.4秒かけてクロスフェード）も再現",
+      "ページ全体の高さの差：PC −1.68% / SP +1.19%",
+    ],
   },
 
   // -------------------------------------------------------------------------

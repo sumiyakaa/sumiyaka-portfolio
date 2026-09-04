@@ -20,6 +20,13 @@ export interface DetailChipGroup {
   truncatedCount: number;
 }
 
+export interface DetailRebuild {
+  platform: string;
+  url: string;
+  note: string;
+  facts: string[];
+}
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -117,6 +124,29 @@ export const getDetailBooleanFlags = (work: Work): DetailFactItem[] => [
   { label: "フォーム", value: formatFlag(work.hasForm) },
   { label: "アニメーション", value: formatFlag(work.hasAnimation) },
 ];
+
+// ---------------------------------------------------------------------------
+// Rebuild — 同じデザインを別プラットフォームで組み直した版
+// ---------------------------------------------------------------------------
+
+/**
+ * 移植版の表示情報を返す。公開URLが空（＝まだ公開していない）なら null。
+ *
+ * 「URL が無いのに表記や導線だけ出ている」状態をここ1箇所で塞いでいる。
+ * 呼び出し側（詳細ページ・モーダル）は null なら節ごと描画しない。
+ */
+export const getDetailRebuild = (work: Work): DetailRebuild | null => {
+  if (!isNonEmpty(work.rebuildUrl)) return null;
+
+  return {
+    platform: isNonEmpty(work.rebuildPlatform)
+      ? work.rebuildPlatform
+      : "別プラットフォーム",
+    url: work.rebuildUrl.trim(),
+    note: isNonEmpty(work.rebuildNote) ? work.rebuildNote : "",
+    facts: (work.rebuildFacts ?? []).filter(isNonEmpty),
+  };
+};
 
 // ---------------------------------------------------------------------------
 // Section visibility helpers
