@@ -10,6 +10,8 @@ import type { Work } from "@/types/work";
 const REBUILD_URLS = {
   // 2026-09-04 公開（noindex, nofollow・Freeプラン）
   "aoki-travel": "https://aoki-travel.studio.site",
+  // 2026-08-30 公開（noindex・Freeプラン）
+  "aoki-gym": "https://aoki-gym.studio.site",
 } satisfies Record<string, string>;
 
 export const works: Work[] = [
@@ -832,6 +834,18 @@ export const works: Work[] = [
     images: ["/works/aoki-gym/01.webp"],
     liveUrl: "https://sumiyakastudio.github.io/AokiGym/",
     isPickUp: false,
+    rebuildPlatform: "STUDIO",
+    rebuildUrl: REBUILD_URLS["aoki-gym"],
+    rebuildNote:
+      "この作品は HTML / CSS / JavaScript で書いた静的サイトである。同じデザインがノーコードでも成立するかを確かめるため、静的版の実測値（配色・余白・文字サイズ・動きの秒数）をそのまま基準にして、STUDIO 上で同じ画面を組み直した。完全な複製ではなく、下に挙げた差は残っている。",
+    rebuildFacts: [
+      "移植元：静的 HTML / CSS / JavaScript・1ページ（GitHub Pages で公開）",
+      "移植した範囲：全12セクションすべて",
+      "STUDIO 版の構成：423ノード",
+      "斜めカット（clip-path）・ネオングロー・ビフォーアフターのバッジまで再現",
+      "ページ全体の高さの差：PC +0.68%",
+      "カウントアップ演出と FAQ の排他開閉は、STUDIO に該当機能がないため落としている",
+    ],
     // Finder fields
     genre: "フィットネス・ヘルスケア",
     siteType: "LP（ランディングページ）",

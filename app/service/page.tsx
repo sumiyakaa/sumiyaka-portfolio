@@ -346,7 +346,27 @@ export default function ServicePage() {
             </ol>
           </ScrollReveal>
 
+          {/* 見本＝主張のすぐ後ろに現物を置く（2026-09-05 追加）。囲みは .pillarItem と同じ作法 */}
           <ScrollReveal className={styles.reveal} delay={0.15}>
+            <div className={styles.sample}>
+              <span className={styles.label}>SAMPLE</span>
+              <h4 className={styles.sampleTitle}>お渡しする形のまま、見本を公開しています。</h4>
+              <p className={styles.sampleDesc}>
+                首都圏の中堅製造業100社を架空データで調べた、リサーチ・リスト作成の見本です。取得条件の決め方、重複の判定、証跡の残し方、品質チェックの数値まで、実際の納品物と同じ形でご覧いただけます。
+              </p>
+              <a
+                href="https://sumiyakastudio.github.io/research-list-sample/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.arrowLink} ${styles.sampleLink}`}
+              >
+                リサーチ・リスト作成の見本を見る
+                <span className={styles.arrow} aria-hidden="true">→</span>
+              </a>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal className={styles.reveal} delay={0.2}>
             <Link href="/tools" className={styles.arrowLink}>
               実際に動くツールを触る
               <span className={styles.arrow} aria-hidden="true">→</span>
