@@ -2,14 +2,82 @@ import type { Work } from "@/types/work";
 
 export const works: Work[] = [
   // -------------------------------------------------------------------------
-  // 1. AOKI STAFFING 採用サイト (Finder: aoki-recruit / work-25)
+  // 1. AOKI TRAVEL (Finder: aoki-travel / work-26)
+  // -------------------------------------------------------------------------
+  {
+    slug: "aoki-travel",
+    title: "AOKI TRAVEL",
+    id: "work-26",
+    tier: "S",
+    order: 1,
+    category: ["CORPORATE"],
+    technologies: ["HTML", "CSS", "JavaScript"],
+    description:
+      "カナダ・バンクーバー発着の旅行会社「アオキ・トラベル」のブランドサイト。映像4本が5秒ごとに切り替わるファーストビューから、ツアー9本の絞り込み一覧・日程表つき詳細・モデルコースまで全11ページを、紙色×オリーブ×橙の手仕事のあるデザインで構成。",
+    thumbnail: "/works/aoki-travel/thumbnail.webp",
+    images: ["/works/aoki-travel/01.webp"],
+    liveUrl: "https://sumiyakastudio.github.io/aoki-travel/",
+    isPickUp: false,
+    // Finder fields
+    genre: "旅行・観光",
+    siteType: "ブランドサイト（マルチページ）",
+    purpose: "ブランディング・予約リクエスト獲得",
+    tags: [
+      "旅行会社サイト",
+      "全11ページ",
+      "動画4本のヒーロー",
+      "ツアー一覧＋5軸絞り込み",
+      "縦タイムラインの日程表",
+      "人数帯別の料金表",
+      "モデルコース3本",
+      "地図埋め込み",
+      "多ステップ予約リクエストフォーム",
+      "JSON駆動のツアーデータ",
+      "レスポンシブ",
+    ],
+    summary:
+      "「現地を知り尽くした日本語ガイドと、まだ見ぬ絶景へ。」をコンセプトに、紙色×墨×オリーブ×バフ×橙の5色と、破れ紙のエッジ・手描きの下線・写真のバフ枠という手仕事のモチーフで組んだ旅行会社のブランドサイト。ファーストビューは森・氷河湖・雪の稜線・外洋の映像4本を5秒ごとにクロスフェードし、右下の01〜04と進行バーで現在地を示す。TOP／ツアー一覧（エリア・季節・アクティビティ・所要時間・並び替えの5軸絞り込み）／ツアー詳細3本（sticky申込カード・タブ3面・含まれるもの／含まれないもの・縦タイムラインの日程表・人数帯×時期の料金表・非対称ギャラリー・地図・FAQ・関連ツアー）／モデルコース3本（2泊3日・4泊5日・7泊8日の日別タイムライン）／よくある質問（4分類13問）／会社概要／お問い合わせ（入力→確認→完了）／プライバシー／404の全11ページ。",
+    challenge:
+      "ツアー9本のデータを1本のJSに集約し、一覧・絞り込み・並び替え・関連ツアー・TOPの人気枠をすべて同じデータから描画する構造にした。データと表示を分けたことで、静的サイトのままCMSやノーコードへ移植できる形を保っている。ファーストビューの映像は、重ね置きした4本をopacityだけで交差させ、2本目以降は順番が近づくまで読み込まない。画面外とタブ非表示では再生を止め、自動再生が拒否された場合はポスター画像が残る。写真51枚と映像4本は原寸のコンタクトシートで全数を検品し、実在事業者の船名と電話番号が判読できる素材など4点を差し替えた。橙の文字は紙色地で4.1:1しか出ないため文字用の橙を別に用意してWCAG AAを満たし、iOS向けにvw不使用・100svhの二段指定・aspect-ratioはimg直の3点を徹底した。",
+    designTone: "ペーパー・クラフト / 手描きの余白",
+    features: [
+      "動画ヒーロー（4本ローテーション）",
+      "5軸の絞り込み",
+      "sticky申込カード",
+      "タブ切替",
+      "縦タイムライン",
+      "料金表",
+      "ライトボックス付きギャラリー",
+      "地図埋め込み",
+      "アコーディオンFAQ",
+      "多ステップフォーム",
+      "レスポンシブ",
+    ],
+    techTags: ["JavaScript"],
+    techStack: ["HTML", "CSS", "JavaScript"],
+    pageCount: 11,
+    scale: null,
+    budgetRange: "¥380,000（税抜）",
+    durationRange: null,
+    createdAt: "2026-09-04",
+    year: 2026,
+    isFeatured: false,
+    hasCms: false,
+    hasAnimation: true,
+    hasForm: true,
+    detailUrl: null,
+    siteUrl: "https://sumiyakastudio.github.io/aoki-travel/",
+  },
+
+  // -------------------------------------------------------------------------
+  // 2. AOKI STAFFING 採用サイト (Finder: aoki-recruit / work-25)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-recruit",
     title: "AOKI STAFFING 採用サイト",
     id: "work-25",
     tier: "A",
-    order: 1,
+    order: 2,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -69,14 +137,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 2. SUIGEN 水源 (Finder: suigen / work-24)
+  // 3. SUIGEN 水源 (Finder: suigen / work-24)
   // -------------------------------------------------------------------------
   {
     slug: "suigen",
     title: "SUIGEN 水源",
     id: "work-24",
     tier: "S",
-    order: 2,
+    order: 3,
     category: ["CORPORATE", "LP"],
     technologies: ["HTML", "CSS", "JavaScript", "Lenis"],
     description:
@@ -131,14 +199,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 3. REGENT BEVERAGE (Finder: regent-beverage / work-23)
+  // 4. REGENT BEVERAGE (Finder: regent-beverage / work-23)
   // -------------------------------------------------------------------------
   {
     slug: "regent-beverage",
     title: "REGENT BEVERAGE",
     id: "work-23",
     tier: "S",
-    order: 3,
+    order: 4,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP", "Lenis"],
     description:
@@ -190,14 +258,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 4. RECLEAR (Finder: reclear / work-22)
+  // 5. RECLEAR (Finder: reclear / work-22)
   // -------------------------------------------------------------------------
   {
     slug: "reclear",
     title: "RECLEAR",
     id: "work-22",
     tier: "A",
-    order: 4,
+    order: 5,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -250,14 +318,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 5. 陽だまりデンタルクリニック (Finder: hidamari-dental / work-21)
+  // 6. 陽だまりデンタルクリニック (Finder: hidamari-dental / work-21)
   // -------------------------------------------------------------------------
   {
     slug: "hidamari-dental",
     title: "陽だまりデンタルクリニック",
     id: "work-21",
     tier: "A",
-    order: 5,
+    order: 6,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript", "jsPDF"],
     description:
@@ -311,14 +379,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 6. もりのこ幼稚園 (Finder: morinoko-kindergarten / work-20)
+  // 7. もりのこ幼稚園 (Finder: morinoko-kindergarten / work-20)
   // -------------------------------------------------------------------------
   {
     slug: "morinoko-kindergarten",
     title: "もりのこ幼稚園",
     id: "work-20",
     tier: "A",
-    order: 6,
+    order: 7,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -371,14 +439,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 7. J. CALDWELL & SONS (Finder: caldwell-sons / work-17)
+  // 8. J. CALDWELL & SONS (Finder: caldwell-sons / work-17)
   // -------------------------------------------------------------------------
   {
     slug: "caldwell-sons",
     title: "J. CALDWELL & SONS",
     id: "work-17",
     tier: "S",
-    order: 7,
+    order: 8,
     category: ["MULTI-LANG"],
     technologies: ["HTML", "CSS", "JavaScript", "i18n"],
     description:
@@ -429,14 +497,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 8. AOKI ATELIER (Finder: aoki-atelier / work-16)
+  // 9. AOKI ATELIER (Finder: aoki-atelier / work-16)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-atelier",
     title: "AOKI ATELIER",
     id: "work-16",
     tier: "A",
-    order: 8,
+    order: 9,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
     description:
@@ -487,14 +555,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 9. CodeQuest (Finder: codequest / work-19)
+  // 10. CodeQuest (Finder: codequest / work-19)
   // -------------------------------------------------------------------------
   {
     slug: "codequest",
     title: "CodeQuest",
     id: "work-19",
     tier: "S",
-    order: 9,
+    order: 10,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP", "PixelArt"],
     description:
@@ -545,14 +613,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 10. AOKI REFORM (Finder: aoki-reform / work-15)
+  // 11. AOKI REFORM (Finder: aoki-reform / work-15)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-reform",
     title: "AOKI REFORM",
     id: "work-15",
     tier: "S",
-    order: 10,
+    order: 11,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript", "IntersectionObserver"],
     description:
@@ -606,14 +674,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 11. AOKI BEAUTY CLINIC NO2 (Finder: aoki-beauty-clinic-no2 / work-14b)
+  // 12. AOKI BEAUTY CLINIC NO2 (Finder: aoki-beauty-clinic-no2 / work-14b)
   // -------------------------------------------------------------------------
   {
     slug: "beauty-clinic-no2",
     title: "AOKI BEAUTY CLINIC NO2",
     id: "work-14b",
     tier: "S",
-    order: 11,
+    order: 12,
     category: ["MULTI-LANG"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP", "i18n"],
     description:
@@ -665,14 +733,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 12. AOKI TAX OFFICE (Finder: aoki-tax-office / work-14a)
+  // 13. AOKI TAX OFFICE (Finder: aoki-tax-office / work-14a)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-tax",
     title: "AOKI TAX OFFICE",
     id: "work-14a",
     tier: "A",
-    order: 12,
+    order: 13,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript", "Lenis"],
     description:
@@ -724,14 +792,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 13. AOKI GYM (Finder: aoki-gym / work-12)
+  // 14. AOKI GYM (Finder: aoki-gym / work-12)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-gym",
     title: "AOKI GYM",
     id: "work-12",
     tier: "A",
-    order: 13,
+    order: 14,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
     description:
@@ -780,14 +848,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 14. BISTRO AOKI (Finder: bistro-aoki / work-11)
+  // 15. BISTRO AOKI (Finder: bistro-aoki / work-11)
   // -------------------------------------------------------------------------
   {
     slug: "bistro-aoki",
     title: "BISTRO AOKI",
     id: "work-11",
     tier: "A",
-    order: 14,
+    order: 15,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
     description:
@@ -838,14 +906,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 15. AOKI ESTATE (Finder: aoki-estate / work-10)
+  // 16. AOKI ESTATE (Finder: aoki-estate / work-10)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-estate",
     title: "AOKI ESTATE",
     id: "work-10",
     tier: "S",
-    order: 15,
+    order: 16,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -900,14 +968,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 16. AOKI FAMILY ENGLISH (Finder: aoki-family-english / work-08)
+  // 17. AOKI FAMILY ENGLISH (Finder: aoki-family-english / work-08)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-family-english",
     title: "AOKI FAMILY ENGLISH",
     id: "work-08",
     tier: "A",
-    order: 16,
+    order: 17,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -962,14 +1030,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 17. AOKI ANIMATION (Finder: aoki-animation / work-09)
+  // 18. AOKI ANIMATION (Finder: aoki-animation / work-09)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-animation",
     title: "AOKI ANIMATION",
     id: "work-09",
     tier: "A",
-    order: 17,
+    order: 18,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1017,14 +1085,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 18. BLUE WOODS No.1 POP-UP SHOP (Finder: aoki-standard-co / work-02)
+  // 19. BLUE WOODS No.1 POP-UP SHOP (Finder: aoki-standard-co / work-02)
   // -------------------------------------------------------------------------
   {
     slug: "popup-store-lp",
     title: "BLUE WOODS No.1 POP-UP SHOP",
     id: "work-02",
     tier: "A",
-    order: 18,
+    order: 19,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1072,14 +1140,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 19. AKASHIKI WORKS FINDER (Portfolio only)
+  // 20. AKASHIKI WORKS FINDER (Portfolio only)
   // -------------------------------------------------------------------------
   {
     slug: "works-finder",
     title: "AKASHIKI WORKS FINDER",
     id: "work-18",
     tier: "A",
-    order: 19,
+    order: 20,
     category: ["CORPORATE"],
     technologies: ["React", "TypeScript", "CSS"],
     description:
@@ -1133,14 +1201,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 20. AOKI MITUMORI (Finder: aoki-mitumori / work-05)
+  // 21. AOKI MITUMORI (Finder: aoki-mitumori / work-05)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-mitumori",
     title: "AOKI MITUMORI",
     id: "work-05",
     tier: "B",
-    order: 20,
+    order: 21,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1187,14 +1255,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 21. AOKI BEAUTY CLINIC (Finder: aoki-beauty-clinic / work-01)
+  // 22. AOKI BEAUTY CLINIC (Finder: aoki-beauty-clinic / work-01)
   // -------------------------------------------------------------------------
   {
     slug: "beauty-clinic",
     title: "AOKI BEAUTY CLINIC",
     id: "work-01",
     tier: "B",
-    order: 21,
+    order: 22,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1241,14 +1309,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 22. AOKI STANDARD CO. (Finder: aoki-standard-co / work-02b)
+  // 23. AOKI STANDARD CO. (Finder: aoki-standard-co / work-02b)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-standard",
     title: "AOKI STANDARD CO.",
     id: "work-02b",
     tier: "A",
-    order: 22,
+    order: 23,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1294,14 +1362,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 23. AOKI TECH STUDIO (Finder: aoki-tech-studio / work-03)
+  // 24. AOKI TECH STUDIO (Finder: aoki-tech-studio / work-03)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-tech-studio",
     title: "AOKI TECH STUDIO",
     id: "work-03",
     tier: "A",
-    order: 23,
+    order: 24,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1357,14 +1425,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 24. AOKICOSMETIC (Finder: aoki-cosmetic / work-07)
+  // 25. AOKICOSMETIC (Finder: aoki-cosmetic / work-07)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-cosmetic",
     title: "AOKICOSMETIC",
     id: "work-07",
     tier: "S",
-    order: 24,
+    order: 25,
     category: ["CORPORATE", "LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1418,14 +1486,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 25. AOKI LOTION (Finder: aoki-lotion-lp / work-06)
+  // 26. AOKI LOTION (Finder: aoki-lotion-lp / work-06)
   // -------------------------------------------------------------------------
   {
     slug: "aoki-lotion",
     title: "AOKI LOTION",
     id: "work-06",
     tier: "B",
-    order: 25,
+    order: 26,
     category: ["LP"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
@@ -1473,14 +1541,14 @@ export const works: Work[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 26. CAFE AOKI (Finder: cafe-aoki / work-04)
+  // 27. CAFE AOKI (Finder: cafe-aoki / work-04)
   // -------------------------------------------------------------------------
   {
     slug: "cafe-aoki",
     title: "CAFE AOKI",
     id: "work-04",
     tier: "A",
-    order: 26,
+    order: 27,
     category: ["CORPORATE"],
     technologies: ["HTML", "CSS", "JavaScript"],
     description:
