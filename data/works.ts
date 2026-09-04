@@ -8,6 +8,8 @@ import type { Work } from "@/types/work";
  * 出ることはない。公開後にこの1行へ正式URLを入れれば、それだけで導線と表記が出る。
  */
 const REBUILD_URLS = {
+  // 2026-09-05 公開（noindex, nofollow・Freeプラン）
+  "aoki-seitai": "https://aoki-seitai.studio.site",
   // 2026-09-04 公開（noindex, nofollow・Freeプラン）
   "aoki-travel": "https://aoki-travel.studio.site",
   // 2026-08-30 公開（noindex・Freeプラン）
@@ -79,6 +81,19 @@ export const works: Work[] = [
     hasForm: true,
     detailUrl: null,
     siteUrl: "https://sumiyakastudio.github.io/aoki-seitai/",
+    // ノーコード移植版（STUDIO）。REBUILD_URLS が空のあいだは作品ページに表示されない
+    rebuildPlatform: "STUDIO",
+    rebuildUrl: REBUILD_URLS["aoki-seitai"],
+    rebuildNote:
+      "この作品は HTML / CSS / JavaScript で書いた静的サイトである。装飾を持たず1pxの罫と余白だけで組んだデザインが、ノーコードでも成立するかを確かめるため、静的版の実測値（配色・余白・文字サイズ・罫の太さ）をそのまま基準にして、STUDIO 上で同じ画面を組み直した。完全な複製ではなく、下に挙げた差は残っている。",
+    rebuildFacts: [
+      "移植元：静的 HTML / CSS / JavaScript・全12ページ（GitHub Pages で公開）",
+      "移植した範囲：TOP と料金の2ページ（全12ページ中）",
+      "STUDIO 版の構成：633ノード（TOP 465／料金 168）＋SPメニュー用モーダル25ノード",
+      "見出し脇の 2px×64px の縦罫は擬似要素のため、実体のボックス17本に置き直した",
+      "施術室の配置図（1pxの線画）はインラインSVGが持てないため、等倍で書き出した透過画像に置き換えた",
+      "ページ全体の高さの差：PC(1280px) +0.14% / SP(390px) +0.24%",
+    ],
   },
 
   // -------------------------------------------------------------------------
