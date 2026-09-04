@@ -379,9 +379,9 @@ export default function ServicePage() {
                 <Image
                   src="/service/research-list-sample.webp"
                   alt=""
-                  width={1546}
-                  height={818}
-                  sizes="(max-width: 900px) 100vw, 600px"
+                  width={1282}
+                  height={478}
+                  sizes="(max-width: 1100px) 100vw, 900px"
                   className={styles.sampleShotImg}
                 />
               </a>

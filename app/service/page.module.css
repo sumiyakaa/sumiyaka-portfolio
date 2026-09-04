@@ -355,82 +355,49 @@
   border: 1px solid var(--color-border-light);
   background: var(--color-background-light);
   padding: 30px 32px 32px;
-  display: flex;
-  align-items: center;
-  gap: 34px;
 }
 
-/* テキスト側。画像と並ぶので伸縮させる */
+/* テキスト側。現物の上に置く */
 .sampleBody {
-  flex: 1 1 0%;
-  min-width: 0;
+  max-width: 46em;
 }
 
 /* 見本の現物。枠の中で少し外へせり出させ、紙が置かれている感じを出す */
+/* 現物は本文の下に全幅で置く。切り取らず、細かい文字も読める大きさを確保する。
+   ⚠ 横並びで縮める作り・拡大して切り取る作りは、いずれも画面幅で崩れた（2026-09-05 実測）。 */
 .sampleShot {
-  flex: 0 0 50%;
-  max-width: 600px;
   display: block;
-  /* 囲みの右下いっぱいまで使い、紙が枠から出ている感じにする */
-  margin: -30px -32px -32px 0;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-background);
+  margin: 28px -32px -32px;
+  border-top: 1px solid var(--color-border);
   overflow: hidden;
-  transition: border-color 0.3s ease;
 }
 
 .sampleShotImg {
   display: block;
   width: 100%;
   height: auto;
-  /* 左上を基準に拡大して見せる＝表の文字が読める大きさを確保する */
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-  object-position: left top;
-  transform: scale(1.28);
-  transform-origin: left top;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* 囲みのどこにホバーしても、紙をさらに手前へ引き寄せたように見せる */
+/* 動きは控えめに。紙が少しだけ手前に寄る */
 .sample:hover .sampleShotImg {
-  transform: scale(1.36);
+  transform: scale(1.02);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sampleShot,
   .sampleShotImg {
     transition: none;
   }
 
   .sample:hover .sampleShotImg {
-    transform: scale(1.28);
+    transform: none;
   }
 }
 
 /* 縦積み。画像は本文の下へ回し、全体を見せる */
-@media (max-width: 900px) {
-  .sample {
-    display: block;
-    padding-bottom: 0;
-  }
-
+@media (max-width: 560px) {
   .sampleShot {
-    max-width: none;
-    margin: 26px -32px 0;
-    border-left: 0;
-    border-top: 1px solid var(--color-border);
-  }
-
-  /* SPは全体を見せる。実画像の比（1546:818）に合わせて余白を出さない */
-  .sampleShotImg {
-    aspect-ratio: 1546 / 818;
-    object-fit: contain;
-    transform: none;
-  }
-
-  .sample:hover .sampleShotImg {
-    transform: none;
+    margin: 22px -20px -22px;
   }
 }
 
