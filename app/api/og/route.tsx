@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background: "#0a0a0a",
+          background: "#1f1c1c",
           position: "relative",
           fontFamily: "Geist, 'Noto Sans JP'",
         }}

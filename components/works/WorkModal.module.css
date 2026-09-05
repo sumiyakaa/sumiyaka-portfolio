@@ -1,10 +1,14 @@
+/* =============================================
+   WorkModal（清・紙：紙が一枚手前に出てくる）
+   モーダルは app/@modal（.page の外）に描画されるので、--wk-* は継承できない。
+   ここでは globals.css の --sumi-* を直接参照する。
+   backdrop-filter は使わない（overlay の opacity アニメと重なる）。
+   ============================================= */
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(20, 18, 18, 0.66);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,15 +25,43 @@
 
 .modalWrap {
   position: relative;
+  isolation: isolate;
   width: 100%;
   max-width: 900px;
+}
+
+/* 奥の二枚（少し回転した紙）。手前の紙の下に敷く */
+.modalWrap::before,
+.modalWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--sumi-sei-paper);
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.45s ease;
+  pointer-events: none;
+}
+
+.modalWrap::before {
+  transform: rotate(-1.6deg) translate(-8px, 6px);
+}
+
+.modalWrap::after {
+  transform: rotate(1.1deg) translate(6px, -4px);
 }
 
 .modal {
   position: relative;
   width: 100%;
   max-height: 85vh;
-  background: #fff;
+  max-height: 85svh;
+  background-color: var(--sumi-sei-paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.11 0 0 0 0 0.11 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  color: var(--sumi-ink-on-paper);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.18),
+    0 30px 80px -20px rgba(0, 0, 0, 0.6);
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -58,23 +90,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #e0e0e0;
+  background: var(--sumi-sei-paper);
+  border: 1px solid var(--sumi-rule-on-paper);
   cursor: pointer;
-  color: #111;
+  color: var(--sumi-ink-on-paper);
   transition: background 0.2s, color 0.2s;
 }
 
 .closeBtn:hover {
-  background: #111;
-  color: #fff;
+  background: var(--sumi-ink-on-paper);
+  color: var(--sumi-sei-paper);
 }
 
 .content {
   padding: 40px 48px 56px;
 }
 
-/* Sticky CTA — positioned outside modal, overlapping right edge */
+/* Sticky CTA — 右端から出た紙のタブ（角は直角） */
 .stickyCta {
   position: absolute;
   left: 100%;
@@ -89,23 +121,22 @@
   font-weight: 400;
   font-size: 12px;
   letter-spacing: 0.06em;
-  color: #111;
-  background: #fff;
+  color: var(--sumi-ink-on-paper);
+  background: var(--sumi-sei-paper);
   padding: 20px 12px;
   border: none;
-  border-radius: 0 100px 100px 0;
   cursor: pointer;
   white-space: nowrap;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transition: background 0.3s, box-shadow 0.3s, padding 0.3s;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 4px 16px -4px rgba(0, 0, 0, 0.35);
 }
 
 .stickyCta:hover {
-  background: #f0f0f0;
+  background: #ffffff;
   padding: 20px 16px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 6px 6px 24px -4px rgba(0, 0, 0, 0.4);
 }
 
 .stickyCtaArrow {
@@ -126,6 +157,15 @@
 
   .modal {
     max-height: 90vh;
+    max-height: 90svh;
+  }
+
+  .modalWrap::before {
+    transform: rotate(-1.2deg) translate(-4px, 4px);
+  }
+
+  .modalWrap::after {
+    transform: rotate(0.8deg) translate(3px, -3px);
   }
 
   .content {
@@ -134,5 +174,14 @@
 
   .stickyCta {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .modal,
+  .modalWrap::before,
+  .modalWrap::after {
+    animation: none;
   }
 }

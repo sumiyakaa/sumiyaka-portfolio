@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import DrawRule from "@/components/animation/DrawRule";
+import WorksFVStack from "@/components/fv/works/WorksFVStack";
 import WorksExplorer from "@/components/works/WorksExplorer";
 import WorksAio from "@/components/works/WorksAio";
 import WorksPrice from "@/components/works/WorksPrice";
@@ -25,24 +27,18 @@ export default function WorksPage() {
   const works = getAllWorks();
 
   return (
-    <main>
-      {/* Hero — FV維持 */}
-      <SubPageFVAnim className={styles.fv}>
-        <div className={styles.fvContent}>
-          <h1 data-fv-title className={styles.fvTitle}>WEB制作</h1>
-          <p data-fv-sub className={styles.fvSub}>
+    <main className={styles.page}>
+      {/* Hero — 清・紙。紙の束が差し込まれ、手前の一枚に題字が押し込まれる
+          （入場は WorksFVStack が持つ＝customEntrance。収縮と位相は舞台のまま） */}
+      <SubPageFVAnim className={styles.fv} customEntrance>
+        <WorksFVStack count={works.length}>
+          <h1 data-wk-title className={styles.fvTitle}>WEB制作</h1>
+          <p data-wk-sub className={styles.fvSub}>
             LP・コーポレート・ブランド・多言語 —{" "}
             {works.length}作品
           </p>
-          <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
-        </div>
-
-        <div className={styles.fvEdgeBl}>
-          <span data-fv-edge className={styles.fvEdgeText}>WEB</span>
-        </div>
-        <div className={styles.fvEdgeBr}>
-          <span data-fv-edge className={styles.fvEdgeText}>SCROLL</span>
-        </div>
+          <div data-wk-rule className={styles.fvHr} aria-hidden="true" />
+        </WorksFVStack>
       </SubPageFVAnim>
 
       {/* ========== 担当範囲＝0→100 ＋ 対応できる媒体 ========== */}
@@ -122,7 +118,7 @@ export default function WorksPage() {
       {/* ========== 末尾CTA ========== */}
       <section className={styles.cta} aria-labelledby="works-cta-title">
         <div className={styles.ctaInner}>
-          <ScrollReveal>
+          <ScrollReveal className={styles.ctaGrid}>
             <span className={styles.ctaLabel}>CONTACT</span>
             <h2 id="works-cta-title" className={styles.ctaTitle}>
               Web制作のご相談
@@ -143,6 +139,7 @@ export default function WorksPage() {
       {/* ========== もうひとつの仕事への導線 ========== */}
       <section className={styles.bridge} aria-labelledby="works-bridge-title">
         <div className={styles.bridgeInner}>
+          <DrawRule className={styles.bridgeRule} />
           <ScrollReveal>
             <h2 id="works-bridge-title" className={styles.bridgeTitle}>
               Web制作のほかに、社内の事務作業を仕組みに変える仕事もしています。

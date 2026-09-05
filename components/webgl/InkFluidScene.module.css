@@ -15,12 +15,36 @@
   height: 100%;
 }
 
+/* フォールバック（タッチ端末・狭幅・WebGL 不可）＝静止1コマの「墨の一滴」
+   2026-09-05 濃・墨：金の暈を撤去し、井戸（焦→地）の上に暖色白の滲みを二つ（非対称）。
+   画面の縁は上に重なる覆い（/about 側）が地色へ溶かす。
+   inset:0 で FV の箱に追従させる＝収縮後（50vh）も滲みの芯が題字の背後に残る
+   （100svh 固定だと芯が FV の下端へ落ち、題字の背後が暗い卵形になる＝390 実測） */
 .fallback {
   position: absolute;
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse at 50% 40%, rgba(60, 60, 60, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 70%, rgba(200, 169, 110, 0.03) 0%, transparent 40%),
-    var(--color-background);
+    radial-gradient(
+      44% 30% at 50% 50%,
+      rgba(250, 247, 245, 0) 54%,
+      rgba(250, 247, 245, 0.06) 66%,
+      rgba(250, 247, 245, 0) 80%
+    ),
+    radial-gradient(
+      36% 26% at 50% 50%,
+      rgba(250, 247, 245, 0.13) 0%,
+      rgba(250, 247, 245, 0.06) 38%,
+      rgba(250, 247, 245, 0) 68%
+    ),
+    radial-gradient(
+      30% 20% at 64% 60%,
+      rgba(250, 247, 245, 0.05) 0%,
+      rgba(250, 247, 245, 0) 70%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      var(--sumi-koge, #141212) 0%,
+      var(--sumi-noh, #1f1c1c) 62%
+    );
 }

@@ -1,10 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 export default function ModalDetailLink({ slug }: { slug: string }) {
-  const router = useRouter();
-
   return (
     <button
       onClick={() => {
@@ -18,12 +14,12 @@ export default function ModalDetailLink({ slug }: { slug: string }) {
         fontWeight: 400,
         fontSize: 13,
         letterSpacing: "0.08em",
-        color: "#fff",
-        background: "#111",
+        color: "var(--sumi-sei-paper)",
+        background: "var(--sumi-ink-on-paper)",
         padding: "14px 32px",
-        border: "none",
+        border: "1px solid var(--sumi-ink-on-paper)",
         cursor: "pointer",
-        transition: "background 0.3s",
+        boxShadow: "0 1px 1px rgba(31, 28, 28, 0.2), 0 6px 14px -6px rgba(31, 28, 28, 0.4)",
       }}
     >
       詳しく見る →

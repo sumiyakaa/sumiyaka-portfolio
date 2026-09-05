@@ -4,18 +4,35 @@
    CSS Variables — Design Tokens
    ============================================= */
 :root {
-  /* Colors — Monotone */
-  --color-primary: #0a0a0a;
-  --color-primary-light: #1a1a1a;
-  --color-secondary: #888888;
-  --color-secondary-light: #aaaaaa;
-  --color-accent: #c8a96e;
-  --color-background: #0a0a0a;
-  --color-background-light: #111111;
-  --color-foreground: #f0f0f0;
-  --color-foreground-muted: #999999;
-  --color-border: #222222;
-  --color-border-light: #333333;
+  /* Colors — Monotone（2026-09-05 五彩改修＝サブページの黒をトップの暖黒へ統一。
+     旧: 純ニュートラル #0a0a0a 系 → 新: theme-top.css と同じ暖色ニアブラック系。
+     地 #1f1c1c = oklch(23.0% 0.005 17.5) ／ 面 #2b2325 ／ 文字白 #f1eaec） */
+  --color-primary: #1f1c1c;
+  --color-primary-light: #2b2325;
+  --color-secondary: #8f8789;
+  --color-secondary-light: #a9a0a2;
+  --color-accent: #c8a96e;            /* 金＝トップの重ね帖だけが使う（§12-8）。サブページの新規要素では使わない */
+  --color-background: #1f1c1c;
+  --color-background-light: #2b2325;
+  --color-foreground: #f1eaec;
+  --color-foreground-muted: #a9a0a2;
+  --color-border: #332d2e;            /* ≒ 暖色白 8% on 地 */
+  --color-border-light: #443c3e;      /* ≒ 暖色白 16% on 地 */
+
+  /* 墨の五彩（2026-09-05）＝サブページの個性は「色」でなく「明度の段階と素材」で分ける。
+     焦（こげ）＝最深／濃（のう）＝地／重（じゅう）＝面／淡（たん）＝中間灰／清（せい）＝紙の白 */
+  --sumi-koge: #141212;
+  --sumi-noh:  #1f1c1c;
+  --sumi-juu:  #2b2325;
+  --sumi-tan:  #8f8789;
+  --sumi-tan-deep: #5e5658;
+  --sumi-sei:  #f1eaec;
+  --sumi-sei-paper: #f6f2f0;          /* 紙の面（Works）。真っ白 #ffffff は最も手前の1枚だけに */
+  --sumi-rule: rgba(241, 234, 236, 0.16);
+  --sumi-rule-soft: rgba(241, 234, 236, 0.08);
+  --sumi-ink-on-paper: #1f1c1c;
+  --sumi-ink-dim-on-paper: #6f6768;
+  --sumi-rule-on-paper: rgba(31, 28, 28, 0.28);
 
   /* Fonts */
   --font-heading: var(--font-barlow), "Helvetica Neue", sans-serif;
@@ -193,7 +210,7 @@ ul, ol {
 }
 
 ::selection {
-  background-color: var(--color-accent);
+  background-color: var(--color-foreground);
   color: var(--color-primary);
 }
 

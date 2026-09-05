@@ -1,19 +1,26 @@
 /* =============================================
-   About Page — AIスペシャリスト 墨家 / SUMIYAKA の人物ページ（P6・2026-08-27）
-   地色＝サブページ既定の暗色（--color-primary 系）。白転調なし。
-   各セクションの骨格は components/works/WorksPrice.module.css に揃える：
-     max-width 1080px／上下 96px（SP 64px）／小ラベル（mono 11px・--color-accent）
-     ＋ h2（--font-body 700・clamp(22px, 2.4rem, 34px)）／罫線 1px --color-border／番号は mono・--color-accent
+   About Page — 濃（のう）・墨（2026-09-05 五彩改修）
+   人物ページを墨の濃淡で描く。黒9:白1。
+     地＝--sumi-noh（暖黒 #1f1c1c）／墨の溜まり（面）＝--sumi-juu／最深＝--sumi-koge
+     滲みの縁＝暖色白 rgba(250,247,245) の透過 0.04〜0.10／文字白＝--color-foreground
+     金 --color-accent は使わない（差し色は白系）
 
-   互換方針：
-   - vw単位のフォントサイズ／filter・backdrop-filter のアニメ／mix-blend-mode／
-     複雑な clip-path／3D transform／will-change は不使用
-   - 100vh は svh の二段指定
-   - grid stretch × aspect-ratio × absolute子 の3点セットは不使用
-   - prefers-reduced-motion: reduce に対応（ScrollReveal の初期 opacity:0 を解除）
+   立体の出し方：
+     ① FV＝奥（流体・data-fv-depth=1 で収縮時に沈む）と手前（墨の粒・題字）の2層
+     ② 題字は手前に残り、下に薄い墨の影（text-shadow）で紙から浮く
+     ③ 本文は各セクションの背後に墨の洗い（静的な放射グラデ）＝濃さをセクションごとに変える
+     ④ 写真は「墨の縁」（四辺に内へ向かう墨のグラデ＋inset 影）と台からの落ち影
+
+   互換方針（contract.ts 規則2）：
+   - 動かすのは transform(2D)／opacity／text-shadow／box-shadow／SVG stroke-dashoffset のみ
+   - filter・backdrop-filter のアニメ／mix-blend-mode／3D transform／複雑な clip-path／
+     vw 単位のフォント／JS スクロール連動の視差は不使用
+   - 100vh は svh の二段指定。grid stretch × aspect-ratio × absolute子 の3点セットは不使用
+   - 常時ループ（墨の粒）は InViewGate で囲い画面外で止める（InkMotes.module.css）
+   - prefers-reduced-motion: reduce では終端値を置く
    ============================================= */
 .page {
-  background: var(--color-primary);
+  background: var(--sumi-noh);
   color: var(--color-foreground);
 }
 
@@ -23,44 +30,72 @@
 }
 
 /* ========================================
-   FV — 100vh（DynamicInkFluid の上に日本語 h1）
+   FV — 100vh（奥＝流体／手前＝粒・題字）
    ======================================== */
 .fv {
   position: relative;
   height: 100vh;
   height: 100svh;
-  background: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--sumi-noh);
   overflow: hidden;
 }
 
-.fvBg {
+/* 舞台＝FV の内側いっぱい。題字を中央に置く */
+.fvStage {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* タッチ端末・狭幅（prefersLightVisuals）で付く印。粒は InkMotes 側で静止させる */
+.fvStill .fvGrain {
+  opacity: 0.03;
+}
+
+/* ---- 奥の層：流体（収縮時に scale 0.94 / y -4% で沈む） ---- */
+.fvDeep {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* 墨の井戸＝縁を地色（濃）へ溶かす覆い。
+   楕円の半径を 50%×50% にして四辺の中点で必ず地色に到達させる
+   ＝沈んで縮んだ時にも継ぎ目が出ない。高さは流体 canvas と同じ 100svh に固定
+   （収縮中に再描画させない） */
+.fvDeepVeil {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      rgba(31, 28, 28, 0) 0%,
+      rgba(31, 28, 28, 0) 40%,
+      rgba(31, 28, 28, 0.5) 72%,
+      var(--sumi-noh) 100%
+    ),
+    linear-gradient(180deg, rgba(31, 28, 28, 0.55) 0%, rgba(31, 28, 28, 0) 32%);
+}
+
+/* 紙の目（静的・ループなし） */
 .fvGrain {
   position: absolute;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  animation: aboutGrain 0.5s steps(5) infinite;
+  background-size: 300px 300px;
+  opacity: 0.04;
 }
 
-@keyframes aboutGrain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  30% { transform: translate(3%, -15%); }
-  50% { transform: translate(12%, 9%); }
-  70% { transform: translate(9%, 4%); }
-  90% { transform: translate(-1%, 7%); }
-}
-
+/* ---- 手前の層：題字 ---- */
 .fvContent {
   position: relative;
   z-index: 2;
@@ -68,94 +103,142 @@
   padding: 0 20px;
 }
 
-/* 英字ラベル＝小さな装飾（入場は data-fv-edge の後追いフェード） */
+/* 小さな英字（装飾・白系） */
 .fvLabel {
   display: block;
   font-family: var(--font-mono);
   font-weight: 300;
   font-size: 11px;
-  letter-spacing: 0.3em;
-  text-indent: 0.3em;
-  color: var(--color-accent);
-  margin-bottom: 22px;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+  color: var(--color-foreground-muted);
+  margin-bottom: 26px;
   opacity: 0;
 }
 
-/* 主役＝日本語 h1（letter-spacing の入場アニメは SubPageFVAnim が 0.4em→0.08em） */
+/* 主役＝題字（明朝・太め）。滲みの中から立ち上がる入場は AboutFVStage が持つ。
+   終端の text-shadow＝下に落ちる薄い墨の影（紙から浮く）。影の本数は入場の始点と揃える */
 .fvTitle {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: clamp(32px, 3.6rem, 56px);
+  font-family: var(--font-shippori-mincho), "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-weight: 600;
+  font-size: clamp(34px, 3.8rem, 60px);
   line-height: 1.4;
   letter-spacing: 0.08em;
   font-feature-settings: "palt" 1;
   color: var(--color-foreground);
-  /* インクが明るく出た箇所でも輪郭を保つ保険（フィルタではないので iOS/WebKit でも安全） */
-  text-shadow: 0 0 14px rgba(0, 0, 0, 0.6);
+  text-shadow:
+    0 0 0 rgba(250, 247, 245, 0),
+    0 3px 18px rgba(20, 18, 18, 0.72);
   white-space: nowrap;
   opacity: 0;
 }
 
+/* サブコピー。暖色白を一段落とした #d8d1d2＝地に対し約 12:1、流体が最も明るく出る
+   #4a4a4a（bgBase 0.078 + brightness 0.21）に対しても約 5.9:1（WCAG AA 4.5:1 を満たす） */
 .fvSub {
   font-family: var(--font-body);
   font-weight: 300;
   font-size: 14px;
-  letter-spacing: 0.08em;
-  /* コントラスト確保（WCAG AA・通常テキスト4.5:1）
-     旧: #888888(--color-secondary) → 地の #0a0a0a に対し 5.58:1 だが、
-         背後のインク流体(fluidSim: bgBase 0.039 + brightness 0.25 ≒ #4a4a4a)が
-         明るく出る箇所では実効 2.50:1 まで落ちて読めなくなっていた。
-     新: #d5d5d5 → #0a0a0a に対し 13.49:1 ／ #4a4a4a に対しても 6.04:1。
-     無彩色のまま明度だけで解決（色相を足していない）。
-     text-shadow はインクがさらに明るく出た場合の保険（フィルタではないので iOS/WebKit でも安全）。 */
-  color: #d5d5d5;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.75);
-  margin-top: 18px;
+  letter-spacing: 0.1em;
+  color: #d8d1d2;
+  text-shadow: 0 0 10px rgba(20, 18, 18, 0.75);
+  margin-top: 20px;
   opacity: 0;
 }
 
+/* 筆の一線（両端がかすれる） */
 .fvHr {
-  width: 60px;
+  display: block;
+  width: 72px;
   height: 1px;
-  background: var(--color-border-light);
-  margin: 24px auto 0;
+  margin: 26px auto 0;
+  background: linear-gradient(
+    90deg,
+    rgba(241, 234, 236, 0) 0%,
+    rgba(241, 234, 236, 0.55) 22%,
+    rgba(241, 234, 236, 0.55) 70%,
+    rgba(241, 234, 236, 0) 100%
+  );
   transform: scaleX(0);
-  transform-origin: center;
+  transform-origin: left center;
 }
 
-.fvEdgeBl,
-.fvEdgeBr {
+/* 下端の滴＝スクロールの合図（文字なし・静止） */
+.fvDrip {
   position: absolute;
+  left: 50%;
+  bottom: 26px;
   z-index: 2;
+  width: 1px;
+  height: 54px;
+  margin-left: -0.5px;
+  background: linear-gradient(180deg, rgba(241, 234, 236, 0.5) 0%, rgba(241, 234, 236, 0) 100%);
+  opacity: 0;
 }
 
-.fvEdgeText {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
+.fvDrip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: rgba(241, 234, 236, 0.55);
 }
-
-.fvEdgeBl { bottom: 40px; left: 40px; opacity: 0; }
-.fvEdgeBr { bottom: 40px; right: 40px; opacity: 0; }
 
 /* ========================================
-   Shared — セクション骨格（WorksPrice と同階層）
+   Shared — セクション骨格
    ======================================== */
 .sec {
-  padding: 0 40px;
+  --sec-pad: 40px;
+  position: relative;
+  padding: 0 var(--sec-pad);
+}
+
+/* 墨の洗い＝セクションごとの静的な放射グラデ。全幅（.sec）に敷く。
+   ⚠ 箱の内側で放射グラデを切ると縁が直線で出る（1280 初回撮影で実測）。
+   必ず画面幅いっぱいの箱に置き、位置は inner（1080px 中央）基準の calc(50% ± px) で指定する */
+.sec::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .inner {
+  position: relative;
+  z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
   padding: 96px 0;
-  border-top: 1px solid var(--color-border);
 }
 
 .innerFirst {
-  border-top: 0;
+  padding-top: 88px;
+}
+
+/* セクション先頭の「かすれた一線」（DrawRule で左から引かれる） */
+.ruleRow {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.rule {
+  display: block;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(241, 234, 236, 0) 0%,
+    rgba(241, 234, 236, 0.24) 5%,
+    rgba(241, 234, 236, 0.14) 42%,
+    rgba(241, 234, 236, 0.07) 80%,
+    rgba(241, 234, 236, 0) 100%
+  );
 }
 
 /* ScrollReveal のラッパーに付ける識別用クラス（reduced-motion で使用） */
@@ -163,13 +246,24 @@
   display: block;
 }
 
+/* 小さな英字ラベル（白系・前に短い墨の一線） */
 .label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.16em;
-  color: var(--color-accent);
+  letter-spacing: 0.18em;
+  color: var(--color-foreground-muted);
   margin-bottom: 18px;
+}
+
+.label::before {
+  content: "";
+  flex: none;
+  width: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(241, 234, 236, 0.6), rgba(241, 234, 236, 0.12));
 }
 
 .title {
@@ -194,8 +288,20 @@
 }
 
 /* ========================================
-   B-2 Profile — 額（Person.module.css の作法）＋本文
+   B-2 Profile — 墨の縁の写真＋本文
    ======================================== */
+/* 洗い＝写真の背後に最も深い墨の溜まり（左寄せ・非対称）。FV の井戸から続く */
+.secProfile::before {
+  background:
+    radial-gradient(
+      560px 520px at calc(50% - 330px) 340px,
+      rgba(20, 18, 18, 0.92) 0%,
+      rgba(20, 18, 18, 0.5) 42%,
+      rgba(20, 18, 18, 0) 74%
+    ),
+    linear-gradient(180deg, rgba(20, 18, 18, 0.45) 0%, rgba(20, 18, 18, 0) 240px);
+}
+
 .profileGrid {
   display: grid;
   grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
@@ -207,51 +313,59 @@
 .portrait {
   margin: 0;
   width: min(100%, 420px);
-  /* 額のオフセット罫線（右下 +14px）がグリッド外へはみ出さないよう余白を確保 */
-  padding: 0 14px 14px 0;
+  /* 台（右下 +22px）がグリッド外へはみ出さないよう余白を確保 */
+  padding: 0 22px 22px 0;
 }
 
 .portraitFrame {
   position: relative;
 }
 
-/* オフセットの罫線フレーム（右下へずらした枠） */
+/* 台＝右下へずらした墨の面（重）。わずかに傾け、落ち影で写真を浮かせる */
 .portraitFrame::before {
   content: "";
   position: absolute;
-  inset: 14px -14px -14px 14px;
-  border: 1px solid var(--color-border-light);
+  inset: 22px -22px -22px 22px;
+  z-index: 0;
+  background: var(--sumi-juu);
+  transform: rotate(-1.2deg);
+  transform-origin: 50% 50%;
+  box-shadow: 0 30px 60px -18px rgba(0, 0, 0, 0.75);
   pointer-events: none;
 }
 
-/* 縁を地色に沈める（通常合成のみ・blend不使用） */
+/* 墨の縁＝四辺から内へ向かう墨のグラデ（overlay・通常合成のみ）＋内側の影 */
 .portraitFrame::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
   background:
-    linear-gradient(to top,    var(--color-primary) 0%, transparent 26%),
-    linear-gradient(to bottom, var(--color-primary) 0%, transparent 18%),
-    linear-gradient(to right,  var(--color-primary) 0%, transparent 16%),
-    linear-gradient(to left,   var(--color-primary) 0%, transparent 16%);
-  opacity: 0.9;
+    linear-gradient(to top,    rgba(20, 18, 18, 0.92) 0%, rgba(20, 18, 18, 0) 30%),
+    linear-gradient(to bottom, rgba(20, 18, 18, 0.8)  0%, rgba(20, 18, 18, 0) 20%),
+    linear-gradient(to right,  rgba(20, 18, 18, 0.85) 0%, rgba(20, 18, 18, 0) 18%),
+    linear-gradient(to left,   rgba(20, 18, 18, 0.85) 0%, rgba(20, 18, 18, 0) 18%);
+  box-shadow: inset 0 0 48px 10px rgba(20, 18, 18, 0.55);
 }
 
 .portraitImg {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: auto; /* 原比率維持＝object-fit による切り抜きをしない */
   display: block;
+  box-shadow: 0 22px 44px -14px rgba(10, 8, 8, 0.8);
 }
 
 .portraitCaption {
-  margin-top: 22px;
+  margin-top: 30px;
   font-family: var(--font-ibm-plex-mono), var(--font-noto-sans-jp), monospace; /* 和文が混ざるので等幅の後ろに Noto を置く（audit #4） */
   font-size: 11px;
   font-weight: 300;
   letter-spacing: 0.2em;
   color: var(--color-secondary);
-  text-align: left; /* 左下配置（トップ Person と同じ） */
+  text-align: left;
 }
 
 /* ---- 本文 ---- */
@@ -276,7 +390,18 @@
   gap: 24px;
   margin-top: 8px;
   padding-top: 28px;
-  border-top: 1px solid var(--color-border);
+  position: relative;
+}
+
+/* かすれた一線 */
+.profileSns::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(241, 234, 236, 0.22), rgba(241, 234, 236, 0.06) 60%, rgba(241, 234, 236, 0));
 }
 
 .snsLink {
@@ -299,22 +424,77 @@
 }
 
 .snsLink:focus-visible {
-  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2）— キーボード時のみ */
+  outline: 2px solid var(--color-foreground); /* フォーカスリング（audit #2）— キーボード時のみ・白系 */
   outline-offset: 3px;
 }
 
 /* ========================================
-   B-3 Stance — ページ最大級の見出し
+   B-3 Stance — ページ最大級の見出し＋段落の左に筆の一線
    ======================================== */
+/* 洗い＝右上に淡い溜まり（重＋暖色白 0.05） */
+.secStance::before {
+  background:
+    radial-gradient(
+      620px 560px at calc(50% + 400px) 220px,
+      rgba(250, 247, 245, 0.05) 0%,
+      rgba(250, 247, 245, 0.022) 38%,
+      rgba(250, 247, 245, 0) 70%
+    ),
+    radial-gradient(
+      780px 660px at calc(50% + 340px) 320px,
+      rgba(43, 35, 37, 1) 0%,
+      rgba(43, 35, 37, 0.6) 40%,
+      rgba(43, 35, 37, 0) 72%
+    );
+}
+
 .stanceTitle {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: clamp(28px, 3.6rem, 52px);
+  font-family: var(--font-shippori-mincho), "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-weight: 600;
+  font-size: clamp(30px, 3.6rem, 54px);
   line-height: 1.4;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   font-feature-settings: "palt" 1;
   color: var(--color-foreground);
-  margin: 0 0 40px;
+  text-shadow: 0 3px 18px rgba(20, 18, 18, 0.6);
+  margin: 0 0 44px;
+}
+
+.stanceBlock {
+  position: relative;
+  padding-left: 36px;
+}
+
+/* 筆の一線（縦）＝上に溜まり、下でかすれる。InkStroke が上から下へ引く */
+.stanceStroke {
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  bottom: 0.4em;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    rgba(241, 234, 236, 0.55) 0%,
+    rgba(241, 234, 236, 0.4) 55%,
+    rgba(241, 234, 236, 0.18) 85%,
+    rgba(241, 234, 236, 0) 100%
+  );
+}
+
+.stanceStroke::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: rgba(241, 234, 236, 0.5);
+}
+
+.stanceText {
+  min-width: 0;
 }
 
 .stanceBody {
@@ -328,23 +508,57 @@
   max-width: 40em;
 }
 
-.stanceBody:last-child {
+.stanceText > :last-child .stanceBody {
   margin-bottom: 0;
 }
 
 /* ========================================
-   B-4 Timeline — 縦の年表
-   左＝年齢/年（mono・accent）／中＝1px の墨線＋点／右＝本文
+   B-4 Timeline — 一本の筆致
+   左＝年齢/年（mono・白系）／中＝SVG の一線＋滲む点／右＝本文
    ======================================== */
+/* 洗い＝線の走る左側に深い墨 */
+.secTimeline::before {
+  background: radial-gradient(
+    520px 720px at calc(50% - 380px) 55%,
+    rgba(20, 18, 18, 0.8) 0%,
+    rgba(20, 18, 18, 0.35) 45%,
+    rgba(20, 18, 18, 0) 75%
+  );
+}
+
 .tl {
+  position: relative;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-/* 行間の余白は li の padding ではなく本文側（.tlText）に持たせる。
-   li の padding は grid 行の外側＝中央列（線）が届かず途切れるため */
+/* 一線（InkTimeline が d を実測で作り、stroke-dashoffset で上から下へ引く）。
+   JS なし・reduced-motion では最初から引き終わっている */
+.tlStroke {
+  position: absolute;
+  top: 0;
+  left: 132px; /* 年の列 120px + gap 12px */
+  width: 32px;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tlStroke path {
+  fill: none;
+  stroke: rgba(241, 234, 236, 0.42);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* 行間の余白は li の padding ではなく本文側（.tlText）に持たせる */
 .tlItem {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 120px 32px minmax(0, 1fr);
   column-gap: 12px;
@@ -356,7 +570,7 @@
   font-size: 13px;
   letter-spacing: 0.08em;
   line-height: 32px; /* 本文1行目（16px × 2）の中心に揃える */
-  color: var(--color-accent);
+  color: var(--color-foreground-muted);
   white-space: nowrap;
 }
 
@@ -366,40 +580,34 @@
   height: 100%;
 }
 
-/* 縦の細い墨線（各行が受け持つ区間をつなぐ） */
-.tlMark::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  margin-left: -0.5px;
-  background: var(--color-border-light);
-}
-
-/* 各行の点 */
-.tlMark::after {
-  content: "";
+/* 墨の溜まり（点）＝視界に入ると滲む（InkTimeline が scale/opacity を動かす） */
+.tlDot {
   position: absolute;
   left: 50%;
   top: 16px;
-  width: 7px;
-  height: 7px;
-  margin: -3.5px 0 0 -3.5px;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
   border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-primary);
+  background: var(--color-foreground);
 }
 
-/* 線は最初の点から始まり、最後の点で終わる */
-.tlItem:first-child .tlMark::before {
-  top: 16px;
-}
-
-.tlItem:last-child .tlMark::before {
-  bottom: auto;
-  height: 16px;
+/* 滲みの暈 */
+.tlDot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(250, 247, 245, 0.18) 0%,
+    rgba(250, 247, 245, 0.07) 42%,
+    rgba(250, 247, 245, 0) 70%
+  );
 }
 
 .tlText {
@@ -419,42 +627,85 @@
 }
 
 /* ========================================
-   B-5 Belief — 3枚グリッド（現行の骨格を再利用）
+   B-5 Belief — 3列・番号は落款・右2列の背後に墨の面
    ======================================== */
+.secBelief::before {
+  background: radial-gradient(
+    640px 560px at calc(50% + 440px) 82%,
+    rgba(20, 18, 18, 0.7) 0%,
+    rgba(20, 18, 18, 0.3) 45%,
+    rgba(20, 18, 18, 0) 75%
+  );
+}
+
 .beliefGrid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
+  column-gap: 44px;
+  align-items: start;
+}
+
+/* 墨の溜まり（重）＝2〜3列目の背後に広がる面。角を持たせない（楕円の半径＝箱の半分で
+   四辺の中点で透明に到達＝縁が直線で出ない）。板やカードに見せない */
+.beliefSlab {
+  position: absolute;
+  z-index: 0;
+  top: -90px;
+  bottom: -90px;
+  left: 16%;
+  right: -60px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    var(--sumi-juu) 0%,
+    rgba(43, 35, 37, 0.92) 34%,
+    rgba(43, 35, 37, 0.45) 68%,
+    rgba(43, 35, 37, 0) 100%
+  );
+  pointer-events: none;
 }
 
 .beliefCell {
+  position: relative;
+  z-index: 1;
   min-width: 0;
 }
 
+/* 段違い＝中央対称を避ける（ScrollReveal は div、面は span なので nth-of-type で数える） */
+.beliefCell:nth-of-type(2) {
+  margin-top: 44px;
+}
+
+.beliefCell:nth-of-type(3) {
+  margin-top: 88px;
+}
+
 .beliefCard {
-  padding: 36px 28px;
-  border: 1px solid var(--color-border);
-  margin-left: -1px;
-  height: 100%;
-  transition: background-color 0.4s ease;
+  padding: 8px 0 0;
 }
 
-.beliefCell:first-child .beliefCard {
-  margin-left: 0;
-}
-
-.beliefCard:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
+/* 落款＝小さな角印。地色を「紙」、白を「印泥」に見立てた反転の白抜き
+   （既存の番号だけ・二重の枠線を inset 影で・わずかに傾けて捺した感じに） */
 .beliefNum {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-indent: 0.06em;
   line-height: 1;
-  margin-bottom: 22px;
+  color: var(--sumi-noh);
+  background: var(--sumi-sei);
+  box-shadow:
+    inset 0 0 0 2px var(--sumi-sei),
+    inset 0 0 0 3px var(--sumi-noh);
+  border-radius: 1px 2px 1px 3px;
+  transform: rotate(-3deg);
+  margin-bottom: 24px;
 }
 
 .beliefHeading {
@@ -478,25 +729,70 @@
 }
 
 /* ========================================
-   B-6 Scope — 担当範囲（小見出し2枠＋リンク）
+   B-6 Scope — 担当範囲（小見出し2枠＝墨の面＋インク密度の縦バー）
    ======================================== */
+.secScope::before {
+  background: radial-gradient(
+    720px 600px at calc(50% - 500px) 72%,
+    rgba(250, 247, 245, 0.035) 0%,
+    rgba(250, 247, 245, 0) 70%
+  );
+}
+
 .scopeSub {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border: 1px solid var(--color-border);
-  margin-top: 8px;
+  column-gap: 48px;
+  margin-top: 12px;
+  padding: 36px 36px 36px 40px;
+}
+
+/* 墨の面（重）＝画面の左端から始まり右でかすれる
+   left: calc(50% - 50vw) ＝ inner の左端から画面左端までの距離（vw は位置にのみ使用・フォントには使わない）。
+   負方向のはみ出しは横スクロール量に数えられない */
+.scopeSub::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  right: 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    var(--sumi-juu) 0%,
+    rgba(43, 35, 37, 0.92) 55%,
+    rgba(43, 35, 37, 0) 100%
+  );
+  pointer-events: none;
 }
 
 .scopeCell {
+  position: relative;
+  z-index: 1;
   min-width: 0;
 }
 
-.scopeCell + .scopeCell {
-  border-left: 1px solid var(--color-border);
+.scopeItem {
+  position: relative;
+  padding: 4px 0 4px 24px;
 }
 
-.scopeItem {
-  padding: 32px 28px;
+/* インク密度の縦バー＝上が濃く、下でかすれる */
+.scopeItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(241, 234, 236, 0.72) 0%,
+    rgba(241, 234, 236, 0.36) 55%,
+    rgba(241, 234, 236, 0.08) 100%
+  );
 }
 
 .scopeItemHeading {
@@ -523,45 +819,71 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-top: 36px;
+  margin-top: 40px;
   font-family: var(--font-body);
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 0.06em;
   color: var(--color-foreground);
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid rgba(241, 234, 236, 0.3);
   padding-bottom: 6px;
   transition: border-color 0.3s ease, color 0.3s ease;
 }
 
 .moreLink:hover,
 .moreLink:focus-visible {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--color-foreground);
 }
 
 .moreLink:focus-visible {
-  outline: 2px solid var(--color-accent); /* フォーカスリング（audit #2）— キーボード時のみ */
+  outline: 2px solid var(--color-foreground); /* フォーカスリング（audit #2）— キーボード時のみ・白系 */
   outline-offset: 3px;
 }
 
 /* ========================================
-   B-7 What I don't — 題字に静的な墨の一線（Hero .declStrikeLine と同じ比率・アニメなし）
+   B-7 What I don't — 最も深い墨の帯・題字に静的な墨の一線
    ======================================== */
+.secDont::before {
+  background: linear-gradient(
+    180deg,
+    var(--sumi-noh) 0%,
+    var(--sumi-koge) 28%,
+    var(--sumi-koge) 76%,
+    var(--sumi-noh) 100%
+  );
+}
+
 .dontList {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--color-border);
 }
 
 .dontItem {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
   column-gap: 32px;
   align-items: baseline;
   padding: 24px 0;
-  border-bottom: 1px solid var(--color-border);
+}
+
+/* かすれた罫（上下） */
+.dontItem::before,
+.dontItem::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(241, 234, 236, 0.18), rgba(241, 234, 236, 0.06) 60%, rgba(241, 234, 236, 0));
+}
+
+.dontItem::before { top: 0; }
+.dontItem::after { bottom: 0; }
+
+.dontItem + .dontItem::before {
+  display: none;
 }
 
 .dontName {
@@ -573,10 +895,10 @@
   color: var(--color-foreground);
 }
 
-/* 否定される題字 — 墨の一線で消される（静的・読める太さと不透明度） */
+/* 否定される題字 — 墨の一線で消される（静的・読める太さと不透明度・両端がかすれる） */
 .dontStrike {
   position: relative;
-  display: inline-block; /* 折返し時に ::after の基準箱が割れないよう /service と同じ inline-block（audit #7） */
+  display: inline-block; /* 折返し時に ::after の基準箱が割れないよう inline-block（audit #7） */
 }
 
 .dontStrike::after {
@@ -588,8 +910,13 @@
   height: 0.09em;
   min-height: 1px;
   max-height: 2px;
-  background: var(--color-foreground);
-  opacity: 0.5;
+  background: linear-gradient(
+    90deg,
+    rgba(241, 234, 236, 0.15) 0%,
+    rgba(241, 234, 236, 0.6) 12%,
+    rgba(241, 234, 236, 0.55) 82%,
+    rgba(241, 234, 236, 0.15) 100%
+  );
   transform: rotate(-1.4deg);
   pointer-events: none;
 }
@@ -618,28 +945,59 @@
 }
 
 /* ========================================
-   B-8 Skill Set — 行グリッド（現行の骨格を再利用）
+   B-8 Skill Set — 行グリッド（墨の濃淡の面の上に、かすれた罫）
    ======================================== */
+/* 洗い＝上は地、中ほどが重、下で地へ戻る（濃淡の面・全幅） */
+.secSkill::before {
+  background: linear-gradient(
+    180deg,
+    rgba(43, 35, 37, 0) 0%,
+    rgba(43, 35, 37, 0.95) 32%,
+    rgba(43, 35, 37, 0.95) 68%,
+    rgba(43, 35, 37, 0) 100%
+  );
+}
+
 .skillList {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border);
+  position: relative;
+}
+
+.skillList::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(241, 234, 236, 0.2), rgba(241, 234, 236, 0.06) 60%, rgba(241, 234, 236, 0));
 }
 
 .skillRow {
+  position: relative;
   display: grid;
   grid-template-columns: 48px 240px minmax(0, 1fr);
   column-gap: 16px;
   align-items: baseline;
   padding: 22px 0;
-  border-bottom: 1px solid var(--color-border);
+}
+
+.skillRow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(241, 234, 236, 0.2), rgba(241, 234, 236, 0.06) 60%, rgba(241, 234, 236, 0));
 }
 
 .skillNum {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--color-accent);
+  color: var(--color-foreground-muted);
 }
 
 .skillName {
@@ -664,12 +1022,11 @@
    Responsive — Tablet (768–1279)
    ======================================== */
 @media (min-width: 768px) and (max-width: 1279px) {
-  .fvTitle { font-size: 44px; }
-  .fvEdgeBl { left: 24px; bottom: 24px; }
-  .fvEdgeBr { right: 24px; bottom: 24px; }
+  .fvTitle { font-size: 46px; }
 
-  .sec { padding: 0 30px; }
+  .sec { --sec-pad: 30px; }
   .inner { padding: 80px 0; }
+  .innerFirst { padding-top: 72px; }
 
   .profileGrid {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -678,12 +1035,17 @@
   .portrait { width: min(100%, 360px); }
 
   .stanceTitle { font-size: 42px; }
+  .stanceBlock { padding-left: 28px; }
 
   .tlItem { grid-template-columns: 104px 28px minmax(0, 1fr); }
+  .tlStroke { left: 116px; width: 28px; }
 
-  .beliefCard { padding: 30px 22px; }
+  .beliefGrid { column-gap: 28px; }
+  .beliefCell:nth-of-type(2) { margin-top: 32px; }
+  .beliefCell:nth-of-type(3) { margin-top: 64px; }
+  .beliefSlab { right: -30px; }
 
-  .scopeItem { padding: 28px 22px; }
+  .scopeSub { column-gap: 32px; padding: 30px 28px 30px 32px; }
 
   .skillRow { grid-template-columns: 44px 200px minmax(0, 1fr); }
 }
@@ -694,37 +1056,106 @@
 @media (max-width: 767px) {
   .brSp { display: inline; }
 
-  .fvLabel { font-size: 10px; margin-bottom: 18px; }
-  .fvTitle { font-size: 30px; line-height: 1.5; }
-  .fvSub { font-size: 12px; margin-top: 16px; }
-  .fvEdgeBl { left: 16px; bottom: 20px; }
-  .fvEdgeBr { right: 16px; bottom: 20px; }
+  /* 覆い＝フォールバック（静止画）に合わせて箱に追従させ、楕円を横に広げる
+     （狭い箱で 50%×50% のままだと縦長の卵形になる＝390 実測）。
+     縁の溶かしはフォールバック自身の外周色（地）が受け持つので、四辺で地色に届かなくてよい */
+  .fvDeepVeil {
+    height: 100%;
+    background:
+      radial-gradient(
+        ellipse 64% 58% at 50% 50%,
+        rgba(31, 28, 28, 0) 0%,
+        rgba(31, 28, 28, 0) 42%,
+        rgba(31, 28, 28, 0.45) 74%,
+        var(--sumi-noh) 100%
+      ),
+      linear-gradient(180deg, rgba(31, 28, 28, 0.5) 0%, rgba(31, 28, 28, 0) 30%);
+  }
 
-  .sec { padding: 0 20px; }
+  .fvLabel { font-size: 10px; margin-bottom: 20px; }
+  .fvTitle { font-size: 31px; line-height: 1.55; }
+  .fvSub { font-size: 12px; margin-top: 16px; }
+  .fvHr { margin-top: 22px; }
+  .fvDrip { bottom: 18px; height: 40px; }
+
+  .sec { --sec-pad: 20px; }
   .inner { padding: 64px 0; }
+  .innerFirst { padding-top: 56px; }
 
   .title { font-size: 20px; line-height: 1.7; margin-bottom: 26px; }
   .body { font-size: 14px; line-height: 1.95; margin-bottom: 24px; }
 
   /* Profile — 1カラム（写真→本文） */
+  .secProfile::before {
+    background:
+      radial-gradient(
+        360px 420px at 36% 300px,
+        rgba(20, 18, 18, 0.9) 0%,
+        rgba(20, 18, 18, 0.5) 45%,
+        rgba(20, 18, 18, 0) 75%
+      ),
+      linear-gradient(180deg, rgba(20, 18, 18, 0.45) 0%, rgba(20, 18, 18, 0) 200px);
+  }
   .profileGrid {
     grid-template-columns: minmax(0, 1fr);
     gap: 40px;
   }
-  .portrait { width: min(100%, 360px); }
+  .portrait {
+    width: min(100%, 360px);
+    padding: 0 16px 16px 0;
+  }
+  .portraitFrame::before { inset: 16px -16px -16px 16px; }
+  .portraitCaption { margin-top: 24px; }
   .profileLead { font-size: 15px; margin: -4px 0 26px; }
   .profileSns { flex-direction: column; gap: 12px; padding-top: 24px; }
 
   /* Stance */
-  .stanceTitle { font-size: 30px; line-height: 1.5; margin-bottom: 28px; }
+  .secStance::before {
+    background:
+      radial-gradient(
+        320px 360px at 82% 160px,
+        rgba(250, 247, 245, 0.05) 0%,
+        rgba(250, 247, 245, 0.02) 40%,
+        rgba(250, 247, 245, 0) 70%
+      ),
+      radial-gradient(
+        420px 420px at 72% 220px,
+        rgba(43, 35, 37, 1) 0%,
+        rgba(43, 35, 37, 0) 72%
+      );
+  }
+  .stanceTitle { font-size: 30px; line-height: 1.5; margin-bottom: 30px; }
+  .stanceBlock { padding-left: 22px; }
   .stanceBody { font-size: 15px; line-height: 2.05; margin-bottom: 22px; }
 
   /* Timeline — 1カラム（左に線と点、年→本文を縦積み） */
+  .secTimeline::before {
+    background: radial-gradient(
+      260px 520px at 0% 50%,
+      rgba(20, 18, 18, 0.75) 0%,
+      rgba(20, 18, 18, 0) 75%
+    );
+  }
+  .secBelief::before {
+    background: radial-gradient(
+      320px 360px at 100% 85%,
+      rgba(20, 18, 18, 0.7) 0%,
+      rgba(20, 18, 18, 0) 75%
+    );
+  }
+  .secScope::before {
+    background: radial-gradient(
+      320px 380px at 0% 70%,
+      rgba(250, 247, 245, 0.035) 0%,
+      rgba(250, 247, 245, 0) 70%
+    );
+  }
   .tlItem {
     grid-template-columns: 20px minmax(0, 1fr);
     grid-template-rows: auto auto;
     column-gap: 14px;
   }
+  .tlStroke { left: 0; width: 20px; }
   .tlWhen {
     grid-column: 2;
     grid-row: 1;
@@ -735,9 +1166,7 @@
     grid-column: 1;
     grid-row: 1 / span 2;
   }
-  .tlMark::after { top: 10px; }
-  .tlItem:first-child .tlMark::before { top: 10px; }
-  .tlItem:last-child .tlMark::before { height: 10px; }
+  .tlDot { top: 10px; }
   .tlText {
     grid-column: 2;
     grid-row: 2;
@@ -747,24 +1176,48 @@
     padding-bottom: 30px;
   }
 
-  /* Belief — 縦1列 */
-  .beliefGrid { grid-template-columns: minmax(0, 1fr); }
-  .beliefCard {
-    margin-left: 0;
-    margin-top: -1px;
-    padding: 28px 20px;
+  /* Belief — 縦1列（段違いなし・面は全幅の帯に） */
+  .beliefGrid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0;
   }
-  .beliefCell:first-child .beliefCard { margin-top: 0; }
+  .beliefSlab {
+    left: -20px;
+    right: -20px;
+    top: 10%;
+    bottom: -40px;
+    background: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      var(--sumi-juu) 0%,
+      rgba(43, 35, 37, 0.9) 40%,
+      rgba(43, 35, 37, 0) 100%
+    );
+  }
+  .beliefCell:nth-of-type(2),
+  .beliefCell:nth-of-type(3) { margin-top: 0; }
+  .beliefCard { padding: 28px 0; }
+  .beliefCell + .beliefCell .beliefCard::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(241, 234, 236, 0.18), rgba(241, 234, 236, 0.05) 60%, rgba(241, 234, 236, 0));
+  }
+  .beliefCard { position: relative; }
+  .beliefNum { margin-bottom: 18px; }
   .beliefHeading { font-size: 16px; }
   .beliefText { font-size: 13.5px; }
 
   /* Scope */
-  .scopeSub { grid-template-columns: minmax(0, 1fr); }
-  .scopeCell + .scopeCell {
-    border-left: 0;
-    border-top: 1px solid var(--color-border);
+  .scopeSub {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 26px;
+    padding: 26px 16px 26px 18px;
   }
-  .scopeItem { padding: 24px 18px; }
+  .scopeSub::before { right: -20px; }
+  .scopeItem { padding-left: 18px; }
   .scopeItemText { font-size: 13.5px; }
   .moreLink { margin-top: 30px; font-size: 13px; }
 
@@ -796,9 +1249,9 @@
 
 /* =============================================
    Reduced Motion
-   ScrollReveal は GSAP で inline に opacity:0 / transform を置くため、
+   ScrollReveal / GSAP は inline に opacity:0 / transform を置くため、
    !important で打ち消して「動かないが必ず見える」状態にする。
-   （FV の入場は SubPageFVAnim＝JS 駆動のため、opacity は必ず 1 に到達する）
+   （FV の入場は AboutFVStage が終端値を即置きする。ここは CSS 側の保険）
    ============================================= */
 @media (prefers-reduced-motion: reduce) {
   .reveal {
@@ -806,11 +1259,32 @@
     transform: none !important;
   }
 
-  .fvGrain {
-    animation: none;
+  .fvTitle,
+  .fvSub,
+  .fvLabel,
+  .fvDrip {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
-  .beliefCard,
+  .fvHr {
+    transform: scaleX(1) !important;
+  }
+
+  .rule,
+  .stanceStroke {
+    transform: none !important;
+  }
+
+  .tlStroke path {
+    stroke-dashoffset: 0 !important;
+  }
+
+  .tlDot {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   .snsLink,
   .moreLink {
     transition: none;

@@ -1,0 +1,140 @@
+/* ========================================
+   /contact FV「焦＝灯」— 舞台の内側
+   （SubPageFVAnim の section の中に絶対配置）
+   ======================================== */
+
+.host {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* JS が毎フレーム更新：--lx 灯の x（px・沈む層の箱基準）／--li 灯の強度 0〜1
+     計測時に更新：--ax --ay 灯の定位置（px・同）／--hr 暈の半径（px） */
+  --lx: 120px;
+  --li: 0;
+  --ax: 120px;
+  --ay: 120px;
+  --hr: 480px;
+}
+
+/* 地：平坦な koge */
+.base {
+  position: absolute;
+  inset: 0;
+  background-color: var(--sumi-koge);
+}
+
+/* 沈む層（data-fv-depth）は 10% はみ出させておく：
+   収縮で scale 0.94・yPercent -4 されても箱の縁が舞台の内側に入らない */
+
+/* 背景の暈：灯の定位置まわりを僅かに持ち上げる（定位置固定・収縮で沈む） */
+.haze {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle var(--hr) at var(--ax) var(--ay),
+    rgba(250, 247, 245, 0.055) 0%,
+    rgba(250, 247, 245, 0.02) 45%,
+    rgba(250, 247, 245, 0) 100%
+  );
+  opacity: var(--li);
+}
+
+/* 床：画面下部、灯の真下に落ちる光の楕円（2D 放射）
+   箱は top 50%〜bottom -10%（高さ 60%）。舞台の下端は箱の 83.3% の位置 */
+.floor {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: 50%;
+  bottom: -10%;
+  pointer-events: none;
+  background-image: radial-gradient(
+    ellipse 30% 84% at var(--lx) 83.3%,
+    rgba(250, 247, 245, 0.15) 0%,
+    rgba(250, 247, 245, 0.05) 42%,
+    rgba(250, 247, 245, 0) 72%
+  );
+  opacity: var(--li);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* 題字：左に寄せ、灯の位置で版面に偏りを作る */
+.stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 12%;
+  pointer-events: none;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-shippori-mincho), "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-weight: 500;
+  font-size: 132px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: var(--sumi-koge);
+  user-select: none;
+}
+
+/* 各文字：JS が color / text-shadow を灯の位置から計算する。
+   既定は地色＝闇に溶けている（灯がともるまで見えない） */
+.letter {
+  display: inline-block;
+  color: var(--sumi-koge);
+}
+
+/* canvas 2D 不成立時の静止ポスター（文字だけ点灯・左から照らされた明度差） */
+.fallback .letter { color: var(--sumi-sei); }
+.fallback .letter:nth-child(n + 3) { color: #cfc8ca; }
+.fallback .letter:nth-child(n + 5) { color: #b0a9ab; }
+.fallback .letter:nth-child(n + 7) { color: var(--sumi-tan); }
+.fallback .haze,
+.fallback .floor { opacity: 1; }
+
+/* prefers-reduced-motion：JS が終端の1コマを置くが、CSS でも可視を担保 */
+@media (prefers-reduced-motion: reduce) {
+  .letter { color: var(--sumi-sei); }
+}
+
+/* ---- 幅ごとの題字サイズ（vw は使わない＝段階指定） ---- */
+@media (max-width: 1599px) {
+  .title { font-size: 112px; }
+}
+@media (max-width: 1279px) {
+  .title { font-size: 96px; }
+}
+@media (max-width: 1023px) {
+  .title { font-size: 76px; }
+  .stage { padding-left: 9%; }
+}
+@media (max-width: 767px) {
+  .title {
+    font-size: 52px;
+    letter-spacing: 0.12em;
+  }
+  .stage { padding-left: 24px; }
+  .floor {
+    background-image: radial-gradient(
+      ellipse 58% 84% at var(--lx) 83.3%,
+      rgba(250, 247, 245, 0.14) 0%,
+      rgba(250, 247, 245, 0.05) 42%,
+      rgba(250, 247, 245, 0) 72%
+    );
+  }
+}
+@media (max-width: 374px) {
+  .title { font-size: 44px; }
+}

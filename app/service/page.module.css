@@ -1,19 +1,48 @@
 /* ==========================================================================
-   /service — AIスペシャリストとしてのサービス（P6・2026-08-27）
-   骨格は WorksPrice.module.css / works .scope 系に揃える：
-     max-width 1080px・上下 padding 96px（Tablet 80px／SP 64px）
-     小ラベル（mono 11px・--color-accent）＋ h2（--font-body 700・clamp(22px, 2.4rem, 34px)）
-     区切り 1px solid --color-border・番号 mono --color-accent
-   互換方針：
-     - vw単位のフォント / filter・backdrop-filter のアニメ / mix-blend-mode /
-       複雑 clip-path / 3D transform / will-change は不使用
-     - 100vh は svh 二段指定（SubPageFVAnim の縮小に合わせ height で指定）
-     - prefers-reduced-motion: reduce に対応（ScrollReveal の inline opacity:0 を解除）
+   /service — 重（じゅう）＝線・図面（2026-09-05 五彩改修・全面改稿）
+   ページ全体が「製図台の上の一枚の図面」。黒8:白2。
+     地      = --sumi-noh(#1f1c1c) に 24px の方眼（透過 0.035／120px ごとに 0.06）
+     プレート = 机に置いた紙。--sumi-juu(#2b2325) の上下2段（deep / raise）で層を作り、
+               上左に 1px の明るい縁（inset）、下右に多段の落ち影
+     線      = 暖色白の透過（--sumi-rule 0.16／--sumi-rule-soft 0.08／強調 0.35）。
+               太さは 1px と 0.5px の二段だけ
+     注記    = 図番（FIG. 0N）・部品番号（PART 0N）・寸法線・トンボ（十字）を mono で
+   金（--color-accent）は使わない。差し色は白系のみ。
+   互換：transform(2D)/opacity/box-shadow/background のみ。filter・blend・3D・
+         vw フォント・JS 視差なし。100vh は FV 側で svh 二段。reduced-motion 対応。
+   FV の見た目は components/fv/service/ServiceFV.module.css、PROCESS の配線図は
+   同 WireSteps.module.css が持つ。
    ========================================================================== */
 
 .page {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  --svc-ink: var(--color-foreground);
+  --svc-muted: var(--color-foreground-muted);
+  --svc-rule: var(--sumi-rule);
+  --svc-rule-soft: var(--sumi-rule-soft);
+  --svc-rule-strong: rgba(241, 234, 236, 0.35);
+  --svc-plate: var(--sumi-juu);
+  --svc-plate-deep: #261f21;
+  --svc-plate-raise: #322a2c;
+  --svc-plate-edge: rgba(241, 234, 236, 0.1);
+  --svc-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    2px 3px 0 rgba(20, 18, 18, 0.55),
+    10px 14px 30px rgba(0, 0, 0, 0.4);
+  --svc-grid: rgba(241, 234, 236, 0.035);
+  --svc-grid-major: rgba(241, 234, 236, 0.06);
+
+  background-color: var(--sumi-noh);
+  background-image:
+    linear-gradient(to right, var(--svc-grid-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--svc-grid-major) 1px, transparent 1px),
+    linear-gradient(to right, var(--svc-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--svc-grid) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  color: var(--svc-ink);
 }
 
 /* SP 専用改行 / PC 専用改行 */
@@ -26,151 +55,34 @@
 }
 
 /* ========================================
-   FV — 100vh 全画面（/tools と同じ作法・回路モチーフ無し）
-   ======================================== */
-.fv {
-  position: relative;
-  height: 100vh;
-  height: 100svh;
-  background: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.fvBg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-/* 墨のグレイン（transform のみ・iOS 安全） */
-.fvGrain {
-  position: absolute;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  animation: serviceGrain 0.5s steps(5) infinite;
-}
-
-@keyframes serviceGrain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  30% { transform: translate(3%, -15%); }
-  50% { transform: translate(12%, 9%); }
-  70% { transform: translate(9%, 4%); }
-  90% { transform: translate(-1%, 7%); }
-}
-
-/* 罫（静かな走査線） */
-.fvScanline {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255, 255, 255, 0.015) 2px,
-    rgba(255, 255, 255, 0.015) 4px
-  );
-  pointer-events: none;
-  opacity: 0.02;
-}
-
-.fvContent {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 0 20px;
-}
-
-/* 英字ラベル＝小さく装飾（data-fv-edge でフェードイン） */
-.fvLabel {
-  display: block;
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  text-indent: 0.3em;
-  color: var(--color-accent);
-  margin-bottom: 26px;
-  opacity: 0;
-}
-
-/* 主役＝日本語 h1（letter-spacing は SubPageFVAnim が 0.4em→0.1em へ） */
-.fvTitle {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 54px;
-  letter-spacing: 0.1em;
-  line-height: 1.35;
-  color: var(--color-foreground);
-  opacity: 0;
-}
-
-.fvSub {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  line-height: 2;
-  color: var(--color-foreground-muted);
-  margin-top: 20px;
-  opacity: 0;
-}
-
-.fvHr {
-  width: 60px;
-  height: 1px;
-  background: var(--color-border-light);
-  margin: 26px auto 0;
-  transform: scaleX(0);
-  transform-origin: center;
-}
-
-.fvEdgeBl,
-.fvEdgeBr {
-  position: absolute;
-  z-index: 2;
-}
-
-.fvEdgeText {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
-}
-
-.fvEdgeBl {
-  bottom: 40px;
-  left: 40px;
-  opacity: 0;
-}
-
-.fvEdgeBr {
-  bottom: 40px;
-  right: 40px;
-  opacity: 0;
-}
-
-/* ========================================
-   セクション共通（WorksPrice と同骨格）
+   セクション共通（図番付きの見出し＋引かれる罫）
    ======================================== */
 .section {
-  padding: 96px 40px;
-  border-top: 1px solid var(--color-border);
+  position: relative;
+  padding: 104px 40px;
   scroll-margin-top: 60px;
 }
 
 .sectionFirst {
-  border-top: 0;
+  padding-top: 88px;
+}
+
+/* 広幅では図面の綴じ代＝本文の左 24px に縦の細線を通し、全セクションを一枚に綴じる */
+@media (min-width: 1200px) {
+  .section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 564px);
+    width: 1px;
+    background: var(--svc-rule-soft);
+    pointer-events: none;
+  }
 }
 
 .inner {
+  position: relative;
   max-width: 1080px;
   margin: 0 auto;
 }
@@ -180,18 +92,52 @@
   display: block;
 }
 
+/* 図番見出し：FIG. 0N ＋ ラベル ＋ 右へ引かれる罫 */
+.figHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 40px;
+}
+
+.figNo {
+  font-family: var(--font-ibm-plex-mono), "Consolas", monospace;
+  font-weight: 300;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--svc-muted);
+  white-space: nowrap;
+}
+
 .label {
   display: block;
-  font-family: var(--font-ibm-plex-mono), var(--font-noto-sans-jp), monospace; /* 和文が混ざるので等幅の後ろに Noto を置く（audit #4） */
+  font-family: var(--font-ibm-plex-mono), var(--font-noto-sans-jp), monospace; /* 和文が混ざるので等幅の後ろに Noto を置く */
+  font-weight: 400;
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--color-accent);
+  color: var(--svc-ink);
   margin-bottom: 18px;
 }
 
-/* h2 を伴わないラベル（FAQ） */
-.labelSolo {
-  margin-bottom: 28px;
+.figLabel {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.figRule {
+  display: block;
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--svc-rule);
+}
+
+/* 見出しと lead の非対称な版面（PC で 7:5。h2 を左に大きく、lead は右の注記欄に） */
+.headGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 64px;
+  align-items: start;
+  margin-bottom: 36px;
 }
 
 .title {
@@ -200,8 +146,9 @@
   font-size: clamp(22px, 2.4rem, 34px);
   line-height: 1.6;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 0 0 32px;
+  text-wrap: balance; /* 折り返す時に「る。」だけが残らないよう均す（非対応ブラウザは従来どおり） */
 }
 
 .lead {
@@ -210,7 +157,7 @@
   font-size: 17px;
   line-height: 2;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   max-width: 40em;
   margin: 0 0 20px;
 }
@@ -219,7 +166,7 @@
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   max-width: 42em;
   margin: 0;
 }
@@ -230,7 +177,7 @@
   font-size: 19px;
   line-height: 1.7;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 44px 0 12px;
 }
 
@@ -239,29 +186,26 @@
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.95;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   margin: 36px 0 0;
   max-width: 46em;
 }
 
 .inlineLink {
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   text-decoration: underline;
   text-underline-offset: 0.22em;
-  text-decoration-color: var(--color-border-light);
-  transition: text-decoration-color var(--duration-normal) var(--ease-default),
-              color var(--duration-normal) var(--ease-default);
+  text-decoration-color: var(--svc-rule-strong);
+  transition: text-decoration-color var(--duration-normal) var(--ease-default);
 }
 
 .inlineLink:hover,
 .inlineLink:focus-visible {
-  color: var(--color-accent);
-  text-decoration-color: var(--color-accent);
+  text-decoration-color: var(--svc-ink);
 }
 
-/* フォーカスリング（audit #2）＝色変化だけでは不可視。outline は transition 対象外＝即時表示 */
 .inlineLink:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--svc-ink);
   outline-offset: 3px;
 }
 
@@ -272,23 +216,21 @@
   gap: 10px;
   margin-top: 40px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--svc-rule-strong);
   font-family: var(--font-body);
   font-size: 14px;
   letter-spacing: 0.08em;
-  color: var(--color-foreground);
-  transition: color var(--duration-normal) var(--ease-default),
-              border-color var(--duration-normal) var(--ease-default);
+  color: var(--svc-ink);
+  transition: border-color var(--duration-normal) var(--ease-default);
 }
 
 .arrowLink:hover,
 .arrowLink:focus-visible {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+  border-bottom-color: var(--svc-ink);
 }
 
 .arrowLink:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--svc-ink);
   outline-offset: 3px;
 }
 
@@ -303,143 +245,77 @@
 }
 
 /* ========================================
-   A-2 できること — 3項目（番号付き・3列）
+   プレート（机に置いた紙）。上左 1px の明るい縁＋下右の落ち影＋四隅のトンボ
    ======================================== */
-.doList {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 32px 40px;
-  margin: 40px 0 0;
-  padding: 0;
+.plate {
+  position: relative;
+  background: var(--svc-plate);
+  box-shadow:
+    inset 1px 1px 0 var(--svc-plate-edge),
+    var(--svc-shadow);
 }
 
-.doItem {
-  border-top: 1px solid var(--color-border);
-  padding-top: 22px;
+.plate::before,
+.plate::after {
+  content: "";
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  background:
+    linear-gradient(var(--svc-rule-strong), var(--svc-rule-strong)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--svc-rule-strong), var(--svc-rule-strong)) 0 50% / 100% 1px no-repeat;
+  pointer-events: none;
 }
 
-.doNum {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent);
+.plate::before {
+  top: -6px;
+  left: -6px;
 }
 
-.doName {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 17px;
-  line-height: 1.6;
-  letter-spacing: 0.02em;
-  color: var(--color-foreground);
-  margin: 12px 0 0;
+.plate::after {
+  bottom: -6px;
+  right: -6px;
 }
 
-.doDesc {
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--color-foreground-muted);
-  margin: 10px 0 0;
+/* 一段沈めた紙（トンボなし・影は軽め） */
+.plateDeep {
+  position: relative;
+  background: var(--svc-plate-deep);
+  box-shadow:
+    inset 1px 1px 0 var(--svc-plate-edge),
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    2px 3px 0 rgba(20, 18, 18, 0.55),
+    8px 12px 26px rgba(0, 0, 0, 0.38);
+}
+
+/* 部品番号（プレート右上の小さなタグ） */
+.partNo {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  padding: 3px 8px;
+  border: 1px solid var(--svc-rule);
+  font-family: var(--font-ibm-plex-mono), "Consolas", monospace;
+  font-weight: 300;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  color: var(--svc-muted);
+  pointer-events: none;
 }
 
 /* ========================================
-   A-2 見本（リサーチ・リスト作成）— 主張の直後に現物を置く
-   囲みは .pillarItem と同じ作法（1px 罫＋背景を一段だけ持ち上げる）。角丸・影は使わない。
-   ラベルは .label をそのまま流用し、リンクは .arrowLink に margin だけ足す。
+   A-2 できること — 柱＝部品プレート
    ======================================== */
-.sample {
-  margin-top: 40px;
-  border: 1px solid var(--color-border-light);
-  background: var(--color-background-light);
-  padding: 30px 32px 32px;
-}
-
-/* テキスト側。現物の上に置く */
-.sampleBody {
-  max-width: 46em;
-}
-
-/* 見本の現物。枠の中で少し外へせり出させ、紙が置かれている感じを出す */
-/* 現物は本文の下に全幅で置く。切り取らず、細かい文字も読める大きさを確保する。
-   ⚠ 横並びで縮める作り・拡大して切り取る作りは、いずれも画面幅で崩れた（2026-09-05 実測）。 */
-.sampleShot {
-  display: block;
-  margin: 28px -32px -32px;
-  border-top: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
-.sampleShotImg {
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* 動きは控えめに。紙が少しだけ手前に寄る */
-.sample:hover .sampleShotImg {
-  transform: scale(1.02);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sampleShotImg {
-    transition: none;
-  }
-
-  .sample:hover .sampleShotImg {
-    transform: none;
-  }
-}
-
-/* 縦積み。画像は本文の下へ回し、全体を見せる */
-@media (max-width: 560px) {
-  .sampleShot {
-    margin: 22px -20px -22px;
-  }
-}
-
-.sampleTitle {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 17px;
-  line-height: 1.7;
-  letter-spacing: 0.02em;
-  color: var(--color-foreground);
-  margin: 0;
-}
-
-.sampleDesc {
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--color-foreground-muted);
-  margin: 12px 0 0;
-  max-width: 46em;
-}
-
-/* 囲みの中なので .arrowLink の margin-top(40px) を詰める */
-.sampleLink {
-  margin-top: 22px;
-}
-
-/* 柱（第1＝AI導入の設計・教育／第2＝業務の自動化・ツール開発） */
 .pillar {
-  margin-top: 64px;
-  padding-top: 48px;
-  border-top: 1px solid var(--color-border);
+  margin-top: 48px;
+  padding: 36px 40px 40px;
 }
 
-/* 第1の柱は h2＋lead の直下に続くので罫を持たない */
 .pillarFirst {
-  margin-top: 36px;
-  padding-top: 0;
-  border-top: 0;
+  margin-top: 8px;
 }
 
-/* 連続する段落の間隔（第1の柱の3段落） */
 .pillarBody + .pillarBody {
   margin-top: 12px;
 }
@@ -450,7 +326,7 @@
   font-size: 26px;
   line-height: 1.6;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 0;
 }
 
@@ -458,34 +334,45 @@
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   max-width: 46em;
   margin: 20px 0 0;
 }
 
-/* 4小項目（横並び・works の .flowItem と同じチップ） */
+/* 4小項目＝母線（上の罫）から引き出し線で吊った部品チップ */
 .pillarList {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 12px;
-  margin: 28px 0 0;
-  padding: 0;
+  gap: 16px 14px;
+  margin: 30px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--svc-rule);
 }
 
 .pillarItem {
-  border: 1px solid var(--color-border-light);
-  background: var(--color-background-light);
+  position: relative;
+  border: 1px solid var(--svc-rule);
+  background: var(--svc-plate-deep);
   padding: 9px 14px;
   font-family: var(--font-body);
   font-size: 14px;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
+}
+
+.pillarItem::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: -17px;
+  width: 1px;
+  height: 16px;
+  background: var(--svc-rule-strong);
 }
 
 /* ========================================
-   A-2 3段階ブロック — 左に丸数字（washi 600・大きめ）／右に題字＋補足
-   ①にだけ小タグ（1px 罫・角丸2px・淡色）。行間は 1px 罫。
+   A-2 3段階ブロック — 縦の母線（レール）に ①②③ の端子が並ぶ
    ======================================== */
 .stage {
   margin-top: 56px;
@@ -497,15 +384,28 @@
   font-size: 19px;
   line-height: 1.7;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 0 0 14px;
+}
+
+.stageWrap {
+  position: relative;
 }
 
 .stageList {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--color-border);
+}
+
+.stageRail {
+  position: absolute;
+  left: 18px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: var(--svc-rule-strong);
+  pointer-events: none;
 }
 
 .stageRow {
@@ -514,16 +414,21 @@
   column-gap: 20px;
   align-items: start;
   padding: 22px 0;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--svc-rule-soft);
 }
 
-/* 丸数字（.statNum と同じ washi フォールバック） */
+/* 丸数字＝レール上の端子（地色で母線を隠し、線の上に乗せる） */
 .stageMark {
+  position: relative;
+  width: 37px;
+  text-align: center;
+  background: var(--sumi-noh);
+  padding: 4px 0;
   font-family: var(--font-display-washi, var(--font-heading));
   font-weight: 600;
   font-size: 34px;
   line-height: 1.1;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
 }
 
 .stageBody {
@@ -544,19 +449,18 @@
   font-size: 17px;
   line-height: 1.7;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
 }
 
 .stageTag {
   display: inline-block;
-  border: 1px solid var(--color-border-light);
-  border-radius: 2px;
+  border: 1px solid var(--svc-rule);
   padding: 2px 8px;
   font-family: var(--font-body);
   font-size: 11px;
   line-height: 1.6;
   letter-spacing: 0.06em;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   white-space: nowrap;
 }
 
@@ -564,55 +468,200 @@
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   margin: 4px 0 0;
 }
 
-/* 「私がすること」＝各段でこちらが何を提供するか（P10・2026-09-02）。
-   ①②③（相手の現在地）と、トップ #steps の一・二・三（提供の三段）を接続する行 */
 .stageMine {
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.95;
-  color: var(--color-foreground);
-  border-left: 1px solid var(--color-border);
+  color: var(--svc-ink);
+  border-left: 1px solid var(--svc-rule-strong);
   padding-left: 14px;
   margin: 12px 0 0;
 }
+
 .stageMineLabel {
   display: block;
   font-size: 11px;
   letter-spacing: 0.08em;
   line-height: 1.6;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   margin-bottom: 2px;
 }
+
 .stageClose {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   max-width: 42em;
   margin: 28px 0 0;
 }
 
 /* ========================================
-   A-3 できないこと — 題字に「墨の一線」を静的に添える
+   A-2 できること 3項目 — 寸法線の下に 3 つの部品プレート
+   ======================================== */
+.doList {
+  position: relative;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 44px 0 0;
+  padding: 28px 0 0;
+}
+
+.doList::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--svc-rule);
+}
+
+.doItem {
+  padding: 26px 26px 28px;
+}
+
+/* 各区画の左端に寸法ティック、最後の区画は右端にも */
+.doItem::before {
+  content: "";
+  position: absolute;
+  top: -28px;
+  left: 0;
+  width: 1px;
+  height: 12px;
+  background: var(--svc-rule-strong);
+}
+
+.doItem:last-child::after {
+  content: "";
+  position: absolute;
+  top: -28px;
+  right: 0;
+  width: 1px;
+  height: 12px;
+  background: var(--svc-rule-strong);
+}
+
+.doNum {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid rgba(241, 234, 236, 0.5);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--svc-ink);
+}
+
+.doName {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--svc-ink);
+  margin: 16px 0 0;
+}
+
+.doDesc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--svc-muted);
+  margin: 10px 0 0;
+}
+
+/* ========================================
+   A-2 見本（リサーチ・リスト作成）— プレートに現物を留める
+   ======================================== */
+.sample {
+  margin-top: 44px;
+  padding: 32px 32px 32px;
+}
+
+.sampleBody {
+  max-width: 46em;
+}
+
+/* 現物は本文の下に全幅で置く。切り取らず、細かい文字も読める大きさを確保する。
+   ⚠ 横並びで縮める作り・拡大して切り取る作りは、いずれも画面幅で崩れた（2026-09-05 実測）。 */
+.sampleShot {
+  display: block;
+  margin: 28px -32px -32px;
+  border-top: 1px solid var(--svc-rule);
+  overflow: hidden;
+}
+
+.sampleShotImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sample:hover .sampleShotImg {
+  transform: scale(1.02);
+}
+
+.sampleTitle {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--svc-ink);
+  margin: 0;
+}
+
+.sampleDesc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--svc-muted);
+  margin: 12px 0 0;
+  max-width: 46em;
+}
+
+.sampleLink {
+  margin-top: 22px;
+}
+
+/* ========================================
+   A-3 できないこと — 破線の枠（不採用部品）＋ハッチング
    ======================================== */
 .dontList {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
-  border-top: 1px solid var(--color-border);
 }
 
 .dontItem {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 19em) minmax(0, 1fr);
   column-gap: 32px;
   align-items: baseline;
-  padding: 26px 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: 26px 28px;
+  border: 1px dashed var(--svc-rule);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(241, 234, 236, 0.04) 0,
+    rgba(241, 234, 236, 0.04) 1px,
+    transparent 1px,
+    transparent 11px
+  );
+}
+
+.dontItem + .dontItem {
+  margin-top: 14px;
 }
 
 .dontName {
@@ -621,11 +670,11 @@
   font-size: 17px;
   line-height: 1.7;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 0;
 }
 
-/* トップFV .declStrikeLine と同じ一線（アニメ無し・水平・読める太さと不透明度） */
+/* 題字の一線（アニメ無し・水平・読める太さと不透明度） */
 .dontStrike {
   position: relative;
   display: inline-block;
@@ -638,7 +687,7 @@
   right: -0.15em;
   top: 54%;
   height: 2px;
-  background: var(--color-foreground);
+  background: var(--svc-ink);
   opacity: 0.45;
   pointer-events: none;
 }
@@ -647,7 +696,7 @@
   font-family: var(--font-body);
   font-size: 14.5px;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   margin: 0;
 }
 
@@ -655,35 +704,43 @@
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   max-width: 42em;
   margin: 36px 0 0;
 }
 
 /* ========================================
-   A-3b AIへの不安（TRUST）— A-3 と同じ罫の行・番号付き（一線は添えない）
+   A-3b AIへの不安（TRUST）— 索引カード（上辺に番号のタブ）
    ======================================== */
 .trustList {
   list-style: none;
+  display: grid;
+  row-gap: 26px;
   margin: 12px 0 0;
   padding: 0;
-  border-top: 1px solid var(--color-border);
 }
 
 .trustItem {
   display: grid;
-  grid-template-columns: 56px minmax(0, 18em) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 18em) minmax(0, 1fr);
   column-gap: 32px;
   align-items: baseline;
-  padding: 26px 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: 34px 32px 32px;
 }
 
 .trustNum {
+  position: absolute;
+  top: -13px;
+  left: 24px;
+  height: 26px;
+  line-height: 24px;
+  padding: 0 12px;
+  border: 1px solid rgba(241, 234, 236, 0.4);
+  background: var(--svc-plate-raise);
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent);
+  letter-spacing: 0.12em;
+  color: var(--svc-ink);
 }
 
 .trustName {
@@ -692,7 +749,7 @@
   font-size: 17px;
   line-height: 1.7;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 0;
 }
 
@@ -700,7 +757,7 @@
   font-family: var(--font-body);
   font-size: 14.5px;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   margin: 0;
 }
 
@@ -708,13 +765,13 @@
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   max-width: 42em;
-  margin: 36px 0 0;
+  margin: 40px 0 0;
 }
 
 /* ========================================
-   A-4 データの扱い — 文＋大きな数字1枚
+   A-4 データの扱い — 文＋計測プレート（大きな数字と寸法バー）
    ======================================== */
 .dataGrid {
   display: grid;
@@ -727,15 +784,12 @@
   margin-bottom: 16px;
 }
 
-/* 本文段落の連続（A-4 追記段落） */
 .dataText .text + .text {
   margin-top: 16px;
 }
 
-/* 数字（トップ「言い当て」.statNum に近い見せ方） */
 .stat {
-  border-top: 1px solid var(--color-border-light);
-  padding-top: 28px;
+  padding: 32px 36px 34px;
   margin-top: 46px;
 }
 
@@ -746,26 +800,72 @@
   line-height: 1.1;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   margin: 0;
+}
+
+/* 寸法バー：全長の罫（両端ティック）に、値の割合だけ白の実線が引かれる */
+.statTrack {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--svc-rule);
+  margin: 22px 0 0;
+}
+
+.statTrack::before,
+.statTrack::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 1px;
+  height: 11px;
+  background: rgba(241, 234, 236, 0.5);
+}
+
+.statTrack::before {
+  left: 0;
+}
+
+.statTrack::after {
+  right: 0;
+}
+
+.statFill {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  height: 3px;
+  width: var(--pct, 0%);
+  background: var(--svc-ink);
+}
+
+.statFill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -4px;
+  width: 1px;
+  height: 11px;
+  background: var(--svc-ink);
 }
 
 .statLabel {
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   max-width: 24em;
-  margin: 14px 0 0;
+  margin: 18px 0 0;
 }
 
 .statNote {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   max-width: 26em;
-  margin: 28px 0 0;
+  margin: 26px 0 0;
 }
 
 .statSrc {
@@ -773,110 +873,71 @@
   font-size: 12px;
   letter-spacing: 0.04em;
   line-height: 1.8;
-  color: var(--color-secondary);
+  color: var(--svc-muted);
   margin: 22px 0 0;
 }
 
 /* ========================================
-   A-5 進め方 — 縦の番号リスト（works FLOW と同じ番号スタイル）
+   A-5 進め方 — 配線図は WireSteps。締めの帯は引き出し線付きの注記
    ======================================== */
-.stepList {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  border-top: 1px solid var(--color-border);
-}
-
-.step {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
-  column-gap: 20px;
-  align-items: baseline;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.stepNum {
-  grid-column: 1;
-  grid-row: 1;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent);
-}
-
-.stepName {
-  grid-column: 2;
-  grid-row: 1;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 17px;
-  line-height: 1.6;
-  letter-spacing: 0.02em;
-  color: var(--color-foreground);
-  margin: 0;
-}
-
-.stepDesc {
-  grid-column: 2;
-  grid-row: 2;
-  font-family: var(--font-body);
-  font-size: 14.5px;
-  line-height: 1.9;
-  color: var(--color-foreground-muted);
-  margin: 6px 0 0;
-}
-
-/* 帯（締めの一文） */
 .band {
-  margin: 40px 0 0;
+  margin: 48px 0 0;
   padding: 22px 28px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background-light);
+  border-left: 1px solid var(--svc-rule-strong);
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
 }
 
 /* ========================================
-   A-6 料金の考え方 — 目安3行（トップ .priceRow の静的簡素版）
+   A-6 料金の考え方 — 見積図面の表（外枠 1px・内罫 0.08・各行に寸法バー）
    ======================================== */
 .priceTable {
-  margin-top: 36px;
-  max-width: 640px;
+  list-style: none;
+  margin: 36px 0 0;
+  padding: 0;
+  max-width: 680px;
+  border: 1px solid var(--svc-rule);
+  background: var(--svc-plate-deep);
+  box-shadow:
+    inset 1px 1px 0 var(--svc-plate-edge),
+    var(--svc-shadow);
 }
 
 .priceRow {
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid var(--svc-rule-soft);
+}
+
+.priceRow:last-child {
+  border-bottom: 0;
+}
+
+.priceMain {
   display: flex;
   align-items: baseline;
   gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.priceRow:first-child {
-  border-top: 1px solid var(--color-border);
 }
 
 .priceLabel {
   font-family: var(--font-body);
   font-size: 15px;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   white-space: nowrap;
 }
 
 .priceLeader {
   flex: 1 1 0;
   min-width: 1.5rem;
-  border-bottom: 1px dotted var(--color-border-light);
+  border-bottom: 1px dotted var(--svc-rule-strong);
   transform: translateY(-0.4em);
 }
 
 .priceArrow {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--color-secondary);
+  color: var(--svc-muted);
 }
 
 .priceAmount {
@@ -885,39 +946,79 @@
   font-size: 18px;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
-  color: var(--color-foreground);
+  color: var(--svc-ink);
   white-space: nowrap;
+}
+
+/* 寸法バー（金額の相対量＝データから） */
+.priceBar {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--svc-rule-soft);
+  margin-top: 12px;
+}
+
+.priceFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  width: var(--pct, 0%);
+  background: rgba(241, 234, 236, 0.6);
+}
+
+.priceFill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: rgba(241, 234, 236, 0.6);
 }
 
 .priceTableNote {
   font-family: var(--font-body);
   font-size: 12.5px;
   letter-spacing: 0.02em;
-  color: var(--color-secondary);
+  color: var(--svc-muted);
   margin: 12px 0 0;
 }
 
 /* ========================================
-   A-7 FAQ — ネイティブ details/summary（JS不要・iOS安全）
+   A-7 FAQ — 索引カード（ネイティブ details/summary・JS 不要）
    ======================================== */
 .faqList {
-  border-top: 1px solid var(--color-border);
+  display: grid;
+  row-gap: 10px;
 }
 
 .faqItem {
-  border-bottom: 1px solid var(--color-border);
+  background: var(--svc-plate-deep);
+  border: 1px solid var(--svc-rule-soft);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    background-color var(--duration-normal) var(--ease-default);
+}
+
+.faqItem[open] {
+  background: var(--svc-plate);
+  box-shadow:
+    inset 1px 1px 0 var(--svc-plate-edge),
+    var(--svc-shadow);
 }
 
 .faqQ {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
   column-gap: 16px;
   align-items: baseline;
-  padding: 22px 0;
+  padding: 20px 24px;
   cursor: pointer;
   list-style: none;
-  color: var(--color-foreground);
-  transition: color var(--duration-normal) var(--ease-default);
+  color: var(--svc-ink);
 }
 
 .faqQ::-webkit-details-marker {
@@ -928,13 +1029,9 @@
   content: "";
 }
 
-.faqQ:hover {
-  color: var(--color-accent);
-}
-
 .faqQ:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 4px;
+  outline: 2px solid var(--svc-ink);
+  outline-offset: -4px;
 }
 
 /* 既定マーカーを消し、＋／− を CSS で */
@@ -945,19 +1042,25 @@
   font-weight: 300;
   font-size: 18px;
   line-height: 1;
-  color: var(--color-accent);
+  color: var(--svc-ink);
 }
 
 .faqItem[open] .faqQ::after {
   content: "\2212";
 }
 
+/* 索引タブ */
 .faqNum {
   grid-column: 1;
+  align-self: center;
+  border: 1px solid rgba(241, 234, 236, 0.35);
+  padding: 3px 0;
+  text-align: center;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  color: var(--svc-ink);
 }
 
 .faqQText {
@@ -970,20 +1073,20 @@
 }
 
 .faqA {
-  padding: 0 40px 26px 44px;
+  padding: 0 40px 24px 76px;
 }
 
 .faqAText {
   font-family: var(--font-body);
   font-size: 14.5px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--svc-muted);
   max-width: 46em;
   margin: 0;
 }
 
 /* ========================================
-   Responsive — PC 広幅（PC 専用改行の有効化）
+   Responsive — PC 広幅（PC 専用改行・非対称の版面・カードのずらし）
    ======================================== */
 @media (min-width: 1280px) {
   .brPc {
@@ -991,23 +1094,67 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .headGrid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .headGrid .title {
+    margin-bottom: 0;
+  }
+
+  .headGrid .lead {
+    margin-top: 6px;
+    font-size: 16px;
+  }
+}
+
+/* 1024–1279 は左列が 500px 前後＝h2 を一段落として 1 行に収める */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .headGrid .title {
+    font-size: 30px;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  /* 索引カードは左右にずらして重ねる */
+  .trustItem:nth-child(odd) {
+    margin-right: 40px;
+  }
+
+  .trustItem:nth-child(even) {
+    margin-left: 40px;
+  }
+
+  /* 不採用部品は段違いに脇へ寄せる */
+  .dontItem:nth-child(2) {
+    margin-left: 32px;
+  }
+
+  .dontItem:nth-child(3) {
+    margin-left: 64px;
+  }
+}
+
 /* ========================================
    Responsive — Tablet (768–1279)
    ======================================== */
 @media (min-width: 768px) and (max-width: 1279px) {
-  .fvTitle {
-    font-size: 42px;
+  .section {
+    padding: 84px 30px;
   }
 
-  .fvEdgeBl { left: 24px; bottom: 24px; }
-  .fvEdgeBr { right: 24px; bottom: 24px; }
-
-  .section {
-    padding: 80px 30px;
+  .sectionFirst {
+    padding-top: 72px;
   }
 
   .doList {
-    gap: 28px 24px;
+    gap: 20px;
+  }
+
+  .doItem {
+    padding: 22px 20px 24px;
   }
 
   .dontItem {
@@ -1016,7 +1163,7 @@
   }
 
   .trustItem {
-    grid-template-columns: 48px minmax(0, 13em) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 13em) minmax(0, 1fr);
     column-gap: 24px;
   }
 
@@ -1047,28 +1194,16 @@
     display: block;
   }
 
-  /* FV */
-  .fvLabel {
-    font-size: 10px;
-    margin-bottom: 20px;
-  }
-
-  .fvTitle {
-    font-size: 28px;
-    line-height: 1.5;
-  }
-
-  .fvSub {
-    font-size: 12.5px;
-    margin-top: 16px;
-  }
-
-  .fvEdgeBl { left: 20px; bottom: 24px; }
-  .fvEdgeBr { right: 20px; bottom: 24px; }
-
-  /* 共通 */
   .section {
     padding: 64px 20px;
+  }
+
+  .sectionFirst {
+    padding-top: 56px;
+  }
+
+  .figHead {
+    margin-bottom: 30px;
   }
 
   .title {
@@ -1102,46 +1237,25 @@
     font-size: 13px;
   }
 
-  /* できること：1列 */
-  .doList {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    margin-top: 28px;
+  .partNo {
+    top: 10px;
+    right: 10px;
   }
 
-  .sample {
-    margin-top: 28px;
-    padding: 24px 20px 26px;
-  }
-
-  .sampleLink {
-    margin-top: 18px;
-  }
-
-  .doItem {
-    padding: 22px 0;
-  }
-
-  .doItem:last-child {
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .doName {
-    font-size: 16px;
-  }
-
-  .doDesc {
-    font-size: 13.5px;
-    line-height: 1.85;
-  }
-
+  /* 柱 */
   .pillar {
-    margin-top: 48px;
-    padding-top: 36px;
+    margin-top: 36px;
+    padding: 28px 20px 26px;
   }
 
+  .pillarFirst {
+    margin-top: 4px;
+  }
+
+  /* PART タグはラベル行の高さに収まり題字とは重ならないので、右を空けない */
   .pillarTitle {
     font-size: 19px;
+    text-wrap: balance;
   }
 
   .pillarBody {
@@ -1150,8 +1264,9 @@
   }
 
   .pillarList {
-    gap: 8px;
-    margin-top: 22px;
+    gap: 14px 10px;
+    margin-top: 24px;
+    padding-top: 14px;
   }
 
   .pillarItem {
@@ -1159,8 +1274,10 @@
     font-size: 13px;
   }
 
-  .pillarFirst {
-    margin-top: 28px;
+  .pillarItem::before {
+    left: 11px;
+    top: -15px;
+    height: 14px;
   }
 
   /* 3段階ブロック */
@@ -1172,6 +1289,10 @@
     font-size: 17px;
   }
 
+  .stageRail {
+    left: 14px;
+  }
+
   .stageRow {
     grid-template-columns: 44px minmax(0, 1fr);
     column-gap: 12px;
@@ -1179,6 +1300,7 @@
   }
 
   .stageMark {
+    width: 29px;
     font-size: 28px;
   }
 
@@ -1196,11 +1318,54 @@
     margin-top: 24px;
   }
 
+  /* できること：1列。寸法線は最初の区画の上だけ */
+  .doList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 32px;
+    padding-top: 22px;
+  }
+
+  .doItem {
+    padding: 22px 20px 24px;
+  }
+
+  .doItem::before {
+    top: -22px;
+  }
+
+  .doItem:not(:first-child)::before,
+  .doItem:last-child::after {
+    display: none;
+  }
+
+  .doName {
+    font-size: 16px;
+  }
+
+  .doDesc {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .sample {
+    margin-top: 32px;
+    padding: 24px 20px 22px;
+  }
+
+  .sampleShot {
+    margin: 22px -20px -22px;
+  }
+
+  .sampleLink {
+    margin-top: 18px;
+  }
+
   /* できないこと：1列 */
   .dontItem {
     grid-template-columns: minmax(0, 1fr);
     row-gap: 8px;
-    padding: 22px 0;
+    padding: 20px 18px;
   }
 
   .dontName {
@@ -1217,35 +1382,33 @@
     margin-top: 28px;
   }
 
-  /* AIへの不安：番号＋題字を1行目、本文を2行目に */
+  /* AIへの不安：題字を1行目、本文を2行目に */
+  .trustList {
+    row-gap: 24px;
+  }
+
   .trustItem {
-    grid-template-columns: 40px minmax(0, 1fr);
-    column-gap: 14px;
+    grid-template-columns: minmax(0, 1fr);
     row-gap: 8px;
-    padding: 22px 0;
+    padding: 30px 20px 24px;
   }
 
   .trustNum {
-    grid-column: 1;
-    grid-row: 1;
+    left: 16px;
   }
 
   .trustName {
-    grid-column: 2;
-    grid-row: 1;
     font-size: 16px;
   }
 
   .trustDesc {
-    grid-column: 2;
-    grid-row: 2;
     font-size: 13.5px;
     line-height: 1.85;
   }
 
   .trustClose {
     font-size: 14px;
-    margin-top: 28px;
+    margin-top: 32px;
   }
 
   /* データ：1列 */
@@ -1256,7 +1419,7 @@
 
   .stat {
     margin-top: 0;
-    padding-top: 24px;
+    padding: 26px 22px 26px;
   }
 
   .statNum {
@@ -1278,24 +1441,9 @@
   }
 
   /* 進め方 */
-  .step {
-    grid-template-columns: 40px minmax(0, 1fr);
-    column-gap: 14px;
-    padding: 20px 0;
-  }
-
-  .stepName {
-    font-size: 16px;
-  }
-
-  .stepDesc {
-    font-size: 13.5px;
-    line-height: 1.85;
-  }
-
   .band {
-    margin-top: 32px;
-    padding: 18px 20px;
+    margin-top: 36px;
+    padding: 16px 18px;
     font-size: 14px;
     line-height: 1.95;
   }
@@ -1306,11 +1454,20 @@
   }
 
   .priceRow {
+    padding: 14px 16px 14px;
+  }
+
+  .priceMain {
     gap: 10px;
-    padding: 14px 0;
+  }
+
+  /* SP は点線リーダーを置かず、ラベルに残り幅をすべて渡す（「自動／化」の折れを防ぐ） */
+  .priceLeader {
+    display: none;
   }
 
   .priceLabel {
+    flex: 1 1 auto;
     font-size: 14px;
     white-space: normal;
   }
@@ -1321,9 +1478,13 @@
 
   /* FAQ */
   .faqQ {
-    grid-template-columns: 24px minmax(0, 1fr) auto;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
     column-gap: 12px;
-    padding: 18px 0;
+    padding: 16px 16px;
+  }
+
+  .faqNum {
+    font-size: 10px;
   }
 
   .faqQText {
@@ -1331,7 +1492,7 @@
   }
 
   .faqA {
-    padding: 0 0 22px 36px;
+    padding: 0 16px 20px 58px;
   }
 
   .faqAText {
@@ -1344,31 +1505,33 @@
    Reduced Motion
    ScrollReveal（GSAP）は inline に opacity:0 / transform を置くため、
    !important で打ち消して「動かないが必ず見える」状態にする。
-   FV の初期 opacity:0 も同様に解除する。
+   引かれる線（DrawRule / DrawLine）も終端値に置く。
    ======================================== */
 @media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .fvLabel,
-  .fvTitle,
-  .fvSub,
-  .fvEdgeBl,
-  .fvEdgeBr {
+  .reveal {
     opacity: 1 !important;
     transform: none !important;
   }
 
-  .fvHr {
-    transform: scaleX(1) !important;
+  .figRule,
+  .stageRail,
+  .statFill,
+  .priceFill {
+    transform: none !important;
   }
 
-  .fvGrain {
-    animation: none;
+  .sampleShotImg {
+    transition: none;
+  }
+
+  .sample:hover .sampleShotImg {
+    transform: none;
   }
 
   .inlineLink,
   .arrowLink,
   .arrow,
-  .faqQ {
+  .faqItem {
     transition: none;
   }
 

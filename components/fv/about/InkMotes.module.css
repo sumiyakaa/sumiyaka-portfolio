@@ -1,0 +1,88 @@
+/* =============================================
+   墨の粒（にじみ）— /about FV の手前層
+   ・動かすのは transform だけ（filter / blend / 3D 不使用）
+   ・既定 paused → InViewGate の .live が付いた時だけ running
+   ・.still（タッチ端末・狭幅）と reduced-motion では animation: none＝初期位置で静止
+   ============================================= */
+.wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+}
+
+.mote {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation-name: moteA;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-play-state: paused;
+}
+
+/* 暖色白の淡い滲み（縁 0.04〜0.10 の範囲） */
+.light {
+  background: radial-gradient(
+    circle,
+    rgba(250, 247, 245, 0.095) 0%,
+    rgba(250, 247, 245, 0.05) 30%,
+    rgba(250, 247, 245, 0.016) 56%,
+    rgba(250, 247, 245, 0) 72%
+  );
+}
+
+/* 墨の溜まり（焦）＝流体の上に落ちる暗い粒 */
+.dark {
+  background: radial-gradient(
+    circle,
+    rgba(20, 18, 18, 0.62) 0%,
+    rgba(20, 18, 18, 0.32) 34%,
+    rgba(20, 18, 18, 0.08) 58%,
+    rgba(20, 18, 18, 0) 70%
+  );
+}
+
+.pathA { animation-name: moteA; }
+.pathB { animation-name: moteB; }
+.pathC { animation-name: moteC; }
+
+.live .mote {
+  animation-play-state: running;
+}
+
+.still .mote {
+  animation: none;
+}
+
+/* 中央の translate(-50%,-50%) を全キーフレームに含める（基準位置を失わない） */
+@keyframes moteA {
+  0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); }
+  45%  { transform: translate(-50%, -50%) translate(calc(var(--mote-dx) * 0.6), calc(var(--mote-dy) * 0.9)) scale(1.03); }
+  100% { transform: translate(-50%, -50%) translate(var(--mote-dx), var(--mote-dy)) scale(0.97); }
+}
+
+@keyframes moteB {
+  0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); }
+  55%  { transform: translate(-50%, -50%) translate(calc(var(--mote-dx) * 0.9), calc(var(--mote-dy) * 0.5)) scale(0.96); }
+  100% { transform: translate(-50%, -50%) translate(var(--mote-dx), var(--mote-dy)) scale(1.04); }
+}
+
+@keyframes moteC {
+  0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); }
+  35%  { transform: translate(-50%, -50%) translate(calc(var(--mote-dx) * 0.4), calc(var(--mote-dy) * 0.7)) scale(1.05); }
+  100% { transform: translate(-50%, -50%) translate(var(--mote-dx), var(--mote-dy)) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mote {
+    animation: none;
+  }
+}

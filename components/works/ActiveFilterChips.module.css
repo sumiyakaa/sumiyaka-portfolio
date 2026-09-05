@@ -1,5 +1,6 @@
 /* =============================================
-   Active Filter Chips
+   Active Filter Chips（清・紙：穴あきの紙タグ）
+   色は app/works/page.module.css の .page が定義する --wk-* を継承する
    ============================================= */
 .container {
   display: flex;
@@ -11,9 +12,9 @@
 .label {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.1em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   flex-shrink: 0;
   padding-top: 4px;
 }
@@ -35,30 +36,44 @@
    Chip
    ============================================= */
 .chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px 4px 10px;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  transition:
-    border-color var(--duration-fast) ease,
-    background-color var(--duration-fast) ease;
+  padding: 4px 8px 4px 22px;
+  border: 1px solid var(--wk-rule);
+  background-color: var(--wk-paper);
+  box-shadow:
+    0 1px 1px rgba(31, 28, 28, 0.08),
+    0 4px 10px -6px rgba(31, 28, 28, 0.18);
+  transition: border-color var(--duration-fast) ease;
+}
+
+/* タグの穴 */
+.chip::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--wk-ground);
+  box-shadow: inset 0 0 0 1px var(--wk-rule);
 }
 
 .chip:hover {
-  border-color: var(--color-border-light);
-  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--wk-ink);
 }
 
+/* 検索語のタグは墨の枠 */
 .chipQuery {
-  border-color: rgba(200, 169, 110, 0.3);
-  background: rgba(200, 169, 110, 0.04);
+  border-color: var(--wk-ink);
 }
 
 .chipQuery:hover {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(200, 169, 110, 0.08);
+  border-color: var(--wk-ink);
 }
 
 .chipFilter {
@@ -68,13 +83,14 @@
 .chipText {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
 }
 
 .chipQuery .chipText {
-  color: var(--color-accent);
+  color: var(--wk-ink);
+  font-weight: 400;
 }
 
 .chipRemove {
@@ -86,13 +102,13 @@
   padding: 0;
   background: transparent;
   border: none;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   cursor: pointer;
   transition: color var(--duration-fast) ease;
 }
 
 .chipRemove:hover {
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 /* =============================================

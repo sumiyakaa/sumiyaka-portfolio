@@ -1,0 +1,218 @@
+/* ==========================================================================
+   PROCESS ＝ 配線図（/service・重）
+   ノード＝机に置いた紙のプレート。左上に端子（1px 枠の小さな箱）。
+   配線は 1px の実線。端子の中心 (--tx, --ty) を通るように置く。
+   どの配線を見せるかはレイアウト（3列／1列）ごとに display で切り替える。
+   ========================================================================== */
+
+.list {
+  --gap: 40px;
+  --rowgap: 56px;
+  --tsz: 28px; /* 端子の一辺 */
+  --tx: 44px; /* 端子中心の x（ノード左端から） */
+  --ty: 42px; /* 端子中心の y（ノード上端から） */
+  --wire: rgba(241, 234, 236, 0.35);
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--rowgap);
+}
+
+.node {
+  position: relative;
+  padding: calc(var(--ty) + var(--tsz) / 2 + 14px) 28px 28px;
+  background: var(--svc-plate-deep, #261f21);
+  box-shadow:
+    inset 1px 1px 0 var(--svc-plate-edge, rgba(241, 234, 236, 0.1)),
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    2px 3px 0 rgba(20, 18, 18, 0.55),
+    8px 12px 26px rgba(0, 0, 0, 0.38);
+}
+
+/* 端子（1px 枠の箱）。番号はこの中に重ねる */
+.terminal {
+  position: absolute;
+  left: calc(var(--tx) - var(--tsz) / 2);
+  top: calc(var(--ty) - var(--tsz) / 2);
+  width: var(--tsz);
+  height: var(--tsz);
+  border: 1px solid rgba(241, 234, 236, 0.5);
+  background: var(--svc-plate, #2b2325);
+  pointer-events: none;
+}
+
+.num {
+  position: absolute;
+  left: calc(var(--tx) - var(--tsz) / 2);
+  top: calc(var(--ty) - var(--tsz) / 2);
+  width: var(--tsz);
+  height: var(--tsz);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-ibm-plex-mono), "Consolas", monospace;
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground);
+}
+
+.name {
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin: 0;
+}
+
+.desc {
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-size: 14.5px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 8px 0 0;
+}
+
+/* ---- 配線 ---- */
+.wire,
+.run {
+  position: absolute;
+  background: var(--wire);
+  pointer-events: none;
+  display: none;
+}
+
+/* 横に入る：左隣の右端から端子の左辺まで（列間の溝を含む） */
+.inH {
+  top: calc(var(--ty) - 0.5px);
+  left: calc(-1 * var(--gap));
+  width: calc(var(--gap) + var(--tx) - var(--tsz) / 2);
+  height: 1px;
+  transform-origin: left center;
+}
+
+/* 縦に入る：上のノードの下端（行間を含む）から端子の上辺まで */
+.inV {
+  left: calc(var(--tx) - 0.5px);
+  top: calc(-1 * var(--rowgap));
+  width: 1px;
+  height: calc(var(--rowgap) + var(--ty) - var(--tsz) / 2);
+  transform-origin: center top;
+}
+
+/* 横に出る：端子の右辺からノードの右端まで */
+.outH {
+  top: calc(var(--ty) - 0.5px);
+  left: calc(var(--tx) + var(--tsz) / 2);
+  right: 0;
+  height: 1px;
+  transform-origin: left center;
+}
+
+/* 縦に出る：端子の下辺からノードの下端まで */
+.outV {
+  left: calc(var(--tx) - 0.5px);
+  top: calc(var(--ty) + var(--tsz) / 2);
+  bottom: 0;
+  width: 1px;
+  transform-origin: center top;
+}
+
+/* 溝を戻る配線（行頭ノードが持つ）：右の列の端子 x から自分の端子 x まで、右→左 */
+.run {
+  top: calc(-1 * var(--rowgap) / 2 - 0.5px);
+  left: calc(var(--tx) - 0.5px);
+  width: calc(200% + 2 * var(--gap) + 1px);
+  height: 1px;
+  transform-origin: right center;
+}
+
+/* ---- 1 列（既定）：縦の配線だけ ---- */
+.node:not(:first-child) .inV {
+  display: block;
+}
+
+.node:not(:last-child) .outV {
+  display: block;
+}
+
+/* ---- 3 列（PC） ---- */
+@media (min-width: 1024px) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--gap);
+  }
+
+  /* 既定の縦配線を一度しまう（1列用の表示規則と同じ詳細度＝後勝ち） */
+  .list .node .inV,
+  .list .node .outV {
+    display: none;
+  }
+
+  /* 行内：横に入る／横に出る */
+  .node:not(:nth-child(3n + 1)) .inH {
+    display: block;
+  }
+
+  .node:not(:nth-child(3n)):not(:last-child) .outH {
+    display: block;
+  }
+
+  /* 行末：端子から下へ落ち、溝の中央まで */
+  .node:nth-child(3n):not(:last-child) .outV {
+    display: block;
+    bottom: calc(-1 * var(--rowgap) / 2);
+  }
+
+  /* 行頭（2行目以降）：溝を戻り、溝の中央から端子へ上がる */
+  .node:nth-child(3n + 1):not(:first-child) .run {
+    display: block;
+  }
+
+  .node:nth-child(3n + 1):not(:first-child) .inV {
+    display: block;
+    top: calc(-1 * var(--rowgap) / 2);
+    height: calc(var(--rowgap) / 2 + var(--ty) - var(--tsz) / 2);
+  }
+}
+
+/* ---- SP ---- */
+@media (max-width: 767px) {
+  .list {
+    --rowgap: 40px;
+    --tx: 36px;
+    --ty: 36px;
+    --tsz: 26px;
+    margin-top: 22px;
+  }
+
+  .node {
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-bottom: 24px;
+  }
+
+  .name {
+    font-size: 16px;
+  }
+
+  .desc {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+}
+
+/* ---- Reduced Motion：終端値 ---- */
+@media (prefers-reduced-motion: reduce) {
+  .wire,
+  .run {
+    transform: none !important;
+  }
+
+  .node {
+    opacity: 1 !important;
+  }
+}

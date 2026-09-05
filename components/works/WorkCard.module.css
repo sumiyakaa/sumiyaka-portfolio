@@ -1,16 +1,22 @@
 /* =============================================
-   Work Card — Grid View
+   Work Card — Grid View（清・紙：紙に貼った写真）
+   白い余白＋実影。ホバーでわずかに浮く（transform と box-shadow のみ）。
+   色は app/works/page.module.css の .page が定義する --wk-* を継承する
    ============================================= */
 .card {
   display: block;
+  padding: 10px 10px 16px;
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
   transition:
-    transform var(--duration-normal) ease,
-    box-shadow var(--duration-normal) ease;
+    transform var(--duration-normal) var(--ease-out-expo),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--wk-shadow-lift);
 }
 
 /* Thumbnail */
@@ -19,7 +25,8 @@
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(31, 28, 28, 0.12);
+  background: var(--wk-ground);
 }
 
 .thumbnailImage {
@@ -44,14 +51,15 @@
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.15em;
-  color: var(--color-accent);
+  color: var(--wk-ink);
   padding: 3px 10px;
-  border: 1px solid rgba(200, 169, 110, 0.3);
+  border: 1px solid rgba(31, 28, 28, 0.4);
+  background: var(--wk-paper);
 }
 
 /* Card Body */
 .cardBody {
-  padding: 16px 4px 0;
+  padding: 14px 4px 0;
 }
 
 .cardTitle {
@@ -59,7 +67,7 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin-bottom: 6px;
 }
 
@@ -68,10 +76,10 @@
 .cardRole {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 1.4;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   margin-bottom: 6px;
 }
 
@@ -79,7 +87,7 @@
   font-family: var(--font-body);
   font-size: 12px;
   line-height: 1.7;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink-3);
   margin-bottom: 12px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -103,11 +111,11 @@
 .cardTag {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.06em;
-  color: var(--color-accent);
+  color: var(--wk-ink);
   padding: 2px 8px;
-  border: 1px solid rgba(200, 169, 110, 0.25);
+  border: 1px solid rgba(31, 28, 28, 0.45);
 }
 
 .cardTechs {
@@ -118,26 +126,26 @@
 .techTag {
   font-family: var(--font-mono);
   font-size: 9px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   padding: 2px 6px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-rule-soft);
 }
 
 /* =============================================
-   Work Card — List View
+   Work Card — List View（帳面の行）
    ============================================= */
 .listCard {
   display: flex;
   gap: 20px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--wk-rule);
   transition: background-color var(--duration-fast) ease;
 }
 
 .listCard:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(31, 28, 28, 0.03);
 }
 
 .listThumb {
@@ -146,7 +154,9 @@
   width: 140px;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(31, 28, 28, 0.12);
+  background: var(--wk-ground);
+  box-shadow: 0 2px 6px -2px rgba(31, 28, 28, 0.25);
 }
 
 .listThumbImage {
@@ -171,32 +181,32 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 .listMeta {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.06em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
 }
 
 /* 担当範囲（全作品共通）。リスト表示でも作品名・ジャンルより下の階層に置く */
 .listRole {
   font-family: var(--font-mono);
   font-size: 9px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 1.4;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
 }
 
 .listSummary {
   font-family: var(--font-body);
   font-size: 12px;
   line-height: 1.6;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink-3);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -213,11 +223,11 @@
 .listTag {
   font-family: var(--font-mono);
   font-size: 9px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   padding: 2px 6px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-rule-soft);
 }
 
 .listRight {
@@ -234,21 +244,22 @@
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.15em;
-  color: var(--color-accent);
+  color: var(--wk-ink);
   padding: 2px 8px;
-  border: 1px solid rgba(200, 169, 110, 0.3);
+  border: 1px solid rgba(31, 28, 28, 0.4);
 }
 
 .listBudget {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
-  color: var(--color-foreground-muted);
+  font-weight: 400;
+  color: var(--wk-ink-2);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* =============================================
-   Work Card — Thumbnail View
+   Work Card — Thumbnail View（写真だけ。紙の縁と影）
    ============================================= */
 .thumbCard {
   position: relative;
@@ -256,8 +267,18 @@
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 4px solid var(--wk-paper);
+  background: var(--wk-ground);
+  box-shadow: var(--wk-shadow-sheet);
   cursor: pointer;
+  transition:
+    transform var(--duration-normal) var(--ease-out-expo),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.thumbCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--wk-shadow-lift);
 }
 
 .thumbImage {
@@ -279,8 +300,8 @@
   padding: 10px;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.7) 0%,
-    transparent 60%
+    rgba(20, 18, 18, 0.72) 0%,
+    rgba(20, 18, 18, 0) 60%
   );
   opacity: 0;
   transition: opacity var(--duration-normal) ease;
@@ -295,7 +316,7 @@
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: #fff;
+  color: var(--sumi-sei);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -305,6 +326,14 @@
    Responsive — Grid
    ============================================= */
 @media (max-width: 767px) {
+  .card {
+    padding: 6px 6px 12px;
+  }
+
+  .cardBody {
+    padding: 10px 2px 0;
+  }
+
   .cardTitle {
     font-size: 13px;
   }
@@ -338,5 +367,20 @@
 
   .listRight {
     display: none;
+  }
+}
+
+/* =============================================
+   Reduced Motion
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .thumbCard {
+    transition: none;
+  }
+
+  .card:hover,
+  .thumbCard:hover {
+    transform: none;
   }
 }

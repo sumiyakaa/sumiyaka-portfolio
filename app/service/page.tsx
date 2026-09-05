@@ -1,8 +1,13 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import CountUp from "@/components/animation/CountUp";
+import DrawRule from "@/components/animation/DrawRule";
 import ScrollReveal from "@/components/animation/ScrollReveal";
-import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
+import DrawLine from "@/components/fv/service/DrawLine";
+import ServiceFV from "@/components/fv/service/ServiceFV";
+import WireSteps from "@/components/fv/service/WireSteps";
 import CtaSection from "@/components/home/CtaSection";
 import styles from "./page.module.css";
 
@@ -13,8 +18,12 @@ import styles from "./page.module.css";
  *      第1の柱の段落3を削除（lead・4小項目・PROCESS 06 と三重だったため）／TRUST 03 から AI歴の重複を外した。
  * 構成：FV → できること（第1の柱＝AI導入の設計・教育／第2の柱＝業務の自動化・ツール開発）
  *       → できないこと → AIへの不安（TRUST） → データの扱い → 進め方 → 料金の考え方 → FAQ → CTA
- * 地色はサブページ既定の暗色（--color-primary 系）。白転調は使わない。
- * 演出は SubPageFVAnim / ScrollReveal のみ（filter・blend・3D・vwフォント不使用）。
+ *
+ * 2026-09-05 五彩改修＝重（じゅう）「線・図面」：
+ *   ページ全体を「製図台の上の一枚の図面」として組み直した。FV は components/fv/service/ServiceFV
+ *   （床面グリッド→構築線→題字が部材のように収まる→表題欄）、本文は図番付きのプレート・配線図（PROCESS）・
+ *   見積図面の表（PRICING）・索引カード（TRUST/FAQ）・破線枠（引き受けないこと）。
+ *   文言・セクション順・id・JSON-LD・metadata は不変。金は使わない。演出は transform/opacity/stroke のみ。
  */
 
 // /api/og は日本語フォント搭載済み。sub は日本語のまま渡す（URL用に符号化するだけ）
@@ -28,6 +37,14 @@ export const metadata: Metadata = {
     images: [{ url: OG_URL, width: 1200, height: 630 }],
   },
 };
+
+/* ---------- 図番（FIG.）＝本文セクションの並び。FV のティック数と見出しの番号はここから作る ---------- */
+const FIGURES = ["what-i-do", "what-i-dont", "trust", "data", "process", "pricing", "faq"] as const;
+type FigureId = (typeof FIGURES)[number];
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const figNo = (id: FigureId) => pad2(FIGURES.indexOf(id) + 1);
+const FIGURE_NUMBERS = FIGURES.map((_, i) => pad2(i + 1));
 
 /* ---------- A-2 できること：第1の柱（AI導入の設計・教育） ---------- */
 const EDUCATION_BODY = [
@@ -124,6 +141,9 @@ const TRUST = [
   },
 ];
 
+/* ---------- A-4 データの扱い：数字（可視の文言と寸法バーの長さの正本） ---------- */
+const STAT = { value: 30.0, decimals: 1, suffix: "%" };
+
 /* ---------- A-5 進め方 ---------- */
 const PROCESS = [
   { num: "01", title: "ヒアリング", desc: "実際に作業している場所で、業務の流れとお使いのファイルを拝見します" },
@@ -134,12 +154,13 @@ const PROCESS = [
   { num: "06", title: "運用・定着", desc: "社員の方が使いこなせるようになるまで伴走します" },
 ];
 
-/* ---------- A-6 料金の目安 ---------- */
+/* ---------- A-6 料金の目安（value＝万円。寸法バーの長さはここから） ---------- */
 const PRICE_ROWS = [
-  { label: "月20時間の削減", amount: "年 約50万円" },
-  { label: "事務作業の30%を自動化", amount: "年 約120万円" },
-  { label: "1人分の業務を丸ごと", amount: "年 約400万円" },
+  { label: "月20時間の削減", amount: "年 約50万円", value: 50 },
+  { label: "事務作業の30%を自動化", amount: "年 約120万円", value: 120 },
+  { label: "1人分の業務を丸ごと", amount: "年 約400万円", value: 400 },
 ];
+const PRICE_MAX = Math.max(...PRICE_ROWS.map((r) => r.value));
 
 /* ---------- A-7 FAQ（可視・JSON-LD 共通の正本・計9問） ----------
    link を持つ項目は、可視側で回答文中の phrase を Link 化する。
@@ -208,6 +229,21 @@ function renderAnswer(item: FaqItem) {
   );
 }
 
+/** 図番見出し：FIG. 0N（装飾）＋ 英字ラベル ＋ 右へ引かれる罫。id はラベル側に付ける（FAQ の aria-labelledby 用） */
+function FigHead({ figure, label, id }: { figure: FigureId; label: string; id?: string }) {
+  return (
+    <div className={styles.figHead}>
+      <span className={styles.figNo} aria-hidden="true">
+        FIG. {figNo(figure)}
+      </span>
+      <span id={id} className={`${styles.label} ${styles.figLabel}`}>
+        {label}
+      </span>
+      <DrawRule className={styles.figRule} duration={1.1} />
+    </div>
+  );
+}
+
 export default function ServicePage() {
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -229,33 +265,19 @@ export default function ServicePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      {/* ========== A-1 FV — 100vh（/tools と同じ作法・回路モチーフは使わない） ========== */}
-      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.1em">
-        <div className={styles.fvBg}>
-          <div className={styles.fvGrain} aria-hidden="true" />
-          <div className={styles.fvScanline} aria-hidden="true" />
-        </div>
-
-        <div className={styles.fvContent}>
-          <span data-fv-edge className={styles.fvLabel} aria-hidden="true">SERVICE</span>
-          <h1 data-fv-title className={styles.fvTitle}>
+      {/* ========== A-1 FV — 図面（床面グリッド・構築線・題字・表題欄）。文言はここに置く ========== */}
+      <ServiceFV
+        sheetName="SERVICE"
+        figures={FIGURE_NUMBERS}
+        sub="AI導入の設計と教育／業務の自動化・ツール開発"
+        title={
+          <>
             業務を、
             <br className={styles.brSp} />
             仕組みに変える。
-          </h1>
-          <p data-fv-sub className={styles.fvSub}>
-            AI導入の設計と教育／業務の自動化・ツール開発
-          </p>
-          <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
-        </div>
-
-        <div className={styles.fvEdgeBl}>
-          <span data-fv-edge className={styles.fvEdgeText}>SERVICE</span>
-        </div>
-        <div className={styles.fvEdgeBr}>
-          <span data-fv-edge className={styles.fvEdgeText}>SCROLL</span>
-        </div>
-      </SubPageFVAnim>
+          </>
+        }
+      />
 
       {/* ========== A-2 できること（WHAT I DO） ========== */}
       <section
@@ -265,21 +287,29 @@ export default function ServicePage() {
       >
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <span className={styles.label}>WHAT I DO</span>
-            <h2 id="service-do-title" className={styles.title}>
-              御社の仕事を、AIに教える。
-            </h2>
+            <FigHead figure="what-i-do" label="WHAT I DO" />
           </ScrollReveal>
 
-          <ScrollReveal className={styles.reveal} delay={0.1}>
-            <p className={styles.lead}>
-              汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、社員の方と並んで手を動かし、私がいなくても回る状態まで持っていく。それが、私の仕事の中心です。
-            </p>
-          </ScrollReveal>
+          <div className={styles.headGrid}>
+            <ScrollReveal className={styles.reveal}>
+              <h2 id="service-do-title" className={styles.title}>
+                御社の仕事を、AIに教える。
+              </h2>
+            </ScrollReveal>
 
-          {/* 第1の柱：AI導入の設計・教育 */}
+            <ScrollReveal className={styles.reveal} delay={0.1}>
+              <p className={styles.lead}>
+                汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、社員の方と並んで手を動かし、私がいなくても回る状態まで持っていく。それが、私の仕事の中心です。
+              </p>
+            </ScrollReveal>
+          </div>
+
+          {/* 第1の柱：AI導入の設計・教育＝部品プレート PART 01 */}
           <ScrollReveal className={styles.reveal} delay={0.15}>
-            <div className={`${styles.pillar} ${styles.pillarFirst}`}>
+            <div className={`${styles.plate} ${styles.pillar} ${styles.pillarFirst}`}>
+              <span className={styles.partNo} aria-hidden="true">
+                PART {pad2(1)}
+              </span>
               <span className={styles.label}>AI導入の設計・教育</span>
               {EDUCATION_BODY.map((para) => (
                 <p key={para} className={styles.pillarBody}>{para}</p>
@@ -292,10 +322,12 @@ export default function ServicePage() {
             </div>
           </ScrollReveal>
 
-          {/* 3段階ブロック（第1の柱の中） */}
+          {/* 3段階ブロック（第1の柱の中）＝縦の母線に端子 ①②③ */}
           <ScrollReveal className={styles.reveal}>
             <div className={styles.stage}>
               <h3 className={styles.stageTitle}>御社は、いまどの段階ですか。</h3>
+              <div className={styles.stageWrap}>
+              <DrawLine axis="y" className={styles.stageRail} duration={1.2} />
               <ol className={styles.stageList}>
                 {STAGES.map((s) => (
                   <li key={s.mark} className={styles.stageRow}>
@@ -314,15 +346,19 @@ export default function ServicePage() {
                   </li>
                 ))}
               </ol>
+              </div>
               <p className={styles.stageClose}>
                 ほとんどの会社が①で、それは自然なことです。①のままでも手作業は減らせます。①から②へ進む最初の一つを、一緒に決めるところから始めます。
               </p>
             </div>
           </ScrollReveal>
 
-          {/* 第2の柱：業務の自動化・ツール開発 */}
+          {/* 第2の柱：業務の自動化・ツール開発＝部品プレート PART 02 */}
           <ScrollReveal className={styles.reveal}>
-            <div className={styles.pillar}>
+            <div className={`${styles.plate} ${styles.pillar}`}>
+              <span className={styles.partNo} aria-hidden="true">
+                PART {pad2(2)}
+              </span>
               <span className={styles.label}>業務の自動化・ツール開発</span>
               <h3 className={styles.pillarTitle}>
                 A社のCSVと、B社のExcelと、C社のPDF請求書を、
@@ -335,10 +371,11 @@ export default function ServicePage() {
             </div>
           </ScrollReveal>
 
+          {/* 3項目＝寸法線の下に並ぶ部品 */}
           <ScrollReveal className={styles.reveal} delay={0.1}>
             <ol className={styles.doList}>
               {WHAT_I_DO.map((item) => (
-                <li key={item.num} className={styles.doItem}>
+                <li key={item.num} className={`${styles.plateDeep} ${styles.doItem}`}>
                   <span className={styles.doNum}>{item.num}</span>
                   <h4 className={styles.doName}>{item.title}</h4>
                   <p className={styles.doDesc}>{item.desc}</p>
@@ -347,9 +384,9 @@ export default function ServicePage() {
             </ol>
           </ScrollReveal>
 
-          {/* 見本＝主張のすぐ後ろに現物を置く（2026-09-05 追加）。囲みは .pillarItem と同じ作法 */}
+          {/* 見本＝主張のすぐ後ろに現物を置く（2026-09-05 追加）。プレートに現物を留める */}
           <ScrollReveal className={styles.reveal} delay={0.15}>
-            <div className={styles.sample}>
+            <div className={`${styles.plate} ${styles.sample}`}>
               <div className={styles.sampleBody}>
                 <span className={styles.label}>SAMPLE</span>
                 <h4 className={styles.sampleTitle}>お渡しする形のまま、見本を公開しています。</h4>
@@ -402,19 +439,24 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* ========== A-3 できないこと（WHAT I DON'T） ========== */}
+      {/* ========== A-3 できないこと（WHAT I DON'T）— 破線の枠＝不採用部品 ========== */}
       <section id="what-i-dont" className={styles.section} aria-labelledby="service-dont-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <span className={styles.label}>WHAT I DON&apos;T</span>
-            <h2 id="service-dont-title" className={styles.title}>
-              先に、できないことをお伝えします。
-            </h2>
+            <FigHead figure="what-i-dont" label="WHAT I DON'T" />
           </ScrollReveal>
 
-          <ScrollReveal className={styles.reveal} delay={0.1}>
-            <p className={styles.lead}>「何でも自動化できます」とは、言いません。</p>
-          </ScrollReveal>
+          <div className={styles.headGrid}>
+            <ScrollReveal className={styles.reveal}>
+              <h2 id="service-dont-title" className={styles.title}>
+                先に、できないことをお伝えします。
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal className={styles.reveal} delay={0.1}>
+              <p className={styles.lead}>「何でも自動化できます」とは、言いません。</p>
+            </ScrollReveal>
+          </div>
 
           <ScrollReveal className={styles.reveal} delay={0.15}>
             <ul className={styles.dontList}>
@@ -438,26 +480,31 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* ========== A-3b AIへの不安（TRUST）— A-3 と同じ番号付き項目の作法 ========== */}
+      {/* ========== A-3b AIへの不安（TRUST）— 索引カード ========== */}
       <section id="trust" className={styles.section} aria-labelledby="service-trust-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <span className={styles.label}>TRUST</span>
-            <h2 id="service-trust-title" className={styles.title}>
-              AIへの不安に、先にお答えします。
-            </h2>
+            <FigHead figure="trust" label="TRUST" />
           </ScrollReveal>
 
-          <ScrollReveal className={styles.reveal} delay={0.1}>
-            <p className={styles.lead}>
-              「AIに任せて大丈夫か」という不安は、正しい不安です。私がどう線を引いているかを、ここに書いておきます。
-            </p>
-          </ScrollReveal>
+          <div className={styles.headGrid}>
+            <ScrollReveal className={styles.reveal}>
+              <h2 id="service-trust-title" className={styles.title}>
+                AIへの不安に、先にお答えします。
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal className={styles.reveal} delay={0.1}>
+              <p className={styles.lead}>
+                「AIに任せて大丈夫か」という不安は、正しい不安です。私がどう線を引いているかを、ここに書いておきます。
+              </p>
+            </ScrollReveal>
+          </div>
 
           <ScrollReveal className={styles.reveal} delay={0.15}>
             <ol className={styles.trustList}>
               {TRUST.map((item) => (
-                <li key={item.num} className={styles.trustItem}>
+                <li key={item.num} className={`${styles.plate} ${styles.trustItem}`}>
                   <span className={styles.trustNum}>{item.num}</span>
                   <h3 className={styles.trustName}>{item.title}</h3>
                   <p className={styles.trustDesc}>{item.desc}</p>
@@ -474,91 +521,102 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* ========== A-4 データの扱い（DATA） ========== */}
+      {/* ========== A-4 データの扱い（DATA）— 文＋計測プレート ========== */}
       <section id="data" className={styles.section} aria-labelledby="service-data-title">
-        <div className={`${styles.inner} ${styles.dataGrid}`}>
-          <div className={styles.dataText}>
-            <ScrollReveal className={styles.reveal}>
-              <span className={styles.label}>DATA</span>
-              <h2 id="service-data-title" className={styles.title}>
-                データはお預かりしません。
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal className={styles.reveal} delay={0.1}>
-              <p className={styles.lead}>
-                お渡しする仕組みは、ブラウザの中だけで完結する設計。データは御社のパソコンから外に出ません。
-              </p>
-              <p className={styles.text}>
-                外部のサーバーにデータを送らないため、顧客名簿や売上データもそのまま安心してお使いいただけます。導入前のお試しも、実際のファイルでその場でご確認いただけます。
-              </p>
-              <p className={styles.text}>
-                AI導入でも、考え方は同じです。御社の環境の中で動く形を優先し、外に出す必要があるデータは、何をどこまで出すかを、出す前に必ず一緒に決めます。
-              </p>
+        <div className={styles.inner}>
+          <ScrollReveal className={styles.reveal}>
+            <FigHead figure="data" label="DATA" />
+          </ScrollReveal>
+
+          <div className={styles.dataGrid}>
+            <div className={styles.dataText}>
+              <ScrollReveal className={styles.reveal}>
+                <h2 id="service-data-title" className={styles.title}>
+                  データはお預かりしません。
+                </h2>
+              </ScrollReveal>
+              <ScrollReveal className={styles.reveal} delay={0.1}>
+                <p className={styles.lead}>
+                  お渡しする仕組みは、ブラウザの中だけで完結する設計。データは御社のパソコンから外に出ません。
+                </p>
+                <p className={styles.text}>
+                  外部のサーバーにデータを送らないため、顧客名簿や売上データもそのまま安心してお使いいただけます。導入前のお試しも、実際のファイルでその場でご確認いただけます。
+                </p>
+                <p className={styles.text}>
+                  AI導入でも、考え方は同じです。御社の環境の中で動く形を優先し、外に出す必要があるデータは、何をどこまで出すかを、出す前に必ず一緒に決めます。
+                </p>
+              </ScrollReveal>
+            </div>
+
+            <ScrollReveal className={styles.reveal} delay={0.15}>
+              <div className={`${styles.plate} ${styles.stat}`}>
+                <p className={styles.statNum}>
+                  <CountUp value={STAT.value} decimals={STAT.decimals} suffix={STAT.suffix} />
+                </p>
+                {/* 寸法バー：長さは STAT.value から（数字のハードコードなし） */}
+                <span
+                  className={styles.statTrack}
+                  aria-hidden="true"
+                  style={{ "--pct": `${STAT.value}%` } as CSSProperties}
+                >
+                  <DrawRule className={styles.statFill} duration={1.2} delay={0.2} />
+                </span>
+                <p className={styles.statLabel}>
+                  クラウドを導入しない理由 第2位「セキュリティ面の不安」（第1位はコスト）
+                </p>
+                <p className={styles.statNote}>
+                  この不安には、説明ではなく「データが外に出ない設計」そのもので答えます。
+                </p>
+                <p className={styles.statSrc}>
+                  マネーフォワード調べ（2024年3月・法人事業者608名対象）
+                </p>
+              </div>
             </ScrollReveal>
           </div>
-
-          <ScrollReveal className={styles.reveal} delay={0.15}>
-            <div className={styles.stat}>
-              <p className={styles.statNum}>30.0%</p>
-              <p className={styles.statLabel}>
-                クラウドを導入しない理由 第2位「セキュリティ面の不安」（第1位はコスト）
-              </p>
-              <p className={styles.statNote}>
-                この不安には、説明ではなく「データが外に出ない設計」そのもので答えます。
-              </p>
-              <p className={styles.statSrc}>
-                マネーフォワード調べ（2024年3月・法人事業者608名対象）
-              </p>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== A-5 進め方（PROCESS） ========== */}
+      {/* ========== A-5 進め方（PROCESS）— 配線図 ========== */}
       <section id="process" className={styles.section} aria-labelledby="service-process-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <span className={styles.label}>PROCESS</span>
+            <FigHead figure="process" label="PROCESS" />
             <h2 id="service-process-title" className={styles.title}>進め方</h2>
           </ScrollReveal>
 
-          <ScrollReveal className={styles.reveal} delay={0.1}>
-            <ol className={styles.stepList}>
-              {PROCESS.map((step) => (
-                <li key={step.num} className={styles.step}>
-                  <span className={styles.stepNum}>{step.num}</span>
-                  <h3 className={styles.stepName}>{step.title}</h3>
-                  <p className={styles.stepDesc}>{step.desc}</p>
-                </li>
-              ))}
-            </ol>
-          </ScrollReveal>
+          {/* 配線は表示時に順に引かれる（WireSteps が自前で発火・ScrollReveal で包まない） */}
+          <WireSteps steps={PROCESS} />
 
           <ScrollReveal className={styles.reveal} delay={0.15}>
-            <p className={styles.band}>
+            <p className={`${styles.plateDeep} ${styles.band}`}>
               ツールをお渡しするだけでなく、AIを使いこなせる人材の育成までを主とした活動をしています。
             </p>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== A-6 料金の考え方（PRICING） ========== */}
+      {/* ========== A-6 料金の考え方（PRICING）— 見積図面の表 ========== */}
       <section id="pricing" className={styles.section} aria-labelledby="service-pricing-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <span className={styles.label}>PRICING</span>
-            <h2 id="service-pricing-title" className={styles.title}>
-              「いくらかかるか」より先に、
-              <br className={styles.brPc} />
-              「いくら浮くか」。
-            </h2>
+            <FigHead figure="pricing" label="PRICING" />
           </ScrollReveal>
 
-          <ScrollReveal className={styles.reveal} delay={0.1}>
-            <p className={styles.lead}>
-              いま作業にかかっている時間と人件費を一緒に試算し、削減額に見合う範囲でお見積りします。
-            </p>
-          </ScrollReveal>
+          <div className={styles.headGrid}>
+            <ScrollReveal className={styles.reveal}>
+              <h2 id="service-pricing-title" className={styles.title}>
+                「いくらかかるか」より先に、
+                <br className={styles.brPc} />
+                「いくら浮くか」。
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal className={styles.reveal} delay={0.1}>
+              <p className={styles.lead}>
+                いま作業にかかっている時間と人件費を一緒に試算し、削減額に見合う範囲でお見積りします。
+              </p>
+            </ScrollReveal>
+          </div>
 
           <ScrollReveal className={styles.reveal} delay={0.15}>
             <h3 className={styles.subTitle}>目指すのは、「新しく採用しなくても回る」状態。</h3>
@@ -569,12 +627,22 @@ export default function ServicePage() {
 
           <ScrollReveal className={styles.reveal} delay={0.2}>
             <ul className={styles.priceTable} aria-label="削減額の目安">
-              {PRICE_ROWS.map((row) => (
+              {PRICE_ROWS.map((row, i) => (
                 <li key={row.label} className={styles.priceRow}>
-                  <span className={styles.priceLabel}>{row.label}</span>
-                  <span className={styles.priceLeader} aria-hidden="true" />
-                  <span className={styles.priceArrow} aria-hidden="true">→</span>
-                  <span className={styles.priceAmount}>{row.amount}</span>
+                  <span className={styles.priceMain}>
+                    <span className={styles.priceLabel}>{row.label}</span>
+                    <span className={styles.priceLeader} aria-hidden="true" />
+                    <span className={styles.priceArrow} aria-hidden="true">→</span>
+                    <span className={styles.priceAmount}>{row.amount}</span>
+                  </span>
+                  {/* 寸法バー：長さは value / 最大値（データから） */}
+                  <span
+                    className={styles.priceBar}
+                    aria-hidden="true"
+                    style={{ "--pct": `${(row.value / PRICE_MAX) * 100}%` } as CSSProperties}
+                  >
+                    <DrawRule className={styles.priceFill} duration={0.9} delay={0.1 * i} />
+                  </span>
                 </li>
               ))}
             </ul>
@@ -602,12 +670,12 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* ========== A-7 よくある質問（FAQ）— ネイティブ details/summary ========== */}
+      {/* ========== A-7 よくある質問（FAQ）— 索引カード（ネイティブ details/summary） ========== */}
       <section id="faq" className={styles.section} aria-labelledby="service-faq-label">
         <div className={styles.inner}>
           {/* 契約ファイル A-7 に h2 文言は無い（ラベル FAQ のみ）＝文言を足さない */}
           <ScrollReveal className={styles.reveal}>
-            <span id="service-faq-label" className={`${styles.label} ${styles.labelSolo}`}>FAQ</span>
+            <FigHead figure="faq" label="FAQ" id="service-faq-label" />
           </ScrollReveal>
 
           <ScrollReveal className={styles.reveal} delay={0.1}>
@@ -615,7 +683,7 @@ export default function ServicePage() {
               {FAQ.map((item, i) => (
                 <details key={item.q} className={styles.faqItem}>
                   <summary className={styles.faqQ}>
-                    <span className={styles.faqNum}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className={styles.faqNum}>{pad2(i + 1)}</span>
                     <span className={styles.faqQText}>{item.q}</span>
                   </summary>
                   <div className={styles.faqA}>

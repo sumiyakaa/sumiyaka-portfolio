@@ -29,10 +29,13 @@ export default function InkFluidScene() {
     // Wait one frame for DOM layout
     const initFrameId = requestAnimationFrame(() => {
       try {
+        // 2026-09-05 濃・墨：奥の層として一段暗く。
+        //   brightness 0.25→0.21（煙の最明部 ≒ #4a4a4a）／bgBase 0.039→0.078（焦 #141212 相当の
+        //   グレー #141414＝井戸の底。縁は InkFluid の上の覆いで地色 --sumi-noh へ溶かす）
         ink = createFluidSim(canvas, {
           resolution: 0.5,
-          brightness: 0.25,
-          bgBase: 0.039,
+          brightness: 0.21,
+          bgBase: 0.078,
           velocityDissipation: 0.985,
           dyeDissipation: 0.998,
           vorticity: 30.0,

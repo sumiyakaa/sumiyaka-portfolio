@@ -1,94 +1,132 @@
 /* =============================================
-   Works Page — FV (100vh → 50vh)
+   Works Page — 清（せい）・紙（2026-09-05 五彩改修）
+   白地に墨。黒2:白8。ページ本体まで紙にする。
+   ・地 --wk-ground（紙より半段暗い）／面 --wk-paper（--sumi-sei-paper）／
+     真っ白 #ffffff は FV 手前の一枚だけ
+   ・立体＝紙の束（±2deg の 2D 回転＋実影 2〜3 段）／紙の粒（静的 SVG）／
+     活版の押し込み（text-shadow）／貼った写真（余白＋影）
+   ・角丸は使わない（紙の縁は直角）。影は純黒でなく墨の透過。金は使わない
+   互換：filter/backdrop-filter アニメ・blend・3D・clip-path・vw フォントは不使用
+   ============================================= */
+.page {
+  --wk-ground: #ebe6e3;
+  --wk-paper: var(--sumi-sei-paper);
+  --wk-front: #ffffff;
+  --wk-ink: var(--sumi-ink-on-paper);
+  --wk-ink-2: var(--sumi-tan-deep);          /* 6.4:1 on paper */
+  --wk-ink-3: var(--sumi-ink-dim-on-paper);  /* 4.95:1 on paper（本文サイズまで） */
+  --wk-rule: var(--sumi-rule-on-paper);
+  --wk-rule-soft: rgba(31, 28, 28, 0.12);
+  /* 紙の粒：feTurbulence をアルファ 0.07 以下で静的に敷く（アニメさせない） */
+  --wk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.11 0 0 0 0 0.11 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  /* 実影：接触影（濃く短い）＋中間＋柔らかく広い */
+  --wk-shadow-sheet:
+    0 1px 1px rgba(31, 28, 28, 0.12),
+    0 3px 6px -2px rgba(31, 28, 28, 0.10),
+    0 18px 36px -16px rgba(31, 28, 28, 0.28);
+  --wk-shadow-lift:
+    0 2px 2px rgba(31, 28, 28, 0.10),
+    0 8px 14px -6px rgba(31, 28, 28, 0.14),
+    0 28px 48px -18px rgba(31, 28, 28, 0.34);
+
+  position: relative;
+  isolation: isolate;               /* 奥の紙（::before z-index:-1）を地の上に置くため */
+  overflow-x: clip;                 /* 回転した紙のはみ出しを横スクロールにしない（sticky は壊さない） */
+  background-color: var(--wk-ground);
+  background-image: var(--wk-grain);
+  color: var(--wk-ink);
+}
+
+/* =============================================
+   FV (100vh → 50vh)
    ============================================= */
 .fv {
   position: relative;
   height: 100vh;
   height: 100svh;
-  background: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-}
-
-.fvContent {
-  position: relative;
-  z-index: 2;
-  text-align: center;
+  background-color: var(--wk-ground);
+  background-image:
+    radial-gradient(120% 90% at 50% 42%, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0) 60%),
+    var(--wk-grain);
 }
 
 .fvTitle {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(48px, 10vw, 120px);
-  letter-spacing: 0.2em;
-  line-height: 0.95;
-  color: var(--color-foreground);
+  font-size: 88px;
+  letter-spacing: 0.14em;
+  padding-left: 0.14em;             /* 末尾の字間ぶんを相殺して視覚中央へ */
+  line-height: 1;
+  text-align: center;
+  color: var(--wk-ink);
   opacity: 0;
+  text-shadow:
+    0 0 0 rgba(255, 255, 255, 0),
+    0 0 0 rgba(31, 28, 28, 0),
+    0 0 0 rgba(31, 28, 28, 0);
+  transition: text-shadow 0.45s ease;
+}
+
+/* 活版の押し込み：上左に紙色の細いハイライト、下右に墨の沈み */
+.fvTitle[data-wk-pressed] {
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 255, 0.95),
+    1px 1px 0 rgba(31, 28, 28, 0.34),
+    2px 3px 6px rgba(31, 28, 28, 0.16);
 }
 
 .fvSub {
   font-family: var(--font-mono);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 12px;
   letter-spacing: 0.14em;
   line-height: 2;
-  color: var(--color-secondary);
-  margin-top: 20px;
+  text-align: center;
+  color: var(--wk-ink-2);
+  margin-top: 18px;
   opacity: 0;
 }
 
 .fvHr {
-  width: 60px;
+  width: 56px;
   height: 1px;
-  background: var(--color-border-light);
-  margin: 24px auto 0;
+  background: rgba(31, 28, 28, 0.5);
+  margin: 20px auto 0;
   transform: scaleX(0);
   transform-origin: center;
 }
 
-/* Edge Text */
-.fvEdgeBl,
-.fvEdgeBr {
-  position: absolute;
-  z-index: 2;
-}
-
-.fvEdgeText {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
-}
-
-.fvEdgeBl {
-  bottom: 40px;
-  left: 40px;
-  opacity: 0;
-}
-
-.fvEdgeBr {
-  bottom: 40px;
-  right: 40px;
-  opacity: 0;
-}
-
 /* =============================================
-   Notice — 掲載作品についてのアナウンス
+   Notice — 掲載作品についてのアナウンス（付箋を貼ったメモ）
    ============================================= */
 .notice {
-  padding: 56px 40px 0;
+  padding: 64px 40px 0;
 }
 
 .noticeInner {
+  position: relative;
   max-width: 1080px;
   margin: 0 auto;
-  border: 1px solid var(--color-border-light);
-  border-left: 3px solid var(--color-accent);
-  background: var(--color-background-light);
-  padding: 24px 28px;
+  padding: 26px 30px 24px;
+  border-left: 3px solid var(--wk-ink);
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
+}
+
+/* マスキングテープ */
+.noticeInner::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 28px;
+  width: 78px;
+  height: 20px;
+  background: rgba(235, 230, 227, 0.86);
+  transform: rotate(-2deg);
+  box-shadow: 0 1px 2px rgba(31, 28, 28, 0.14);
+  pointer-events: none;
 }
 
 .noticeLabel {
@@ -96,7 +134,7 @@
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--color-accent);
+  color: var(--wk-ink-2);
   margin-bottom: 10px;
 }
 
@@ -104,35 +142,36 @@
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.9;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin: 0;
 }
 
 .noticeStrong {
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   font-weight: 700;
 }
 
 /* =============================================
-   Content
+   Content（一覧＝机の上に散る写真。器は持たない）
    ============================================= */
 .content {
-  padding: 0 40px 120px;
+  padding: 8px 40px 120px;
 }
 
 /* =============================================
    Responsive — Tablet (768–1279)
    ============================================= */
 @media (min-width: 768px) and (max-width: 1279px) {
-  .fvEdgeBl { left: 24px; bottom: 24px; }
-  .fvEdgeBr { right: 24px; bottom: 24px; }
+  .fvTitle {
+    font-size: 64px;
+  }
 
   .notice {
-    padding: 44px 30px 0;
+    padding: 52px 30px 0;
   }
 
   .content {
-    padding: 0 30px 100px;
+    padding: 8px 30px 100px;
   }
 }
 
@@ -141,23 +180,33 @@
    ============================================= */
 @media (max-width: 767px) {
   .fvTitle {
-    font-size: clamp(32px, 12vw, 56px);
-    letter-spacing: 0.12em;
+    font-size: 40px;
+    letter-spacing: 0.1em;
+    padding-left: 0.1em;
   }
 
   .fvSub {
     font-size: 11px;
+    letter-spacing: 0.1em;
+    margin-top: 12px;
   }
 
-  .fvEdgeBl { left: 16px; bottom: 20px; }
-  .fvEdgeBr { right: 16px; bottom: 20px; }
+  .fvHr {
+    margin-top: 14px;
+  }
 
   .notice {
-    padding: 36px 20px 0;
+    padding: 44px 20px 0;
   }
 
   .noticeInner {
-    padding: 20px 18px;
+    padding: 22px 18px 20px;
+  }
+
+  .noticeInner::after {
+    left: 18px;
+    width: 64px;
+    height: 18px;
   }
 
   .noticeText {
@@ -166,20 +215,38 @@
   }
 
   .content {
-    padding: 0 20px 80px;
+    padding: 8px 20px 80px;
   }
 }
 
 /* =============================================
-   Scope — 担当範囲 0→100 ＋ 対応できる媒体
+   Scope — 担当範囲 0→100 ＋ 対応できる媒体（工程票の紙）
    ============================================= */
 .scope {
-  padding: 96px 40px 0;
+  padding: 112px 40px 0;
 }
 
+/* 束から抜いた一枚。::before が奥の一枚（わずかに回転） */
 .scopeInner {
+  position: relative;
   max-width: 1080px;
   margin: 0 auto;
+  padding: 56px 64px 60px;
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
+}
+
+.scopeInner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wk-paper);
+  box-shadow: var(--wk-shadow-sheet);
+  transform: rotate(-1.1deg) translate(-6px, 8px);
+  transform-origin: 50% 60%;
+  pointer-events: none;
 }
 
 .scopeLabel {
@@ -187,7 +254,7 @@
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--color-accent);
+  color: var(--wk-ink-2);
   margin-bottom: 18px;
 }
 
@@ -197,64 +264,81 @@
   font-size: clamp(22px, 2.4rem, 34px);
   line-height: 1.6;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
-  margin: 0 0 32px;
+  color: var(--wk-ink);
+  margin: 0 0 36px;
 }
 
 .brSp {
   display: none;
 }
 
-/* 工程 */
+/* 工程＝工程票のスタンプ。1.5px の外枠＋内側の細い二重線、少しずつ傾く */
 .flow {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 12px;
-  margin: 0 0 28px;
+  gap: 14px 16px;
+  margin: 0 0 36px;
   padding: 0;
 }
 
 .flowItem {
+  --stamp-r: 0deg;
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  border: 1px solid var(--color-border-light);
-  background: var(--color-background-light);
-  padding: 9px 14px;
+  gap: 10px;
+  padding: 9px 15px 8px;
+  border: 1.5px solid var(--wk-ink);
+  box-shadow:
+    inset 0 0 0 3px var(--wk-paper),
+    inset 0 0 0 4px rgba(31, 28, 28, 0.62);
+  color: var(--wk-ink);
+  transform: rotate(var(--stamp-r));
 }
+
+.flowItem:nth-child(6n + 1) { --stamp-r: -1.4deg; }
+.flowItem:nth-child(6n + 2) { --stamp-r: 0.9deg; }
+.flowItem:nth-child(6n + 3) { --stamp-r: -0.5deg; }
+.flowItem:nth-child(6n + 4) { --stamp-r: 1.3deg; opacity: 0.94; }
+.flowItem:nth-child(6n + 5) { --stamp-r: -1deg; }
+.flowItem:nth-child(6n + 6) { --stamp-r: 0.6deg; opacity: 0.96; }
 
 .flowNum {
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.1em;
-  color: var(--color-accent);
+  color: var(--wk-ink-2);
 }
 
 .flowName {
   font-family: var(--font-body);
+  font-weight: 500;
   font-size: 14px;
-  letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  letter-spacing: 0.06em;
+  color: var(--wk-ink);
 }
 
 .scopeText {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   margin: 0 0 40px;
   max-width: 42em;
 }
 
 .scopeStrong {
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   font-weight: 700;
+  background-image: linear-gradient(rgba(31, 28, 28, 0.14), rgba(31, 28, 28, 0.14));
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 100% 32%;
 }
 
-/* 対応できる媒体 */
+/* 対応できる媒体＝紙のタグ（穴あき） */
 .media {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--wk-rule);
   padding-top: 28px;
 }
 
@@ -264,7 +348,7 @@
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.08em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin-bottom: 14px;
 }
 
@@ -272,73 +356,112 @@
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 10px;
+  gap: 10px 12px;
   margin: 0 0 16px;
   padding: 0;
 }
 
 .mediaItem {
+  position: relative;
   font-family: var(--font-body);
   font-size: 13px;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
-  border: 1px solid var(--color-border-light);
-  padding: 7px 14px;
+  color: var(--wk-ink);
+  border: 1px solid var(--wk-rule);
+  background: var(--wk-paper);
+  padding: 7px 14px 7px 26px;
+  box-shadow:
+    0 1px 1px rgba(31, 28, 28, 0.08),
+    0 4px 10px -6px rgba(31, 28, 28, 0.18);
+}
+
+.mediaItem::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--wk-ground);
+  box-shadow: inset 0 0 0 1px var(--wk-rule);
 }
 
 .mediaNote {
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.95;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink-3);
   margin: 0;
   max-width: 46em;
 }
 
 /* =============================================
-   CTA — 末尾の問い合わせ
+   CTA — 末尾の問い合わせ（左寄せの一枚。中央対称にしない）
    ============================================= */
 .cta {
   padding: 0 40px 96px;
 }
 
 .ctaInner {
+  position: relative;
   max-width: 1080px;
   margin: 0 auto;
-  border: 1px solid var(--color-border-light);
-  background: var(--color-background-light);
-  padding: 56px 40px;
-  text-align: center;
+  padding: 52px 64px 56px;
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
+  text-align: left;
+}
+
+/* ScrollReveal の div をそのままグリッドにする */
+.ctaGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label label"
+    "title button"
+    "text button";
+  column-gap: 48px;
+  align-items: end;
 }
 
 .ctaLabel {
+  grid-area: label;
   display: block;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--color-accent);
+  color: var(--wk-ink-2);
   margin-bottom: 16px;
 }
 
 .ctaTitle {
+  grid-area: title;
   font-family: var(--font-body);
   font-weight: 700;
   font-size: clamp(20px, 2rem, 28px);
   line-height: 1.6;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
-  margin: 0 0 16px;
+  color: var(--wk-ink);
+  margin: 0 0 12px;
 }
 
 .ctaText {
+  grid-area: text;
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.95;
-  color: var(--color-foreground-muted);
-  margin: 0 0 32px;
+  color: var(--wk-ink);
+  margin: 0;
 }
 
+/* 墨のブロック。押すと少し浮く（transform と box-shadow のみ） */
 .ctaButton {
+  grid-area: button;
+  justify-self: end;
+  align-self: end;
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -346,19 +469,25 @@
   font-weight: 700;
   font-size: 14px;
   letter-spacing: 0.08em;
-  color: var(--color-primary);
-  background: var(--color-foreground);
-  border: 1px solid var(--color-foreground);
+  color: var(--wk-paper);
+  background: var(--wk-ink);
+  border: 1px solid var(--wk-ink);
   padding: 16px 36px;
   text-decoration: none;
-  transition: background var(--duration-normal) var(--ease-default),
-    color var(--duration-normal) var(--ease-default);
+  box-shadow:
+    0 1px 1px rgba(31, 28, 28, 0.2),
+    0 6px 14px -6px rgba(31, 28, 28, 0.4);
+  transition:
+    transform var(--duration-normal) var(--ease-out-expo),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
 }
 
 .ctaButton:hover,
 .ctaButton:focus-visible {
-  background: transparent;
-  color: var(--color-foreground);
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 2px rgba(31, 28, 28, 0.16),
+    0 14px 24px -8px rgba(31, 28, 28, 0.45);
 }
 
 .ctaArrow {
@@ -374,7 +503,7 @@
 }
 
 /* =============================================
-   Bridge — もうひとつの仕事への導線
+   Bridge — もうひとつの仕事への導線（地に直接・墨の一線）
    ============================================= */
 .bridge {
   padding: 0 40px 120px;
@@ -383,8 +512,16 @@
 .bridgeInner {
   max-width: 1080px;
   margin: 0 auto;
-  border-top: 1px solid var(--color-border);
   padding-top: 48px;
+}
+
+/* DrawRule が左から引く罫（見た目はここが持つ） */
+.bridgeRule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: rgba(31, 28, 28, 0.55);
+  margin-bottom: 48px;
 }
 
 .bridgeTitle {
@@ -393,7 +530,7 @@
   font-size: clamp(17px, 1.5rem, 22px);
   line-height: 1.75;
   letter-spacing: 0.02em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin: 0 0 16px;
   max-width: 34em;
 }
@@ -402,7 +539,7 @@
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   margin: 0 0 24px;
   max-width: 42em;
 }
@@ -415,25 +552,26 @@
   font-weight: 700;
   font-size: 14px;
   letter-spacing: 0.08em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   text-decoration: none;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--wk-rule);
   padding-bottom: 6px;
   transition: border-color var(--duration-normal) var(--ease-default);
 }
 
 .bridgeLink:hover,
 .bridgeLink:focus-visible {
-  border-bottom-color: var(--color-accent);
+  border-bottom-color: var(--wk-ink);
 }
 
 /* =============================================
    Responsive — Tablet (768–1279)｜追加ブロック
    ============================================= */
 @media (min-width: 768px) and (max-width: 1279px) {
-  .scope { padding: 80px 30px 0; }
+  .scope { padding: 96px 30px 0; }
+  .scopeInner { padding: 48px 40px 52px; }
   .cta { padding: 0 30px 80px; }
-  .ctaInner { padding: 48px 32px; }
+  .ctaInner { padding: 44px 40px 48px; }
   .bridge { padding: 0 30px 100px; }
 }
 
@@ -443,23 +581,34 @@
 @media (max-width: 767px) {
   .brSp { display: block; }
 
-  .scope { padding: 64px 20px 0; }
-  .scopeTitle { font-size: 20px; line-height: 1.7; margin-bottom: 26px; }
-  .flow { gap: 8px; margin-bottom: 24px; }
-  .flowItem { padding: 8px 11px; }
+  .scope { padding: 72px 20px 0; }
+  .scopeInner { padding: 34px 22px 36px; }
+  .scopeInner::before { transform: rotate(-0.9deg) translate(-3px, 6px); }
+  .scopeTitle { font-size: 18px; line-height: 1.7; margin-bottom: 28px; } /* 390px で「公開ま／で、」と折れないよう 20→18px（2026-09-06 統合QC） */
+  .flow { gap: 10px 10px; margin-bottom: 28px; }
+  .flowItem { padding: 8px 11px 7px; }
   .flowName { font-size: 13px; }
   .scopeText { font-size: 14px; line-height: 1.95; margin-bottom: 32px; }
   .media { padding-top: 24px; }
   .mediaNote { font-size: 12.5px; }
 
   .cta { padding: 0 20px 72px; }
-  .ctaInner { padding: 40px 20px; }
+  .ctaInner { padding: 36px 22px 36px; }
+  .ctaGrid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "label"
+      "title"
+      "text"
+      "button";
+  }
   .ctaTitle { font-size: 19px; }
-  .ctaText { font-size: 13px; }
-  .ctaButton { width: 100%; justify-content: center; padding: 16px 20px; }
+  .ctaText { font-size: 13px; margin-bottom: 28px; }
+  .ctaButton { width: 100%; justify-content: center; justify-self: stretch; padding: 16px 20px; }
 
   .bridge { padding: 0 20px 88px; }
   .bridgeInner { padding-top: 40px; }
+  .bridgeRule { margin-bottom: 36px; }
   .bridgeTitle { font-size: 16px; }
   .bridgeText { font-size: 13px; }
 }
@@ -468,10 +617,28 @@
    Motion — reduce
    ============================================= */
 @media (prefers-reduced-motion: reduce) {
+  .fvTitle,
+  .fvSub {
+    opacity: 1;
+  }
+
+  .fvHr {
+    transform: scaleX(1);
+  }
+
+  .fvTitle {
+    transition: none;
+  }
+
   .ctaButton,
   .ctaArrow,
   .bridgeLink {
     transition: none;
+  }
+
+  .ctaButton:hover,
+  .ctaButton:focus-visible {
+    transform: none;
   }
 
   .ctaButton:hover .ctaArrow,

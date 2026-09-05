@@ -1,5 +1,6 @@
 /* =============================================
-   Works Explorer — Layout
+   Works Explorer — Layout（清・紙：机の上に散る写真）
+   色は app/works/page.module.css の .page が定義する --wk-* を継承する
    ============================================= */
 .layout {
   display: flex;
@@ -26,15 +27,19 @@
 .viewGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 32px 28px;
 }
 
 /* =============================================
-   Works View — List
+   Works View — List（帳面の一枚に行を並べる）
    ============================================= */
 .viewList {
   display: flex;
   flex-direction: column;
+  padding: 8px 28px 12px;
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
 }
 
 /* =============================================
@@ -43,7 +48,7 @@
 .viewThumbnail {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 
 /* =============================================
@@ -59,7 +64,7 @@
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin-bottom: 8px;
 }
 
@@ -67,7 +72,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.7;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink-2);
   margin-bottom: 24px;
 }
 
@@ -76,19 +81,19 @@
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.12em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   padding: 10px 24px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-ink);
   background: transparent;
   cursor: pointer;
   transition:
     color var(--duration-normal) ease,
-    border-color var(--duration-normal) ease;
+    background-color var(--duration-normal) ease;
 }
 
 .emptyBtn:hover {
-  color: var(--color-foreground);
-  border-color: var(--color-border-light);
+  color: var(--wk-paper);
+  background-color: var(--wk-ink);
 }
 
 /* =============================================
@@ -103,12 +108,12 @@
 
   .viewGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 28px 24px;
   }
 
   .viewThumbnail {
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 14px;
   }
 }
 
@@ -119,9 +124,13 @@
     gap: 20px 12px;
   }
 
+  .viewList {
+    padding: 4px 14px 8px;
+  }
+
   .viewThumbnail {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 10px;
   }
 
   .empty {

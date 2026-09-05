@@ -1,8 +1,44 @@
 /* =============================================
-   Work Detail — Hero
+   Work Detail — 清（せい）・紙（2026-09-05 五彩改修）
+   /works と同じ紙の語彙：地（--wk-ground）に紙（--wk-paper）を重ね、
+   墨（--wk-ink）で書く。角丸なし・金なし・影は墨の透過。
+   ============================================= */
+.page {
+  --wk-ground: #ebe6e3;
+  --wk-paper: var(--sumi-sei-paper);
+  --wk-ink: var(--sumi-ink-on-paper);
+  --wk-ink-2: var(--sumi-tan-deep);
+  --wk-ink-3: var(--sumi-ink-dim-on-paper);
+  --wk-rule: var(--sumi-rule-on-paper);
+  --wk-rule-soft: rgba(31, 28, 28, 0.12);
+  --wk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.11 0 0 0 0 0.11 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --wk-shadow-sheet:
+    0 1px 1px rgba(31, 28, 28, 0.12),
+    0 3px 6px -2px rgba(31, 28, 28, 0.10),
+    0 18px 36px -16px rgba(31, 28, 28, 0.28);
+
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  background-color: var(--wk-ground);
+  background-image: var(--wk-grain);
+  color: var(--wk-ink);
+}
+
+/* 紙の一枚（各節の内側で共通に使う見た目） */
+.overviewInner,
+.rebuildInner,
+.metaInner {
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
+}
+
+/* =============================================
+   Hero
    ============================================= */
 .hero {
-  padding: 160px 40px 80px;
+  padding: 150px 40px 64px;
 }
 
 .heroInner {
@@ -10,35 +46,33 @@
   margin: 0 auto;
 }
 
-/* Back Link */
+/* Back Link＝紙のタグ */
 .backLink {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 28px;
   padding: 8px 18px 8px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--wk-ink);
+  background: transparent;
   transition:
     background-color 250ms ease,
-    border-color 250ms ease;
+    color 250ms ease;
 }
 
 .backLink:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: var(--wk-ink);
+  color: var(--wk-paper);
 }
 
 .backArrow {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+  color: inherit;
   transition: transform 250ms ease;
 }
 
 .backLink:hover .backArrow {
   transform: translateX(-3px);
-  color: var(--color-foreground);
 }
 
 .backLabel {
@@ -50,9 +84,9 @@
 .backEn {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.12em;
-  color: var(--color-foreground);
+  color: inherit;
   line-height: 1.2;
 }
 
@@ -60,7 +94,7 @@
   font-family: var(--font-body);
   font-size: 9px;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--wk-ink-2);
   letter-spacing: 0.06em;
   line-height: 1.2;
 }
@@ -76,28 +110,28 @@
 .breadcrumbLink {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.12em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   transition: color 300ms ease;
 }
 
 .breadcrumbLink:hover {
-  color: var(--color-accent);
+  color: var(--wk-ink);
 }
 
 .breadcrumbSep {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--color-border-light);
+  color: var(--wk-rule);
 }
 
 .breadcrumbCurrent {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.08em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
 }
 
 /* Status Pills */
@@ -114,14 +148,16 @@
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.08em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   padding: 4px 12px;
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--wk-rule);
 }
 
+/* Featured＝墨のスタンプ */
 .pillAccent {
-  color: var(--color-accent);
-  border-color: rgba(200, 169, 110, 0.3);
+  color: var(--wk-paper);
+  background: var(--wk-ink);
+  border-color: var(--wk-ink);
 }
 
 .tierBadge {
@@ -129,40 +165,44 @@
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.15em;
-  color: var(--color-accent);
+  color: var(--wk-ink);
   padding: 4px 12px;
-  border: 1px solid rgba(200, 169, 110, 0.3);
+  border: 1px solid rgba(31, 28, 28, 0.4);
 }
 
 .categoryTag {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.08em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   padding: 3px 10px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-rule);
 }
 
-/* Title */
+/* Title＝活版の押し込み */
 .heroTitle {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 7rem);
+  font-size: clamp(3rem, 6rem, 7rem);
   font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 0.95;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin-bottom: 16px;
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 255, 0.9),
+    1px 1px 0 rgba(31, 28, 28, 0.3),
+    2px 3px 6px rgba(31, 28, 28, 0.14);
 }
 
 /* Kicker (genre / siteType) */
 .heroKicker {
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.08em;
   font-style: italic;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   margin-bottom: 24px;
 }
 
@@ -170,12 +210,12 @@
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   max-width: 640px;
 }
 
 /* =============================================
-   Live Preview (iframe)
+   Live Preview (iframe)＝紙に貼った画面
    ============================================= */
 .preview {
   padding: 0 40px 80px;
@@ -194,7 +234,7 @@
   font-family: var(--font-body);
   font-size: 12px;
   line-height: 1.8;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   text-align: center;
   max-width: 600px;
 }
@@ -211,10 +251,9 @@
   align-items: center;
   min-height: 36px;
   padding: 0 20px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--wk-ink);
+  background: transparent;
+  color: var(--wk-ink);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
@@ -226,8 +265,8 @@
 }
 
 .liveBtn:hover {
-  background: #fff;
-  color: #111;
+  background: var(--wk-ink);
+  color: var(--wk-paper);
 }
 
 /* Device Toggle */
@@ -235,10 +274,9 @@
   display: flex;
   align-items: center;
   gap: 0;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  padding: 4px;
+  background: transparent;
+  border: 1px solid var(--wk-ink);
+  padding: 0;
 }
 
 .deviceBtn {
@@ -248,9 +286,8 @@
   min-height: 36px;
   padding: 0 28px;
   border: none;
-  border-radius: 4px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--wk-ink-2);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
@@ -258,28 +295,38 @@
   cursor: pointer;
   transition:
     background-color 250ms ease,
-    color 250ms ease,
-    box-shadow 250ms ease;
+    color 250ms ease;
+}
+
+.deviceBtn + .deviceBtn {
+  border-left: 1px solid var(--wk-rule);
 }
 
 .deviceBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  background: rgba(31, 28, 28, 0.05);
+  color: var(--wk-ink);
 }
 
 .deviceBtnActive {
-  background: #fff;
-  color: #111;
+  background: var(--wk-ink);
+  color: var(--wk-paper);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-/* iframe Container */
+.deviceBtnActive:hover {
+  background: var(--wk-ink);
+  color: var(--wk-paper);
+}
+
+/* iframe Container＝紙の縁を持つ写真 */
 .iframeWrap {
-  border: 1px solid var(--color-border);
+  border: 8px solid var(--wk-paper);
+  box-shadow:
+    inset 0 0 0 1px rgba(31, 28, 28, 0.12),
+    var(--wk-shadow-sheet);
   overflow: hidden;
   margin: 0 auto;
-  background: #fff;
+  background: #ffffff;
   transition: width 400ms ease;
   position: relative;
 }
@@ -312,39 +359,39 @@
   display: block;
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.18em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   margin-bottom: 24px;
 }
 
 /* =============================================
-   Overview Section (Concept + Challenge)
+   Overview Section (Concept + Challenge)＝一枚の紙
    ============================================= */
 .overviewSection {
-  padding: 0 40px 80px;
+  padding: 0 40px 64px;
 }
 
 .overviewInner {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 48px 0;
-  border-top: 1px solid var(--color-border);
+  padding: 48px 56px 52px;
 }
 
 .overviewText {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 2.2;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   max-width: 720px;
 }
 
+/* 背景・課題＝墨の縦罫を持つメモ */
 .challengeBlock {
   margin-top: 32px;
-  padding: 24px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background-light);
+  padding: 20px 24px;
+  border-left: 3px solid var(--wk-ink);
+  background: rgba(31, 28, 28, 0.035);
 }
 
 .challengeLabel {
@@ -353,7 +400,7 @@
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.14em;
-  color: var(--color-accent);
+  color: var(--wk-ink-2);
   margin-bottom: 12px;
 }
 
@@ -361,21 +408,34 @@
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
 }
 
 /* =============================================
-   Rebuild — 同じデザインを別プラットフォームで組み直した版
+   Rebuild — 同じデザインを別プラットフォームで組み直した版（テープ留めのメモ）
    ============================================= */
 .rebuildSection {
-  padding: 0 40px 80px;
+  padding: 0 40px 64px;
 }
 
 .rebuildInner {
+  position: relative;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 48px 0;
-  border-top: 1px solid var(--color-border);
+  padding: 48px 56px 52px;
+}
+
+.rebuildInner::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 40px;
+  width: 92px;
+  height: 22px;
+  background: rgba(235, 230, 227, 0.86);
+  transform: rotate(-2deg);
+  box-shadow: 0 1px 2px rgba(31, 28, 28, 0.14);
+  pointer-events: none;
 }
 
 .rebuildTitle {
@@ -383,7 +443,7 @@
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   line-height: 1.6;
   margin-bottom: 14px;
 }
@@ -392,15 +452,15 @@
   font-family: var(--font-body);
   font-size: 14px;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   max-width: 720px;
 }
 
 .rebuildFacts {
   margin-top: 24px;
-  padding: 24px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background-light);
+  padding: 20px 24px;
+  border-top: 1px solid var(--wk-rule);
+  border-bottom: 1px solid var(--wk-rule);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -412,7 +472,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
 }
 
 /* 行頭の短い罫。list-style を使わず擬似要素で置く（globals で list-style: none のため） */
@@ -423,7 +483,7 @@
   top: 0.85em;
   width: 8px;
   height: 1px;
-  background: var(--color-accent);
+  background: var(--wk-ink);
 }
 
 .rebuildLink {
@@ -431,52 +491,53 @@
   align-items: center;
   margin-top: 24px;
   padding: 12px 24px;
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--wk-ink);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.1em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   transition:
     color 300ms ease,
-    border-color 300ms ease;
+    background-color 300ms ease;
 }
 
 .rebuildLink:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
+  color: var(--wk-paper);
+  background-color: var(--wk-ink);
 }
 
 /* =============================================
-   Meta Facts Grid
+   Meta Facts Grid＝帳票の紙
    ============================================= */
 .metaSection {
-  padding: 0 40px 80px;
+  padding: 0 40px 64px;
 }
 
 .metaInner {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 48px 0;
-  border-top: 1px solid var(--color-border);
+  padding: 48px 56px 52px;
 }
 
 .metaGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0;
-  border: 1px solid var(--color-border);
+  border-top: 1px solid var(--wk-ink);
+  border-left: 1px solid var(--wk-rule);
+  border-right: 1px solid var(--wk-rule);
   overflow: hidden;
 }
 
 .metaItem {
   padding: 16px 20px;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-background-light);
+  border-bottom: 1px solid var(--wk-rule);
+  background: transparent;
 }
 
 .metaItem:nth-child(odd) {
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--wk-rule);
 }
 
 /* 担当範囲の行。2カラムの最終行に半端なマスを作らないよう全幅で1行を占有する。
@@ -489,9 +550,9 @@
 .metaDt {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.12em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   margin-bottom: 4px;
 }
 
@@ -499,22 +560,22 @@
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   line-height: 1.6;
 }
 
 /* =============================================
-   Design Perspective
+   Design Perspective（地に直接・墨の一線）
    ============================================= */
 .designSection {
-  padding: 0 40px 80px;
+  padding: 0 40px 64px;
 }
 
 .designInner {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 48px 0;
-  border-top: 1px solid var(--color-border);
+  padding: 48px 0 0;
+  border-top: 1px solid var(--wk-ink);
 }
 
 .designGrid {
@@ -525,22 +586,23 @@
 
 .designItem {
   padding: 16px 20px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background-light);
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
 }
 
 /* =============================================
-   Tech & Features Section
+   Tech & Features Section（紙のタグ）
    ============================================= */
 .techSection {
-  padding: 0 40px 80px;
+  padding: 0 40px 64px;
 }
 
 .techInner {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 48px 0;
-  border-top: 1px solid var(--color-border);
+  padding: 48px 0 0;
+  border-top: 1px solid var(--wk-ink);
 }
 
 /* Chip Group */
@@ -554,7 +616,7 @@
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.12em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   margin-bottom: 12px;
 }
 
@@ -569,34 +631,39 @@
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0.08em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   padding: 8px 18px;
-  border: 1px solid var(--color-border-light);
-  transition:
-    border-color 300ms ease,
-    color 300ms ease;
+  border: 1px solid var(--wk-rule);
+  background-color: var(--wk-paper);
+  box-shadow:
+    0 1px 1px rgba(31, 28, 28, 0.08),
+    0 4px 10px -6px rgba(31, 28, 28, 0.18);
+  transition: border-color 300ms ease;
 }
 
 .techItem:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--wk-ink);
 }
 
 .chipMore {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   padding: 8px 14px;
-  border: 1px dashed var(--color-border-light);
+  border: 1px dashed var(--wk-rule);
 }
 
 /* Boolean Flags Row */
 .flagsRow {
   display: flex;
   gap: 0;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-rule);
+  border-top: 1px solid var(--wk-ink);
   overflow: hidden;
   margin-top: 8px;
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
 }
 
 .flagItem {
@@ -605,8 +672,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 14px 16px;
-  background: var(--color-background-light);
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--wk-rule);
 }
 
 .flagItem:last-child {
@@ -616,16 +682,16 @@
 .flagLabel {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.12em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
 }
 
 .flagValue {
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 /* =============================================
@@ -639,7 +705,7 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 48px 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--wk-ink);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -654,7 +720,7 @@
 }
 
 .navLink:hover {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .navLinkRight {
@@ -665,9 +731,9 @@
 .navDir {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.14em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
 }
 
 .navTitle {
@@ -675,26 +741,26 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 .navAll {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.14em;
-  color: var(--color-secondary);
+  color: var(--wk-ink);
   padding: 8px 16px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-ink);
   transition:
     color 300ms ease,
-    border-color 300ms ease;
+    background-color 300ms ease;
   align-self: center;
 }
 
 .navAll:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
+  color: var(--wk-paper);
+  background-color: var(--wk-ink);
 }
 
 /* =============================================
@@ -702,34 +768,54 @@
    ============================================= */
 @media (max-width: 767px) {
   .hero {
-    padding: 120px 20px 60px;
+    padding: 110px 20px 48px;
   }
 
   .heroTitle {
-    font-size: clamp(2.5rem, 14vw, 4.5rem);
+    font-size: clamp(2.5rem, 3rem, 4.5rem);
   }
 
   .preview {
     padding: 0 20px 60px;
   }
 
+  .iframeWrap {
+    border-width: 5px;
+  }
+
   /* Overview */
   .overviewSection {
-    padding: 0 20px 60px;
+    padding: 0 20px 48px;
+  }
+
+  .overviewInner,
+  .rebuildInner,
+  .metaInner {
+    padding: 32px 22px 36px;
+  }
+
+  .challengeBlock {
+    padding: 16px 18px;
   }
 
   /* Rebuild */
   .rebuildSection {
-    padding: 0 20px 60px;
+    padding: 0 20px 48px;
+  }
+
+  .rebuildInner::before {
+    left: 20px;
+    width: 72px;
+    height: 18px;
   }
 
   .rebuildFacts {
-    padding: 20px 16px;
+    padding: 16px 0;
   }
 
   /* Meta */
   .metaSection {
-    padding: 0 20px 60px;
+    padding: 0 20px 48px;
   }
 
   .metaGrid {
@@ -742,12 +828,20 @@
 
   /* Design */
   .designSection {
-    padding: 0 20px 60px;
+    padding: 0 20px 48px;
+  }
+
+  .designInner {
+    padding-top: 36px;
   }
 
   /* Tech */
   .techSection {
-    padding: 0 20px 60px;
+    padding: 0 20px 48px;
+  }
+
+  .techInner {
+    padding-top: 36px;
   }
 
   .flagsRow {
@@ -756,7 +850,7 @@
 
   .flagItem {
     border-right: none;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--wk-rule);
   }
 
   .flagItem:last-child {
@@ -794,7 +888,7 @@
    ============================================= */
 @media (min-width: 768px) and (max-width: 1279px) {
   .hero {
-    padding: 140px 30px 80px;
+    padding: 130px 30px 64px;
   }
 
   .preview,
@@ -807,7 +901,34 @@
     padding-right: 30px;
   }
 
+  .overviewInner,
+  .rebuildInner,
+  .metaInner {
+    padding: 40px 40px 44px;
+  }
+
   .nav {
     padding: 0 30px 100px;
+  }
+}
+
+/* =============================================
+   Reduced Motion
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .backLink,
+  .backArrow,
+  .liveBtn,
+  .deviceBtn,
+  .iframeWrap,
+  .rebuildLink,
+  .techItem,
+  .navLink,
+  .navAll {
+    transition: none;
+  }
+
+  .backLink:hover .backArrow {
+    transform: none;
   }
 }

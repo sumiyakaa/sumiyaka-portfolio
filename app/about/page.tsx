@@ -3,8 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
+import DrawRule from "@/components/animation/DrawRule";
 import DynamicInkFluid from "@/components/webgl/DynamicInkFluid";
 import CtaSection from "@/components/home/CtaSection";
+import AboutFVStage from "@/components/fv/about/AboutFVStage";
+import InkMotes from "@/components/fv/about/InkMotes";
+import InkTimeline from "@/components/about/InkTimeline";
+import InkStroke from "@/components/about/InkStroke";
 import styles from "./page.module.css";
 
 /* P10（2026-09-02）＝STANCE 段落2の末尾を「三段」の説明へ置換（トップ Person・/service PROCESS 帯との三重を解消）／
@@ -15,7 +20,13 @@ import styles from "./page.module.css";
  * 文言の正本＝`P9_原稿_top_service_about.md` B節（差分）＋`P6_原稿_service_about.md` B節（B-0〜B-10）。一言一句変えない（改行のみ自由）。
  * 構成：FV（DynamicInkFluid 維持）→ PROFILE → STANCE → TIMELINE → BELIEF →
  *       SCOPE OF WORK → WHAT I DON'T → SKILL SET → CTA（トップ CtaSection をそのまま再利用）
- * モーションは ScrollReveal（＋既存 SubPageFVAnim）のみ。旧 BeliefFigures は不使用。
+ *
+ * 五彩改修（2026-09-05）＝「濃（のう）・墨」黒9:白1。人物ページを墨の濃淡で描く。
+ *  - FV は奥（流体・data-fv-depth=1 で収縮時に沈む）と手前（墨の粒・題字）の2層
+ *  - 題字は滲みの中から立ち上がる（AboutFVStage・customEntrance）
+ *  - 本文は各セクションの背後に墨の洗い（静的な放射グラデ）、写真は墨の縁と台の落ち影、
+ *    STANCE は筆の一線、TIMELINE は一本の筆致（SVG path）、BELIEF の番号は落款
+ *  - 金 --color-accent は使わない（差し色は白系）。動きは transform/opacity/text-shadow/stroke のみ
  */
 
 // /api/og は日本語フォント搭載済み（Geist + Noto Sans JP）。sub は日本語のまま渡す
@@ -124,34 +135,46 @@ const SKILLS = [
   },
 ];
 
+/* 各セクション先頭の「かすれた一線」（最初のセクションには置かない） */
+function SectionRule() {
+  return (
+    <div className={styles.ruleRow}>
+      <DrawRule className={styles.rule} />
+    </div>
+  );
+}
+
 export default function AboutPage() {
   return (
     <main className={styles.page}>
-      {/* ========== B-1 FV（DynamicInkFluid・読み込み方とフォールバックは現行維持） ========== */}
-      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.08em">
-        <DynamicInkFluid />
-        <div className={styles.fvBg}>
+      {/* ========== B-1 FV（DynamicInkFluid・読み込み方とフォールバックは現行維持）
+          奥＝流体（data-fv-depth=1・収縮で沈む）／手前＝墨の粒・題字（残る） ========== */}
+      <SubPageFVAnim className={styles.fv} customEntrance>
+        <AboutFVStage className={styles.fvStage} stillClassName={styles.fvStill}>
+          <div className={styles.fvDeep} data-fv-depth="1">
+            <DynamicInkFluid />
+            <div className={styles.fvDeepVeil} aria-hidden="true" />
+          </div>
+          <InkMotes />
           <div className={styles.fvGrain} aria-hidden="true" />
-        </div>
-        <div className={styles.fvContent}>
-          {/* 英字は小さな装飾（入場は SubPageFVAnim のエッジ群と同じ後追いフェード） */}
-          <span data-fv-edge className={styles.fvLabel} aria-hidden="true">ABOUT</span>
-          <h1 data-fv-title className={styles.fvTitle}>
-            机上ではなく、<br className={styles.brSp} />現場から。
-          </h1>
-          <p data-fv-sub className={styles.fvSub}>AI導入の設計と教育 — 墨家 / SUMIYAKA</p>
-          <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
-        </div>
-        <div className={styles.fvEdgeBl}>
-          <span data-fv-edge className={styles.fvEdgeText}>ABOUT</span>
-        </div>
-        <div className={styles.fvEdgeBr}>
-          <span data-fv-edge className={styles.fvEdgeText}>SCROLL</span>
-        </div>
+          <div className={styles.fvContent}>
+            <span data-about-fv="label" className={styles.fvLabel} aria-hidden="true">
+              ABOUT
+            </span>
+            <h1 data-about-fv="title" className={styles.fvTitle}>
+              机上ではなく、<br className={styles.brSp} />現場から。
+            </h1>
+            <p data-about-fv="sub" className={styles.fvSub}>
+              AI導入の設計と教育 — 墨家 / SUMIYAKA
+            </p>
+            <span data-about-fv="hr" className={styles.fvHr} aria-hidden="true" />
+          </div>
+          <span data-about-fv="drip" className={styles.fvDrip} aria-hidden="true" />
+        </AboutFVStage>
       </SubPageFVAnim>
 
-      {/* ========== B-2 PROFILE — 写真（トップ Person の額）＋本文の2カラム ========== */}
-      <section className={styles.sec} aria-labelledby="about-profile-title">
+      {/* ========== B-2 PROFILE — 墨の縁の写真＋本文の2カラム ========== */}
+      <section className={`${styles.sec} ${styles.secProfile}`} aria-labelledby="about-profile-title">
         <div className={`${styles.inner} ${styles.innerFirst}`}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>PROFILE</span>
@@ -159,7 +182,7 @@ export default function AboutPage() {
 
           <div className={styles.profileGrid}>
             <ScrollReveal as="figure" className={`${styles.reveal} ${styles.portrait}`} delay={0.1}>
-              {/* 額＝オフセット罫線＋縁の沈み込み（Person.module.css と同じ作法・CSS filter 不使用） */}
+              {/* 墨の縁＝四辺に内へ向かう墨のグラデ（overlay の疑似要素・CSS filter 不使用）＋台からの落ち影 */}
               <div className={styles.portraitFrame}>
                 <Image
                   src="/about/profile.webp"
@@ -222,64 +245,75 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ========== B-3 STANCE — このページ最大級の見出し ========== */}
-      <section className={styles.sec} aria-labelledby="about-stance-title">
+      {/* ========== B-3 STANCE — このページ最大級の見出し＋段落の左に筆の一線 ========== */}
+      <section className={`${styles.sec} ${styles.secStance}`} aria-labelledby="about-stance-title">
+        <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>STANCE</span>
             <h2 id="about-stance-title" className={styles.stanceTitle}>AIを使う側に、立つ。</h2>
           </ScrollReveal>
-          <ScrollReveal className={styles.reveal} delay={0.1}>
-            <p className={styles.stanceBody}>
-              AIにできることはAIに、という流れは、これから加速していきます。その中で仕事は二つに分かれる。AIにできないことをする側か、AIを使う側に立ち、AIと融合して仕事をする側か。私は、後者でありたい。
-            </p>
-          </ScrollReveal>
-          <ScrollReveal className={styles.reveal} delay={0.15}>
-            <p className={styles.stanceBody}>
-              単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。だから仕事を三段に分けています。御社専用の道具をお渡しする、その道具をAIに使わせる、社員の方が自分で作れるようにする。どの段からでも始められるようにしているのは、AIを使いこなせる人材の育成までを軸に置いているからです。
-            </p>
-          </ScrollReveal>
-          {/* P9 B-3 段落3・4（FDE の注釈はここだけ。欧文も和文段落と同じフォント指定のまま） */}
-          <ScrollReveal className={styles.reveal} delay={0.2}>
-            <p className={styles.stanceBody}>
-              海外では、こうした働き方を Forward Deployed Engineer（FDE）と呼び始めています。AIの技術と、お客様ごとの業務の両方を知っていて、現場に入って一緒に作る人。私はそれを、中小企業の規模で、一人でやっています。
-            </p>
-          </ScrollReveal>
-          <ScrollReveal className={styles.reveal} delay={0.25}>
-            <p className={styles.stanceBody}>
-              それでも、仕事は人と人との間に生まれるものだと思っています。顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。効率では測れないものが、最後に残ります。AIで速くなった分は、そこに使いたい。
-            </p>
-          </ScrollReveal>
+          <div className={styles.stanceBlock}>
+            <InkStroke axis="y" className={styles.stanceStroke} duration={1.6} />
+            <div className={styles.stanceText}>
+              <ScrollReveal className={styles.reveal} delay={0.1}>
+                <p className={styles.stanceBody}>
+                  AIにできることはAIに、という流れは、これから加速していきます。その中で仕事は二つに分かれる。AIにできないことをする側か、AIを使う側に立ち、AIと融合して仕事をする側か。私は、後者でありたい。
+                </p>
+              </ScrollReveal>
+              <ScrollReveal className={styles.reveal} delay={0.15}>
+                <p className={styles.stanceBody}>
+                  単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。だから仕事を三段に分けています。御社専用の道具をお渡しする、その道具をAIに使わせる、社員の方が自分で作れるようにする。どの段からでも始められるようにしているのは、AIを使いこなせる人材の育成までを軸に置いているからです。
+                </p>
+              </ScrollReveal>
+              {/* P9 B-3 段落3・4（FDE の注釈はここだけ。欧文も和文段落と同じフォント指定のまま） */}
+              <ScrollReveal className={styles.reveal} delay={0.2}>
+                <p className={styles.stanceBody}>
+                  海外では、こうした働き方を Forward Deployed Engineer（FDE）と呼び始めています。AIの技術と、お客様ごとの業務の両方を知っていて、現場に入って一緒に作る人。私はそれを、中小企業の規模で、一人でやっています。
+                </p>
+              </ScrollReveal>
+              <ScrollReveal className={styles.reveal} delay={0.25}>
+                <p className={styles.stanceBody}>
+                  それでも、仕事は人と人との間に生まれるものだと思っています。顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。効率では測れないものが、最後に残ります。AIで速くなった分は、そこに使いたい。
+                </p>
+              </ScrollReveal>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ========== B-4 TIMELINE — 縦の年表 ========== */}
-      <section className={styles.sec} aria-label="年表">
+      {/* ========== B-4 TIMELINE — 一本の筆致（SVG path が上から下へ・各年代で墨が滲む） ========== */}
+      <section className={`${styles.sec} ${styles.secTimeline}`} aria-label="年表">
+        <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>TIMELINE</span>
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.1}>
-            <ol className={styles.tl}>
+            <InkTimeline className={styles.tl} strokeClassName={styles.tlStroke}>
               {TIMELINE.map((row) => (
                 <li key={row.when} className={styles.tlItem}>
                   <span className={styles.tlWhen}>{row.when}</span>
-                  <span className={styles.tlMark} aria-hidden="true" />
+                  <span className={styles.tlMark} aria-hidden="true">
+                    <i className={styles.tlDot} data-tl-dot />
+                  </span>
                   <p className={styles.tlText}>{row.text}</p>
                 </li>
               ))}
-            </ol>
+            </InkTimeline>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== B-5 BELIEF — 3枚グリッド（現行の骨格を再利用） ========== */}
-      <section className={styles.sec} aria-label="信条">
+      {/* ========== B-5 BELIEF — 3列（番号は落款・右2列の背後に墨の面） ========== */}
+      <section className={`${styles.sec} ${styles.secBelief}`} aria-label="信条">
+        <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>BELIEF</span>
           </ScrollReveal>
           <div className={styles.beliefGrid}>
+            <span className={styles.beliefSlab} aria-hidden="true" />
             {BELIEFS.map((item, i) => (
               <ScrollReveal key={item.num} className={`${styles.reveal} ${styles.beliefCell}`} delay={i * 0.1}>
                 <article className={styles.beliefCard}>
@@ -293,8 +327,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ========== B-6 SCOPE OF WORK — 担当範囲 ========== */}
-      <section className={styles.sec} aria-labelledby="about-scope-title">
+      {/* ========== B-6 SCOPE OF WORK — 担当範囲（小見出し2枠＝墨の面＋インク密度の縦バー） ========== */}
+      <section className={`${styles.sec} ${styles.secScope}`} aria-labelledby="about-scope-title">
+        <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>SCOPE OF WORK</span>
@@ -337,8 +372,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ========== B-7 WHAT I DON'T — 引き受けないこと（題字に静的な墨の一線） ========== */}
-      <section className={styles.sec} aria-labelledby="about-dont-title">
+      {/* ========== B-7 WHAT I DON'T — 引き受けないこと（最も深い墨の帯・題字に静的な墨の一線） ========== */}
+      <section className={`${styles.sec} ${styles.secDont}`} aria-labelledby="about-dont-title">
+        <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>WHAT I DON&apos;T</span>
@@ -365,8 +401,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ========== B-8 SKILL SET — 行グリッド（現行の骨格を再利用） ========== */}
-      <section className={styles.sec} aria-label="スキル">
+      {/* ========== B-8 SKILL SET — 行グリッド（墨の濃淡の面の上に、かすれた罫で区切る） ========== */}
+      <section className={`${styles.sec} ${styles.secSkill}`} aria-label="スキル">
+        <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>SKILL SET</span>

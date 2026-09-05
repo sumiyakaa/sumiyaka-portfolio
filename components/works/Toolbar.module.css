@@ -1,12 +1,14 @@
 /* =============================================
-   Toolbar
+   Toolbar（清・紙）
+   色は app/works/page.module.css の .page が定義する --wk-* を継承する。
+   <select> は appearance:none 必須（暗色/明色にかかわらず WebKit で読めなくなる罠）
    ============================================= */
 .toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--wk-ink);
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
@@ -22,23 +24,23 @@
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.06em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   padding: 8px 14px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-ink);
   background: transparent;
   cursor: pointer;
   transition:
     color var(--duration-normal) ease,
-    border-color var(--duration-normal) ease;
+    background-color var(--duration-normal) ease;
 }
 
 .filterBtn:hover {
-  color: var(--color-foreground);
-  border-color: var(--color-border-light);
+  color: var(--wk-paper);
+  background-color: var(--wk-ink);
 }
 
 /* =============================================
-   Search
+   Search（紙の記入欄）
    ============================================= */
 .search {
   position: relative;
@@ -52,7 +54,7 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   pointer-events: none;
 }
 
@@ -60,21 +62,22 @@
   width: 100%;
   font-family: var(--font-body);
   font-size: 13px;
-  color: var(--color-foreground);
-  background: transparent;
-  border: 1px solid var(--color-border);
+  color: var(--wk-ink);
+  background-color: var(--wk-paper);
+  border: 1px solid var(--wk-rule);
   padding: 8px 12px 8px 36px;
   outline: none;
+  box-shadow: inset 0 1px 2px rgba(31, 28, 28, 0.06);
   transition: border-color var(--duration-normal) ease;
 }
 
 .searchInput::placeholder {
-  color: var(--color-secondary);
+  color: var(--wk-ink-3);
   font-size: 12px;
 }
 
 .searchInput:focus {
-  border-color: var(--color-border-light);
+  border-color: var(--wk-ink);
 }
 
 /* =============================================
@@ -82,7 +85,7 @@
    ============================================= */
 .viewToggle {
   display: flex;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-ink);
 }
 
 .viewBtn {
@@ -93,7 +96,7 @@
   height: 36px;
   background: transparent;
   border: none;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   cursor: pointer;
   transition:
     color var(--duration-fast) ease,
@@ -101,17 +104,22 @@
 }
 
 .viewBtn + .viewBtn {
-  border-left: 1px solid var(--color-border);
+  border-left: 1px solid var(--wk-rule);
 }
 
 .viewBtn:hover {
-  color: var(--color-foreground);
-  background: rgba(255, 255, 255, 0.03);
+  color: var(--wk-ink);
+  background: rgba(31, 28, 28, 0.05);
 }
 
 .viewBtnActive {
-  color: var(--color-accent);
-  background: rgba(200, 169, 110, 0.08);
+  color: var(--wk-paper);
+  background: var(--wk-ink);
+}
+
+.viewBtnActive:hover {
+  color: var(--wk-paper);
+  background: var(--wk-ink);
 }
 
 /* =============================================
@@ -120,14 +128,15 @@
 .sort {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-foreground-muted);
-  background: transparent;
-  border: 1px solid var(--color-border);
+  color: var(--wk-ink);
+  background-color: var(--wk-paper);
+  border: 1px solid var(--wk-rule);
   padding: 8px 32px 8px 12px;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23888888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%231f1c1c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   cursor: pointer;
@@ -136,12 +145,12 @@
 }
 
 .sort:focus {
-  border-color: var(--color-border-light);
+  border-color: var(--wk-ink);
 }
 
 .sort option {
-  background: var(--color-primary);
-  color: var(--color-foreground);
+  background: var(--sumi-sei-paper);
+  color: var(--sumi-ink-on-paper);
 }
 
 /* =============================================
@@ -151,17 +160,18 @@
   font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   margin-left: auto;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .countLabel {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.1em;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
 }
 
 /* =============================================

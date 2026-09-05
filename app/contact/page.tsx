@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
-import FVTypewriter from "@/components/animation/FVTypewriter";
-import FVPulseRings from "@/components/animation/FVPulseRings";
+import ContactLantern from "@/components/fv/contact/ContactLantern";
 import ContactForm from "@/components/contact/ContactForm";
 import styles from "./page.module.css";
 
@@ -15,35 +14,25 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * /contact — 五彩「焦（こげ）＝灯」（黒9.5:白0.5）
+ * 最も暗い地に一点の灯。FV は吊られた裸電球と、その光で照らされた題字。
+ * その下に、灯の光が落ちる机と一枚の紙（フォーム）。
+ */
 export default function ContactPage() {
   return (
-    <main>
-      {/* ========== FV — 100vh ========== */}
-      <SubPageFVAnim className={styles.fv} targetLetterSpacing="0.25em">
-        <div className={styles.fvBg}>
-          <div className={styles.fvGrain} aria-hidden="true" />
-          <div className={styles.fvScanline} aria-hidden="true" />
-        </div>
-
-        <FVPulseRings />
-
-        <div className={styles.fvContent}>
-          <FVTypewriter text="CONTACT" className={styles.fvTitle} />
-          <div data-fv-hr className={styles.fvHr} aria-hidden="true" />
-        </div>
-
-        <div className={styles.fvEdgeBl}>
-          <span data-fv-edge className={styles.fvEdgeText}>CONTACT</span>
-        </div>
-        <div className={styles.fvEdgeBr}>
-          <span data-fv-edge className={styles.fvEdgeText}>SCROLL</span>
-        </div>
+    <main className={styles.main}>
+      {/* ========== FV — 100vh（customEntrance：灯がともる独自入場） ========== */}
+      <SubPageFVAnim className={styles.fv} customEntrance>
+        <ContactLantern />
       </SubPageFVAnim>
 
-      {/* ========== フォームセクション（白背景） ========== */}
+      {/* ========== 机の上の一枚の紙（フォーム） ========== */}
       <section className={styles.formSection} aria-label="お問い合わせフォーム">
-        <div className={styles.formInner}>
-          <ContactForm />
+        <div className={styles.desk} data-contact-desk>
+          <div className={styles.paper}>
+            <ContactForm />
+          </div>
         </div>
       </section>
     </main>

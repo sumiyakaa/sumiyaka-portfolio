@@ -1,0 +1,118 @@
+/* ==========================================================================
+   GaugeDial — 計器の文字盤（目盛り＝SVG 静的／針＝HTML の rotate だけ）
+   色は白系のみ（金は使わない）。差し色は呼び出し側の --card-accent 等に任せる。
+   ========================================================================== */
+
+.dial {
+  --hub: 14px;
+  --blade: 2px;
+  position: relative;
+  display: block;
+  width: 100%;
+  pointer-events: none;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.arc {
+  fill: none;
+  stroke: rgba(241, 234, 236, 0.3);
+  stroke-width: 1;
+}
+
+.tick {
+  stroke: rgba(241, 234, 236, 0.5);
+  stroke-width: 1;
+}
+
+.tickMajor {
+  stroke: rgba(241, 234, 236, 0.92);
+  stroke-width: 1.6;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  fill: #efe8ea;
+}
+
+/* 針：ピボット（100,104）＝左 50%・上 81.25%。長さ 78/128 */
+.needle {
+  position: absolute;
+  left: 50%;
+  bottom: 18.75%;
+  width: var(--blade);
+  height: 61%;
+  margin-left: calc(var(--blade) * -0.5);
+  transform-origin: 50% 100%;
+  transform: rotate(var(--needle-rest, -100deg));
+  will-change: transform;
+}
+
+.blade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: linear-gradient(180deg, #f8f3f4 0%, #d9d1d3 55%, #8f8789 100%);
+  border-radius: 2px 2px 0 0;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.55);
+  transform-origin: 50% 100%;
+}
+
+/* 針の微動＝生きている計器。既定は停止。囲う側が .live を付けた時だけ回る */
+.quiver {
+  animation: gaugeQuiver 5.2s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.live .quiver {
+  animation-play-state: running;
+}
+
+/* タッチ端末・狭幅（prefersLightVisuals）＝常時ループを起動しない */
+.still .quiver {
+  animation: none;
+}
+
+@keyframes gaugeQuiver {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-0.7deg); }
+  55% { transform: rotate(0.9deg); }
+  78% { transform: rotate(-0.4deg); }
+}
+
+/* 軸＝小さな金属の円 */
+.hub {
+  position: absolute;
+  left: 50%;
+  top: 81.25%;
+  width: var(--hub);
+  height: var(--hub);
+  margin: calc(var(--hub) * -0.5) 0 0 calc(var(--hub) * -0.5);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #a9a0a2 0%, #5e5658 45%, #2b2325 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 700px) {
+  .numMid {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiver {
+    animation: none;
+  }
+  .needle {
+    transform: rotate(var(--needle-end, var(--needle-rest, -100deg))) !important;
+  }
+}

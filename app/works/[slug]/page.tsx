@@ -78,7 +78,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
   const rebuild = getDetailRebuild(work);
 
   return (
-    <main>
+    <main className={styles.page}>
       {/* ── Hero ── */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>

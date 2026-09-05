@@ -1,0 +1,455 @@
+/* ==========================================================================
+   /tools FV「淡（たん）＝金属と計器」
+   地 = --sumi-noh／鋼板 = #5e5658→#3f393b の縦グラデ＋1px ヘアライン（静的）
+   刻印（凹）= 板より暗い #2b2325 に下辺の明るい縁／浮き彫り（凸）= 白系に上辺の暗い縁
+   金は使わない。filter・3D・clip-path・vw フォントは使わない。
+   ========================================================================== */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 固定ヘッダー 60px の下に据える */
+  padding: 60px 40px 0;
+}
+
+/* ---------- 地（収縮で奥へ沈む層） ---------- */
+.ground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: -6%;
+  background: radial-gradient(110% 80% at 34% 42%, #2a2527 0%, #1f1c1c 52%, #161414 100%);
+}
+
+/* 目盛りの外周：右寄り・画面からはみ出す大円（非対称） */
+.ringPos {
+  position: absolute;
+  top: 50%;
+  left: 64%;
+  width: 132vh;
+  width: clamp(760px, 132svh, 1500px);
+  height: 132vh;
+  height: clamp(760px, 132svh, 1500px);
+  transform: translate(-50%, -50%);
+}
+
+.ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+}
+
+.ringArc {
+  fill: none;
+  stroke: rgba(241, 234, 236, 0.1);
+  stroke-width: 1;
+}
+
+.ringArcInner {
+  fill: none;
+  stroke: rgba(241, 234, 236, 0.05);
+  stroke-width: 1;
+}
+
+.ringTick {
+  stroke: rgba(241, 234, 236, 0.14);
+  stroke-width: 1;
+}
+
+.ringTickMajor {
+  stroke: rgba(241, 234, 236, 0.24);
+  stroke-width: 1.5;
+}
+
+/* ---------- 鋼板 ---------- */
+.plateWrap {
+  position: relative;
+  width: min(1120px, 100%);
+}
+
+/* 落ち影：着地点で待つ（板が降りてくるにつれて濃くなる） */
+.plateShadow {
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    0 30px 50px -18px rgba(0, 0, 0, 0.75),
+    0 80px 120px -40px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.plate {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  column-gap: 40px;
+  padding: 36px 44px 30px 48px;
+  background:
+    /* 斜めの鈍い光（静的） */
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.045) 50%, rgba(255, 255, 255, 0) 62%),
+    /* ヘアライン：1px 縞（静的・透過 0.05） */
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    linear-gradient(180deg, #5e5658 0%, #4d4648 55%, #3f393b 100%);
+  border: 1px solid #241f20;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 1px 0 0 rgba(241, 234, 236, 0.06),
+    inset -1px 0 0 rgba(0, 0, 0, 0.3),
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 14px 28px -10px rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ベゼル＝内側の二重線（暗い線＋その内側の細い光） */
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.07),
+    0 1px 0 rgba(241, 234, 236, 0.06);
+  pointer-events: none;
+}
+
+/* リベット：四隅にだけ */
+.rivet {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8f8789 0%, #5e5658 45%, #2b2325 100%);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.rivetTl { top: 12px; left: 12px; }
+.rivetTr { top: 12px; right: 12px; }
+.rivetBl { bottom: 12px; left: 12px; }
+.rivetBr { bottom: 12px; right: 12px; }
+
+/* 題字＝刻印（凹）。板より暗く、下辺に 1px の明るい縁 */
+.title {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 112px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  color: #2b2325;
+  text-shadow:
+    0 1px 0 rgba(241, 234, 236, 0.14),
+    0 -1px 0 rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform-origin: 8% 70%;
+  will-change: transform, opacity;
+}
+
+/* サブコピー＝白入れの刻印（溝に白を流した銘板の作法。本文 AA を満たす） */
+.sub {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 16px 0 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.9;
+  letter-spacing: 0.14em;
+  color: #f1eaec;
+  text-shadow:
+    0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(241, 234, 236, 0.08);
+  white-space: nowrap;
+}
+
+.ch {
+  display: inline-block;
+  opacity: 0;
+}
+
+/* 計器：右上（非対称） */
+.gauge {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: end;
+  justify-self: end;
+  width: 224px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.dial {
+  width: 100%;
+}
+
+.needle {
+  /* GSAP がインラインの transform を置く。ここでは軸だけ固定する */
+  transform-origin: 50% 100%;
+}
+
+/* 本数の窓＝機械式カウンタ（凹の窓に白の数字） */
+.counter {
+  display: inline-block;
+  min-width: 3.4em;
+  padding: 3px 10px 3px 12px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: #f1eaec;
+  background: #171415;
+  border: 1px solid #0f0d0d;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.75),
+    0 1px 0 rgba(241, 234, 236, 0.1);
+}
+
+/* 6つの印＝浮き彫りの鍵（左寄せ） */
+.keys {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 20px 0 0;
+  display: flex;
+  gap: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 0 rgba(241, 234, 236, 0.07);
+}
+
+.key {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.keyLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #f1eaec;
+  text-decoration: none;
+}
+
+.keyFace {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #6a6264 0%, #4a4345 100%);
+  border: 1px solid #241f20;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 4px 8px -2px rgba(0, 0, 0, 0.5);
+  transition:
+    transform var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.keyMark {
+  color: #f1eaec;
+}
+
+.keyNo {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #e4dcde;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* 押される */
+.keyLink:hover .keyFace,
+.keyLink:focus-visible .keyFace {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    0 2px 4px -1px rgba(0, 0, 0, 0.5);
+}
+
+.keyLink:focus-visible {
+  outline: 1px solid rgba(241, 234, 236, 0.7);
+  outline-offset: 3px;
+}
+
+/* ---------- 幅ごとの寸法（vw フォントは使わない） ---------- */
+/* 1280×800 で収縮後の 50vh（＝ヘッダー下 340px）に板を収める寸法 */
+@media (max-width: 1399px) {
+  .title {
+    font-size: 92px;
+  }
+  .plate {
+    padding: 32px 40px 26px 44px;
+  }
+  .sub {
+    margin-top: 12px;
+  }
+  .gauge {
+    width: 176px;
+    gap: 8px;
+  }
+  .counter {
+    font-size: 13px;
+    padding: 2px 9px 2px 11px;
+  }
+  .keys {
+    margin-top: 22px;
+    padding-top: 16px;
+  }
+  .keyLink {
+    gap: 5px;
+  }
+  .keyFace {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* 低めの画面（1280×720 級）：さらに詰める */
+@media (max-height: 740px) {
+  .title {
+    font-size: 84px;
+  }
+  .plate {
+    padding: 24px 40px 20px 44px;
+  }
+  .gauge {
+    width: 160px;
+  }
+  .keys {
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+}
+
+@media (max-width: 999px) {
+  .title {
+    font-size: 72px;
+  }
+  .plate {
+    column-gap: 28px;
+    padding: 30px 32px 26px 36px;
+  }
+  .gauge {
+    width: 180px;
+  }
+}
+
+@media (max-width: 700px) {
+  .stage {
+    padding: 60px 20px 0;
+  }
+  .ringPos {
+    left: 72%;
+  }
+  .plate {
+    grid-template-columns: minmax(0, 1fr) 104px;
+    column-gap: 12px;
+    padding: 22px 20px 20px 22px;
+  }
+  .plate::before {
+    inset: 7px;
+  }
+  .rivetTl { top: 9px; left: 9px; }
+  .rivetTr { top: 9px; right: 9px; }
+  .rivetBl { bottom: 9px; left: 9px; }
+  .rivetBr { bottom: 9px; right: 9px; }
+  .title {
+    font-size: 46px;
+    letter-spacing: 0.12em;
+  }
+  .sub {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 10px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+  .gauge {
+    grid-row: 1;
+    width: 104px;
+    gap: 6px;
+  }
+  .counter {
+    min-width: 3em;
+    padding: 1px 8px;
+    font-size: 12px;
+  }
+  .keys {
+    margin-top: 16px;
+    padding-top: 14px;
+    gap: 6px;
+    justify-content: space-between;
+  }
+  .keyLink {
+    gap: 4px;
+  }
+  .keyFace {
+    width: 36px;
+    height: 36px;
+  }
+  .keyNo {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* 低い画面（横向きスマホ等）：50vh に収めるため詰める */
+@media (max-height: 560px) {
+  .title {
+    font-size: 56px;
+  }
+  .plate {
+    padding-top: 20px;
+    padding-bottom: 18px;
+  }
+  .keys {
+    margin-top: 14px;
+    padding-top: 12px;
+  }
+}
+
+/* ---------- 動きを減らす：終端値を置く（JS 側も同じ値を置く） ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .plate,
+  .plateShadow,
+  .title,
+  .ch,
+  .key {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* 外周は data-fv-depth（沈んだ終端値）を SubPageFVAnim が置くので transform は触らない */
+  .ring {
+    opacity: 1 !important;
+  }
+  .keyFace {
+    transition: none;
+  }
+}

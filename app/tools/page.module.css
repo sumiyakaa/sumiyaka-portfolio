@@ -1,157 +1,121 @@
 /* ==========================================================================
    /tools — 開発したツールのカタログ
-   FV は既存サブページ（/service・/about）と同じ作法を踏襲する。
+   「淡（たん）＝金属と計器」（2026-09-05 五彩改修）。灰6:黒3:白1。
+   地 = --sumi-noh／鋼板 = #5e5658→#3f393b＋1px ヘアライン（静的）／
+   刻印（凹）= 板より暗い文字に下辺の光／白入れの刻印 = 白系の文字に上辺の影／
+   ベゼル = 二重線と内側の影。金（--color-accent）は使わない。
+   filter のアニメ・3D・clip-path・vw フォントは使わない（iOS/WebKit 安全）。
    ========================================================================== */
 
 .page {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--sumi-noh);
+  color: var(--sumi-sei);
 }
 
 /* ========================================
-   FV — 100vh 全画面（1秒後に 50vh へ縮む）
+   FV — 100vh 全画面（1秒後に 50vh へ縮む）。中身は components/fv/tools/ToolsFV
    ======================================== */
 .fv {
   position: relative;
   height: 100vh;
   height: 100svh;
-  background: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--sumi-noh);
   overflow: hidden;
 }
 
-.fvBg {
+/* ========================================
+   共通の部品：鋼板・リベット
+   ======================================== */
+.leadPlate,
+.cardLink,
+.customLink {
+  background:
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.04) 50%, rgba(255, 255, 255, 0) 62%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    linear-gradient(180deg, #5e5658 0%, #4d4648 55%, #3f393b 100%);
+  border: 1px solid #241f20;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 1px 0 0 rgba(241, 234, 236, 0.06),
+    inset -1px 0 0 rgba(0, 0, 0, 0.3),
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 14px 28px -10px rgba(0, 0, 0, 0.6),
+    0 40px 60px -28px rgba(0, 0, 0, 0.7);
+}
+
+.rivet {
   position: absolute;
-  inset: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8f8789 0%, #5e5658 45%, #2b2325 100%);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
 
-.fvGrain {
-  position: absolute;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  animation: toolsGrain 0.5s steps(5) infinite;
-}
-
-@keyframes toolsGrain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  30% { transform: translate(3%, -15%); }
-  50% { transform: translate(12%, 9%); }
-  70% { transform: translate(9%, 4%); }
-  90% { transform: translate(-1%, 7%); }
-}
-
-.fvScanline {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255, 255, 255, 0.015) 2px,
-    rgba(255, 255, 255, 0.015) 4px
-  );
-  pointer-events: none;
-  opacity: 0.02;
-}
-
-.fvContent {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-}
-
-.fvTitle {
-  font-family: var(--font-heading);
-  font-weight: 100;
-  font-size: clamp(48px, 8vw, 120px);
-  letter-spacing: 0.25em;
-  color: var(--color-foreground);
-  opacity: 0;
-}
-
-.fvSub {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 13px;
-  color: var(--color-foreground);
-  margin-top: 16px;
-  opacity: 0;
-}
-
-.fvHr {
-  width: 60px;
-  height: 1px;
-  background: var(--color-border-light);
-  margin: 24px auto 0;
-  transform: scaleX(0);
-  transform-origin: center;
-}
-
-.fvEdgeBl,
-.fvEdgeBr {
-  position: absolute;
-  z-index: 2;
-}
-
-.fvEdgeText {
-  font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: var(--color-foreground);
-}
-
-.fvEdgeBl {
-  bottom: 40px;
-  left: 40px;
-  opacity: 0;
-}
-
-.fvEdgeBr {
-  bottom: 40px;
-  right: 40px;
-  opacity: 0;
-}
+.rivetTl { top: 12px; left: 12px; }
+.rivetTr { top: 12px; right: 12px; }
+.rivetBl { bottom: 12px; left: 12px; }
+.rivetBr { bottom: 12px; right: 12px; }
 
 /* ========================================
-   リード
+   リード＝取扱説明書の刻印プレート（左寄せ・非対称）
    ======================================== */
 .lead {
-  padding: 7rem 0 5rem;
+  padding: 6.5rem 0 3rem;
 }
 
 .leadInner {
-  max-width: 860px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 0 40px;
 }
 
+.leadPlate {
+  position: relative;
+  max-width: 780px;
+  padding: 2.3rem 2.8rem 2.4rem 3rem;
+}
+
+.leadPlate::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.07),
+    0 1px 0 rgba(241, 234, 236, 0.06);
+  pointer-events: none;
+}
+
 .leadHead {
   margin: 0;
-  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
-  line-height: 1.8;
+  font-size: 1.55rem;
+  font-weight: 500;
+  line-height: 1.7;
   letter-spacing: 0.06em;
+  color: #f6f1f2;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55);
 }
 
 .leadBody {
-  margin: 1.6rem 0 0;
+  margin: 1.3rem 0 0;
   font-size: 0.88rem;
-  line-height: 2.15;
-  color: var(--color-foreground-muted);
+  line-height: 2.1;
+  color: #ddd6d8;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.35);
 }
 
 /* ========================================
-   ツール一覧
+   ツール一覧＝計器モジュールの棚
    ======================================== */
 .list {
-  padding: 2rem 0 6rem;
+  padding: 3rem 0 6.5rem;
+  background: var(--sumi-juu);
+  border-top: 1px solid var(--sumi-rule-soft);
 }
 
 .listInner {
@@ -162,10 +126,10 @@
 
 .listHead {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 1.2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-border);
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--sumi-rule);
 }
 
 .listTitle {
@@ -173,51 +137,98 @@
   font-size: 1.05rem;
   font-weight: 400;
   letter-spacing: 0.12em;
+  color: var(--sumi-sei);
 }
 
+/* 本数の窓＝FV のカウンタと同じ作法 */
 .listCount {
-  font-family: var(--font-heading);
-  font-weight: 300;
+  display: inline-block;
+  padding: 2px 10px;
+  font-family: var(--font-mono);
+  font-weight: 400;
   font-size: 0.7rem;
+  line-height: 1.7;
   letter-spacing: 0.2em;
-  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  color: var(--sumi-sei);
+  background: #171415;
+  border: 1px solid #0f0d0d;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.75),
+    0 1px 0 rgba(241, 234, 236, 0.1);
 }
 
 .listNote {
   margin: 0.8rem 0 0;
   font-size: 0.78rem;
   line-height: 1.9;
-  color: var(--color-foreground-muted);
+  color: #c9c1c3;
 }
 
 .cards {
   list-style: none;
-  margin: 3rem 0 0;
+  margin: 2.6rem 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
+  gap: 2.4rem;
 }
 
+/* .card は ScrollReveal（GSAP）が opacity/transform を持つ。ここには動きを置かない */
 .card {
-  border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.02);
+  position: relative;
 }
 
 .cardLink {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  text-decoration: none;
   color: inherit;
+  text-decoration: none;
+  transition:
+    transform var(--duration-slow) var(--ease-out-expo),
+    box-shadow var(--duration-slow) var(--ease-out-expo);
 }
 
-/* ★ 2026-08-27 白ベース化：サムネイルは白い紙のUI。読み込み前の地も紙色にして
-   黒→白のちらつきを出さない（グレースケール下地の見え方と同じ明度） */
+/* ベゼルの二重線 */
+.cardLink::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.07),
+    0 1px 0 rgba(241, 234, 236, 0.06);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ホバー：板がわずかに浮く */
+.cardLink:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 1px 0 0 rgba(241, 234, 236, 0.06),
+    inset -1px 0 0 rgba(0, 0, 0, 0.3),
+    0 3px 0 rgba(0, 0, 0, 0.35),
+    0 22px 36px -12px rgba(0, 0, 0, 0.7),
+    0 56px 80px -30px rgba(0, 0, 0, 0.75);
+}
+
+.cardLink:focus-visible {
+  outline: 1px solid rgba(241, 234, 236, 0.7);
+  outline-offset: 4px;
+}
+
+/* 画面＝ベゼルに嵌め込まれた窓。読み込み前の地は紙色（サムネは白い紙のUI） */
 .cardThumb {
   position: relative;
+  margin: 18px 0 18px 18px;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #e6e3dc;
+  border: 1px solid #151213;
 }
 
 .cardImg {
@@ -237,10 +248,14 @@
     transform var(--duration-slow) var(--ease-out-expo);
 }
 
+/* 窓の内側の影＝嵌め込み */
 .cardVeil {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(10, 10, 10, 0) 60%, rgba(10, 10, 10, 0.55) 100%);
+  box-shadow:
+    inset 0 3px 10px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(90deg, rgba(20, 18, 18, 0) 72%, rgba(20, 18, 18, 0.32) 100%);
   pointer-events: none;
 }
 
@@ -253,83 +268,147 @@
 }
 
 .cardBody {
-  padding: 2.4rem 2.2rem;
+  position: relative;
+  padding: 2rem 2.2rem 1.9rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-/* 図像＋番号。--card-accent は Link に付けた1本1色（data/tools.ts の accent） */
+/* 左上＝図像と表示灯／右上＝小さな計器と型番 */
 .cardHead {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.8rem;
 }
 
 .cardMark {
-  color: var(--card-accent, var(--color-accent));
+  color: var(--sumi-sei);
+  align-self: center;
+}
+
+/* 表示灯：ツールのテーマ色を使う唯一の点（グローは付けない） */
+.cardLamp {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  align-self: center;
+  background: radial-gradient(circle at 38% 32%, rgba(255, 255, 255, 0.85) 0%, var(--card-accent, #8f8789) 30%, #1a1718 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.cardDial {
+  --hub: 8px;
+  --blade: 1.5px;
+  display: block;
+  width: 56px;
+  margin-left: auto;
+}
+
+.cardNeedle {
+  transition: transform 0.9s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* ホバー：針が振れる */
+.cardLink:hover .cardNeedle {
+  transform: rotate(64deg);
 }
 
 .cardNo {
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 0.68rem;
-  letter-spacing: 0.28em;
-  color: var(--card-accent, var(--color-accent));
+  display: inline-block;
+  padding: 2px 10px;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  letter-spacing: 0.24em;
+  color: var(--sumi-sei);
+  background: #171415;
+  border: 1px solid #0f0d0d;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(241, 234, 236, 0.1);
 }
 
 .cardTitle {
-  margin: 0.9rem 0 0;
-  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  margin: 1rem 0 0;
+  font-size: 1.35rem;
   font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1.5;
+  color: #f6f1f2;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .cardEn {
   margin: 0.35rem 0 0;
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.68rem;
   letter-spacing: 0.26em;
-  color: var(--color-secondary);
+  color: #d8d1d3;
   text-transform: uppercase;
 }
 
 .cardText {
-  margin: 1.3rem 0 0;
+  margin: 1.2rem 0 0;
   font-size: 0.82rem;
   line-height: 2;
-  color: var(--color-foreground-muted);
+  color: #ddd6d8;
 }
 
+/* 刻まれたチップ */
 .cardTags {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin: 1.4rem 0 0;
+  margin: 1.3rem 0 0;
   padding: 0;
 }
 
 .cardTags li {
   font-size: 0.66rem;
   letter-spacing: 0.06em;
-  color: var(--color-secondary);
-  border: 1px solid var(--color-border-light);
-  padding: 5px 10px;
+  color: #e4dcde;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.25),
+    0 1px 0 rgba(241, 234, 236, 0.08);
+  padding: 4px 10px;
 }
 
+/* 浮き彫りの鍵 */
 .cardMore {
-  margin-top: 1.8rem;
+  align-self: flex-start;
+  margin-top: 1.7rem;
+  padding: 0.55rem 1.2rem;
   font-size: 0.78rem;
   letter-spacing: 0.1em;
-  color: var(--color-foreground);
-  transition: color var(--duration-normal) var(--ease-default);
+  color: var(--sumi-sei);
+  background: linear-gradient(180deg, #6a6264 0%, #4a4345 100%);
+  border: 1px solid #241f20;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 4px 8px -2px rgba(0, 0, 0, 0.5);
+  transition:
+    transform var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
 }
 
+/* 板が浮くと鍵は押し込まれる */
 .cardLink:hover .cardMore {
-  color: var(--card-accent, var(--color-accent));
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    0 2px 4px -1px rgba(0, 0, 0, 0.5);
 }
 
 /* ホバーできない端末では最初からカラーで見せる（墨のままだと画面が読めない） */
@@ -339,49 +418,58 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cardImg,
-  .cardImgColor,
-  .cardMore {
-    transition: none;
-  }
-}
-
 /* ========================================
-   データを送らない設計
+   データを送らない設計（黒の帯・左に目盛りの定規）
    ======================================== */
 .why {
-  border-top: 1px solid var(--color-border);
-  background: var(--color-background-light);
+  border-top: 1px solid var(--sumi-rule-soft);
+  background: #1a1718;
   padding: 6rem 0;
 }
 
 .whyInner {
-  max-width: 860px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 0 40px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  column-gap: 2.2rem;
+}
+
+/* 縦の目盛り：1px の刻み（静的・background だけ） */
+.whyRuler {
+  background:
+    linear-gradient(rgba(241, 234, 236, 0.26), rgba(241, 234, 236, 0.26)) left top / 1px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(241, 234, 236, 0.36) 0 1px, rgba(0, 0, 0, 0) 1px 50px) left top / 20px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(241, 234, 236, 0.2) 0 1px, rgba(0, 0, 0, 0) 1px 10px) left top / 9px 100% no-repeat;
+}
+
+.whyText {
+  min-width: 0;
 }
 
 .whyTitle {
   margin: 0 0 2rem;
-  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  font-size: 1.5rem;
   font-weight: 400;
   line-height: 1.75;
   letter-spacing: 0.05em;
+  color: var(--sumi-sei);
 }
 
 .whyBody {
   margin: 0 0 1.4rem;
   font-size: 0.85rem;
   line-height: 2.15;
-  color: var(--color-foreground-muted);
+  color: #c9c1c3;
 }
 
 /* ========================================
-   特注への導線
+   特注への導線（左寄せ・鍵のボタン）
    ======================================== */
 .custom {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--sumi-rule-soft);
+  background: var(--sumi-juu);
   padding: 6rem 0;
 }
 
@@ -389,41 +477,155 @@
   max-width: 860px;
   margin: 0 auto;
   padding: 0 40px;
-  text-align: center;
 }
 
 .customLead {
   margin: 0;
-  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  font-size: 1.3rem;
   line-height: 1.9;
   letter-spacing: 0.04em;
+  color: var(--sumi-sei);
 }
 
 .customBody {
   margin: 1.6rem 0 0;
   font-size: 0.86rem;
   line-height: 2.1;
-  color: var(--color-foreground-muted);
-  text-align: left;
+  color: #c9c1c3;
 }
 
 .customLink {
   display: inline-block;
   margin-top: 2.4rem;
   padding: 0.9rem 2.2rem;
-  border: 1px solid var(--color-border-light);
-  color: var(--color-foreground);
+  color: var(--sumi-sei);
   font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-decoration: none;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
   transition:
-    border-color var(--duration-normal) var(--ease-default),
-    color var(--duration-normal) var(--ease-default);
+    transform var(--duration-normal) var(--ease-out-expo),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
 }
 
 .customLink:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 3px 0 rgba(0, 0, 0, 0.35),
+    0 18px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+.customLink:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.customLink:focus-visible {
+  outline: 1px solid rgba(241, 234, 236, 0.7);
+  outline-offset: 4px;
+}
+
+/* ========================================
+   権利表記＝銘板（小さな刻印）
+   app/tools/layout.tsx が main の直後に置く aside。tools-rights.module.css は
+   ツール各ページと共有なので触らず、一覧ページの main（.page）の隣接兄弟にだけ当てる
+   ======================================== */
+.page + aside {
+  background: var(--sumi-noh);
+  border-top: 1px solid var(--sumi-rule-soft);
+  color: #ddd6d8;
+  padding: 2.4rem 0;
+}
+
+.page + aside > div {
+  width: calc(100% - 80px);
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 1.1rem 1.6rem 1.1rem 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 3rem;
+  flex-wrap: wrap;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    linear-gradient(180deg, #3f393b 0%, #2f2a2b 100%);
+  border: 1px solid #1c1819;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 10px 20px -8px rgba(0, 0, 0, 0.6);
+}
+
+.page + aside p {
+  margin: 0;
+  max-width: 62em;
+  font-size: 0.7rem;
+  line-height: 1.9;
+  letter-spacing: 0.03em;
+  color: #ddd6d8;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.page + aside p span {
+  margin-right: 0.8em;
+  color: var(--sumi-sei);
+  letter-spacing: 0.08em;
+}
+
+.page + aside a {
+  flex: none;
+  padding: 0.35rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--sumi-sei);
+  text-decoration: none;
+  background: linear-gradient(180deg, #5a5254 0%, #403a3c 100%);
+  border: 1px solid #1c1819;
+  border-bottom: 1px solid #1c1819;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 2px 0 rgba(0, 0, 0, 0.35);
+  transition:
+    transform var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.page + aside a:hover {
+  color: #ffffff;
+  border-color: #1c1819;
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(241, 234, 236, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* ========================================
+   動きを減らす
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .cardLink,
+  .cardImg,
+  .cardImgColor,
+  .cardMore,
+  .cardNeedle,
+  .customLink,
+  .page + aside a {
+    transition: none;
+  }
+  .cardLink:hover,
+  .customLink:hover {
+    transform: none;
+  }
 }
 
 /* ========================================
@@ -434,12 +636,28 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .cardThumb {
+    margin: 14px 14px 0;
+  }
+
   .cardBody {
-    padding: 2rem 1.5rem;
+    padding: 1.6rem 1.5rem 1.6rem;
   }
 
   .cardVeil {
-    background: linear-gradient(180deg, rgba(10, 10, 10, 0) 60%, rgba(10, 10, 10, 0.5) 100%);
+    background: linear-gradient(180deg, rgba(20, 18, 18, 0) 72%, rgba(20, 18, 18, 0.3) 100%);
+  }
+
+  .leadHead {
+    font-size: 1.3rem;
+  }
+
+  .whyTitle {
+    font-size: 1.3rem;
+  }
+
+  .customLead {
+    font-size: 1.15rem;
   }
 }
 
@@ -453,11 +671,36 @@
   }
 
   .lead {
-    padding: 5rem 0 3.5rem;
+    padding: 4.5rem 0 2.5rem;
+  }
+
+  .leadPlate {
+    padding: 1.7rem 1.4rem 1.8rem 1.6rem;
+  }
+
+  .leadPlate::before {
+    inset: 7px;
+  }
+
+  .rivetTl { top: 9px; left: 9px; }
+  .rivetTr { top: 9px; right: 9px; }
+  .rivetBl { bottom: 9px; left: 9px; }
+  .rivetBr { bottom: 9px; right: 9px; }
+
+  .leadHead {
+    font-size: 1.2rem;
   }
 
   .list {
-    padding: 1.5rem 0 4rem;
+    padding: 2.2rem 0 4.5rem;
+  }
+
+  .cards {
+    gap: 1.8rem;
+  }
+
+  .cardTitle {
+    font-size: 1.15rem;
   }
 
   .why,
@@ -465,16 +708,28 @@
     padding: 4.5rem 0;
   }
 
-  .fvEdgeBl,
-  .fvEdgeBr {
-    bottom: 24px;
+  .whyInner {
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: 1.2rem;
   }
 
-  .fvEdgeBl {
-    left: 20px;
+  .whyRuler {
+    background:
+      linear-gradient(rgba(241, 234, 236, 0.26), rgba(241, 234, 236, 0.26)) left top / 1px 100% no-repeat,
+      repeating-linear-gradient(180deg, rgba(241, 234, 236, 0.36) 0 1px, rgba(0, 0, 0, 0) 1px 50px) left top / 14px 100% no-repeat,
+      repeating-linear-gradient(180deg, rgba(241, 234, 236, 0.2) 0 1px, rgba(0, 0, 0, 0) 1px 10px) left top / 7px 100% no-repeat;
   }
 
-  .fvEdgeBr {
-    right: 20px;
+  .whyTitle {
+    font-size: 1.15rem;
+  }
+
+  .page + aside {
+    padding: 1.8rem 0;
+  }
+
+  .page + aside > div {
+    width: calc(100% - 40px);
+    padding: 1rem 1.2rem;
   }
 }

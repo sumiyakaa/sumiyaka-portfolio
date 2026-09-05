@@ -1,7 +1,8 @@
 /* =============================================
-   WorksAio — AI検索最適化（AIO）セクション
-   `/works`（Web制作ページ）に置く自己完結セクション。
-   `/service` の .aio 系から移植。色は無彩色のみ（§10-1 モノクロ基調）。
+   WorksAio — AI検索最適化（AIO）セクション＝メモ用紙
+   `/works`（清・紙）に置く自己完結セクション。横罫と左の余白線を持つ
+   メモ帳の一枚を、マスキングテープで地に留めてある。
+   色は app/works/page.module.css の .page が定義する --wk-* を継承する。
 
    互換方針：
    - vw単位 / 100vh前提 / filter・backdrop-filter のアニメ /
@@ -10,13 +11,36 @@
    - prefers-reduced-motion: reduce に対応（ScrollReveal の初期 opacity:0 を解除）
    ============================================= */
 .worksAio {
-  background: #fff;
-  padding: 160px 80px;
+  padding: 96px 40px 0;
 }
 
 .worksAioInner {
-  max-width: 800px;
+  position: relative;
+  max-width: 880px;
   margin: 0 auto;
+  padding: 64px 64px 72px 84px;
+  background-color: var(--wk-paper);
+  /* 左の余白線＋32px ピッチの横罫＋紙の粒 */
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0) 0 56px, rgba(31, 28, 28, 0.32) 56px, rgba(31, 28, 28, 0.32) 57px, rgba(0, 0, 0, 0) 57px),
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 31px, var(--wk-rule-soft) 31px, var(--wk-rule-soft) 32px),
+    var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
+}
+
+/* マスキングテープ（上中央） */
+.worksAioInner::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 120px;
+  height: 26px;
+  margin-left: -60px;
+  background: rgba(235, 230, 227, 0.86);
+  transform: rotate(-1.5deg);
+  box-shadow: 0 1px 2px rgba(31, 28, 28, 0.14);
+  pointer-events: none;
 }
 
 /* ScrollReveal のラッパーに付ける識別用クラス（reduced-motion で使用） */
@@ -29,7 +53,7 @@
   font-weight: 200;
   font-size: 50.4px;
   letter-spacing: 0.15em;
-  color: #111;
+  color: var(--wk-ink);
   line-height: 1.4;
 }
 
@@ -37,7 +61,7 @@
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 21.6px;
-  color: #111;
+  color: var(--wk-ink);
   margin-top: 32px;
   line-height: 2;
 }
@@ -51,7 +75,7 @@
   font-weight: 300;
   font-size: 16.8px;
   line-height: 2;
-  color: #111;
+  color: var(--wk-ink);
   letter-spacing: 0.04em;
   margin-bottom: 16px;
 }
@@ -70,7 +94,7 @@
   font-weight: 300;
   font-size: 16.8px;
   line-height: 2;
-  color: #111;
+  color: var(--wk-ink);
   letter-spacing: 0.04em;
   padding-left: 1.2em;
   position: relative;
@@ -81,16 +105,16 @@
   content: "—";
   position: absolute;
   left: 0;
-  color: #111;
+  color: var(--wk-ink);
 }
 
-/* ---- Marker Highlight（無彩色） ---- */
+/* ---- 墨のマーカー（無彩色） ---- */
 .worksAioMarker {
   background: none;
   color: inherit;
   background-image: linear-gradient(
-    rgba(17, 17, 17, 0.12),
-    rgba(17, 17, 17, 0.12)
+    rgba(31, 28, 28, 0.14),
+    rgba(31, 28, 28, 0.14)
   );
   background-repeat: no-repeat;
   background-position: 0 85%;
@@ -104,12 +128,12 @@
   gap: 40px;
   margin: 48px 0;
   padding: 48px 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--wk-ink);
+  border-bottom: 1px solid var(--wk-ink);
 }
 
 .worksAioStat {
-  text-align: center;
+  text-align: left;
 }
 
 .worksAioStatNum {
@@ -117,9 +141,10 @@
   font-weight: 200;
   font-size: 48px;
   letter-spacing: -0.02em;
-  color: #111;
+  color: var(--wk-ink);
   line-height: 1;
   display: block;
+  font-variant-numeric: tabular-nums;
 }
 
 .worksAioStatUnit {
@@ -132,7 +157,7 @@
   font-family: var(--font-body);
   font-weight: 300;
   font-size: 13px;
-  color: #555;
+  color: var(--wk-ink-2);
   margin-top: 12px;
   display: block;
   line-height: 1.6;
@@ -140,7 +165,7 @@
 
 .worksAioStatLabel small {
   font-size: 11px;
-  color: #999;
+  color: var(--wk-ink-2);
 }
 
 /* =============================================
@@ -148,7 +173,11 @@
    ============================================= */
 @media (min-width: 768px) and (max-width: 1279px) {
   .worksAio {
-    padding: 120px 40px;
+    padding: 80px 30px 0;
+  }
+
+  .worksAioInner {
+    padding: 52px 40px 56px 68px;
   }
 
   .worksAioTitle {
@@ -161,7 +190,22 @@
    ============================================= */
 @media (max-width: 767px) {
   .worksAio {
-    padding: 80px 20px;
+    padding: 64px 20px 0;
+  }
+
+  .worksAioInner {
+    padding: 40px 20px 44px 36px;
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0) 0 22px, rgba(31, 28, 28, 0.32) 22px, rgba(31, 28, 28, 0.32) 23px, rgba(0, 0, 0, 0) 23px),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 27px, var(--wk-rule-soft) 27px, var(--wk-rule-soft) 28px),
+      var(--wk-grain);
+  }
+
+  .worksAioInner::before {
+    width: 96px;
+    height: 22px;
+    margin-left: -48px;
+    top: -10px;
   }
 
   .worksAioTitle {

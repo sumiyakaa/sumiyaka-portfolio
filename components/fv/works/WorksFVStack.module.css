@@ -1,0 +1,126 @@
+/* =============================================
+   WorksFVStack — /works FV「紙の束」（清・紙）
+   色のトークンは app/works/page.module.css の .page が定義する
+   --wk-* を継承する（FV は .page の内側にある）。
+   動かすのは transform(2D)・opacity・text-shadow のみ。
+   ============================================= */
+
+/* 舞台いっぱいに広がる層。紙の束を中央に置き、隅に索引を持つ */
+.stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 束の外形。高さは 50vh の収縮後にも収まる 40vh を上限に、幅から比で決める。
+   vh は iOS でアドレスバー込みの値になるが、紙の大きさなので害はない。
+   svh が使える環境では svh を優先（二段指定） */
+.stack {
+  position: relative;
+  width: min(84%, calc(36vh * 1.6), 640px);
+  width: min(84%, calc(36svh * 1.6), 640px);
+  aspect-ratio: 8 / 5;
+}
+
+.depth {
+  position: absolute;
+  inset: 0;
+}
+
+/* 奥の紙。既定の transform は CSS 変数で置き、GSAP が同じ終端値へ上書きする */
+.sheet {
+  position: absolute;
+  inset: 0;
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: var(--wk-shadow-sheet);
+  opacity: 0;
+  transform: translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, 0deg));
+}
+
+/* 手前の一枚＝サイト内で唯一の真っ白。上左に光が当たる細い縁と実影 */
+.front {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+  background-color: var(--wk-front);
+  background-image: var(--wk-grain);
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 1px rgba(31, 28, 28, 0.14),
+    0 4px 10px -4px rgba(31, 28, 28, 0.16),
+    0 24px 48px -18px rgba(31, 28, 28, 0.36);
+  opacity: 0;
+}
+
+/* 隅の索引。settled で現れる */
+.corner {
+  position: absolute;
+  left: 40px;
+  bottom: 32px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.5s var(--ease-out-expo),
+    transform 0.5s var(--ease-out-expo);
+}
+
+.settled .corner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cornerText {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--wk-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .corner {
+    left: 24px;
+    bottom: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .stack {
+    width: min(88%, calc(36vh * 1.6), 640px);
+    width: min(88%, calc(36svh * 1.6), 640px);
+  }
+
+  .front {
+    padding: 16px 18px;
+  }
+
+  .corner {
+    left: 16px;
+    bottom: 18px;
+  }
+
+  .cornerText {
+    font-size: 10px;
+  }
+}
+
+/* 動きを減らす：終端値で置く（JS 側でも即置きする） */
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .front {
+    opacity: 1;
+  }
+
+  .corner {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

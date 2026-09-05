@@ -1,5 +1,6 @@
 /* =============================================
-   FilterSidebar — Desktop / Drawer
+   FilterSidebar — Desktop / Drawer（清・紙：索引カード）
+   色は app/works/page.module.css の .page が定義する --wk-* を継承する
    ============================================= */
 
 /* PC: 常時表示 */
@@ -21,22 +22,23 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
-    scrollbar-color: var(--color-border) transparent;
+    scrollbar-color: var(--wk-rule) transparent;
+    background-color: var(--wk-paper);
+    background-image: var(--wk-grain);
+    box-shadow: var(--wk-shadow-sheet);
   }
 }
 
-/* SP: オーバーレイ */
+/* SP: オーバーレイ（墨の暗がり。backdrop-filter は使わない） */
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 900;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(20, 18, 18, 0.55);
   touch-action: none;
 }
 
-/* SP: ドロワー */
+/* SP: ドロワー＝紙の一枚が左から差し込まれる */
 .drawer {
   position: fixed;
   top: 0;
@@ -44,14 +46,15 @@
   bottom: 0;
   z-index: 910;
   width: min(320px, 85vw);
-  background: var(--color-primary);
-  border-right: 1px solid var(--color-border);
+  background-color: var(--wk-paper);
+  background-image: var(--wk-grain);
+  box-shadow: 8px 0 32px -8px rgba(20, 18, 18, 0.45);
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
+  scrollbar-color: var(--wk-rule) transparent;
 }
 
 @media (min-width: 1280px) {
@@ -65,7 +68,7 @@
    Sidebar Content
    ============================================= */
 .sidebar {
-  padding: 24px 20px;
+  padding: 24px 22px;
 }
 
 /* =============================================
@@ -77,7 +80,7 @@
   gap: 10px;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--wk-ink);
 }
 
 .title {
@@ -85,15 +88,16 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 .resultCount {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 300;
-  color: var(--color-secondary);
+  font-weight: 400;
+  color: var(--wk-ink-2);
   margin-left: auto;
+  font-variant-numeric: tabular-nums;
 }
 
 .closeBtn {
@@ -103,14 +107,14 @@
   width: 32px;
   height: 32px;
   background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-secondary);
+  border: 1px solid var(--wk-rule);
+  color: var(--wk-ink);
   cursor: pointer;
-  transition: color var(--duration-fast) ease;
+  transition: border-color var(--duration-fast) ease;
 }
 
 .closeBtn:hover {
-  color: var(--color-foreground);
+  border-color: var(--wk-ink);
 }
 
 @media (max-width: 1279px) {
@@ -124,7 +128,7 @@
 }
 
 /* =============================================
-   Active Tags
+   Active Tags（紙のタグ）
    ============================================= */
 .activeTags {
   display: flex;
@@ -132,7 +136,7 @@
   gap: 6px;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--wk-rule);
 }
 
 .activeTag {
@@ -141,29 +145,29 @@
   gap: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-accent);
+  color: var(--wk-ink);
   padding: 3px 8px;
-  border: 1px solid rgba(200, 169, 110, 0.3);
-  background: rgba(200, 169, 110, 0.06);
+  border: 1px solid var(--wk-ink);
+  background: transparent;
   cursor: pointer;
   transition:
     background-color var(--duration-fast) ease,
-    border-color var(--duration-fast) ease;
+    color var(--duration-fast) ease;
 }
 
 .activeTag:hover {
-  background: rgba(200, 169, 110, 0.12);
-  border-color: rgba(200, 169, 110, 0.5);
+  background: var(--wk-ink);
+  color: var(--wk-paper);
 }
 
 .clearAll {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink-2);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -174,7 +178,7 @@
 }
 
 .clearAll:hover {
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 /* =============================================
@@ -187,7 +191,7 @@
 }
 
 .group {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--wk-rule-soft);
 }
 
 .groupActive {
@@ -203,12 +207,12 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--color-foreground);
+  color: var(--wk-ink);
   transition: color var(--duration-fast) ease;
 }
 
 .groupHeader:hover {
-  color: var(--color-accent);
+  color: var(--wk-ink-2);
 }
 
 .groupTitle {
@@ -218,21 +222,21 @@
   letter-spacing: 0.02em;
 }
 
+/* 選択数＝墨のスタンプ */
 .groupBadge {
   font-family: var(--font-heading);
   font-size: 10px;
   font-weight: 600;
-  color: var(--color-accent);
-  background: rgba(200, 169, 110, 0.12);
+  color: var(--wk-paper);
+  background: var(--wk-ink);
   padding: 1px 6px;
-  border-radius: 2px;
   min-width: 18px;
   text-align: center;
 }
 
 .groupArrow {
   margin-left: auto;
-  color: var(--color-secondary);
+  color: var(--wk-ink-2);
   transition: transform var(--duration-fast) ease;
 }
 
@@ -255,7 +259,7 @@
 }
 
 /* =============================================
-   Checkbox
+   Checkbox（墨で塗る四角）
    ============================================= */
 .checkbox {
   display: flex;
@@ -263,16 +267,15 @@
   gap: 8px;
   padding: 6px 4px;
   cursor: pointer;
-  border-radius: 2px;
   transition: background-color var(--duration-fast) ease;
 }
 
 .checkbox:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(31, 28, 28, 0.04);
 }
 
 .checkboxChecked {
-  background: rgba(200, 169, 110, 0.04);
+  background: rgba(31, 28, 28, 0.05);
 }
 
 .checkboxInput {
@@ -290,7 +293,7 @@
   justify-content: center;
   width: 16px;
   height: 16px;
-  border: 1px solid var(--color-border-light);
+  border: 1px solid rgba(31, 28, 28, 0.5);
   background: transparent;
   transition:
     border-color var(--duration-fast) ease,
@@ -298,15 +301,15 @@
 }
 
 .checkboxChecked .checkboxBox {
-  border-color: var(--color-accent);
-  background: rgba(200, 169, 110, 0.15);
-  color: var(--color-accent);
+  border-color: var(--wk-ink);
+  background: var(--wk-ink);
+  color: var(--wk-paper);
 }
 
 .checkboxLabel {
   font-family: var(--font-body);
   font-size: 12px;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink-2);
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -316,15 +319,16 @@
 }
 
 .checkboxChecked .checkboxLabel {
-  color: var(--color-foreground);
+  color: var(--wk-ink);
 }
 
 .checkboxCount {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
-  color: var(--color-secondary);
+  font-weight: 400;
+  color: var(--wk-ink-2);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* =============================================
@@ -341,18 +345,18 @@
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.08em;
-  color: var(--color-foreground-muted);
+  color: var(--wk-ink);
   padding: 10px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--wk-ink);
   background: transparent;
   cursor: pointer;
   text-align: center;
   transition:
     color var(--duration-normal) ease,
-    border-color var(--duration-normal) ease;
+    background-color var(--duration-normal) ease;
 }
 
 .clearBtn:hover {
-  color: var(--color-foreground);
-  border-color: var(--color-border-light);
+  color: var(--wk-paper);
+  background-color: var(--wk-ink);
 }
