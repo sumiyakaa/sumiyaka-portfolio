@@ -66,26 +66,10 @@
 }
 
 /* =============================================
-   可読性スクリム（墨塵ステージ ↔ 題字のあいだ）
-   粒は輝度上限・保護帯・定着後の減光で三重に抑えてあるが、最終防御として
-   題字＋宣言の帯にだけ地色を薄く敷く。静的（アニメーション・filter なし）。
+   ※可読性スクリムは転記ステージの内側（灯と筆のあいだ）へ移した。
+     背景（墨の流体・灯）は題字の下で抑えつつ、筆と断片はスクリムの上に置く
+     ため。→ components/fv/top/TenkiStage.module.css の .scrim
    ============================================= */
-.scrim {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  width: min(1360px, 96%);
-  height: 56%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    ellipse 72% 58% at 50% 50%,
-    var(--paper, var(--color-background)) 0%,
-    transparent 72%
-  );
-  opacity: 0.42;
-  pointer-events: none;
-  z-index: 1;
-}
 
 /* =============================================
    Content Container — 縦積み（基本）→ PC≥1280 で2カラム
@@ -394,13 +378,6 @@
 
   .corners {
     display: none;
-  }
-
-  /* 静止1コマの墨塵は粒が題字の縁に寄る＝スクリムは狭幅ほど控えめでよい */
-  .scrim {
-    top: 48%;
-    height: 62%;
-    opacity: 0.34;
   }
 }
 

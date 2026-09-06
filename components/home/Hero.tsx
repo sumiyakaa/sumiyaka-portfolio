@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import BokujinStage from "@/components/fv/top/BokujinStage";
-import { BOKUJIN_T, BOKUJIN_STILL } from "@/components/fv/top/bokujinTiming";
+import TenkiStage from "@/components/fv/top/TenkiStage";
+import { TENKI_T, TENKI_STILL } from "@/components/fv/top/tenkiTiming";
 import { useLenis } from "@/components/animation/SmoothScroll";
 import { useLightVisuals } from "@/lib/useLightVisuals";
 import { prefersLightVisuals } from "@/lib/device";
@@ -20,9 +20,9 @@ const reducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /** 文字列を個別spanに分割するヘルパー
- *  各文字は opacity:0 で置かれ、墨塵ステージの onLetter(i)（＝粒がその文字に定着した
+ *  各文字は opacity:0 で置かれ、転記ステージの onLetter(i)（＝筆がその文字を書き上げた
  *  瞬間）でクロスフェードして現れる。data-hero-mag は付けない（マグネティックで
- *  文字がずれると、その下に定着している粒と絵がずれるため。H1 の手触りは粒側が担う）。 */
+ *  文字がずれると、版下（canvas に焼いた同じ字）と絵がずれるため）。 */
 function LetterSpan({ text, className }: { text: string; className?: string }) {
   return (
     <span data-hero-line className={className}>
@@ -62,9 +62,9 @@ export default function Hero({ openingDone }: HeroProps) {
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
 
-  /** 墨塵ステージが「粒が題字に定着し切った」と告げた（＝他要素の入場の起点） */
+  /** 転記ステージが「題字を書き終え、墨の一滴が落ちた」と告げた（＝他要素の入場の起点） */
   const [settled, setSettled] = useState(false);
-  /** FV がスクロールで出ていく進捗 0→1（ScrollTrigger の scrub が書き、粒が読む） */
+  /** FV がスクロールで出ていく進捗 0→1（ScrollTrigger の scrub が書き、ステージが読む） */
   const exitRef = useRef(0);
 
   const lettersRef = useRef<HTMLElement[] | null>(null);
@@ -74,7 +74,7 @@ export default function Hero({ openingDone }: HeroProps) {
   const light = useLightVisuals();
   const lenis = useLenis();
 
-  /* ---- 題字の文字を1文字ずつ現す（粒の定着とクロスフェード） ---- */
+  /* ---- 題字の文字を1文字ずつ現す（筆が通った版下とのクロスフェード） ---- */
   const revealLetter = useCallback((i: number) => {
     const hero = heroRef.current;
     if (!hero) return;
@@ -88,7 +88,7 @@ export default function Hero({ openingDone }: HeroProps) {
     shownRef.current.add(i);
     gsap.to(el, {
       opacity: 1,
-      duration: reducedMotion() ? 0.01 : BOKUJIN_T.letterFade,
+      duration: reducedMotion() ? 0.01 : TENKI_T.letterFade,
       ease: "power1.out",
       overwrite: "auto",
     });
@@ -105,7 +105,7 @@ export default function Hero({ openingDone }: HeroProps) {
     for (let i = 0; i < lettersRef.current.length; i++) revealLetter(i);
   }, [revealLetter]);
 
-  /** 墨塵ステージ → Hero：粒が i 番目の文字に定着した */
+  /** 転記ステージ → Hero：筆が i 番目の文字を書き上げた */
   const handleLetter = useCallback(
     (i: number) => {
       revealLetter(i);
@@ -113,7 +113,7 @@ export default function Hero({ openingDone }: HeroProps) {
     [revealLetter]
   );
 
-  /** 墨塵ステージ → Hero：定着完了（灯がともり、他要素が入場する） */
+  /** 転記ステージ → Hero：定着完了（墨の一滴が落ち、灯がともり、他要素が入場する） */
   const handleSettled = useCallback(() => {
     setSettled(true);
   }, []);
@@ -134,14 +134,17 @@ export default function Hero({ openingDone }: HeroProps) {
     [lenis]
   );
 
-  /* ---- 軽量経路（タッチ・狭幅・reduced-motion・?bokujin=still）の入場 ----
-     静止1コマの墨塵は onLetter / onSettled を発火しないので、こちら側で
-     bokujinTiming.ts の BOKUJIN_STILL と同じ刻みで題字を現し、定着を告げる。 */
+  /* ---- 軽量経路（タッチ・狭幅・reduced-motion・?tenki=still）の入場 ----
+     静止1コマの転記は onLetter / onSettled を発火しないので、こちら側で
+     tenkiTiming.ts の TENKI_STILL と同じ刻みで題字を現し、定着を告げる。 */
   useEffect(() => {
     if (!openingDone) return;
     const forcedStill =
       typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).get("bokujin") === "still";
+      (() => {
+        const q = new URLSearchParams(window.location.search);
+        return (q.get("tenki") || q.get("bokujin")) === "still";
+      })();
     if (!light && !forcedStill) return;
 
     const rm = reducedMotion();
@@ -154,11 +157,11 @@ export default function Hero({ openingDone }: HeroProps) {
     letters.forEach((_, i) => {
       const at = rm
         ? 0
-        : (BOKUJIN_STILL.letterDelay + i * BOKUJIN_STILL.letterStagger) * 1000;
+        : (TENKI_STILL.letterDelay + i * TENKI_STILL.letterStagger) * 1000;
       timers.push(window.setTimeout(() => revealLetter(i), at));
     });
     timers.push(
-      window.setTimeout(() => setSettled(true), rm ? 0 : BOKUJIN_STILL.settle * 1000)
+      window.setTimeout(() => setSettled(true), rm ? 0 : TENKI_STILL.settle * 1000)
     );
     return () => timers.forEach((id) => window.clearTimeout(id));
   }, [openingDone, light, revealLetter]);
@@ -174,22 +177,22 @@ export default function Hero({ openingDone }: HeroProps) {
     let id = 0;
     const check = () => {
       const elapsed = (performance.now() - t0) / 1000;
-      const dbg = typeof window !== "undefined" ? window.__bokujin : undefined;
+      const dbg = typeof window !== "undefined" ? window.__tenki : undefined;
       // ステージ時計の遅れ＝壁時計 − ステージ時計（書体待ち・可視性ゲートで止まった分）
       const lag = dbg && dbg.mode !== "still" ? Math.max(0, elapsed - dbg.t) : 0;
-      if (elapsed >= BOKUJIN_T.hardDeadline + lag) {
+      if (elapsed >= TENKI_T.hardDeadline + lag) {
         revealAllLetters();
         setSettled(true);
         return;
       }
       id = window.setTimeout(check, 200);
     };
-    id = window.setTimeout(check, BOKUJIN_T.hardDeadline * 1000);
+    id = window.setTimeout(check, TENKI_T.hardDeadline * 1000);
     return () => window.clearTimeout(id);
   }, [openingDone, revealAllLetters]);
 
   // 入場アニメーション（題字以外）→ 肩書き/サブ/HR/宣言/エッジ/コーナー
-  // 起点＝墨塵ステージの onSettled（旧 runnerDone の役割）
+  // 起点＝転記ステージの onSettled（墨の一滴が落ちて灯がともる瞬間）
   useEffect(() => {
     if (!openingDone || !settled) return;
 
@@ -284,7 +287,7 @@ export default function Hero({ openingDone }: HeroProps) {
     const sticky = stickyRef.current;
     if (!scrollArea || !sticky) return;
 
-    // 粒へ渡す退場進捗は PC のフル経路のみ（静止1コマ側は書かない）
+    // ステージへ渡す退場進捗は PC のフル経路のみ（静止1コマ側は書かない）
     const writeExit = !prefersLightVisuals();
     const exit = exitRef;
 
@@ -442,7 +445,7 @@ export default function Hero({ openingDone }: HeroProps) {
 
   return (
     <div ref={scrollAreaRef} className={styles.scrollArea}>
-      {/* JS 無効時の終端値＝題字はそのまま読める（粒の演出だけが無くなる） */}
+      {/* JS 無効時の終端値＝題字はそのまま読める（転記の演出だけが無くなる） */}
       <noscript>
         <style>{`[data-hero-letter]{opacity:1!important}[data-hero-sub],[data-hero-sub2],[data-hero-hr],[data-hero-decl],[data-hero-corner]{visibility:visible!important}`}</style>
       </noscript>
@@ -455,22 +458,26 @@ export default function Hero({ openingDone }: HeroProps) {
             <span className={styles.floatingLogoJp}>灯敷</span>
           </div>
 
-          {/* Background — 墨塵（ぼくじん）
-              数万粒の墨が散らばって漂い（バラバラ）、誰も触らないのに集まって題字を
-              書き上げ（ひとりでに）、文字として静止する（仕組み）。灯は lantern.ts と
-              してこのステージの内側にある（旧 HeroInkLight の二重掛けはしない）。 */}
-          <BokujinStage
+          {/* Background — 転記（てんき）
+              事務のデータの断片（CSV の行・Excel の升目・PDF の紙片）がばらばらに
+              漂い（バラバラな事務作業）、誰も触らないのに整列して繋がり（ひとりでに）、
+              一本の線になって題字を書き上げる（仕組みに変えます）。書き終えた瞬間に
+              墨の一滴が落ちて背景に滲み、灯が一点ともる。
+              可読性スクリムと灯（lantern.ts）はこのステージの内側にある。 */}
+          <TenkiStage
             light={light}
             exitRef={exitRef}
             onLetter={handleLetter}
             onSettled={handleSettled}
           />
 
-          {/* 可読性の最終防御＝題字＋宣言の帯にだけ地色を薄く敷く（静的・アニメなし） */}
-          <div className={styles.scrim} aria-hidden="true" />
-
-          {/* Content Container — 2カラム（PC≥1280：左＝H1演出／右＝宣言）・以下は縦積み */}
-          <div className={styles.container} style={{ visibility: openingDone ? "visible" : "hidden" }}>
+          {/* Content Container — 2カラム（PC≥1280：左＝H1演出／右＝宣言）・以下は縦積み
+              data-hero-content ＝ステージが読む保護帯（墨と灯をこの外側にだけ置く） */}
+          <div
+            data-hero-content
+            className={styles.container}
+            style={{ visibility: openingDone ? "visible" : "hidden" }}
+          >
             <div className={styles.colMain}>
               <h1 data-hero-main className={styles.mainText}>
                 <LetterSpan text="バラバラな事務作業を、" className={styles.fvLine} />

@@ -1,0 +1,98 @@
+/* =============================================
+   転記（てんき）ステージ — トップ FV の背景層
+   層順は DOM 順：
+     base（地色）→ 流体（WebGL・墨）→ orbs（和紙の暈）→ grain（紙の粒・静的）
+     → 灯（canvas 2D・加算）→ scrim（可読性の最終防御）→ 転記（canvas 2D）
+     → ビネット
+   ★scrim を灯と転記のあいだに置くのが要点：背景（流体・灯）は題字の下で
+     抑えられ、筆と断片は scrim の上＝地の明るさに負けずに読める。
+   色は theme-top.css のトークンのみ参照。
+   ============================================= */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  /* 初速：断片が見えるまでを短くする（旧 0.9s → 0.5s・2026-09-07 統合QC） */
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.on {
+  opacity: 1;
+}
+
+/* 地色（流体が使えない環境でもここだけで成立する） */
+.base {
+  position: absolute;
+  inset: 0;
+  background-color: var(--paper, var(--color-background));
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: transparent;
+}
+
+/* 墨の流体（/about で iOS 実機実証済みの手法）。地色に馴染ませて敷く */
+.fluid {
+  opacity: 0.92;
+}
+
+/* 和紙の暈（流体の上・粒の下） */
+.orbs {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 72% 58% at 78% 26%, var(--washi-orb-a, transparent), transparent 70%),
+    radial-gradient(ellipse 54% 46% at 12% 80%, var(--washi-orb-c, transparent), transparent 72%);
+}
+
+/* 紙の粒（静的・極薄） */
+.grain {
+  opacity: 0.6;
+}
+
+/* 可読性スクリム＝題字＋宣言の帯にだけ地色を薄く敷く（静的・アニメなし） */
+.scrim {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(1360px, 96%);
+  height: 56%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse 72% 58% at 50% 50%,
+    var(--paper, var(--color-background)) 0%,
+    transparent 72%
+  );
+  opacity: 0.42;
+}
+
+/* ビネット＋下端は地色へ溶かす（次セクションと地続きに） */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 72%, var(--paper, var(--color-background)) 100%),
+    radial-gradient(120% 90% at 50% 42%, transparent 60%, var(--paper-deep, var(--color-background)) 100%);
+}
+
+@media (max-width: 767px) {
+  .scrim {
+    top: 48%;
+    height: 62%;
+    opacity: 0.34;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    transition: none;
+  }
+}
