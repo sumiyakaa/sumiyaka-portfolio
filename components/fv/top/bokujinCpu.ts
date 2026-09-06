@@ -257,8 +257,10 @@ export function createBokujinCpu(
       const Lf = 0.42 + 0.58 * Math.min(1, lit);
       const calm = 1 - smooth(0.1, 1.4, sp);
       let a = (glyph ? 0.5 : 0.2) * Lf * (0.45 + 0.55 * calm);
-      const near = glyph ? 1 - smooth(0.002, 0.012, Math.hypot(x - tx[i], y - ty[i])) : 0;
-      a *= 1 + ((edge[i] ? 0.55 : 0.12) - 1) * f.settle * near;
+      /* 2026-09-06 修正：題字に届いた粒は定着後に消す（DOM の文字をざらつかせない）。
+         到達とみなす範囲は輪郭のすぐ外まで＝GPU 経路と同値 */
+      const near = glyph ? 1 - smooth(0.010, 0.045, Math.hypot(x - tx[i], y - ty[i])) : 0;
+      a *= 1 - 0.99 * f.settle * near;
       a *= 1 - f.exit * 0.85;
       a *= f.alpha;
       if (a < 0.02) continue;

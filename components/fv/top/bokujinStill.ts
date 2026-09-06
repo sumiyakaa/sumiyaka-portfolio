@@ -73,34 +73,30 @@ export function drawBokujinStill(
     return true;
   }
 
-  /* 題字の粒：縁は濃く・内側は薄く。1/8 は流れの余韻として左下へ引き伸ばす */
-  const want = Math.min(targets.count, 2600);
+  /* 題字の粒＝「まだ着地していない粒」だけを描く。
+     2026-09-06 修正：以前は目標そのものの上にも粒を置いていたが、DOM の題字と
+     重なって文字の輪郭がざらついて見えた（あおきさん指摘）。文字の上には何も置かず、
+     目標から少し離れた場所へ、離れるほど淡く散らす＝これから吸い込まれる余韻。 */
+  const want = Math.min(targets.count, 1900);
   const stride = Math.max(1, Math.floor(targets.count / want));
+  const MIN_PX = 7; /* 文字の輪郭に触れない最小距離 */
+  const SPAN_PX = 52;
   for (let j = 0; j < targets.count; j += stride) {
     const ux = targets.pos[j * 2];
     const uy = targets.pos[j * 2 + 1];
-    const isEdge = targets.edge[j] === 1;
     const L = lit(ux, uy);
-    const tail = rnd() < 0.125;
-    if (tail) {
-      // 集まりきる直前の粒：目標から流れの向きへ 4〜40px 離れ、離れるほど淡い
-      const dist = (4 + rnd() * 36) / H;
-      const ang = Math.PI * (0.55 + rnd() * 0.5); // 左下〜下
-      const x = ux + Math.cos(ang) * dist;
-      const y = uy + Math.sin(ang) * dist * 0.5;
-      const a = 0.26 * L * (1 - dist * H / 44);
-      if (a <= 0.02) continue;
-      ctx.fillStyle = col(a);
-      ctx.fillRect(x * H - 0.7, y * H - 0.7, 1.4, 1.4);
-      continue;
-    }
-    const jitter = isEdge ? 0.9 : 0.4;
-    const x = ux * H + (rnd() - 0.5) * jitter;
-    const y = uy * H + (rnd() - 0.5) * jitter;
-    const a = (isEdge ? 0.5 : 0.3) * L;
-    const s = isEdge ? 1.5 : 1.2;
+    /* 目標から流れの向き（左下〜下）へ MIN_PX〜MIN_PX+SPAN_PX 離す */
+    const r = rnd();
+    const distPx = MIN_PX + r * SPAN_PX;
+    const dist = distPx / H;
+    const ang = Math.PI * (0.55 + rnd() * 0.5);
+    const x = ux + Math.cos(ang) * dist;
+    const y = uy + Math.sin(ang) * dist * 0.5;
+    const a = 0.30 * L * (1 - r) * (1 - r * 0.35);
+    if (a <= 0.02) continue;
     ctx.fillStyle = col(a);
-    ctx.fillRect(x - s / 2, y - s / 2, s, s);
+    const s = 1.4 - r * 0.4;
+    ctx.fillRect(x * H - s / 2, y * H - s / 2, s, s);
   }
   ctx.globalCompositeOperation = "source-over";
   return true;

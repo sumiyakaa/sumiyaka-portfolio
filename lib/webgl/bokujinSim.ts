@@ -318,7 +318,9 @@ void main() {
   float speed = length(v);
 
   /* 呼吸：定着した縁の粒は目標の周りでわずかに揺れる（物理でなく描画側） */
-  float near = glyph ? 1.0 - smoothstep(0.002, 0.012, distance(p, ta.xy)) : 0.0;
+  float near = glyph ? 1.0 - smoothstep(0.010, 0.045, distance(p, ta.xy)) : 0.0;
+  /* 2026-09-06 修正：到達とみなす範囲を広げた。定着後に題字の輪郭へ粒が残ると
+     DOM の文字がざらついて見えるため、輪郭のすぐ外まで「届いた」と数える */
   vec2 br = vec2(sin(u_time * 1.7 + seed * 41.0), cos(u_time * 1.3 + seed * 23.0))
           * 0.0012 * u_settle * near * (0.4 + edge);
   vec2 q = p + br;
@@ -332,8 +334,9 @@ void main() {
   float L = 0.42 + 0.58 * min(1.0, lit(u_l0, q) + lit(u_l1, q) + lit(u_l2, q));
   float calm = 1.0 - smoothstep(0.1, 1.4, speed);
   float a = (glyph ? 0.5 : 0.2) * L * mix(0.45, 1.0, calm);
-  /* 定着後：内側の粒は DOM の題字の下へ沈み、縁だけ薄く残る。吹かれて離れた粒は見える */
-  a *= mix(1.0, mix(0.12, 0.55, edge), u_settle * near);
+  /* 定着後：題字に届いた粒は消える（DOM の文字を汚さない）。
+     吹かれて離れた粒だけが見え、戻ってくるにつれて文字へ吸い込まれるように消える */
+  a *= 1.0 - 0.99 * u_settle * near;
   a *= 1.0 - u_exit * 0.85;
   v_a = a * u_alpha;
 }`;
