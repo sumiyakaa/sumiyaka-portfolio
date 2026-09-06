@@ -1,15 +1,14 @@
 /* =============================================
-   いくら浮くか — フルブリード白転調＋掘り下げ構成（REVIEW2・2026-08-18）
-   「紙が挟まる」構造（左右の地色・差し込み overlap）は廃止し、
-   画面両端いっぱいの真っ白なセクションへ。上下の黒との境界は直線でくっきり。
-   構成（P9・2026-08-27）：中見出し（h2）→ 逆算3行 → 注記。
-   大見出し（宣言）・社長の声2つ・答え＋写真は「働き方」(components/home/Way) へ移設済み。
+   いくら浮くか（07 VALUE・#value）— 地に「紙が挟まる」白転調
+   REVIEW2（2026-08-18）→ P9 → **P12「1画面1メッセージ」(2026-09-06)**
+   トップで唯一の紙。上下の暖黒との境は直線で、紙の落ち影を上下の地に落として浮かせる。
+   構成：章番号 → 中見出し（h2・一句ずつ着地）→ 逆算3行 → 注記1文 → 小さな2リンク。
    色はトークン（theme-top.css）のみ参照。
    PriceRunner のオーバーレイ都合で position:relative / overflow:hidden は維持
    （画面左端からキャラが走り込む＝動き・発火・[data-price-amount] 契約は不変）
    ============================================= */
 
-/* #value（旧 FV ボタンの飛び先。P9 で FV は #way へ。id は不変）。固定ヘッダー60pxぶん逃がす */
+/* #value（id は不変）。固定ヘッダー60pxぶん逃がす */
 .valueAnchor {
   scroll-margin-top: 60px;
 }
@@ -24,6 +23,10 @@
   color: var(--sumi);
   font-family: var(--font-body-washi, sans-serif);
   line-height: 2;
+  /* 紙の落ち影＝上下の暖黒へ落とす（z-index 2 なので隣のセクションの上に描かれる） */
+  box-shadow:
+    0 -14px 36px rgba(0, 0, 0, 0.42),
+    0 14px 36px rgba(0, 0, 0, 0.42);
 }
 
 /* 紙の上ではフォーカスリングも墨色に */
@@ -35,38 +38,38 @@
   max-width: 1120px;
   margin-inline: auto;
   padding-inline: clamp(1.5rem, 5vw, 5rem);
-  padding-block: clamp(5rem, 9vw, 9rem);
+  padding-block: clamp(5rem, 9vw, 8rem);
 }
 
-/* ---- 1. 中見出し（既存・[data-price-header]・P9 で h2 に昇格＝先頭なので margin-top 0）。短い墨の罫で転を示す ---- */
+/* ---- 1. 章番号＋中見出し（[data-price-header]＝PriceAnim が一括で出す） ---- */
 .priceHead {
   margin: 0;
 }
 
-.priceHead::before {
-  content: "";
-  display: block;
-  width: 2.5rem;
-  height: 2px;
-  background: var(--sumi);
-  margin-bottom: 2rem;
+.priceMark {
+  margin-bottom: clamp(1.6rem, 3vw, 2.4rem);
 }
 
 .priceTitle {
   margin: 0;
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2.05rem);
-  letter-spacing: 0.06em;
+  font-size: clamp(1.7rem, 1.1rem + 2.6vw, 2.9rem);
+  letter-spacing: 0.05em;
   font-feature-settings: "palt" 1;
   color: var(--sumi);
-  line-height: 1.8;
+  line-height: 1.6;
   max-width: 24em;
+}
+
+/* 句単位の折返し（語の途中で折れない） */
+.phrase {
+  display: inline-block;
 }
 
 /* ---- 2. 浮く額 3行（年額側が [data-price-amount]＝PriceRunner の運搬対象） ---- */
 .priceRows {
-  margin-top: 4rem;
+  margin-top: clamp(2.6rem, 5vw, 4rem);
   max-width: 52rem;
 }
 
@@ -83,7 +86,7 @@
 }
 
 .priceLabel {
-  font-size: 1rem;
+  font-size: clamp(1rem, 0.96rem + 0.3vw, 1.12rem);
   color: var(--sumi);
   white-space: nowrap;
 }
@@ -103,41 +106,90 @@
 .priceAmount {
   font-family: var(--font-display-washi, serif);
   font-weight: 600;
-  font-size: clamp(1.25rem, 1rem + 1.2vw, 1.8rem);
+  font-size: clamp(1.35rem, 1rem + 1.5vw, 2.1rem);
   letter-spacing: 0.03em;
   font-variant-numeric: tabular-nums;
   color: var(--sumi);
   white-space: nowrap;
 }
 
-/* ---- 3. 注記 ---- */
+/* ---- 3. 注記（1文）＋小さな2リンク ---- */
 .priceNote {
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--sumi-dim);
+  margin-top: 1.6rem;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(1rem, 0.96rem + 0.35vw, 1.18rem);
+  line-height: 2;
+  font-feature-settings: "palt" 1;
+  color: var(--sumi);
   max-width: 38em;
 }
 
-.priceNoteLink {
-  color: var(--sumi);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-  text-decoration-color: var(--rule-paper);
-  transition: text-decoration-color var(--duration-normal) var(--ease-default);
+.priceLinks {
+  margin-top: 1.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 2rem;
 }
 
-.priceNoteLink:hover,
-.priceNoteLink:focus-visible {
+.priceLink {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  color: var(--sumi-dim);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  text-decoration-color: var(--rule-paper);
+  white-space: nowrap;
+  transition:
+    color var(--duration-normal) var(--ease-default),
+    text-decoration-color var(--duration-normal) var(--ease-default);
+}
+
+.priceLink:hover,
+.priceLink:focus-visible {
+  color: var(--sumi);
   text-decoration-color: var(--sumi);
 }
 
 @media (max-width: 640px) {
+  /* h2 の第1句「いくらかかるかより先に、」が 390 幅で1行に収まる寸法へ落とす
+     （収まらないと「に、」だけが行に残る＝実測 2026-09-06） */
+  .priceTitle {
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+  }
+
   .priceRow {
     gap: 0.75rem;
   }
 
+  /* 点線のリーダーを畳んで、その分を項目名へ回す。
+     390 幅で「1人分の業務を丸ごと」が「丸／ごと」に割れるのを防ぐ（実測 2026-09-06） */
+  .priceLeader {
+    display: none;
+  }
+
   .priceLabel {
     white-space: normal;
+    flex: 1 1 auto;
+  }
+
+  .priceLink {
+    white-space: normal;
+  }
+}
+
+/* 390 幅：項目名と年額を一段落として、3行とも項目名が1行に収まるようにする
+   （「事務作業の30%を自動化」が「自動／化」に割れるのを防ぐ・実測 2026-09-06） */
+@media (max-width: 430px) {
+  .priceLabel {
+    font-size: 0.92rem;
+  }
+
+  .priceAmount {
+    font-size: 1.2rem;
   }
 }
 
@@ -146,5 +198,9 @@
 @media (prefers-reduced-motion: reduce) {
   .priceAmount {
     opacity: 1 !important;
+  }
+
+  .priceLink {
+    transition: none;
   }
 }

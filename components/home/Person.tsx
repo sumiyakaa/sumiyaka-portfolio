@@ -1,50 +1,56 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
+import Highlight from "@/components/animation/Highlight";
+import tb from "@/components/fv/top-body/top-body.module.css";
 import styles from "./Person.module.css";
 
 /**
- * どんな人か — an-a.html .sec-person の忠実移植。
- * 経歴文言は正本（an-a.html＝売り込み資料v1.1準拠）どおり一言一句不変。
- * 2026-08-18：写真を新portrait.webpへ差し替え（§14-1 G2「不自然なら別途用意」の実行）
- * →同日、あおきさん指示「画像を大きく」＝4:5縦位置クロップ portrait-tall.webp へ再差し替え（案Aベース）。
- * 原画 869×1086＝4:5（設計書の許容「正方形〜4:5」の範囲内・これ以上の縦長は禁止）。
- * 額(オフセット罫線)・縁の沈み込み・SUMIYAKAキャプション(左下)は現行意匠を維持。
- * 彩度−15%はアセットに焼き込み済み＝CSSフィルタ不使用（全デバイス同一表示・iOS安定）。
- * /about は旧 profile.webp のまま（別アセット＝キャッシュ罠も回避）。旧 portrait.webp は未参照で残置。
+ * どんな人か — an-a.html .sec-person の移植 → **P12「1画面1メッセージ」で減量（2026-09-06）**。
+ * 文言は正本 `P12_原稿_減量差分.md` トップ Person の【可視】どおり：
+ *   ラベル・見出し・導線は不変／本文は3行（各1文）／Highlight は「使う側」
+ *   （学歴・独立年齢・「セキュリティを何より重視」・育成の軸・「顔を合わせて分かること〜」は削除指示）。
+ * 写真は portrait-tall.webp（869×1086＝4:5・原比率のまま・CSSフィルタ不使用）。
+ * 額（オフセット罫線）・縁の沈み込み・SUMIYAKA キャプション（左下）は現行意匠を維持。
  */
 export default function Person() {
   return (
-    <section className={styles.section}>
+    <section
+      className={styles.section}
+      data-top-section="08"
+      data-top-label="PERSON"
+    >
       <div className={styles.wrap}>
         <div className={styles.grid}>
           <div>
             <ScrollReveal as="p" className={styles.label}>
+              <span className={styles.labelNo} aria-hidden="true">
+                08
+              </span>
               どんな人か
             </ScrollReveal>
             <ScrollReveal as="p" className={styles.display}>
               15歳、作る側へ。
             </ScrollReveal>
-            {/* 経歴＝2026-08-18 あおきさん提供の正本文（語り口調は末尾段落のみ許可）
-                独立文＝2026-08-19追加（正本「29歳〜独立」準拠。年齢感が30代と伝わるように＝あおきさん指示）
-                2026-08-19改稿＝「人体の情報という最上級のプライバシー」＋「だからこそ保守はセキュリティ最重視」（あおきさん指示・文量は抑える）
-                2026-08-27 P6-4＝トップの情報量を落として導線を確保（あおきさん一任）。
-                  9歳〜15歳〜学歴の段落は /about の年表へ移し、ここは「7年の現場」と「AIを使う側」の2段落＋/about への導線だけにする。
-                  文言は一言一句そのまま（段落の削除と導線の追加のみ） */}
-            <ScrollReveal as="p" className={styles.bio} delay={0.15}>
-              15歳で作る側に回り、大学卒業後、大手美容外科で社内・院内SEとして2系統のシステムを7年間担当。人体の情報という最上級のプライバシーを扱う医療現場での経験が、業務ヒアリングと堅実な進行の基盤です。だからこそ、システムの保守ではセキュリティを何より重視しています。29歳で独立し、現在に至ります。
-            </ScrollReveal>
-            {/* AIスペシャリストとしての目標＝§7-4承認済み素材＋§2-4中核メッセージ（人生設計②準拠・開示線内） */}
-            <ScrollReveal as="p" className={styles.bio} delay={0.2}>
-              仕事はこれから、AIにできないことをする側と、AIを使う側に分かれていく。私は、使う側でありたい。AIスペシャリストとして、ただツールを渡すだけでなく、AIを使いこなせる人材の育成までを仕事の軸にしている。
-            </ScrollReveal>
-            {/* P9（2026-08-27）＝3段落目「人と人のつながり」（正本 T-6・安心材料） */}
-            <ScrollReveal as="p" className={styles.bio} delay={0.25}>
-              それでも、仕事は人と人との間に生まれる。効率だけでは推し量れないもの——顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。AIで速くなった分は、そこに使いたい。
-            </ScrollReveal>
+
+            {/* 3行（各1文）。マーカーは「使う側」＝2文目の主張の側に引く */}
+            <ul className={styles.lines}>
+              <ScrollReveal as="li" className={styles.line} delay={0.12}>
+                大手美容外科の社内・院内SEを7年。止まれば診療が止まるシステムを守ってきました。
+              </ScrollReveal>
+              <ScrollReveal as="li" className={styles.line} delay={0.2}>
+                仕事はこれから、AIにできないことをする側と、AIを使う側に分かれる。私は、
+                <Highlight delay={0.35}>使う側</Highlight>
+                でありたい。
+              </ScrollReveal>
+              <ScrollReveal as="li" className={styles.line} delay={0.28}>
+                それでも、仕事は人と人との間に生まれる。AIで速くなった分は、そこに使いたい。
+              </ScrollReveal>
+            </ul>
+
             {/* 導線（P6-4）＝経歴の物語・年表・信条・引き受けないことは /about に置く */}
-            <ScrollReveal as="p" className={styles.more} delay={0.3}>
-              <Link href="/about" className={styles.moreLink}>
+            <ScrollReveal as="p" className={`${tb.more} ${styles.more}`} delay={0.34}>
+              <Link href="/about" className={tb.moreLink}>
                 経歴と考え方を読む → /about
               </Link>
             </ScrollReveal>

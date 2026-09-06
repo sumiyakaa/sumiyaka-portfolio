@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersLightVisuals } from "@/lib/device";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,18 +20,27 @@ gsap.registerPlugin(ScrollTrigger);
  *    （隠すのは JS が動いてから・DrawRule と同じ規律）。
  *  - 読み込み時点で既に視界にある場合は動かさない。
  *  - 動かすのは SVG stroke-dashoffset と transform/opacity だけ。
+ *
+ * P12（2026-09-06 減量）＝「現在見ている年代」。
+ *  - focusClassName を渡すと、画面中央にいちばん近い行（[data-tl-item]）にそのクラスを付け、
+ *    <ol> に data-focus を立てる（CSS 側はこの属性がある時だけ濃淡を切り替える）。
+ *  - PC（pointer: fine・広幅）だけ。タッチ端末・狭幅・reduced-motion では何もしない＝全行が同じ濃さ。
+ *  - 見た目（点の暈・文字の濃さ）は呼び出し側の CSS が持つ。ここはクラスを付け外しするだけ。
  */
 type Props = {
   children: ReactNode;
   className?: string;
   /** 線を置く SVG のクラス（位置と幅は呼び出し側の CSS が持つ） */
   strokeClassName?: string;
+  /** 「現在見ている年代」の行に付けるクラス（省略時はこの仕組みを使わない） */
+  focusClassName?: string;
 };
 
 export default function InkTimeline({
   children,
   className = "",
   strokeClassName = "",
+  focusClassName = "",
 }: Props) {
   const listRef = useRef<HTMLOListElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -88,8 +98,53 @@ export default function InkTimeline({
     const alreadyInView =
       ol.getBoundingClientRect().top < window.innerHeight * 0.85;
 
+    // 現在見ている年代（PC のみ・reduced-motion では静的）
+    let focusTrigger: ScrollTrigger | null = null;
+    const items = focusClassName
+      ? Array.from(ol.querySelectorAll<HTMLElement>("[data-tl-item]"))
+      : [];
+    if (focusClassName && items.length && !reduceMotion && !prefersLightVisuals()) {
+      ol.setAttribute("data-focus", "");
+      let cur = -1;
+      const pick = () => {
+        const mid = window.innerHeight * 0.5;
+        let best = -1;
+        let bestDist = Infinity;
+        items.forEach((it, i) => {
+          // 行頭（点のあたり）で判定する
+          const y = it.getBoundingClientRect().top + 16;
+          const d = Math.abs(y - mid);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        if (best === cur) return;
+        if (cur >= 0) items[cur].classList.remove(focusClassName);
+        if (best >= 0) items[best].classList.add(focusClassName);
+        cur = best;
+      };
+      focusTrigger = ScrollTrigger.create({
+        trigger: ol,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate: pick,
+        onToggle: (self) => {
+          if (self.isActive) pick();
+        },
+      });
+    }
+    const clearFocus = () => {
+      focusTrigger?.kill();
+      ol.removeAttribute("data-focus");
+      if (focusClassName) items.forEach((it) => it.classList.remove(focusClassName));
+    };
+
     if (reduceMotion || alreadyInView) {
-      return () => ro.disconnect();
+      return () => {
+        ro.disconnect();
+        clearFocus();
+      };
     }
 
     const ctx = gsap.context(() => {
@@ -140,9 +195,10 @@ export default function InkTimeline({
 
     return () => {
       ro.disconnect();
+      clearFocus();
       ctx.revert();
     };
-  }, []);
+  }, [focusClassName]);
 
   return (
     <ol ref={listRef} className={className}>

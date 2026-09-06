@@ -1,0 +1,39 @@
+/* 墨のマーカー（Highlight）＝共通部品。
+   ページ側で上書きしてよい変数：
+     --hl-ink   … マーカー／下線の色（既定＝暖色白の 18% 透過。紙の上では墨の透過に変える）
+     --hl-h     … マーカーの厚み（既定 0.55em＝文字の下半分に塗る） */
+.hl {
+  --hl-ink: rgba(241, 234, 236, 0.18);
+  --hl-h: 0.55em;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(var(--hl-ink), var(--hl-ink));
+  transition: background-size 0.7s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+  /* 複数行にまたがったときも各行の左から引かれる */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.marker {
+  background-size: 0% var(--hl-h);
+  background-position: 0 88%;
+  padding: 0 0.08em;
+  margin: 0 -0.08em;
+}
+.marker.on {
+  background-size: 100% var(--hl-h);
+}
+
+.under {
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  padding-bottom: 0.08em;
+}
+.under.on {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hl {
+    transition: none;
+  }
+}

@@ -3,16 +3,26 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import HeroInkLight from "./HeroInkLight";
-import HeroRunner from "./HeroRunner";
+import BokujinStage from "@/components/fv/top/BokujinStage";
+import { BOKUJIN_T, BOKUJIN_STILL } from "@/components/fv/top/bokujinTiming";
 import { useLenis } from "@/components/animation/SmoothScroll";
+import { useLightVisuals } from "@/lib/useLightVisuals";
+import { prefersLightVisuals } from "@/lib/device";
 import styles from "./Hero.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
-/** 文字列を個別spanに分割するヘルパー */
+const reducedMotion = () =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** 文字列を個別spanに分割するヘルパー
+ *  各文字は opacity:0 で置かれ、墨塵ステージの onLetter(i)（＝粒がその文字に定着した
+ *  瞬間）でクロスフェードして現れる。data-hero-mag は付けない（マグネティックで
+ *  文字がずれると、その下に定着している粒と絵がずれるため。H1 の手触りは粒側が担う）。 */
 function LetterSpan({ text, className }: { text: string; className?: string }) {
   return (
     <span data-hero-line className={className}>
@@ -20,7 +30,7 @@ function LetterSpan({ text, className }: { text: string; className?: string }) {
         ch === " " ? (
           <span key={i} className={styles.fvSpace} />
         ) : (
-          <span key={i} data-hero-letter data-hero-mag className={styles.fvLetter} style={{ display: "inline-block", willChange: "transform", opacity: 0 }}>
+          <span key={i} data-hero-letter className={styles.fvLetter} style={{ opacity: 0 }}>
             {ch}
           </span>
         )
@@ -37,7 +47,7 @@ function magChars(text: string) {
       data-hero-mag=""
       style={{ display: "inline-block", willChange: "transform" }}
     >
-      {ch === " " ? "\u00A0" : ch}
+      {ch === " " ? " " : ch}
     </span>
   ));
 }
@@ -51,14 +61,61 @@ export default function Hero({ openingDone }: HeroProps) {
   const stickyRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const [runnerDone, setRunnerDone] = useState(false);
-  const entryDoneRef = useRef(false);
+
+  /** 墨塵ステージが「粒が題字に定着し切った」と告げた（＝他要素の入場の起点） */
+  const [settled, setSettled] = useState(false);
+  /** FV がスクロールで出ていく進捗 0→1（ScrollTrigger の scrub が書き、粒が読む） */
+  const exitRef = useRef(0);
+
+  const lettersRef = useRef<HTMLElement[] | null>(null);
+  const shownRef = useRef<Set<number>>(new Set());
   const scrollBoundRef = useRef(false);
 
+  const light = useLightVisuals();
   const lenis = useLenis();
 
-  const handleRunnerComplete = useCallback(() => {
-    setRunnerDone(true);
+  /* ---- 題字の文字を1文字ずつ現す（粒の定着とクロスフェード） ---- */
+  const revealLetter = useCallback((i: number) => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    if (!lettersRef.current) {
+      lettersRef.current = Array.from(
+        hero.querySelectorAll<HTMLElement>("[data-hero-letter]")
+      );
+    }
+    const el = lettersRef.current[i];
+    if (!el || shownRef.current.has(i)) return;
+    shownRef.current.add(i);
+    gsap.to(el, {
+      opacity: 1,
+      duration: reducedMotion() ? 0.01 : BOKUJIN_T.letterFade,
+      ease: "power1.out",
+      overwrite: "auto",
+    });
+  }, []);
+
+  const revealAllLetters = useCallback(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    if (!lettersRef.current) {
+      lettersRef.current = Array.from(
+        hero.querySelectorAll<HTMLElement>("[data-hero-letter]")
+      );
+    }
+    for (let i = 0; i < lettersRef.current.length; i++) revealLetter(i);
+  }, [revealLetter]);
+
+  /** 墨塵ステージ → Hero：粒が i 番目の文字に定着した */
+  const handleLetter = useCallback(
+    (i: number) => {
+      revealLetter(i);
+    },
+    [revealLetter]
+  );
+
+  /** 墨塵ステージ → Hero：定着完了（灯がともり、他要素が入場する） */
+  const handleSettled = useCallback(() => {
+    setSettled(true);
   }, []);
 
   // FV右の宣言ボタン →「働き方」#way へページ内スムーススクロール（P9・2026-08-27＝旧 #value）
@@ -77,27 +134,84 @@ export default function Hero({ openingDone }: HeroProps) {
     [lenis]
   );
 
-  // 入場アニメーション（タイトル以外）→ 肩書き/サブ/HR/エッジ/コーナー
+  /* ---- 軽量経路（タッチ・狭幅・reduced-motion・?bokujin=still）の入場 ----
+     静止1コマの墨塵は onLetter / onSettled を発火しないので、こちら側で
+     bokujinTiming.ts の BOKUJIN_STILL と同じ刻みで題字を現し、定着を告げる。 */
   useEffect(() => {
     if (!openingDone) return;
+    const forcedStill =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("bokujin") === "still";
+    if (!light && !forcedStill) return;
+
+    const rm = reducedMotion();
+    const hero = heroRef.current;
+    if (!hero) return;
+    const letters = Array.from(hero.querySelectorAll<HTMLElement>("[data-hero-letter]"));
+    lettersRef.current = letters;
+
+    const timers: number[] = [];
+    letters.forEach((_, i) => {
+      const at = rm
+        ? 0
+        : (BOKUJIN_STILL.letterDelay + i * BOKUJIN_STILL.letterStagger) * 1000;
+      timers.push(window.setTimeout(() => revealLetter(i), at));
+    });
+    timers.push(
+      window.setTimeout(() => setSettled(true), rm ? 0 : BOKUJIN_STILL.settle * 1000)
+    );
+    return () => timers.forEach((id) => window.clearTimeout(id));
+  }, [openingDone, light, revealLetter]);
+
+  /* ---- 保険：何があっても hardDeadline（2.6s）で題字を出し切る ----
+     フォント読込の遅延・WebGL の失敗・rAF の停止などで onLetter が来なくても、
+     題字は必ず読める状態になる（a11y の最終防御）。
+     ただしステージ時計が回っている間は、その立ち上がり遅れ（書体待ち・画面外での
+     停止）ぶんだけ期限を後ろへずらす。さもないと書き順の演出を保険が食ってしまう。 */
+  useEffect(() => {
+    if (!openingDone) return;
+    const t0 = performance.now();
+    let id = 0;
+    const check = () => {
+      const elapsed = (performance.now() - t0) / 1000;
+      const dbg = typeof window !== "undefined" ? window.__bokujin : undefined;
+      // ステージ時計の遅れ＝壁時計 − ステージ時計（書体待ち・可視性ゲートで止まった分）
+      const lag = dbg && dbg.mode !== "still" ? Math.max(0, elapsed - dbg.t) : 0;
+      if (elapsed >= BOKUJIN_T.hardDeadline + lag) {
+        revealAllLetters();
+        setSettled(true);
+        return;
+      }
+      id = window.setTimeout(check, 200);
+    };
+    id = window.setTimeout(check, BOKUJIN_T.hardDeadline * 1000);
+    return () => window.clearTimeout(id);
+  }, [openingDone, revealAllLetters]);
+
+  // 入場アニメーション（題字以外）→ 肩書き/サブ/HR/宣言/エッジ/コーナー
+  // 起点＝墨塵ステージの onSettled（旧 runnerDone の役割）
+  useEffect(() => {
+    if (!openingDone || !settled) return;
 
     const scrollArea = scrollAreaRef.current;
     const sticky = stickyRef.current;
     if (!scrollArea || !sticky) return;
+
+    const rm = reducedMotion();
 
     // FloatingLogo 表示
     if (logoRef.current) {
       gsap.fromTo(
         logoRef.current,
         { opacity: 0, scale: 0.1, transformOrigin: "left top" },
-        { opacity: 1, scale: 1, duration: 0.6, ease: EASE }
+        { opacity: 1, scale: 1, duration: rm ? 0.01 : 0.6, ease: EASE }
       );
     }
 
     const ctx = gsap.context(() => {
       // 初期表示: visibility visible + opacity 0
       const singleSelectors = [
-        "[data-hero-main]", "[data-hero-sub]", "[data-hero-sub2]",
+        "[data-hero-sub]", "[data-hero-sub2]",
         "[data-hero-hr]", "[data-hero-decl]",
         "[data-hero-corners-svg]",
       ];
@@ -111,15 +225,8 @@ export default function Hero({ openingDone }: HeroProps) {
       });
 
       // ===== 入場タイムライン =====
-      const tl = gsap.timeline({
-        delay: 0.1,
-        onComplete() {
-          entryDoneRef.current = true;
-        },
-      });
-
-      // メイン文字コンテナ — 即時表示（文字自体はRunnerが配置する）
-      tl.to("[data-hero-main]", { opacity: 1, duration: 0.01 }, 0);
+      const tl = gsap.timeline({ delay: rm ? 0 : 0.1 });
+      if (rm) tl.timeScale(100); // reduced-motion は終端値へ即座に
 
       // 肩書き行
       tl.fromTo("[data-hero-sub]",
@@ -165,16 +272,21 @@ export default function Hero({ openingDone }: HeroProps) {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [openingDone]);
+  }, [openingDone, settled]);
 
-  // スクロール連動 — Runner完了後にバインド
+  // スクロール連動 — 定着後にバインド
   useEffect(() => {
-    if (!runnerDone || scrollBoundRef.current) return;
+    if (!settled || scrollBoundRef.current) return;
+    if (reducedMotion()) return; // スクロール連動の視差は reduced-motion では張らない
     scrollBoundRef.current = true;
 
     const scrollArea = scrollAreaRef.current;
     const sticky = stickyRef.current;
     if (!scrollArea || !sticky) return;
+
+    // 粒へ渡す退場進捗は PC のフル経路のみ（静止1コマ側は書かない）
+    const writeExit = !prefersLightVisuals();
+    const exit = exitRef;
 
     const stConfig = {
       trigger: scrollArea,
@@ -190,6 +302,24 @@ export default function Hero({ openingDone }: HeroProps) {
       // H1 が行単位の時差で墨がにじむように静かに消える。
       // 使用プロパティは transform / opacity のみ（filter・blend・3D 不使用）。
       const exitTl = gsap.timeline({ scrollTrigger: stConfig });
+
+      // 粒への退場進捗（scrub 済みの 0→1）。粒は上へ流れ去り、灯は遠のく。
+      if (writeExit) {
+        const proxy = { v: 0 };
+        exitTl.fromTo(
+          proxy,
+          { v: 0 },
+          {
+            v: 1,
+            ease: "none",
+            duration: 1,
+            onUpdate() {
+              exit.current = proxy.v;
+            },
+          },
+          0
+        );
+      }
 
       // 沈み — 下の要素ほど深く沈む（3Dなしの奥行き感）
       exitTl.fromTo("[data-hero-main]", { y: 0 }, { y: 36, ease: "power1.in", duration: 1 }, 0);
@@ -219,13 +349,18 @@ export default function Hero({ openingDone }: HeroProps) {
       );
     }, heroRef);
 
-    return () => ctx.revert();
-  }, [runnerDone]);
+    return () => {
+      exit.current = 0;
+      ctx.revert();
+    };
+  }, [settled]);
 
-  // マグネティック反発エフェクト（PC only）— Runner完了後に有効化
+  // マグネティック反発エフェクト（PC only・題字以外の文字＝肩書き/サブ/隅の英字）
+  // 題字は粒との位置合わせを守るため対象外（data-hero-mag を付けていない）
   useEffect(() => {
-    if (!runnerDone) return;
+    if (!settled) return;
     if (typeof window !== "undefined" && window.innerWidth <= 768) return;
+    if (reducedMotion()) return;
 
     const hero = heroRef.current;
     if (!hero) return;
@@ -303,10 +438,14 @@ export default function Hero({ openingDone }: HeroProps) {
       hero.removeEventListener("mousemove", onMove);
       hero.removeEventListener("mouseleave", onLeave);
     };
-  }, [runnerDone]);
+  }, [settled]);
 
   return (
     <div ref={scrollAreaRef} className={styles.scrollArea}>
+      {/* JS 無効時の終端値＝題字はそのまま読める（粒の演出だけが無くなる） */}
+      <noscript>
+        <style>{`[data-hero-letter]{opacity:1!important}[data-hero-sub],[data-hero-sub2],[data-hero-hr],[data-hero-decl],[data-hero-corner]{visibility:visible!important}`}</style>
+      </noscript>
       <section ref={heroRef} className={styles.hero}>
         <div ref={stickyRef} data-hero-sticky className={styles.stickyInner}>
           {/* Floating Logo */}
@@ -316,14 +455,24 @@ export default function Hero({ openingDone }: HeroProps) {
             <span className={styles.floatingLogoJp}>灯敷</span>
           </div>
 
-          {/* Background — 複合常時アニメ「墨 × 灯」（旧 .bg オーブ＋HeroFXLayer を置換）
-              ignite: HeroRunner 完走で H1 の真上に灯がともる（未完走でも常時アニメ単独成立） */}
-          <HeroInkLight active={openingDone} ignite={runnerDone} />
+          {/* Background — 墨塵（ぼくじん）
+              数万粒の墨が散らばって漂い（バラバラ）、誰も触らないのに集まって題字を
+              書き上げ（ひとりでに）、文字として静止する（仕組み）。灯は lantern.ts と
+              してこのステージの内側にある（旧 HeroInkLight の二重掛けはしない）。 */}
+          <BokujinStage
+            light={light}
+            exitRef={exitRef}
+            onLetter={handleLetter}
+            onSettled={handleSettled}
+          />
+
+          {/* 可読性の最終防御＝題字＋宣言の帯にだけ地色を薄く敷く（静的・アニメなし） */}
+          <div className={styles.scrim} aria-hidden="true" />
 
           {/* Content Container — 2カラム（PC≥1280：左＝H1演出／右＝宣言）・以下は縦積み */}
           <div className={styles.container} style={{ visibility: openingDone ? "visible" : "hidden" }}>
             <div className={styles.colMain}>
-              <h1 data-hero-main className={styles.mainText} style={{ visibility: "hidden" }}>
+              <h1 data-hero-main className={styles.mainText}>
                 <LetterSpan text="バラバラな事務作業を、" className={styles.fvLine} />
                 <LetterSpan text="ひとりでに回る" className={styles.fvLine} />
                 <LetterSpan text="仕組みに変えます。" className={styles.fvLine} />
@@ -377,9 +526,6 @@ export default function Hero({ openingDone }: HeroProps) {
           <div data-hero-corner className={styles.edgeBr} style={{ visibility: "hidden" }}>
             <span className={styles.edgeText}>{magChars("TOKYO, JAPAN")}</span>
           </div>
-
-          {/* HeroRunner — 文字運搬アニメーション */}
-          <HeroRunner active={openingDone} onComplete={handleRunnerComplete} />
 
           {/* Corner Frames SVG */}
           <svg

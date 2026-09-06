@@ -1,14 +1,17 @@
 /* =============================================
    どんな人か — 黒のまま＋写真（full.html 手本・2026-08-17／写真4:5拡大 2026-08-18 案Aベース）
-   左＝見出し/経歴、右＝portrait-tall.webp（869×1086 4:5縦位置クロップ＝原比率のまま）。
-   あおきさん指示＝「画像を大きく」。額・縁の沈み込み・SUMIYAKA(左下)は維持。
-   彩度−15%はアセット焼き込み済み＝CSSフィルタ不使用。
-   地色に沈めるグラデ＋オフセット罫線フレーム
-   （filter アニメ/blend/3D 不使用＝iOS安定）。
-   色はトークン（theme-top.css）のみ参照・罫線は最小限
+   **P12「1画面1メッセージ」(2026-09-06)＝本文を3行に減量。行ごとに短い罫で区切る。**
+   左＝見出し/3行、右＝portrait-tall.webp（869×1086 4:5縦位置クロップ＝原比率のまま）。
+   額・縁の沈み込み・SUMIYAKA(左下)は維持。彩度−15%はアセット焼き込み済み＝CSSフィルタ不使用。
+   地色に沈めるグラデ＋オフセット罫線フレーム（filter アニメ/blend/3D 不使用＝iOS安定）。
+   色はトークン（theme-top.css）のみ参照。導線は top-body.module.css の .more/.moreLink。
    ============================================= */
 .section {
-  background: var(--paper);
+  position: relative;
+  scroll-margin-top: 60px;
+  background:
+    radial-gradient(70% 45% at 100% 20%, var(--washi-radial-tint), transparent 62%),
+    var(--paper);
   color: var(--ink);
   font-family: var(--font-body-washi, sans-serif);
   line-height: 2;
@@ -18,8 +21,8 @@
 .wrap {
   max-width: 1120px;
   margin-inline: auto;
-  padding-inline: clamp(1.5rem, 4vw, 4rem);
-  padding-block: var(--washi-space-4xl, 9rem) var(--washi-space-3xl, 6rem);
+  padding-inline: clamp(1.5rem, 5vw, 5rem);
+  padding-block: clamp(5rem, 9vw, 8rem) var(--washi-space-3xl, 6rem);
 }
 
 .grid {
@@ -30,10 +33,31 @@
   align-items: center;
 }
 
+/* ラベル（不変）＋章番号（装飾） */
 .label {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
   font-size: 0.78rem;
   letter-spacing: 0.22em;
   color: var(--neutral);
+}
+
+.labelNo {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.labelNo::after {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 2.5rem;
+  height: 1px;
+  margin-left: 0.9rem;
+  background: var(--rule);
 }
 
 .display {
@@ -51,57 +75,38 @@
   line-height: 1.4;
 }
 
-.bio {
-  margin-top: var(--washi-space-xl, 2.5rem);
-  font-size: 1.15rem;
-  line-height: 2.2;
-  color: var(--ink);
-  max-width: 38em;
+/* ---- 3行（各1文）。段落を積まず、短い罫で区切る ---- */
+.lines {
+  list-style: none;
+  margin: var(--washi-space-xl, 2.5rem) 0 0;
+  padding: 0;
+  max-width: 34em;
 }
 
-/* ---- 導線（P6-4）＝Deguchi の .branchLink と同じ作法 ----
-   2026-08-27 あおきさん指示「華美にならない程度に、上品にもう少し目立たせる」。
-   細い下線テキスト → 1px の罫で囲った小さな札へ（トップの導線4種で同じ骨格）。
-   動かすのは罫の色・地の色・transform だけ（filter / box-shadow のアニメは無し）。
-   文言末尾の「→」はテキストのまま＝::after は使わない */
+.line {
+  position: relative;
+  margin: 0;
+  padding: 1.1rem 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 0.98rem + 0.5vw, 1.3rem);
+  line-height: 2.05;
+  letter-spacing: 0.03em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink);
+}
+
+.line + .line {
+  border-top: 1px solid var(--rule-soft);
+}
+
+/* 2文目（主張）だけ明るく */
+.line:nth-child(2) {
+  color: var(--ink-deep);
+}
+
 .more {
   margin-top: var(--washi-space-xl, 2.5rem);
-}
-.moreLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  padding: 0.55em 1.1em 0.55em 1.2em;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  font-size: 0.86rem;
-  letter-spacing: 0.1em;
-  color: var(--ink-deep);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-/* ⚠ タッチ端末では :hover が張り付くので、ホバー由来の演出はこの中へ */
-@media (hover: hover) and (pointer: fine) {
-  .moreLink:hover {
-    border-color: var(--ink-deep);
-    background: rgba(241, 234, 236, 0.06);
-    transform: translateX(2px);
-  }
-}
-.moreLink:focus-visible {
-  outline: 2px solid var(--ink-deep);
-  outline-offset: 3px;
-}
-.moreLink:active {
-  transform: translateY(1px);
-}
-@media (prefers-reduced-motion: reduce) {
-  .moreLink {
-    transition: none;
-  }
 }
 
 /* ---- 写真（原比率 869×1086＝4:5。設計書許容「正方形〜4:5」の上限＝これ以上の縦長は禁止） ---- */
@@ -156,15 +161,11 @@
 
 @media (max-width: 860px) {
   .wrap {
-    padding-block: var(--washi-space-3xl, 6rem) var(--washi-space-2xl, 4rem);
+    padding-block: clamp(4rem, 8vw, 6rem) var(--washi-space-2xl, 4rem);
   }
 
   .grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .bio {
-    margin-top: var(--washi-space-xl, 2.5rem);
   }
 
   .portrait {

@@ -2,18 +2,24 @@
    言い当て — an-a.html .sec-insight の構成を踏襲（黒地×白系）
    色はトークン（theme-top.css）のみ参照
    ============================================= */
+/* P12（2026-09-06）＝一段沈めた層（焦へ寄せる静的グラデ）。Steps の暖黒から層を変える */
 .section {
-  background: var(--paper);
+  position: relative;
+  scroll-margin-top: 60px;
+  background:
+    radial-gradient(80% 50% at 50% 0%, var(--washi-radial-tint), transparent 60%),
+    linear-gradient(180deg, #1a1717 0%, var(--paper) 100%);
   color: var(--ink);
   font-family: var(--font-body-washi, sans-serif);
   line-height: 2;
+  border-top: 1px solid var(--rule-soft);
 }
 
 .wrap {
   max-width: 1120px;
   margin-inline: auto;
-  padding-inline: clamp(1.5rem, 4vw, 4rem);
-  padding-block: 6rem 4rem;
+  padding-inline: clamp(1.5rem, 5vw, 5rem);
+  padding-block: clamp(5rem, 9vw, 8rem) 4rem;
 }
 
 .q {

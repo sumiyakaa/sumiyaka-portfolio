@@ -1,0 +1,164 @@
+/* =============================================
+   進捗線（P12・2026-09-06）— /about 濃・墨
+   ページ左端の細い一線＋セクションの連番＋現在地の節名。
+   PC（1280 以上・pointer: fine）だけに出す。SP・タブレットは出さない。
+   動かすのは transform / opacity / box-shadow だけ（filter・blend・3D 不使用）。
+   reduced-motion では線の伸びを消し、印だけ即時に切り替える。
+   ============================================= */
+.rail {
+  position: fixed;
+  left: 30px;
+  top: 50%;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translate(-10px, -50%);
+  transition:
+    opacity 0.6s ease,
+    transform 0.8s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+  pointer-events: none;
+}
+
+@media (min-width: 1280px) and (pointer: fine) {
+  .rail {
+    display: flex;
+  }
+}
+
+.show {
+  opacity: 1;
+  transform: translate(0, -50%);
+  pointer-events: auto;
+}
+
+/* 一線（薄）と、その上を伸びる線（濃） */
+.track {
+  position: relative;
+  width: 1px;
+  height: 180px;
+  margin-left: 6px;
+  background: rgba(241, 234, 236, 0.16);
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(241, 234, 236, 0.9) 0%, rgba(241, 234, 236, 0.5) 100%);
+  transform: scaleY(0);
+  transform-origin: center top;
+}
+
+.ticks {
+  position: absolute;
+  inset: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tickItem {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* 連番（押せる）。点の中心を線に乗せる（点 5px → -2px） */
+.tick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 26px;
+  margin-left: -2px;
+  padding: 0 8px 0 0;
+  background: none;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  color: var(--sumi-tan); /* #8f8789 on #1f1c1c ≒ 4.8:1（AA） */
+  cursor: pointer;
+  transition: color 0.35s ease;
+}
+
+.tick:hover,
+.tick:focus-visible,
+.on {
+  color: var(--color-foreground);
+}
+
+.tick:focus-visible {
+  outline: 1px solid var(--color-foreground);
+  outline-offset: 3px;
+}
+
+/* 墨の点＝現在地で滲む（scale と box-shadow） */
+.dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 rgba(250, 247, 245, 0);
+  transform: scale(0.8);
+  transition:
+    transform 0.5s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow 0.5s ease;
+}
+
+.on .dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 12px 3px rgba(250, 247, 245, 0.22);
+}
+
+.no {
+  display: block;
+}
+
+/* 現在の節名＝縦書き（欧文は横倒し） */
+.name {
+  display: block;
+  margin: 20px 0 0 2px;
+  min-height: 7em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--sumi-tan);
+}
+
+.nameText {
+  display: block;
+  animation: nameIn 0.6s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+@keyframes nameIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail,
+  .tick,
+  .dot {
+    transition: none;
+  }
+  .nameText {
+    animation: none;
+  }
+  .fill {
+    display: none;
+  }
+}

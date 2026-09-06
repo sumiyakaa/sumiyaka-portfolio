@@ -16,6 +16,7 @@ import type { Work } from "@/types/work";
 import type { Tool } from "@/types/tool";
 import { measurePan, RETURN_DURATION, type PanSpec } from "@/lib/hoverScroll";
 import { useLenis } from "@/components/animation/SmoothScroll";
+import SectionMark from "@/components/fv/top-body/SectionMark";
 import styles from "./PickUpWorks.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -1357,7 +1358,12 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
   const openWorkData = openIndex !== null ? works[openIndex] : null;
 
   return (
-    <section ref={sectionRef} className={styles.section}>
+    <section
+      ref={sectionRef}
+      className={styles.section}
+      data-top-section="06"
+      data-top-label="WORKS"
+    >
       {/* 巨大タイポ：地に+3〜5%Lで沈める（読ませない・左裁ち落とし） */}
       <div className={styles.ghostType} aria-hidden="true">
         WORKS
@@ -1368,6 +1374,8 @@ export default function PickUpWorks({ works, tools }: PickUpWorksProps) {
 
       <div className={styles.inner} ref={innerRef}>
         <div className={styles.headingWrap} data-pickup-heading>
+          {/* P12（2026-09-06）＝章番号（進捗線と同じ連番）。重ね帖の動き・文言は不変 */}
+          <SectionMark no="06" label="WORKS" />
           <h2 className={styles.heading}>制作実績</h2>
         </div>
 

@@ -1,6 +1,7 @@
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import CountUp from "@/components/animation/CountUp";
 import DrawRule from "@/components/animation/DrawRule";
+import SectionMark from "@/components/fv/top-body/SectionMark";
 import styles from "./Atari.module.css";
 
 /**
@@ -15,8 +16,16 @@ import styles from "./Atari.module.css";
  */
 export default function Atari() {
   return (
-    <section className={styles.section}>
+    <section
+      className={styles.section}
+      data-top-section="04"
+      data-top-label="INSIGHT"
+    >
       <div className={styles.wrap}>
+        {/* P12（2026-09-06）＝章番号（進捗線と同じ連番）。文言・数値・出典は不変 */}
+        <ScrollReveal>
+          <SectionMark no="04" label="INSIGHT" />
+        </ScrollReveal>
         {/* 句ごとに現れる＝3社のデータが別々に置かれ、最後に問いが立つ */}
         <h2 className={styles.q}>
           <ScrollReveal as="span" className={styles.qPhrase}>

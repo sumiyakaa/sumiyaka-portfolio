@@ -1,0 +1,185 @@
+/* =============================================================
+   安心（TRUST・#trust-top）— P12「1画面1メッセージ」(2026-09-06)
+   Way の直後に置く短いブロック。左に問いと約束、右に経歴票の板。
+   地は一段沈めた層（下へ暗く）＝Way との層差を作る。
+   共通語彙は top-body.module.css。動きは transform/opacity/background-size のみ。
+   ============================================================= */
+/* ⚠ このセクションは top-body.module.css の .section と併用する。
+   2つの CSS モジュールでどちらが後に置かれるかはバンドルの順序に依存するので、
+   クラスを二重に書いて特異度で確実に勝たせる（地色が暖黒に戻る事故の防止） */
+.section.section {
+  background:
+    radial-gradient(70% 45% at 100% 0%, var(--washi-radial-tint), transparent 62%),
+    linear-gradient(180deg, var(--paper) 0%, #1b1818 100%);
+}
+
+/* 短いブロック＝上下の余白は本文セクションより詰める（同上・特異度で勝たせる） */
+.inner.inner {
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+
+.grid {
+  display: grid;
+  gap: 2.8rem 4.5rem;
+  align-items: start;
+}
+
+@media (min-width: 861px) {
+  .grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+}
+
+.text {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.4rem);
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+  line-height: 1.7;
+}
+
+/* 同上（top-body の .summary と併用） */
+.summary.summary {
+  margin-top: clamp(1.4rem, 2.5vw, 2rem);
+  font-size: clamp(1.05rem, 0.98rem + 0.5vw, 1.3rem);
+  max-width: 30em;
+}
+
+/* 不安の3つ＝1行ずつ落として薄く */
+.ask {
+  display: block;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.ask:first-of-type {
+  margin-top: 0.5rem;
+}
+
+/* キーフレーズ（墨のマーカー） */
+.key {
+  margin: clamp(1.6rem, 3vw, 2.4rem) 0 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 1rem + 1.6vw, 2.2rem);
+  letter-spacing: 0.06em;
+  font-feature-settings: "palt" 1;
+  line-height: 1.7;
+  color: var(--ink-deep);
+}
+
+/* 約束3行 */
+.list {
+  list-style: none;
+  margin: clamp(1.6rem, 3vw, 2.2rem) 0 0;
+  padding: 1.2rem 0 0;
+  border-top: 1px solid var(--rule-soft);
+  display: grid;
+  gap: 1.2rem;
+}
+
+.item {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(0.98rem, 0.95rem + 0.25vw, 1.1rem);
+  letter-spacing: 0.04em;
+  font-feature-settings: "palt" 1;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+.itemRule {
+  display: block;
+  width: 1.6rem;
+  height: 2px;
+  background: var(--ink);
+  margin-bottom: 0.6rem;
+}
+
+/* ---- 経歴票（板の上の台帳） ---- */
+.ledger {
+  align-self: start;
+}
+
+@media (min-width: 861px) {
+  .ledger {
+    margin-top: 0.6rem;
+  }
+}
+
+.record {
+  margin: 0;
+  padding: 0;
+}
+
+.recordRule {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  column-gap: 1rem;
+  align-items: baseline;
+  padding-block: 0.55rem;
+}
+
+.row + .row {
+  border-top: 1px solid var(--rule-soft);
+}
+
+/* 板（#2b2325）の上では --neutral だと 4.5:1 を割るので --muted（AA） */
+.k {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  line-height: 2;
+  color: var(--muted);
+}
+
+.v {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(0.98rem, 0.95rem + 0.3vw, 1.12rem);
+  line-height: 1.85;
+  letter-spacing: 0.04em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+}
+
+/* 在籍＝数字が根拠。一段大きく */
+.term {
+  font-weight: 600;
+  font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.6rem);
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.since {
+  margin: 1.4rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(0.98rem, 0.95rem + 0.3vw, 1.1rem);
+  line-height: 1.9;
+  font-feature-settings: "palt" 1;
+  color: var(--ink);
+}
+
+.detail {
+  --disclose-dim: 0.55;
+  margin-top: 0.2rem;
+}

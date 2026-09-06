@@ -1,0 +1,179 @@
+/* ==========================================================================
+   3段階（①②③）— 縦の母線（レール）に端子が並ぶ（/service・重）
+   page.module.css から移設（2026-09-06）。現在地の段が灯る＝opacity / text-shadow の遷移だけ。
+   ========================================================================== */
+
+.wrap {
+  position: relative;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rail {
+  position: absolute;
+  left: 18px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: rgba(241, 234, 236, 0.35);
+  pointer-events: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  column-gap: 20px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--sumi-rule-soft);
+}
+
+/* 丸数字＝レール上の端子（地色で母線を隠し、線の上に乗せる） */
+.mark {
+  position: relative;
+  width: 37px;
+  text-align: center;
+  background: var(--sumi-noh);
+  padding: 4px 0;
+  font-family: var(--font-display-washi, var(--font-heading));
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--color-foreground);
+  transition:
+    opacity 0.45s ease,
+    text-shadow 0.45s ease;
+}
+
+.body {
+  min-width: 0;
+  transition: opacity 0.45s ease;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.name {
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+}
+
+.tag {
+  display: inline-block;
+  border: 1px solid var(--sumi-rule);
+  padding: 2px 8px;
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground-muted);
+  white-space: nowrap;
+}
+
+.sub {
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--color-foreground-muted);
+  margin: 4px 0 0;
+}
+
+/* 「私がすること」＝引き出し線付きの注記。段が灯った時に着地する（JS） */
+.mine {
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-size: 15px;
+  line-height: 1.95;
+  color: var(--color-foreground);
+  border-left: 1px solid rgba(241, 234, 236, 0.35);
+  padding-left: 14px;
+  margin: 12px 0 0;
+}
+
+.mineLabel {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  color: var(--color-foreground-muted);
+  margin-bottom: 2px;
+}
+
+/* ---- 現在地の段だけ灯る（JS が .anim を付けた時だけ効く＝静的環境は全段が明るいまま）。
+        灯っていない段も読める濃さ（0.58）に留める ---- */
+.anim .mark,
+.anim .body {
+  opacity: 0.58;
+}
+
+.anim .lit .mark,
+.anim .lit .body {
+  opacity: 1;
+}
+
+.anim .lit .mark {
+  text-shadow: 0 0 14px rgba(241, 234, 236, 0.45);
+}
+
+/* ---- Tablet ---- */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .row {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+}
+
+/* ---- SP ---- */
+@media (max-width: 767px) {
+  .rail {
+    left: 14px;
+  }
+
+  .row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    column-gap: 12px;
+    padding: 18px 0;
+  }
+
+  .mark {
+    width: 29px;
+    font-size: 28px;
+  }
+
+  .name {
+    font-size: 16px;
+  }
+
+  .sub {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .mine {
+    font-size: 14px;
+  }
+}
+
+/* ---- Reduced Motion：終端値 ---- */
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    transform: none !important;
+  }
+
+  .mark,
+  .body {
+    transition: none;
+    opacity: 1 !important;
+  }
+}

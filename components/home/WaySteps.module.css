@@ -1,0 +1,156 @@
+/* =============================================================
+   THE WAY の3工程＝縦のレール（P12・2026-09-06）
+   左端に 1px のレール。各工程の頭に灯（点）。PC ではスクロールに合わせて
+   灯がレールを下り、「今の工程」だけが灯る。SP・reduced-motion は全部灯る（静的）。
+   動かすのは transform / opacity / 色 / text-shadow / box-shadow のみ。
+   ============================================================= */
+.list {
+  --rail-x: 4px;
+  --col-no: clamp(3.2rem, 6vw, 4.2rem);
+  position: relative;
+  list-style: none;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
+}
+
+.rail,
+.railFill {
+  position: absolute;
+  left: var(--rail-x);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule);
+}
+
+.railFill {
+  background: var(--ink);
+  opacity: 0.6;
+  transform: scaleY(0);
+  transform-origin: center top;
+}
+
+/* 下りていく灯 */
+.lamp {
+  position: absolute;
+  left: calc(var(--rail-x) + 0.5px);
+  top: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px 3px var(--accent-halo);
+  transform: translate(-50%, 0);
+}
+
+.static .rail {
+  background: var(--rule);
+}
+
+.static .railFill,
+.static .lamp {
+  display: none;
+}
+
+.step {
+  position: relative;
+}
+
+.step + .step .stepInner {
+  border-top: 1px solid var(--rule-soft);
+}
+
+.stepInner {
+  display: grid;
+  grid-template-columns: var(--col-no) minmax(0, 1fr);
+  column-gap: clamp(0.8rem, 2.5vw, 2rem);
+  padding: clamp(1.6rem, 3vw, 2.4rem) 0;
+  margin-left: 0;
+}
+
+/* 番号（等幅・小）＋レール上の点 */
+.no {
+  position: relative;
+  display: block;
+  padding-left: calc(var(--rail-x) + 1.3rem);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  line-height: 1.9;
+  color: var(--neutral);
+  transition: color 0.5s ease;
+}
+
+.dot {
+  position: absolute;
+  left: calc(var(--rail-x) + 0.5px);
+  top: 0.95em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--neutral);
+  transform: translate(-50%, -50%);
+  transition:
+    background-color 0.5s ease,
+    border-color 0.5s ease,
+    box-shadow 0.5s ease;
+}
+
+.lit .no,
+.static .no {
+  color: var(--ink-deep);
+}
+
+.lit .dot,
+.static .dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px 2px var(--accent-halo);
+}
+
+.body {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 1.05rem + 0.8vw, 1.7rem);
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink);
+  transition: color 0.5s ease, text-shadow 0.5s ease;
+}
+
+.lit .title,
+.static .title {
+  color: var(--ink-deep);
+  text-shadow: 0 0 18px var(--accent-halo);
+}
+
+.line {
+  margin-top: 0.7rem;
+  max-width: 40em;
+}
+
+.detail {
+  --disclose-dim: 0.55;
+  margin-top: 0.3rem;
+}
+
+@media (max-width: 640px) {
+  .list {
+    --col-no: 2.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .no,
+  .dot,
+  .title {
+    transition: none;
+  }
+}

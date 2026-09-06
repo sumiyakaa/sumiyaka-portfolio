@@ -1,6 +1,9 @@
 import Link from "next/link";
 import HomeIntro from "@/components/home/HomeIntro";
+import TopProgress from "@/components/fv/top-body/TopProgress";
+import SectionMark from "@/components/fv/top-body/SectionMark";
 import Way from "@/components/home/Way";
+import Trust from "@/components/home/Trust";
 import Steps from "@/components/home/Steps";
 import Atari from "@/components/home/Atari";
 import Deguchi from "@/components/home/Deguchi";
@@ -44,41 +47,51 @@ export default function Home() {
       {/* 1. Hero（OP→Hero の配線は HomeIntro＝子CC-E提供） */}
       <HomeIntro />
 
-      {/* 2. 働き方（P9・2026-08-27）＝FV「その意味を、見る」の飛び先 #way。
-          FV の黒から白へ落ちる最初の紙。宣言・2声・答え＋写真は「いくら浮くか」から移設 */}
+      {/* P12「1画面1メッセージ」(2026-09-06)：
+          - 進捗線＝画面左端の細い縦線。[data-top-section] を持つセクションの並びが目盛（01…09）。
+            PC（1280px 以上・マウス）だけ。FV のあいだは出ない。
+          - 各セクション＝章番号 → 要約（大きく）→ 根拠1つ → 詳細は Disclose。
+          - 地は暖黒 × 灯 × 墨で通し、白転調（紙）は「いくら浮くか」(#value) だけ */}
+      <TopProgress />
+
+      {/* 2. 働き方（01 THE WAY・#way）＝FV「その意味を、見る」の飛び先 */}
       <Way />
 
-      {/* 2c. 三段（P10・2026-09-02）＝Way の紙をそのまま続ける。
-          一段目＝御社専用の道具（オフライン）／二段目＝その道具をAIに使わせる／三段目＝社員の方が自分で作れる。
-          /service の「御社は、いまどの段階ですか。」(①②③) と同じ梯子を提供側から見せたもの。
-          Way 末尾にあった /service への枠ボタンはこのセクションの末尾へ移設した */}
+      {/* 2b. 安心（02 TRUST・#trust-top）＝Way から独立させた短いブロック */}
+      <Trust />
+
+      {/* 2c. 三段（03 THREE STEPS・#steps）＝梯子 */}
       <Steps />
 
-      {/* 2b. マーキー帯A＝削除（2026-08-16 あおきさん指示「FV下のスクロール文字はAI臭の典型のため削除」。帯Bの扱いは確認中） */}
-
-      {/* 3. 言い当て */}
+      {/* 3. 言い当て（04 INSIGHT）＝不変 */}
       <Atari />
 
-      {/* 4. できること（3つの出口） */}
+      {/* 4. できること（05 EXITS）＝不変 */}
       <Deguchi />
 
-      {/* 5. 制作実績（Pickup） */}
+      {/* 5. 制作実績（06 WORKS）＝不変 */}
       <PickUpWorks works={pickupWorks} tools={pickupTools} />
 
-      {/* 6. いくら浮くか（掘り下げ構成・2026-08-18 REVIEW2／P9・2026-08-27 で軽量化）
+      {/* 6. いくら浮くか（07 VALUE・#value）＝地に「紙が挟まる」白転調（トップで唯一の紙）
           - id="value" は PriceAnim が section を描画する都合上、ラッパー div に付与（PriceAnim は変更禁止）
-            ※ FV「その意味を、見る」の飛び先は P9 で #way（Way）へ。id="value" 自体は不変
-          - 宣言「コンサルティングでは、ありません。」・社長の声2つ・答え＋写真は Way へ移設
-          - PriceRunner の動き・発火・[data-price-amount] 契約は不変 */}
-      <div id="value" className={styles.valueAnchor}>
+          - PriceRunner の動き・発火・[data-price-header]/[data-price-card]/[data-price-amount] 契約は不変
+          - P12＝注記を1文に短縮し、導線は小さな2リンクへ */}
+      <div
+        id="value"
+        className={styles.valueAnchor}
+        data-top-section="07"
+        data-top-label="VALUE"
+        data-top-tone="paper"
+      >
         <PriceAnim className={styles.priceSection}>
           <PriceRunner />
           <div className={styles.priceInner}>
-            {/* 1. 中見出し（既存・[data-price-header] 契約維持）
-                P9＝先頭に来るので h3→h2 へ昇格。.priceHead の margin-top は 0（page.module.css） */}
+            {/* 1. 中見出し（既存・[data-price-header] 契約維持） */}
             <div data-price-header className={styles.priceHead}>
+              <SectionMark no="07" label="VALUE" onPaper className={styles.priceMark} />
               <h2 className={styles.priceTitle}>
-                いくらかかるかより先に、いくら浮くか。
+                <span className={styles.phrase}>いくらかかるかより先に、</span>
+                <span className={styles.phrase}>いくら浮くか。</span>
               </h2>
             </div>
 
@@ -104,14 +117,15 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 3. 注記（既存）— Web制作の料金表は /works#price（C4 実施済み・P6-1）
-                P6-4＝できないこと・進め方・料金の考え方の本体は /service に置いたので導線を足す */}
-            <p className={styles.priceNote}>
-              価格は、削減額から逆算してご提案します。できないこと・進め方・料金の考え方は
-              <Link href="/service" className={styles.priceNoteLink}>サービスページ</Link>
-              へ、Web制作の料金は
-              <Link href="/works#price" className={styles.priceNoteLink}>Web制作ページ</Link>
-              へ。
+            {/* 3. 注記（P12＝1文）＋小さな2リンク */}
+            <p className={styles.priceNote}>価格は、削減額から逆算してご提案します。</p>
+            <p className={styles.priceLinks}>
+              <Link href="/service" className={styles.priceLink}>
+                進め方と料金の考え方 → /service
+              </Link>
+              <Link href="/works#price" className={styles.priceLink}>
+                Web制作の料金 → /works#price
+              </Link>
             </p>
           </div>
         </PriceAnim>
@@ -122,11 +136,13 @@ export default function Home() {
 
       {/* 8. マーキー帯B＝削除（2026-08-17 あおきさん決定「帯は全廃」） */}
 
-      {/* 9. どんな人か */}
+      {/* 9. どんな人か（08 PERSON） */}
       <Person />
 
-      {/* 10. CTA */}
-      <CtaSection />
+      {/* 10. CTA（09 CONTACT）＝共通部品（/about /service と共用）。進捗線の目盛のためだけに包む */}
+      <div data-top-section="09" data-top-label="CONTACT">
+        <CtaSection />
+      </div>
     </main>
   );
 }

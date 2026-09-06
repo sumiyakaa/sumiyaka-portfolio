@@ -1,0 +1,221 @@
+/* =============================================================
+   トップ本文（FV より下）の共通語彙 — P12「1画面1メッセージ」(2026-09-06)
+   トップは五彩の基準点＝暖黒（--paper）× 灯（白の暈）× 墨（--paper-2 の板）で通す。
+   紙・図面・金属の語彙はサブページに譲る。白転調は「いくら浮くか」(#value) だけ。
+
+   型：各セクション＝ 章番号（.mark）→ 要約（.summary）→ 根拠1つ → 詳細は Disclose。
+   立体：地の上に「墨の洗い」（静的な放射グラデ・アニメしない）で層を作り、
+        要約の板（.plate）は落ち影と後ろへずらした罫で浮かせる。角は丸めない。
+   動き：transform / opacity / background-size / box-shadow のみ。
+        filter・backdrop-filter・blend・3D・clip-path・vw フォントは使わない。
+   ============================================================= */
+
+/* ---- 地（暖黒）＋墨の洗い ---- */
+.section {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body-washi, sans-serif);
+  line-height: 2;
+  scroll-margin-top: 60px;
+}
+
+/* 灯の暈＝左上から差す（静的） */
+.washTop {
+  background:
+    radial-gradient(90% 55% at 8% 0%, var(--washi-radial-tint), transparent 62%),
+    var(--paper);
+}
+
+/* 下へ沈む（次の層への受け渡し） */
+.washDown {
+  background:
+    radial-gradient(70% 40% at 90% 100%, rgba(20, 18, 18, 0.7), transparent 70%),
+    var(--paper);
+}
+
+.inner {
+  position: relative;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 5vw, 5rem);
+  padding-block: clamp(5rem, 9vw, 8rem);
+}
+
+/* ---- 章番号（01 — THE WAY）。装飾＝aria-hidden で置く ---- */
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 clamp(1.6rem, 3vw, 2.4rem);
+  font-family: var(--font-heading, sans-serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  color: var(--neutral);
+  text-transform: uppercase;
+}
+
+.markNo {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.markRule {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* 紙の上（#value）では墨で */
+.onPaper .markNo {
+  color: var(--sumi);
+}
+
+.onPaper .markRule {
+  background: var(--rule-paper);
+}
+
+.onPaper.mark {
+  color: var(--sumi-dim);
+}
+
+/* ---- 見出し（章の頭＝最大） ---- */
+.h2 {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.85rem, 1.05rem + 3.2vw, 3.2rem);
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+}
+
+/* 句単位の折返し（語の途中で折れない）＝Atari の作法 */
+.phrase {
+  display: inline-block;
+}
+
+/* ---- 要約（3秒で読める・大きく） ---- */
+.summary {
+  margin: 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 1rem + 1vw, 1.7rem);
+  line-height: 1.95;
+  letter-spacing: 0.04em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+}
+
+/* ---- 板（要約の載る面）＝落ち影＋後ろへずらした罫。角は丸めない ---- */
+/* ⚠ 板は ScrollReveal（transform/opacity）と同じ要素に載るので、自身が重ね合わせ文脈になる。
+   後ろへずらした罫（::after・z -1）を「板の裏」に置くには、板の面そのものも ::before（z 0）で
+   描き、中身を z 1 に上げる必要がある（要素の background に描くと罫が面の上に出てしまう）。 */
+.plate {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(1.6rem, 3vw, 2.6rem) clamp(1.5rem, 3.2vw, 3rem);
+}
+
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--paper-2);
+  box-shadow:
+    inset 1px 1px 0 rgba(241, 234, 236, 0.07),
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    12px 16px 34px rgba(0, 0, 0, 0.42);
+  pointer-events: none;
+}
+
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 12px -12px -12px 12px;
+  z-index: -1;
+  border: 1px solid var(--edge);
+  pointer-events: none;
+}
+
+.plate > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- 本文（一行の根拠） ---- */
+.body {
+  margin: 0;
+  font-size: clamp(0.95rem, 0.92rem + 0.3vw, 1.06rem);
+  line-height: 2.05;
+  font-feature-settings: "palt" 1;
+  color: var(--ink);
+}
+
+/* ---- 詳細（Disclose の中身）＝一段薄く・小さく ---- */
+.detail {
+  margin: 0;
+  font-size: 0.93rem;
+  line-height: 2;
+  font-feature-settings: "palt" 1;
+  color: var(--muted);
+  max-width: 40em;
+}
+
+.detail + .detail {
+  margin-top: 0.8rem;
+}
+
+/* ---- 導線（1px 罫の枠ボタン＝トップの導線と同じ骨格） ---- */
+.more {
+  margin: 2.2rem 0 0;
+}
+
+.moreLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.55em 1.1em 0.55em 1.2em;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font-size: 0.86rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-deep);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ⚠ タッチ端末では :hover が張り付くので、ホバー由来の演出はこの中へ */
+@media (hover: hover) and (pointer: fine) {
+  .moreLink:hover {
+    border-color: var(--ink-deep);
+    background: rgba(241, 234, 236, 0.06);
+    transform: translateX(2px);
+  }
+}
+
+.moreLink:focus-visible {
+  outline: 2px solid var(--ink-deep);
+  outline-offset: 3px;
+}
+
+.moreLink:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moreLink {
+    transition: none;
+  }
+}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import MagneticType from "@/components/home/MagneticType";
+import SectionMark from "@/components/fv/top-body/SectionMark";
 import styles from "./Deguchi.module.css";
 
 /**
@@ -12,9 +13,15 @@ import styles from "./Deguchi.module.css";
  */
 export default function Deguchi() {
   return (
-    <section className={styles.section}>
+    <section
+      className={styles.section}
+      data-top-section="05"
+      data-top-label="EXITS"
+    >
       <div className={styles.wrap}>
+        {/* P12（2026-09-06）＝章番号（進捗線と同じ連番）。文言は不変 */}
         <ScrollReveal>
+          <SectionMark no="05" label="EXITS" />
           <h2 className={styles.heading}>できること</h2>
           <MagneticType
             label="ひとつの軸から、三つの出口へ。"

@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/animation/ScrollReveal";
 import SubPageFVAnim from "@/components/animation/SubPageFVAnim";
 import DrawRule from "@/components/animation/DrawRule";
+import Disclose from "@/components/animation/Disclose";
+import Highlight from "@/components/animation/Highlight";
+import CountUp from "@/components/animation/CountUp";
 import DynamicInkFluid from "@/components/webgl/DynamicInkFluid";
 import CtaSection from "@/components/home/CtaSection";
 import AboutFVStage from "@/components/fv/about/AboutFVStage";
 import InkMotes from "@/components/fv/about/InkMotes";
 import InkTimeline from "@/components/about/InkTimeline";
 import InkStroke from "@/components/about/InkStroke";
+import AboutProgress from "@/components/about/AboutProgress";
 import styles from "./page.module.css";
 
-/* P10（2026-09-02）＝STANCE 段落2の末尾を「三段」の説明へ置換（トップ Person・/service PROCESS 帯との三重を解消）／
-   段落4はトップ Person 3段落目と一字一句同じだったため、語順を変えて反復感を消した。正本＝`P10_原稿_三段.md` A10節 */
+/* P12（2026-09-06）＝減量。文言の正本＝`P12_原稿_減量差分.md` About 節。
+   各セクションを「要約（大きく）＋根拠（数字は CountUp）＋詳細は Disclose で畳む」の型に組み直し、
+   要点の語句に Highlight（墨のマーカー）。原稿に無い部分（FV・BELIEF・WHAT I DON'T・SKILL SET・CTA）は現行のまま。
+   読み進める装置＝左端の進捗線（AboutProgress・PC のみ）と、年表の「現在見ている年代」（InkTimeline focusClassName）。
+   P10（2026-09-02）＝STANCE 段落2の末尾を「三段」の説明へ置換。P9/P6 の正本はコメント履歴として残す */
 
 /**
  * /about — AIスペシャリスト 墨家 / SUMIYAKA の人物ページ（P6・2026-08-27）
- * 文言の正本＝`P9_原稿_top_service_about.md` B節（差分）＋`P6_原稿_service_about.md` B節（B-0〜B-10）。一言一句変えない（改行のみ自由）。
+ * 文言の正本＝`P12_原稿_減量差分.md` About 節（可視／詳細／削除）→ それ以前は `P9_原稿_top_service_about.md` B節・`P6_原稿_service_about.md` B節。
  * 構成：FV（DynamicInkFluid 維持）→ PROFILE → STANCE → TIMELINE → BELIEF →
  *       SCOPE OF WORK → WHAT I DON'T → SKILL SET → CTA（トップ CtaSection をそのまま再利用）
  *
@@ -47,19 +55,24 @@ export const metadata: Metadata = {
   },
 };
 
-/* ---- B-4 年表 ---- */
-const TIMELINE = [
+/* ---- B-4 年表（P12＝各1行に短縮。数字は CountUp） ---- */
+const TIMELINE: { when: string; text: ReactNode }[] = [
   {
     when: "9歳",
-    text: "初めて触れたのは、スマホでもゲームでもなく、パソコンでした。インターネットやプログラミングはどう動いているのか——関心の始まり。",
+    text: "初めて触れたのは、パソコンでした。インターネットはどう動いているのか——関心の始まり。",
   },
   {
     when: "15歳",
-    text: "ブログブームの中で、WordPressとHTML/CSS/JavaScriptを独学。オリジナルテーマを自作し、サーバー契約からサイト公開まで自力でやり切って以来、「見るだけ」ではなく「作る側」に。手を動かして、約15年になります。",
+    text: (
+      <>
+        WordPressとHTML/CSS/JavaScriptを独学。サーバー契約からサイト公開まで自力でやり切り、「作る側」に。以来、
+        <CountUp value={15} prefix="約" suffix="年" className={styles.num} />。
+      </>
+    ),
   },
   {
     when: "専攻",
-    text: "高校（情報技術科）から理系大学まで、情報技術を専攻。我流ではなく、体系立てて学んだ土台。22歳で大学卒業。",
+    text: "高校（情報技術科）から理系大学まで、情報技術を専攻。22歳で卒業。",
   },
   {
     when: "22〜29歳",
@@ -67,7 +80,7 @@ const TIMELINE = [
   },
   {
     when: "2022年12月",
-    text: "ChatGPT公開初日に登録。趣味ではなく仕事で。メールの返信案から、スケジュール管理とリマインド、プログラミングの補助へ。",
+    text: "ChatGPT公開初日に登録。趣味ではなく仕事で。",
   },
   {
     when: "29歳〜",
@@ -173,8 +186,17 @@ export default function AboutPage() {
         </AboutFVStage>
       </SubPageFVAnim>
 
-      {/* ========== B-2 PROFILE — 墨の縁の写真＋本文の2カラム ========== */}
-      <section className={`${styles.sec} ${styles.secProfile}`} aria-labelledby="about-profile-title">
+      {/* 進捗線（左端・PC のみ・body へ portal）。対象＝下の各 section[data-about-sec] */}
+      <AboutProgress />
+
+      {/* ========== B-2 PROFILE — 墨の縁の写真＋本文の2カラム
+          P12＝h2（7年＝CountUp）→ 要約（墨の台の上に浮かせる）→ 段落2つ（「繋がっていない」＝Highlight）→ 詳細は Disclose ========== */}
+      <section
+        className={`${styles.sec} ${styles.secProfile}`}
+        aria-labelledby="about-profile-title"
+        data-about-sec="01"
+        data-about-label="PROFILE"
+      >
         <div className={`${styles.inner} ${styles.innerFirst}`}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>PROFILE</span>
@@ -200,29 +222,35 @@ export default function AboutPage() {
             <div className={styles.profileText}>
               <ScrollReveal className={styles.reveal}>
                 <h2 id="about-profile-title" className={styles.title}>
-                  事故が許されない現場で、システムを7年守ってきました。
+                  事故が許されない現場で、システムを
+                  <CountUp value={7} suffix="年" className={styles.num} />
+                  守ってきました。
                 </h2>
+              </ScrollReveal>
+
+              <ScrollReveal className={styles.reveal} delay={0.08}>
                 <p className={styles.profileLead}>
                   机上のコンサルティングではなく、「現場の当事者」としての経験がもとになっています。
                 </p>
               </ScrollReveal>
 
-              <ScrollReveal className={styles.reveal} delay={0.1}>
+              <ScrollReveal className={styles.reveal} delay={0.14}>
                 <p className={styles.body}>
-                  大手美容外科クリニックで、社内・院内システムの2系統を7年間担当しました。予約・電子カルテ・会計——止まれば診療が止まるシステムの導入・運用・障害対応。人体の情報という最上級のプライバシーを扱う現場で求められたのは、一切の曖昧さを排した正確性と、絶対に止めない安定性でした。
+                  大手美容外科クリニックで、予約・電子カルテ・会計——止まれば診療が止まるシステムを7年。求められたのは、一切の曖昧さを排した正確性と、絶対に止めない安定性でした。
                 </p>
-              </ScrollReveal>
-
-              <ScrollReveal className={styles.reveal} delay={0.15}>
                 <p className={styles.body}>
-                  そこで見てきたのは、システムが「無い」現場ではなく、システム同士が「繋がっていない」現場です。だから人が転記し、照合し、月末に半日を失う。技術が好きだから、ではなく、業務が止まる現場を見てきたから——それが、いま私がこの仕事をしている理由です。
+                  そこで見たのは、システムが「無い」現場ではなく、システム同士が
+                  <Highlight>「繋がっていない」</Highlight>
+                  現場です。だから人が転記し、照合し、月末に半日を失う。業務が止まる現場を見てきたから——それが、この仕事をしている理由です。
                 </p>
               </ScrollReveal>
 
               <ScrollReveal className={styles.reveal} delay={0.2}>
-                <p className={styles.body}>
-                  会社員として現場の業務を回していた2022年12月、ChatGPTの公開初日に登録しました。趣味ではなく、最初から仕事のためです。医療機関の中で使う以上、何を渡さないかから決めました。メールの返信案を考えてもらうことから始め、スケジュールの管理とリマインド、プログラミングの補助へと、任せる範囲を一つずつ広げていく。仕事の仕組みが根本から変わっていくのを当事者として目の当たりにし、その後29歳で独立。以来、AI導入の設計・教育と、業務効率化の設計と実装を仕事にしています。AIを実務で使い続けて、4年目になります。
-                </p>
+                <Disclose className={styles.disclose}>
+                  <p className={styles.detail}>
+                    2022年12月、ChatGPTの公開初日に登録しました。趣味ではなく、仕事のためです。医療機関の中で使う以上、何を渡さないかから決めました。メールの返信案から、スケジュール管理、プログラミングの補助へと、任せる範囲を一つずつ広げ、その後29歳で独立。AIを実務で使い続けて、4年目になります。
+                  </p>
+                </Disclose>
               </ScrollReveal>
 
               <ScrollReveal className={styles.reveal} delay={0.25}>
@@ -245,8 +273,14 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ========== B-3 STANCE — このページ最大級の見出し＋段落の左に筆の一線 ========== */}
-      <section className={`${styles.sec} ${styles.secStance}`} aria-labelledby="about-stance-title">
+      {/* ========== B-3 STANCE — このページ最大級の見出し＋段落の左に筆の一線
+          P12＝要約（白・大きく、「使う側」＝Highlight）→ 段落（三段）→ 強調の一行（最深の墨の帯の上に明朝で浮かせる）→ 詳細は Disclose（FDE／顔を合わせて） ========== */}
+      <section
+        className={`${styles.sec} ${styles.secStance}`}
+        aria-labelledby="about-stance-title"
+        data-about-sec="02"
+        data-about-label="STANCE"
+      >
         <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
@@ -257,44 +291,61 @@ export default function AboutPage() {
             <InkStroke axis="y" className={styles.stanceStroke} duration={1.6} />
             <div className={styles.stanceText}>
               <ScrollReveal className={styles.reveal} delay={0.1}>
-                <p className={styles.stanceBody}>
-                  AIにできることはAIに、という流れは、これから加速していきます。その中で仕事は二つに分かれる。AIにできないことをする側か、AIを使う側に立ち、AIと融合して仕事をする側か。私は、後者でありたい。
+                <p className={styles.stanceLead}>
+                  仕事は二つに分かれる。AIにできないことをする側か、AIを<Highlight>使う側</Highlight>か。私は、後者でありたい。
                 </p>
               </ScrollReveal>
               <ScrollReveal className={styles.reveal} delay={0.15}>
                 <p className={styles.stanceBody}>
-                  単なる開発者ではなく、会社の業務がどう回るかを分かった上で技術を当てられること。それが私の価値だと考えています。だから仕事を三段に分けています。御社専用の道具をお渡しする、その道具をAIに使わせる、社員の方が自分で作れるようにする。どの段からでも始められるようにしているのは、AIを使いこなせる人材の育成までを軸に置いているからです。
-                </p>
-              </ScrollReveal>
-              {/* P9 B-3 段落3・4（FDE の注釈はここだけ。欧文も和文段落と同じフォント指定のまま） */}
-              <ScrollReveal className={styles.reveal} delay={0.2}>
-                <p className={styles.stanceBody}>
-                  海外では、こうした働き方を Forward Deployed Engineer（FDE）と呼び始めています。AIの技術と、お客様ごとの業務の両方を知っていて、現場に入って一緒に作る人。私はそれを、中小企業の規模で、一人でやっています。
-                </p>
-              </ScrollReveal>
-              <ScrollReveal className={styles.reveal} delay={0.25}>
-                <p className={styles.stanceBody}>
-                  それでも、仕事は人と人との間に生まれるものだと思っています。顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。効率では測れないものが、最後に残ります。AIで速くなった分は、そこに使いたい。
+                  会社の業務がどう回るかを分かった上で、技術を当てる。だから仕事を三段に分けています——御社専用の道具を渡す、その道具をAIに使わせる、社員の方が自分で作れるようにする。
                 </p>
               </ScrollReveal>
             </div>
           </div>
+
+          <ScrollReveal className={styles.reveal} delay={0.1}>
+            <p className={styles.stanceStatement}>
+              <span className={styles.stanceStatementText}>
+                それでも、仕事は人と人との間に生まれる。<br />
+                AIで速くなった分は、そこに使いたい。
+              </span>
+            </p>
+          </ScrollReveal>
+
+          {/* P9 B-3 段落3・4 → P12 で詳細へ（FDE の注釈はここだけ。欧文も和文段落と同じフォント指定のまま） */}
+          <ScrollReveal className={styles.reveal} delay={0.15}>
+            <Disclose className={`${styles.disclose} ${styles.discloseStance}`}>
+              <p className={styles.detail}>
+                海外では、こうした働き方を Forward Deployed Engineer（FDE）と呼び始めています。AIの技術と、お客様ごとの業務の両方を知っていて、現場に入って一緒に作る人。私はそれを、中小企業の規模で、一人でやっています。
+              </p>
+              <p className={styles.detail}>
+                顔を合わせて分かること、言葉にならない気遣い、長く付き合うから生まれる信頼。効率では測れないものが、最後に残ります。
+              </p>
+            </Disclose>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ========== B-4 TIMELINE — 一本の筆致（SVG path が上から下へ・各年代で墨が滲む） ========== */}
-      <section className={`${styles.sec} ${styles.secTimeline}`} aria-label="年表">
+      {/* ========== B-4 TIMELINE — 一本の筆致（SVG path が上から下へ・各年代で墨が滲む）
+          P12＝各1行。PC では「現在見ている年代」の点が濃くなる（InkTimeline focusClassName） ========== */}
+      <section
+        className={`${styles.sec} ${styles.secTimeline}`}
+        aria-label="年表"
+        data-about-sec="03"
+        data-about-label="TIMELINE"
+      >
         <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
             <span className={styles.label}>TIMELINE</span>
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.1}>
-            <InkTimeline className={styles.tl} strokeClassName={styles.tlStroke}>
+            <InkTimeline className={styles.tl} strokeClassName={styles.tlStroke} focusClassName={styles.tlNow}>
               {TIMELINE.map((row) => (
-                <li key={row.when} className={styles.tlItem}>
+                <li key={row.when} className={styles.tlItem} data-tl-item>
                   <span className={styles.tlWhen}>{row.when}</span>
                   <span className={styles.tlMark} aria-hidden="true">
+                    <i className={styles.tlHalo} />
                     <i className={styles.tlDot} data-tl-dot />
                   </span>
                   <p className={styles.tlText}>{row.text}</p>
@@ -306,7 +357,12 @@ export default function AboutPage() {
       </section>
 
       {/* ========== B-5 BELIEF — 3列（番号は落款・右2列の背後に墨の面） ========== */}
-      <section className={`${styles.sec} ${styles.secBelief}`} aria-label="信条">
+      <section
+        className={`${styles.sec} ${styles.secBelief}`}
+        aria-label="信条"
+        data-about-sec="04"
+        data-about-label="BELIEF"
+      >
         <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
@@ -327,8 +383,14 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ========== B-6 SCOPE OF WORK — 担当範囲（小見出し2枠＝墨の面＋インク密度の縦バー） ========== */}
-      <section className={`${styles.sec} ${styles.secScope}`} aria-labelledby="about-scope-title">
+      {/* ========== B-6 SCOPE OF WORK — 担当範囲（小見出し2枠＝墨の面＋インク密度の縦バー）
+          P12＝段落を1つに短縮（「分業も外注もありません。」＝下線の Highlight） ========== */}
+      <section
+        className={`${styles.sec} ${styles.secScope}`}
+        aria-labelledby="about-scope-title"
+        data-about-sec="05"
+        data-about-label="SCOPE OF WORK"
+      >
         <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
@@ -336,12 +398,10 @@ export default function AboutPage() {
             <h2 id="about-scope-title" className={styles.title}>企画から公開まで、すべて私一人で。</h2>
           </ScrollReveal>
           <ScrollReveal className={styles.reveal} delay={0.1}>
-            <p className={styles.body}>
-              Web制作も、業務ツールも、企画・設計・デザイン・コーディング・実装・公開まで、すべて私一人で一貫して対応します。分業も外注もありません。Works に掲載しているものは、すべてこの体制で手がけたものです。作品によって担当した範囲が違う、ということはありません。
-            </p>
-            {/* P9 B-6 追記（body の直後・同じ段落スタイル） */}
-            <p className={styles.body}>
-              AI導入も同じです。業務の棚卸しから、実装、教育、定着まで、途中で担当が変わることはありません。
+            <p className={styles.scopeLead}>
+              Web制作も、業務ツールも、AI導入も、企画・設計・実装・教育・公開まで、途中で担当が変わることはありません。
+              <Highlight variant="under" className={styles.hlUnder}>分業も外注もありません。</Highlight>
+              Works に載せているものは、すべてこの体制で手がけたものです。
             </p>
           </ScrollReveal>
 
@@ -358,7 +418,7 @@ export default function AboutPage() {
               <div className={styles.scopeItem}>
                 <h3 className={styles.scopeItemHeading}>支給データからの実装</h3>
                 <p className={styles.scopeItemText}>
-                  デザインが既にある場合は、Figma／XD からの実装だけを承ることもできます。これは対応できる範囲の話で、上に書いた実績の担当範囲とは別のものです。
+                  デザインが既にある場合は、Figma／XD からの実装だけも承ります。
                 </p>
               </div>
             </ScrollReveal>
@@ -373,7 +433,12 @@ export default function AboutPage() {
       </section>
 
       {/* ========== B-7 WHAT I DON'T — 引き受けないこと（最も深い墨の帯・題字に静的な墨の一線） ========== */}
-      <section className={`${styles.sec} ${styles.secDont}`} aria-labelledby="about-dont-title">
+      <section
+        className={`${styles.sec} ${styles.secDont}`}
+        aria-labelledby="about-dont-title"
+        data-about-sec="06"
+        data-about-label="WHAT I DON'T"
+      >
         <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
@@ -402,7 +467,12 @@ export default function AboutPage() {
       </section>
 
       {/* ========== B-8 SKILL SET — 行グリッド（墨の濃淡の面の上に、かすれた罫で区切る） ========== */}
-      <section className={`${styles.sec} ${styles.secSkill}`} aria-label="スキル">
+      <section
+        className={`${styles.sec} ${styles.secSkill}`}
+        aria-label="スキル"
+        data-about-sec="07"
+        data-about-label="SKILL SET"
+      >
         <SectionRule />
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>

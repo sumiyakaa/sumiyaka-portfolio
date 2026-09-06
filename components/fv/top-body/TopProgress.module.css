@@ -1,0 +1,160 @@
+/* =============================================================
+   進捗線（TopProgress）— 画面左端の細い縦線＋章番号の目盛
+   PC（1280px 以上・マウス）だけ表示。動きは transform / opacity のみ。
+   ============================================================= */
+.rail {
+  display: none;
+  position: fixed;
+  left: 22px;
+  top: 50%;
+  width: 1px;
+  height: min(56vh, 520px);
+  transform: translateY(-50%);
+  z-index: 900; /* ヘッダー(1000)の下・本文の上 */
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+@media (min-width: 1280px) and (pointer: fine) {
+  .rail {
+    display: block;
+  }
+}
+
+.on {
+  opacity: 1;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  background: var(--rule-soft);
+}
+
+/* 読み進めた分だけ灯る線（scaleY・上から） */
+.fill {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  background: var(--ink);
+  opacity: 0.55;
+  transform: scaleY(0);
+  transform-origin: center top;
+}
+
+/* 灯（いまの位置） */
+.lamp {
+  position: absolute;
+  left: 0.5px;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 2px var(--accent-halo);
+  transform: translate(-50%, 0);
+}
+
+/* 目盛＝章番号 */
+.tick {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 14px;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.dash {
+  display: block;
+  width: 8px;
+  height: 1px;
+  background: var(--neutral);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+}
+
+.no {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--neutral);
+  transition: color 0.4s ease;
+}
+
+.label {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.active .dash {
+  width: 12px;
+  background: var(--ink);
+}
+
+.active .no {
+  color: var(--ink-deep);
+}
+
+.active .label {
+  opacity: 0.85;
+  transform: translateX(0);
+}
+
+.passed .no {
+  color: var(--muted);
+}
+
+/* ---- 紙（白転調＝#value）の上では墨で描く ---- */
+.paper .track {
+  background: var(--rule-paper);
+}
+
+.paper .fill {
+  background: var(--sumi);
+}
+
+.paper .lamp {
+  background: var(--sumi);
+  box-shadow: 0 0 8px 1px rgba(31, 28, 28, 0.3);
+}
+
+.paper .dash {
+  background: var(--sumi-dim);
+}
+
+.paper .no,
+.paper .passed .no {
+  color: var(--sumi-dim);
+}
+
+.paper .label,
+.paper .active .no {
+  color: var(--sumi);
+}
+
+.paper .active .dash {
+  background: var(--sumi);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail,
+  .dash,
+  .no,
+  .label {
+    transition: none;
+  }
+
+  .fill,
+  .lamp {
+    display: none;
+  }
+}

@@ -1,0 +1,109 @@
+/* 段階開示（Disclose）＝共通部品。色はページ側のトークンに追従する。
+   ページ側で上書きしてよい変数：
+     --disclose-ink   … 文字・罫の色（既定 currentColor）
+     --disclose-dim   … ボタンの薄い色（既定 0.6 の透過）
+     --disclose-gap   … 開いた本文の上下余白 */
+.root {
+  --disclose-ink: currentColor;
+  --disclose-gap: 0.9em;
+  position: relative;
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.55s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.open .panel {
+  grid-template-rows: 1fr;
+}
+
+.inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.45s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) 0.05s,
+    transform 0.45s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) 0.05s;
+}
+.open .inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* 開いた本文の余白は inner の中身に持たせる（0fr のとき padding が残らないように） */
+.inner > :first-child { margin-top: var(--disclose-gap); }
+.inner > :last-child { margin-bottom: var(--disclose-gap); }
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.35em 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--disclose-ink);
+  opacity: var(--disclose-dim, 0.62);
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  min-height: 44px; /* タッチ目標 */
+}
+.toggle:hover,
+.toggle:focus-visible {
+  opacity: 1;
+}
+.toggle:focus-visible {
+  outline: 1px solid var(--disclose-ink);
+  outline-offset: 4px;
+}
+
+.rule {
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left center;
+  transition: transform 0.4s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.toggle:hover .rule {
+  transform: scaleX(1.5);
+}
+
+.label {
+  white-space: nowrap;
+}
+
+/* ＋／− の印（回転だけで切り替える） */
+.mark {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  flex: none;
+}
+.markH,
+.markV {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+  transition: transform 0.4s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.markV {
+  transform: rotate(90deg);
+}
+.open .markV {
+  transform: rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .inner,
+  .rule,
+  .markH,
+  .markV {
+    transition: none;
+  }
+}

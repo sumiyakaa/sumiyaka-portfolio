@@ -1,21 +1,27 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import CountUp from "@/components/animation/CountUp";
+import Disclose from "@/components/animation/Disclose";
 import DrawRule from "@/components/animation/DrawRule";
+import Highlight from "@/components/animation/Highlight";
 import ScrollReveal from "@/components/animation/ScrollReveal";
-import DrawLine from "@/components/fv/service/DrawLine";
+import FigRail from "@/components/fv/service/FigRail";
 import ServiceFV from "@/components/fv/service/ServiceFV";
+import StageSteps, { type Stage } from "@/components/fv/service/StageSteps";
 import WireSteps from "@/components/fv/service/WireSteps";
 import CtaSection from "@/components/home/CtaSection";
 import styles from "./page.module.css";
 
 /**
- * /service — AIスペシャリストとしてのサービス（P6・2026-08-27 → P9・2026-08-27 → P10・2026-09-02）
- * 文言は `P10_原稿_三段.md` S10節 → `P9_原稿_top_service_about.md` A節 → `P6_原稿_service_about.md` A節の順が正本（一言一句不変）。
- * P10＝3段階ブロックに「私がすること」を追加（相手の現在地①②③と、トップ #steps の提供の三段を接続）／
- *      第1の柱の段落3を削除（lead・4小項目・PROCESS 06 と三重だったため）／TRUST 03 から AI歴の重複を外した。
+ * /service — AIスペシャリストとしてのサービス（P6・2026-08-27 → P9・2026-08-27 → P10・2026-09-02 → P12・2026-09-06）
+ * 文言は `P12_原稿_減量差分.md` Service 節 → `P10_原稿_三段.md` S10節 → `P9_原稿_top_service_about.md` A節 →
+ * `P6_原稿_service_about.md` A節の順が正本（一言一句不変）。
+ * P12＝減量：各セクションを「要約（表題欄プレート・3秒で読める）＋根拠（数字は CountUp）＋詳細（Disclose・既定は閉）」
+ *      の型に組み直した。詳細は DOM に残る（SEO・読み上げは全文）。削除＝①「パソコンの中だけで動き…」／
+ *      ②「御社の仕事のやり方を教え込みます。」／TRUST 03「自分の仕事で…」／04「仕事は、人と人との間に…」／
+ *      PROCESS の締め帯。⚠ TRUST 02 見出し「専門知識で防ぎます」→「設計で防ぎます」は言い換え（あおきさん確認事項）。
  * 構成：FV → できること（第1の柱＝AI導入の設計・教育／第2の柱＝業務の自動化・ツール開発）
  *       → できないこと → AIへの不安（TRUST） → データの扱い → 進め方 → 料金の考え方 → FAQ → CTA
  *
@@ -23,7 +29,8 @@ import styles from "./page.module.css";
  *   ページ全体を「製図台の上の一枚の図面」として組み直した。FV は components/fv/service/ServiceFV
  *   （床面グリッド→構築線→題字が部材のように収まる→表題欄）、本文は図番付きのプレート・配線図（PROCESS）・
  *   見積図面の表（PRICING）・索引カード（TRUST/FAQ）・破線枠（引き受けないこと）。
- *   文言・セクション順・id・JSON-LD・metadata は不変。金は使わない。演出は transform/opacity/stroke のみ。
+ * 2026-09-06 読み進める装置：左端の図番の進捗線（FigRail・PC のみ）、3段階は現在地の段が灯り
+ *   「私がすること」が段ごとに着地する（StageSteps）。演出は transform/opacity/stroke のみ。金は使わない。
  */
 
 // /api/og は日本語フォント搭載済み。sub は日本語のまま渡す（URL用に符号化するだけ）
@@ -38,20 +45,26 @@ export const metadata: Metadata = {
   },
 };
 
-/* ---------- 図番（FIG.）＝本文セクションの並び。FV のティック数と見出しの番号はここから作る ---------- */
-const FIGURES = ["what-i-do", "what-i-dont", "trust", "data", "process", "pricing", "faq"] as const;
-type FigureId = (typeof FIGURES)[number];
+/* ---------- 図番（FIG.）＝本文セクションの並び。FV のティック数・見出しの番号・進捗線はここから作る ---------- */
+const FIGURES = [
+  { id: "what-i-do", label: "WHAT I DO" },
+  { id: "what-i-dont", label: "WHAT I DON'T" },
+  { id: "trust", label: "TRUST" },
+  { id: "data", label: "DATA" },
+  { id: "process", label: "PROCESS" },
+  { id: "pricing", label: "PRICING" },
+  { id: "faq", label: "FAQ" },
+] as const;
+type FigureId = (typeof FIGURES)[number]["id"];
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
-const figNo = (id: FigureId) => pad2(FIGURES.indexOf(id) + 1);
+const figIndex = (id: FigureId) => FIGURES.findIndex((f) => f.id === id);
+const figNo = (id: FigureId) => pad2(figIndex(id) + 1);
+const figLabel = (id: FigureId) => FIGURES[figIndex(id)].label;
 const FIGURE_NUMBERS = FIGURES.map((_, i) => pad2(i + 1));
+const RAIL_FIGURES = FIGURES.map((f, i) => ({ id: f.id, no: pad2(i + 1), label: f.label }));
 
 /* ---------- A-2 できること：第1の柱（AI導入の設計・教育） ---------- */
-const EDUCATION_BODY = [
-  "最初にやるのは、実際に作業している場所で業務を見ることです。ヒアリングで出てくるのは業務の半分で、残りは机の横で見て初めて分かります。誰が、どのファイルを、どの順で触っているか。そこから、AIに任せる作業と、人に残す判断を切り分けます。",
-  "AIには、御社の仕事のやり方を一つずつ教え込みます。一つの作業だけを速くするのではなく、情報を集めてから、揃えて、出すまでの一連の流れをまるごと任せられる形に組みます。一つの作業にだけ入れたAIは、普段はきちんと動いても、想定外のことが起きたときに止まってしまう。止まったときにどう対処するかを自分で考えられる社員の方を育てるところまでが、設計と教育です。",
-];
-
 const EDUCATION_POINTS = [
   "実際の現場で、業務の棚卸し",
   "AIに任せる作業と、人に残す判断の切り分け",
@@ -59,26 +72,37 @@ const EDUCATION_POINTS = [
   "自分たちで回せるようになるまで伴走",
 ];
 
-/* 3段階（左に丸数字・右に題字＋補足・①にだけタグ） */
-const STAGES = [
+/* 詳細（Disclose の中・既定は閉） */
+const EDUCATION_DETAIL = [
+  "最初にやるのは、実際に作業している場所で業務を見ることです。ヒアリングで出てくるのは業務の半分で、残りは机の横で見て初めて分かります。誰が、どのファイルを、どの順で触っているか。そこから、AIに任せる作業と、人に残す判断を切り分けます。",
+  "止まったときにどう対処するかを自分で考えられる社員の方を育てるところまでが、設計と教育です。",
+];
+
+/* 3段階（左に丸数字・右に題字＋補足・①にだけタグ）。「私がすること」は各1文 */
+const STAGES: Stage[] = [
   {
     mark: "①",
     title: "社員が、生成AIを個人で使っている",
     sub: "文章の下書き、調べもの、壁打ち",
     tag: "ほとんどの会社",
-    mine: "御社専用の道具をお渡しします。AIはまだ入れなくて構いません。パソコンの中だけで動き、データは外に出ません。",
+    mine: "御社専用の道具をお渡しします。AIはまだ入れなくて構いません。",
   },
   {
     mark: "②",
     title: "社内のデータや既存システムと繋がった、業務専用のAIがある",
     sub: "見積・請求・台帳の照合などが、御社のファイルで動く",
-    mine: "その道具をAIに使わせ、御社の仕事のやり方を教え込みます。「〇〇の作業をお願いします」で終わる状態にします。",
+    mine: "その道具をAIに使わせ、「〇〇をお願いします」で終わる状態にします。",
   },
   {
     mark: "③",
     title: "AIがあることを前提に、仕事の進め方そのものを組み直している",
     sub: "人は判断に集中し、集める・揃える・出すはAIが担う",
-    mine: "社員の方が自分で作れるところまで教えます。ゴールは、私が要らなくなることです。",
+    mine: (
+      <>
+        社員の方が自分で作れるところまで教えます。
+        <Highlight>ゴールは、私が要らなくなることです。</Highlight>
+      </>
+    ),
   },
 ];
 
@@ -117,32 +141,51 @@ const WHAT_I_DONT = [
   },
 ];
 
-/* ---------- A-3b AIへの不安（TRUST） ---------- */
-const TRUST = [
+/* ---------- A-3b AIへの不安（TRUST）。detail は Disclose の中（02 のみ） ---------- */
+type TrustItem = {
+  num: string;
+  title: string;
+  desc: ReactNode;
+  detail?: string;
+};
+
+const TRUST: TrustItem[] = [
   {
     num: "01",
     title: "AIに丸投げしません",
-    desc: "AIが作ったものは、最後に必ず私の目で確認します。数字・宛名・金額のような、間違えてはいけない箇所ほど、人が見ます。",
+    desc: "AIが作ったものは、最後に必ず私の目で確認します。数字・宛名・金額ほど、人が見ます。",
   },
   {
     num: "02",
-    title: "暴走とデータ流出は、専門知識で防ぎます",
-    desc: "AIに何を渡し、何を渡さないか。どこまで自動で動かし、どこで止めるか。これは気合ではなく設計の問題で、専門の知識が要ります。セキュリティの知識がないままAIでプログラムを組むと、動いてはいても穴が残ります。私は大手美容外科クリニックで正社員として7年、人体の情報という最上級のプライバシーを扱うシステムとサーバーのデータ保守とセキュリティを担ってきました。高校・大学で体系立てて学んだ情報技術とその経験に、最新のAIを掛け合わせて仕事をしています。",
+    title: "暴走とデータ流出は、設計で防ぎます",
+    desc: (
+      <>
+        何を渡し、何を渡さないか。どこまで自動で動かし、どこで止めるか。気合ではなく、
+        <Highlight className={styles.nowrap}>設計の問題です。</Highlight>
+      </>
+    ),
+    detail:
+      "セキュリティの知識がないままAIでプログラムを組むと、動いてはいても穴が残ります。私は大手美容外科クリニックで正社員として7年、人体の情報という最上級のプライバシーを扱うシステムとサーバーのデータ保守とセキュリティを担ってきました。高校・大学で体系立てて学んだ情報技術とその経験に、最新のAIを掛け合わせて仕事をしています。",
   },
   {
     num: "03",
     title: "私自身が、そう使っています",
-    desc: "自分の仕事でAIを使うときも、同じ基準で線を引いています。医療機関の中で使い始めた頃から、何を渡さないかを先に決めてきました。御社にお渡しするのは、私が自分で守ってきた使い方です。",
+    desc: "医療機関の中で使い始めた頃から、何を渡さないかを先に決めてきました。御社にお渡しするのは、私が自分で守ってきた使い方です。",
   },
   {
     num: "04",
     title: "効率だけでは、測れないものがある",
-    desc: "仕事は、人と人との間に生まれます。AIで速くなった分は、お客様と向き合う時間に返す。AIは、そのための道具だと考えています。",
+    desc: "AIで速くなった分は、お客様と向き合う時間に返す。AIは、そのための道具です。",
   },
 ];
 
-/* ---------- A-4 データの扱い：数字（可視の文言と寸法バーの長さの正本） ---------- */
+/* ---------- A-4 データの扱い：数字（可視の文言と寸法バーの長さの正本）＋詳細 ---------- */
 const STAT = { value: 30.0, decimals: 1, suffix: "%" };
+
+const DATA_DETAIL = [
+  "外部のサーバーにデータを送らないため、顧客名簿や売上データもそのまま安心してお使いいただけます。導入前のお試しも、実際のファイルでその場でご確認いただけます。",
+  "AI導入でも、考え方は同じです。御社の環境の中で動く形を優先し、外に出す必要があるデータは、何をどこまで出すかを、出す前に必ず一緒に決めます。",
+];
 
 /* ---------- A-5 進め方 ---------- */
 const PROCESS = [
@@ -154,7 +197,8 @@ const PROCESS = [
   { num: "06", title: "運用・定着", desc: "社員の方が使いこなせるようになるまで伴走します" },
 ];
 
-/* ---------- A-6 料金の目安（value＝万円。寸法バーの長さはここから） ---------- */
+/* ---------- A-6 料金の目安（value＝万円。寸法バーの長さはここから）
+   ⚠ 金額は CountUp にしない：視界に入るまで「年 約0万円」と出る瞬間があり、料金表では誤読の元（2026-09-06 実測） ---------- */
 const PRICE_ROWS = [
   { label: "月20時間の削減", amount: "年 約50万円", value: 50 },
   { label: "事務作業の30%を自動化", amount: "年 約120万円", value: 120 },
@@ -230,16 +274,42 @@ function renderAnswer(item: FaqItem) {
 }
 
 /** 図番見出し：FIG. 0N（装飾）＋ 英字ラベル ＋ 右へ引かれる罫。id はラベル側に付ける（FAQ の aria-labelledby 用） */
-function FigHead({ figure, label, id }: { figure: FigureId; label: string; id?: string }) {
+function FigHead({ figure, id }: { figure: FigureId; id?: string }) {
   return (
     <div className={styles.figHead}>
       <span className={styles.figNo} aria-hidden="true">
         FIG. {figNo(figure)}
       </span>
       <span id={id} className={`${styles.label} ${styles.figLabel}`}>
-        {label}
+        {figLabel(figure)}
       </span>
       <DrawRule className={styles.figRule} duration={1.1} />
+    </div>
+  );
+}
+
+/** 要約＝表題欄プレート（大きく・3秒で読める。落ち影で浮かせる）。extra＝同じ紙の裏面（Disclose）を続ける */
+function Brief({ children, extra }: { children: ReactNode; extra?: ReactNode }) {
+  return (
+    <div className={`${styles.plate} ${styles.brief}`}>
+      <span className={styles.briefTag} aria-hidden="true">
+        SUMMARY
+      </span>
+      <p className={styles.briefText}>{children}</p>
+      {extra}
+    </div>
+  );
+}
+
+/** 詳細＝図面の裏面（Disclose の中身。段落の配列） */
+function Detail({ paragraphs }: { paragraphs: string[] }) {
+  return (
+    <div className={styles.detail}>
+      {paragraphs.map((p) => (
+        <p key={p} className={styles.detailText}>
+          {p}
+        </p>
+      ))}
     </div>
   );
 }
@@ -279,6 +349,9 @@ export default function ServicePage() {
         }
       />
 
+      {/* 図番の進捗線（左端・PC のみ・fixed） */}
+      <FigRail figures={RAIL_FIGURES} />
+
       {/* ========== A-2 できること（WHAT I DO） ========== */}
       <section
         id="what-i-do"
@@ -287,7 +360,7 @@ export default function ServicePage() {
       >
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="what-i-do" label="WHAT I DO" />
+            <FigHead figure="what-i-do" />
           </ScrollReveal>
 
           <div className={styles.headGrid}>
@@ -298,55 +371,46 @@ export default function ServicePage() {
             </ScrollReveal>
 
             <ScrollReveal className={styles.reveal} delay={0.1}>
-              <p className={styles.lead}>
-                汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、社員の方と並んで手を動かし、私がいなくても回る状態まで持っていく。それが、私の仕事の中心です。
-              </p>
+              <Brief>
+                汎用のAIをそのまま渡しても、御社の業務は動きません。実際のファイルと判断の基準を一つずつ教え込み、
+                <Highlight delay={0.2}>私がいなくても回る状態</Highlight>
+                まで持っていきます。
+              </Brief>
             </ScrollReveal>
           </div>
 
-          {/* 第1の柱：AI導入の設計・教育＝部品プレート PART 01 */}
+          {/* 第1の柱：AI導入の設計・教育＝部品プレート PART 01（4項目 → 一句 → 補足 → 裏面） */}
           <ScrollReveal className={styles.reveal} delay={0.15}>
             <div className={`${styles.plate} ${styles.pillar} ${styles.pillarFirst}`}>
               <span className={styles.partNo} aria-hidden="true">
                 PART {pad2(1)}
               </span>
               <span className={styles.label}>AI導入の設計・教育</span>
-              {EDUCATION_BODY.map((para) => (
-                <p key={para} className={styles.pillarBody}>{para}</p>
-              ))}
               <ul className={styles.pillarList} aria-label="AI導入の設計・教育で行うこと">
                 {EDUCATION_POINTS.map((point) => (
                   <li key={point} className={styles.pillarItem}>{point}</li>
                 ))}
               </ul>
+
+              {/* 一句＝この図の主題。大きく置き、墨のマーカーが引かれる */}
+              <p className={styles.keyLine}>
+                <Highlight className={styles.keyMark} delay={0.15}>点ではなく、線で。</Highlight>
+              </p>
+              <p className={styles.keyNote}>
+                一つの作業にだけ入れたAIは、想定外が起きたときに止まります。集めて、揃えて、出すまでの一連の流れを、まるごと任せられる形に組みます。
+              </p>
+
+              <Disclose className={styles.disclose} label="詳しく読む">
+                <Detail paragraphs={EDUCATION_DETAIL} />
+              </Disclose>
             </div>
           </ScrollReveal>
 
-          {/* 3段階ブロック（第1の柱の中）＝縦の母線に端子 ①②③ */}
+          {/* 3段階ブロック（第1の柱の中）＝縦の母線に端子 ①②③。現在地の段が灯る（StageSteps） */}
           <ScrollReveal className={styles.reveal}>
             <div className={styles.stage}>
               <h3 className={styles.stageTitle}>御社は、いまどの段階ですか。</h3>
-              <div className={styles.stageWrap}>
-              <DrawLine axis="y" className={styles.stageRail} duration={1.2} />
-              <ol className={styles.stageList}>
-                {STAGES.map((s) => (
-                  <li key={s.mark} className={styles.stageRow}>
-                    <span className={styles.stageMark}>{s.mark}</span>
-                    <div className={styles.stageBody}>
-                      <p className={styles.stageHead}>
-                        <span className={styles.stageName}>{s.title}</span>
-                        {s.tag && <span className={styles.stageTag}>{s.tag}</span>}
-                      </p>
-                      <p className={styles.stageSub}>{s.sub}</p>
-                      <p className={styles.stageMine}>
-                        <span className={styles.stageMineLabel}>私がすること</span>
-                        {s.mine}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              </div>
+              <StageSteps stages={STAGES} mineLabel="私がすること" />
               <p className={styles.stageClose}>
                 ほとんどの会社が①で、それは自然なことです。①のままでも手作業は減らせます。①から②へ進む最初の一つを、一緒に決めるところから始めます。
               </p>
@@ -366,7 +430,7 @@ export default function ServicePage() {
                 御社の管理表の形に揃えます。
               </h3>
               <p className={styles.pillarBody}>
-                汎用ソフトに業務を合わせるのではなく、御社がいま実際に使っているファイルに合わせて仕組みを作ります。AIを入れる前でも始められる、一段目の仕事です。
+                御社がいま使っているファイルに合わせて、仕組みを作ります。AIを入れる前でも始められる、一段目の仕事です。
               </p>
             </div>
           </ScrollReveal>
@@ -391,7 +455,7 @@ export default function ServicePage() {
                 <span className={styles.label}>SAMPLE</span>
                 <h4 className={styles.sampleTitle}>お渡しする形のまま、見本を公開しています。</h4>
                 <p className={styles.sampleDesc}>
-                  首都圏の中堅製造業100社を架空データで調べた、リサーチ・リスト作成の見本です。取得条件の決め方、重複の判定、証跡の残し方、品質チェックの数値まで、実際の納品物と同じ形でご覧いただけます。
+                  首都圏の中堅製造業100社を架空データで調べた、リサーチ・リスト作成の見本。取得条件、重複の判定、証跡、品質チェックまで、納品物と同じ形でご覧いただけます。
                 </p>
                 <a
                   href="https://sumiyakastudio.github.io/research-list-sample/"
@@ -443,7 +507,7 @@ export default function ServicePage() {
       <section id="what-i-dont" className={styles.section} aria-labelledby="service-dont-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="what-i-dont" label="WHAT I DON'T" />
+            <FigHead figure="what-i-dont" />
           </ScrollReveal>
 
           <div className={styles.headGrid}>
@@ -454,7 +518,7 @@ export default function ServicePage() {
             </ScrollReveal>
 
             <ScrollReveal className={styles.reveal} delay={0.1}>
-              <p className={styles.lead}>「何でも自動化できます」とは、言いません。</p>
+              <Brief>「何でも自動化できます」とは、言いません。</Brief>
             </ScrollReveal>
           </div>
 
@@ -480,11 +544,11 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* ========== A-3b AIへの不安（TRUST）— 索引カード ========== */}
+      {/* ========== A-3b AIへの不安（TRUST）— 索引カード（02 の裏面に経歴） ========== */}
       <section id="trust" className={styles.section} aria-labelledby="service-trust-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="trust" label="TRUST" />
+            <FigHead figure="trust" />
           </ScrollReveal>
 
           <div className={styles.headGrid}>
@@ -495,9 +559,7 @@ export default function ServicePage() {
             </ScrollReveal>
 
             <ScrollReveal className={styles.reveal} delay={0.1}>
-              <p className={styles.lead}>
-                「AIに任せて大丈夫か」という不安は、正しい不安です。私がどう線を引いているかを、ここに書いておきます。
-              </p>
+              <Brief>「AIに任せて大丈夫か」は、正しい不安です。線の引き方を、先に書いておきます。</Brief>
             </ScrollReveal>
           </div>
 
@@ -507,7 +569,14 @@ export default function ServicePage() {
                 <li key={item.num} className={`${styles.plate} ${styles.trustItem}`}>
                   <span className={styles.trustNum}>{item.num}</span>
                   <h3 className={styles.trustName}>{item.title}</h3>
-                  <p className={styles.trustDesc}>{item.desc}</p>
+                  <div className={styles.trustBody}>
+                    <p className={styles.trustDesc}>{item.desc}</p>
+                    {item.detail && (
+                      <Disclose className={`${styles.disclose} ${styles.discloseTight}`} label="詳しく読む">
+                        <Detail paragraphs={[item.detail]} />
+                      </Disclose>
+                    )}
+                  </div>
                 </li>
               ))}
             </ol>
@@ -521,11 +590,11 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* ========== A-4 データの扱い（DATA）— 文＋計測プレート ========== */}
+      {/* ========== A-4 データの扱い（DATA）— 要約＋計測プレート＋裏面 ========== */}
       <section id="data" className={styles.section} aria-labelledby="service-data-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="data" label="DATA" />
+            <FigHead figure="data" />
           </ScrollReveal>
 
           <div className={styles.dataGrid}>
@@ -536,15 +605,16 @@ export default function ServicePage() {
                 </h2>
               </ScrollReveal>
               <ScrollReveal className={styles.reveal} delay={0.1}>
-                <p className={styles.lead}>
-                  お渡しする仕組みは、ブラウザの中だけで完結する設計。データは御社のパソコンから外に出ません。
-                </p>
-                <p className={styles.text}>
-                  外部のサーバーにデータを送らないため、顧客名簿や売上データもそのまま安心してお使いいただけます。導入前のお試しも、実際のファイルでその場でご確認いただけます。
-                </p>
-                <p className={styles.text}>
-                  AI導入でも、考え方は同じです。御社の環境の中で動く形を優先し、外に出す必要があるデータは、何をどこまで出すかを、出す前に必ず一緒に決めます。
-                </p>
+                <Brief
+                  extra={
+                    <Disclose className={styles.disclose} label="詳しく読む">
+                      <Detail paragraphs={DATA_DETAIL} />
+                    </Disclose>
+                  }
+                >
+                  お渡しする仕組みは、ブラウザの中だけで完結。
+                  <Highlight delay={0.2}>データは御社のパソコンから外に出ません。</Highlight>
+                </Brief>
               </ScrollReveal>
             </div>
 
@@ -580,18 +650,12 @@ export default function ServicePage() {
       <section id="process" className={styles.section} aria-labelledby="service-process-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="process" label="PROCESS" />
+            <FigHead figure="process" />
             <h2 id="service-process-title" className={styles.title}>進め方</h2>
           </ScrollReveal>
 
           {/* 配線は表示時に順に引かれる（WireSteps が自前で発火・ScrollReveal で包まない） */}
           <WireSteps steps={PROCESS} />
-
-          <ScrollReveal className={styles.reveal} delay={0.15}>
-            <p className={`${styles.plateDeep} ${styles.band}`}>
-              ツールをお渡しするだけでなく、AIを使いこなせる人材の育成までを主とした活動をしています。
-            </p>
-          </ScrollReveal>
         </div>
       </section>
 
@@ -599,7 +663,7 @@ export default function ServicePage() {
       <section id="pricing" className={styles.section} aria-labelledby="service-pricing-title">
         <div className={styles.inner}>
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="pricing" label="PRICING" />
+            <FigHead figure="pricing" />
           </ScrollReveal>
 
           <div className={styles.headGrid}>
@@ -607,14 +671,12 @@ export default function ServicePage() {
               <h2 id="service-pricing-title" className={styles.title}>
                 「いくらかかるか」より先に、
                 <br className={styles.brPc} />
-                「いくら浮くか」。
+                <Highlight className={styles.titleMark} delay={0.25}>「いくら浮くか」</Highlight>。
               </h2>
             </ScrollReveal>
 
             <ScrollReveal className={styles.reveal} delay={0.1}>
-              <p className={styles.lead}>
-                いま作業にかかっている時間と人件費を一緒に試算し、削減額に見合う範囲でお見積りします。
-              </p>
+              <Brief>いま作業にかかっている時間と人件費を一緒に試算し、削減額に見合う範囲でお見積りします。</Brief>
             </ScrollReveal>
           </div>
 
@@ -661,7 +723,8 @@ export default function ServicePage() {
             <p className={styles.text}>
               仕組みが定着したあとも、月額でお付き合いを続けることができます。新しい業務への広げ方、社員の方からの質問、AIの更新への追従を、引き続き私が見ます。
             </p>
-            <p className={styles.note}>
+            {/* Web制作の料金＝小さな導線 */}
+            <p className={`${styles.note} ${styles.noteSmall}`}>
               Web制作の料金は、
               <Link href="/works#price" className={styles.inlineLink}>Web制作ページ</Link>
               の料金表をご覧ください。
@@ -675,7 +738,7 @@ export default function ServicePage() {
         <div className={styles.inner}>
           {/* 契約ファイル A-7 に h2 文言は無い（ラベル FAQ のみ）＝文言を足さない */}
           <ScrollReveal className={styles.reveal}>
-            <FigHead figure="faq" label="FAQ" id="service-faq-label" />
+            <FigHead figure="faq" id="service-faq-label" />
           </ScrollReveal>
 
           <ScrollReveal className={styles.reveal} delay={0.1}>

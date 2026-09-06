@@ -1,192 +1,128 @@
-/* =============================================
-   働き方（THE WAY・#way）— フルブリード白（P9・2026-08-27）
-   FV の黒から白へ落ちる最初の紙。作法は「いくら浮くか」(app/page.module.css .priceSection) と同じ：
-   画面両端いっぱいの真っ白・上下の黒との境界は直線。
-   .valueLead / .valueVoices / .valueVoice / .valueProof / .valueAnswer /
-   .proofFig / .proofFrame / .proofImg / .proofCaption は app/page.module.css から
-   そのまま移設（見た目を変えない）。
-   色はトークン（theme-top.css）のみ参照。出現は ScrollReveal のみ＝独自アニメ無し。
+/* =============================================================
+   働き方（THE WAY・#way）— P12「1画面1メッセージ」(2026-09-06)
+   共通語彙（地・章番号・見出し・要約・板・本文・詳細）は
+   components/fv/top-body/top-body.module.css。ここは配置だけ。
+   暖黒 × 灯 × 墨。白転調はしない（紙は #value だけ）。
    filter / backdrop-filter / blend / 3D / vw フォントは不使用。
-   ============================================= */
+   ============================================================= */
 
-/* FV「その意味を、見る」の飛び先（#way）。固定ヘッダー60pxぶん逃がす */
-.section {
-  position: relative;
-  overflow: hidden;
-  z-index: 2;
-  width: 100%;
-  margin: 0;
-  scroll-margin-top: 60px;
-  background: var(--paper-white);
-  color: var(--sumi);
-  font-family: var(--font-body-washi, sans-serif);
-  line-height: 2;
+/* FV との境＝細い罫（FV 側の地は問わない）。
+   top-body の .section と併用するので、特異度を上げて確実に効かせる */
+.section.section {
+  border-top: 1px solid var(--rule-soft);
 }
 
-/* 紙の上ではフォーカスリングも墨色に */
-.section :global(*:focus-visible) {
-  outline-color: var(--sumi);
-}
-
-.inner {
-  max-width: 1120px;
-  margin-inline: auto;
-  padding-inline: clamp(1.5rem, 5vw, 5rem);
-  padding-block: clamp(5rem, 9vw, 9rem);
-}
-
-/* ---- 0. 英字ラベル（装飾・aria-hidden） ---- */
-.label {
-  margin: 0 0 1.5rem;
-  font-family: var(--font-heading, sans-serif);
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  color: var(--sumi-dim);
-}
-
-/* ---- 1. 大見出し（ページ内最大級の宣言・Shippori Mincho・墨色）＝移設 ---- */
-.valueLead {
-  margin: 0;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 600;
-  font-size: clamp(1.9rem, 1.05rem + 3.4vw, 3.3rem);
-  line-height: 1.6;
-  letter-spacing: 0.05em;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-}
-
-/* ---- 1b. リード（宣言の直下） ---- */
-.lead {
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
-  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-  line-height: 2.3;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 40em;
-}
-
-/* ---- 1c. キッカー（.valueLead より一段小さい宣言） ---- */
-.kicker {
-  margin: clamp(3rem, 6vw, 5rem) 0 0;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 600;
-  font-size: clamp(1.3rem, 1rem + 1.2vw, 1.9rem);
-  line-height: 1.7;
-  letter-spacing: 0.05em;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-}
-
-/* ---- 2. 社長の声2つ（引用・左罫＋字下げ。PC は横並び2声）＝移設 ---- */
-.valueVoices {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
+/* ---- 社長の2声（引用体・PC は横並び） ---- */
+.voices {
+  margin-top: clamp(2.2rem, 4vw, 3.2rem);
   display: grid;
-  gap: 1.5rem 3rem;
+  gap: 1.2rem 3rem;
 }
 
 @media (min-width: 820px) {
-  .valueVoices {
+  .voices {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-.valueVoice {
+.voice {
   margin: 0;
-  border-left: 2px solid var(--rule-paper);
-  padding-left: 1.25rem;
+  border-left: 2px solid var(--rule);
+  padding-left: 1.2rem;
   font-family: var(--font-display-washi, serif);
   font-weight: 500;
-  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
-  line-height: 2.1;
+  font-size: clamp(0.98rem, 0.94rem + 0.3vw, 1.12rem);
+  line-height: 2.05;
   font-feature-settings: "palt" 1;
-  color: var(--sumi);
+  color: var(--muted);
   max-width: 30em;
 }
 
-/* ---- 3. 答え＝移設 ---- */
-.valueAnswer {
-  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
-  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-  line-height: 2.3;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 40em;
-}
-
-/* ---- 3b. 答え＋現場写真「対の額」（2026-08-18・あおきさん選定＝案1）＝移設
-   「どんな人か」(黒地)のオフセット額を白紙に反転＝罫線は --rule-paper。
-   写真は墨デュオトーン焼き込み済み(1264×948 原比率・トリミングなし)＝CSSフィルタ不使用。
-   PC=答えと2カラム(中央揃え)・SP=答えの下に1カラム。
-   右へ張り出す枠(-14px)は inner の横paddingの内側に収まる ---- */
-.valueProof {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
+/* ---- 要約の板＋写真 ---- */
+.proof {
+  margin-top: clamp(2.6rem, 5vw, 4rem);
   display: grid;
-  gap: 2.5rem 4.5rem;
+  gap: 2.8rem 4rem;
   align-items: center;
 }
 
 @media (min-width: 861px) {
-  .valueProof {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  .proof {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   }
 }
 
-.valueProof .valueAnswer {
-  margin-top: 0;
+.plate {
+  max-width: 40em;
 }
 
-.proofFig {
+/* 対比＝墨のマーカーで引かれる一行 */
+.kicker {
+  margin: 1.5rem 0 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 1rem + 1.3vw, 2rem);
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+}
+
+.sub {
+  margin-top: 0.9rem;
+  color: var(--muted);
+  max-width: 34em;
+}
+
+.fig {
   margin: 0;
   width: min(100%, 420px);
 }
 
 @media (min-width: 861px) {
-  .proofFig {
+  .fig {
     justify-self: end;
   }
 }
 
-.proofFrame {
+.frame {
   position: relative;
 }
 
-/* オフセットの罫線フレーム（右下へずらした枠・Personと同寸） */
-.proofFrame::before {
+/* 後ろへずらした罫の額（Person と同寸） */
+.frame::before {
   content: "";
   position: absolute;
   inset: 14px -14px -14px 14px;
-  border: 1px solid var(--rule-paper);
+  border: 1px solid var(--edge);
   pointer-events: none;
 }
 
-.proofImg {
+.img {
   width: 100%;
-  height: auto; /* 原比率維持＝object-fit による切り抜きをしない */
+  height: auto; /* 原比率維持 */
   display: block;
 }
 
-.proofCaption {
+.caption {
   margin-top: 1.2rem;
   font-size: 0.72rem;
   letter-spacing: 0.22em;
-  color: var(--sumi-dim);
+  color: var(--neutral);
   text-align: right;
 }
 
-/* ---- 4. 中見出し（3工程／3段階の小見出し）。短い墨の罫で転を示す＝priceHead と同じ作法 ---- */
+/* ---- 中見出し（3工程の頭）。短い罫で転を示す ---- */
 .head {
-  margin: clamp(4.5rem, 9vw, 7rem) 0 0;
+  margin: clamp(4rem, 8vw, 6rem) 0 0;
 }
 
-/* P11・2026-09-03＝::before から DrawRule（左から引かれる実体の要素）へ置き換え。
-   見た目の寸法は従来どおり（2.5rem × 2px・下 2rem） */
 .headRule {
   display: block;
   width: 2.5rem;
   height: 2px;
-  background: var(--sumi);
-  margin-bottom: 2rem;
+  background: var(--ink);
+  margin-bottom: 1.6rem;
 }
 
 .headTitle {
@@ -196,361 +132,7 @@
   font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2.05rem);
   letter-spacing: 0.06em;
   font-feature-settings: "palt" 1;
-  color: var(--sumi);
+  color: var(--ink-deep);
   line-height: 1.8;
   max-width: 24em;
-}
-
-/* ---- 5. 3工程（PC 3カラム／SP 1カラム・各カードは上罫） ---- */
-.steps {
-  list-style: none;
-  margin: 3rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 2.5rem 2.5rem;
-}
-
-@media (min-width: 861px) {
-  .steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.5rem 3rem;
-    align-items: start;
-  }
-
-  /* 3等分の等質感を崩す段差（Deguchi の枝インデントと同じ語彙・audit B-5） */
-  .step:nth-child(2) {
-    margin-top: 1.5rem;
-  }
-
-  .step:nth-child(3) {
-    margin-top: 3rem;
-  }
-}
-
-.step {
-  border-top: 1px solid var(--rule-paper);
-  padding-top: 1.5rem;
-}
-
-/* ---- 5b. 3枚がゆっくり上下に揺れる（P11・2026-09-03 あおきさん指示） ----
-   読ませる場所なので振幅は片側3〜4px・周期7〜9秒＝1秒あたり1px前後。
-   3枚で周期・位相・振幅を変えてあり、揃って動かない（乱数は使わず癖を固定＝
-   いつ見ても同じ動き。PickUpWorks の札と同じ考えかた）。
-   ⚠ 揺れは .step ではなく内側の .float に当てる。.step は ScrollReveal が
-     インラインの transform を持っており、CSSアニメはインラインより強いので、
-     同じ要素に当てると出現演出（下から浮かぶ）を殺してしまう。
-   ⚠ 既定は paused。InViewGate が付ける .stepsLive のあいだだけ running＝
-     画面外・背面タブでは本当に止まる（表示を消すだけでは負荷は減らない）。
-   ⚠ transform だけを動かす（filter / 3D / blend は使わない＝iOS/WebKit 安全）。 */
-.float {
-  animation: wayFloat 8s ease-in-out infinite;
-  animation-play-state: paused;
-}
-
-.stepsLive .float {
-  animation-play-state: running;
-  will-change: transform; /* ⚠ 実際に動いている間だけ持たせる */
-}
-
-.step:nth-child(1) .float {
-  animation-duration: 7.3s;
-  animation-delay: -2.4s; /* 負の遅延＝最初から位相をずらして始める */
-  --way-float-amp: 3px;
-}
-
-.step:nth-child(2) .float {
-  animation-duration: 9.1s;
-  animation-delay: -5.1s;
-  --way-float-amp: 4px;
-}
-
-.step:nth-child(3) .float {
-  animation-duration: 8.2s;
-  animation-delay: -0.9s;
-  --way-float-amp: 3.5px;
-}
-
-@keyframes wayFloat {
-  0%,
-  100% {
-    transform: translateY(var(--way-float-amp, 3px));
-  }
-  50% {
-    transform: translateY(calc(var(--way-float-amp, 3px) * -1));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .float {
-    animation: none;
-  }
-}
-
-/* 番号＝小さな等幅（PickUpWorks .catIdx 風・紙上は --sumi-dim） */
-.stepNo {
-  display: block;
-  font-family: var(--font-mono, monospace);
-  font-weight: 400;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: var(--sumi-dim);
-}
-
-.stepTitle {
-  margin: 0.75rem 0 0;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 600;
-  font-size: clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem);
-  letter-spacing: 0.06em;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  line-height: 1.7;
-}
-
-.stepBody {
-  margin: 0.9rem 0 0;
-  font-size: 0.95rem;
-  line-height: 2;
-  color: var(--sumi);
-}
-
-/* ---- 6. 安心して任せられるか（P11「減量」2026-09-03 で作り直し）
-   問い＝1行目だけ墨・以下の3つの不安は薄い墨で1行ずつ落とす（読点で切らない）
-   答え＝「7年」を大きな数字で立て、右に短い本文（数字が主役・本文は従）
-   約束＝PC は縦罫で仕切った3列。全幅の横罫を3本積む単調な形をやめた ---- */
-.trustAsk {
-  margin: 2rem 0 0;
-  border-left: 2px solid var(--rule-paper);
-  padding-left: 1.25rem;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 500;
-  font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-  line-height: 2.1;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 36em;
-}
-
-/* 不安の3行＝1行ずつ・一段小さく・薄く */
-.trustAskLine {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1.08rem);
-  color: var(--sumi-dim);
-}
-
-.trustAskLine:first-of-type {
-  margin-top: 0.8rem;
-}
-
-/* 答え＝数字＋本文の2カラム（SP は縦積み） */
-.trustProof {
-  margin-top: clamp(2.2rem, 4vw, 3rem);
-  display: grid;
-  gap: 1.6rem 3rem;
-  align-items: start;
-}
-
-@media (min-width: 861px) {
-  .trustProof {
-    grid-template-columns: minmax(0, 21.5rem) minmax(0, 1fr);
-    gap: 1.6rem 3.5rem;
-    align-items: start;
-  }
-}
-
-/* 経歴票＝奥付のような小さな台帳。項目（薄墨・小）と値（明朝）の2列を3行。
-   数字を主役にしない＝「在籍 7年」は値の1つとして並べ、他の値よりわずかに大きい程度。 */
-.record {
-  margin: 0;
-  padding: 0;
-}
-
-/* 上罫＝DrawRule（左から引かれる）。border-top から実体の要素へ置き換えた */
-.recordRule {
-  display: block;
-  width: 100%;
-  height: 2px;
-  background: var(--sumi);
-  margin-bottom: 1.2rem;
-}
-
-.recordRow {
-  display: grid;
-  grid-template-columns: 3.2rem minmax(0, 1fr);
-  column-gap: 1rem;
-  align-items: baseline;
-  padding-block: 0.5rem;
-}
-
-.recordRow + .recordRow {
-  border-top: 1px solid var(--rule-paper);
-}
-
-.recordKey {
-  margin: 0;
-  font-family: var(--font-body-washi, sans-serif);
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  line-height: 2;
-  color: var(--sumi-dim);
-}
-
-.recordVal {
-  margin: 0;
-  font-family: var(--font-display-washi, serif);
-  font-weight: 500;
-  font-size: clamp(0.98rem, 0.95rem + 0.3vw, 1.12rem);
-  line-height: 1.85;
-  letter-spacing: 0.04em;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-}
-
-/* 在籍年数だけ一段だけ大きく（見出しにはしない） */
-.recordTerm {
-  font-weight: 600;
-  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.55rem);
-  line-height: 1.5;
-  font-variant-numeric: tabular-nums;
-}
-
-.trustAnswer {
-  margin: 0;
-  font-size: clamp(0.95rem, 0.92rem + 0.3vw, 1.1rem);
-  line-height: 2.15;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-  max-width: 34em;
-}
-
-.trustList {
-  list-style: none;
-  margin: clamp(2.2rem, 4vw, 3rem) 0 0;
-  padding: 1.4rem 0 0;
-  border-top: 1px solid var(--rule-paper);
-  display: grid;
-  gap: 1.6rem;
-}
-
-@media (min-width: 861px) {
-  .trustList {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 2.4rem;
-  }
-
-  .trustItem + .trustItem {
-    border-left: 1px solid var(--rule-paper);
-    padding-left: 2.4rem;
-  }
-}
-
-.trustItem {
-  font-family: var(--font-display-washi, serif);
-  font-weight: 600;
-  font-size: clamp(0.98rem, 0.95rem + 0.25vw, 1.1rem);
-  letter-spacing: 0.04em;
-  font-feature-settings: "palt" 1;
-  line-height: 1.95;
-  color: var(--sumi);
-}
-
-/* 頭の「—」をやめ、短い墨の罫を立てる（.head::before と同じ語彙）。
-   P11・2026-09-03＝DrawRule で左から引かれる実体の要素にした（::before から変更） */
-.trustItemRule {
-  display: block;
-  width: 1.6rem;
-  height: 2px;
-  background: var(--sumi);
-  margin-bottom: 0.9rem;
-}
-
-/* ---- 7. 締め（AI歴）＝等幅の年月＋明朝の一行。段落を積まない ---- */
-.close {
-  margin: clamp(2.4rem, 4.5vw, 3.4rem) 0 0;
-  display: grid;
-  gap: 0.5rem 1.4rem;
-  align-items: baseline;
-  max-width: 46em;
-}
-
-@media (min-width: 641px) {
-  .close {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-}
-
-.closeDate {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.78rem;
-  letter-spacing: 0.16em;
-  line-height: 2.1;
-  color: var(--sumi-dim);
-  white-space: nowrap;
-}
-
-.closeText {
-  font-family: var(--font-display-washi, serif);
-  font-weight: 500;
-  font-size: clamp(1.02rem, 0.98rem + 0.35vw, 1.22rem);
-  line-height: 2.1;
-  font-feature-settings: "palt" 1;
-  color: var(--sumi);
-}
-
-/* ---- 8. 導線（P6-4 の「1px 罫の枠ボタン」と同じ骨格＝Deguchi .branchLink／Person .moreLink の紙上版）
-   動かすのは罫の色・地の色・transform だけ（filter / box-shadow のアニメは無し）。
-   文言末尾の「→」はテキストのまま＝::after は使わない ---- */
-.more {
-  margin: 2.5rem 0 0;
-}
-
-.moreLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  padding: 0.55em 1.1em 0.55em 1.2em;
-  border: 1px solid var(--rule-paper);
-  border-radius: 2px;
-  font-size: 0.86rem;
-  letter-spacing: 0.1em;
-  color: var(--sumi);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ⚠ タッチ端末では :hover が張り付くので、ホバー由来の演出はこの中へ */
-@media (hover: hover) and (pointer: fine) {
-  .moreLink:hover {
-    border-color: var(--sumi);
-    background: rgba(31, 28, 28, 0.04);
-    transform: translateX(2px);
-  }
-}
-
-.moreLink:focus-visible {
-  outline: 2px solid var(--sumi);
-  outline-offset: 3px;
-}
-
-.moreLink:active {
-  transform: translateY(1px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .moreLink {
-    transition: none;
-  }
-}
-
-@media (max-width: 640px) {
-
-}
-
-/* h2 の句単位折返し（語の途中で折れない） */
-.phrase {
-  display: inline-block;
 }

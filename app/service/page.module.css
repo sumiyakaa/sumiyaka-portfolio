@@ -1,6 +1,9 @@
 /* ==========================================================================
-   /service — 重（じゅう）＝線・図面（2026-09-05 五彩改修・全面改稿）
+   /service — 重（じゅう）＝線・図面（2026-09-05 五彩改修・全面改稿 → 2026-09-06 P12 減量）
    ページ全体が「製図台の上の一枚の図面」。黒8:白2。
+   P12＝各セクションを「要約（表題欄プレート .brief）＋根拠＋詳細（Disclose＝図面の裏面 .detail）」の型に。
+   一句（.keyLine）は大きく置いて墨のマーカー。3段階は StageSteps.module.css、左端の進捗線は
+   FigRail.module.css が持つ。
      地      = --sumi-noh(#1f1c1c) に 24px の方眼（透過 0.035／120px ごとに 0.06）
      プレート = 机に置いた紙。--sumi-juu(#2b2325) の上下2段（deep / raise）で層を作り、
                上左に 1px の明るい縁（inset）、下右に多段の落ち影
@@ -151,15 +154,100 @@
   text-wrap: balance; /* 折り返す時に「る。」だけが残らないよう均す（非対応ブラウザは従来どおり） */
 }
 
-.lead {
+/* 要約＝表題欄プレート（3秒で読める大きさ・落ち影で浮かせる・左に太めの縁）
+   .plate（後出）の地色に勝つよう二重クラスで書く */
+.plate.brief {
+  background: var(--svc-plate-raise);
+  padding: 22px 26px 24px 28px;
+  border-left: 2px solid rgba(241, 234, 236, 0.55);
+}
+
+.briefTag {
+  display: block;
+  font-family: var(--font-ibm-plex-mono), "Consolas", monospace;
+  font-weight: 300;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  color: var(--svc-muted);
+  margin-bottom: 12px;
+}
+
+.briefText {
   font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 2;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.95;
   letter-spacing: 0.02em;
   color: var(--svc-ink);
-  max-width: 40em;
-  margin: 0 0 20px;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* 一句（点ではなく、線で。）＝この図の主題。大きく、マーカーを引く */
+.keyLine {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(24px, 2.2rem, 32px);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: var(--svc-ink);
+  margin: 36px 0 0;
+}
+
+.keyMark {
+  --hl-ink: rgba(241, 234, 236, 0.16);
+  --hl-h: 0.42em;
+}
+
+.keyNote {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--svc-ink);
+  max-width: 44em;
+  margin: 14px 0 0;
+}
+
+/* 短い強調句は途中で折らない（「設計の問題で／す。」の分断を防ぐ） */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* 見出しの中のマーカー（PRICING の「いくら浮くか」） */
+.titleMark {
+  --hl-ink: rgba(241, 234, 236, 0.14);
+  --hl-h: 0.36em;
+}
+
+/* 詳細＝図面の裏面（Disclose）。ボタンは mono・本文は薄い色、上に破線の罫 */
+.disclose {
+  --disclose-ink: var(--svc-ink);
+  --disclose-dim: 0.7;
+  --disclose-gap: 4px;
+  margin-top: 14px;
+}
+
+.discloseTight {
+  margin-top: 6px;
+}
+
+.detail {
+  border-top: 1px dashed var(--svc-rule);
+  padding-top: 16px;
+}
+
+.detailText {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 2;
+  color: var(--svc-muted);
+  max-width: 46em;
+  margin: 0;
+}
+
+.detailText + .detailText {
+  margin-top: 12px;
 }
 
 .text {
@@ -189,6 +277,12 @@
   color: var(--svc-muted);
   margin: 36px 0 0;
   max-width: 46em;
+}
+
+/* 小さな導線（Web制作の料金は…） */
+.noteSmall {
+  font-size: 12.5px;
+  margin-top: 28px;
 }
 
 .inlineLink {
@@ -316,10 +410,6 @@
   margin-top: 8px;
 }
 
-.pillarBody + .pillarBody {
-  margin-top: 12px;
-}
-
 .pillarTitle {
   font-family: var(--font-body);
   font-weight: 700;
@@ -350,6 +440,11 @@
   border-top: 1px solid var(--svc-rule);
 }
 
+/* ラベルの直後に来るときは母線を近づける */
+.label + .pillarList {
+  margin-top: 8px;
+}
+
 .pillarItem {
   position: relative;
   border: 1px solid var(--svc-rule);
@@ -372,7 +467,7 @@
 }
 
 /* ========================================
-   A-2 3段階ブロック — 縦の母線（レール）に ①②③ の端子が並ぶ
+   A-2 3段階ブロック — 端子の並びと灯りは components/fv/service/StageSteps.module.css
    ======================================== */
 .stage {
   margin-top: 56px;
@@ -386,109 +481,6 @@
   letter-spacing: 0.02em;
   color: var(--svc-ink);
   margin: 0 0 14px;
-}
-
-.stageWrap {
-  position: relative;
-}
-
-.stageList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.stageRail {
-  position: absolute;
-  left: 18px;
-  top: 8px;
-  bottom: 8px;
-  width: 1px;
-  background: var(--svc-rule-strong);
-  pointer-events: none;
-}
-
-.stageRow {
-  display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
-  column-gap: 20px;
-  align-items: start;
-  padding: 22px 0;
-  border-bottom: 1px solid var(--svc-rule-soft);
-}
-
-/* 丸数字＝レール上の端子（地色で母線を隠し、線の上に乗せる） */
-.stageMark {
-  position: relative;
-  width: 37px;
-  text-align: center;
-  background: var(--sumi-noh);
-  padding: 4px 0;
-  font-family: var(--font-display-washi, var(--font-heading));
-  font-weight: 600;
-  font-size: 34px;
-  line-height: 1.1;
-  color: var(--svc-ink);
-}
-
-.stageBody {
-  min-width: 0;
-}
-
-.stageHead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin: 0;
-}
-
-.stageName {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 17px;
-  line-height: 1.7;
-  letter-spacing: 0.02em;
-  color: var(--svc-ink);
-}
-
-.stageTag {
-  display: inline-block;
-  border: 1px solid var(--svc-rule);
-  padding: 2px 8px;
-  font-family: var(--font-body);
-  font-size: 11px;
-  line-height: 1.6;
-  letter-spacing: 0.06em;
-  color: var(--svc-muted);
-  white-space: nowrap;
-}
-
-.stageSub {
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--svc-muted);
-  margin: 4px 0 0;
-}
-
-.stageMine {
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.95;
-  color: var(--svc-ink);
-  border-left: 1px solid var(--svc-rule-strong);
-  padding-left: 14px;
-  margin: 12px 0 0;
-}
-
-.stageMineLabel {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  line-height: 1.6;
-  color: var(--svc-muted);
-  margin-bottom: 2px;
 }
 
 .stageClose {
@@ -751,6 +743,13 @@
   letter-spacing: 0.02em;
   color: var(--svc-ink);
   margin: 0;
+  /* 2行になるとき「〜設計で防ぎま／す」と1文字だけ落ちるのを防ぐ（2026-09-06 統合QC）。
+     非対応ブラウザは従来どおり折り返す＝進行的強化 */
+  text-wrap: balance;
+}
+
+.trustBody {
+  min-width: 0;
 }
 
 .trustDesc {
@@ -780,12 +779,9 @@
   align-items: start;
 }
 
-.dataText .lead {
-  margin-bottom: 16px;
-}
-
-.dataText .text + .text {
-  margin-top: 16px;
+/* 表題欄の裏面（DATA）：同じ紙の中で続ける */
+.brief .disclose {
+  margin-top: 6px;
 }
 
 .stat {
@@ -875,19 +871,6 @@
   line-height: 1.8;
   color: var(--svc-muted);
   margin: 22px 0 0;
-}
-
-/* ========================================
-   A-5 進め方 — 配線図は WireSteps。締めの帯は引き出し線付きの注記
-   ======================================== */
-.band {
-  margin: 48px 0 0;
-  padding: 22px 28px;
-  border-left: 1px solid var(--svc-rule-strong);
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 2;
-  color: var(--svc-ink);
 }
 
 /* ========================================
@@ -1103,9 +1086,9 @@
     margin-bottom: 0;
   }
 
-  .headGrid .lead {
+  /* 表題欄は h2 の頭に揃え、少し下げて重心を右下へ */
+  .headGrid .brief {
     margin-top: 6px;
-    font-size: 16px;
   }
 }
 
@@ -1167,10 +1150,6 @@
     column-gap: 24px;
   }
 
-  .stageRow {
-    grid-template-columns: 56px minmax(0, 1fr);
-  }
-
   .dataGrid {
     grid-template-columns: minmax(0, 1fr);
     gap: 40px;
@@ -1212,8 +1191,27 @@
     margin-bottom: 26px;
   }
 
-  .lead {
-    font-size: 15px;
+  .brief {
+    padding: 18px 18px 20px 20px;
+  }
+
+  .briefText {
+    font-size: 15.5px;
+    line-height: 1.9;
+  }
+
+  .keyLine {
+    font-size: 22px;
+    margin-top: 28px;
+  }
+
+  .keyNote {
+    font-size: 14px;
+    line-height: 1.95;
+  }
+
+  .detailText {
+    font-size: 13.5px;
     line-height: 1.95;
   }
 
@@ -1287,30 +1285,6 @@
 
   .stageTitle {
     font-size: 17px;
-  }
-
-  .stageRail {
-    left: 14px;
-  }
-
-  .stageRow {
-    grid-template-columns: 44px minmax(0, 1fr);
-    column-gap: 12px;
-    padding: 18px 0;
-  }
-
-  .stageMark {
-    width: 29px;
-    font-size: 28px;
-  }
-
-  .stageName {
-    font-size: 16px;
-  }
-
-  .stageSub {
-    font-size: 13.5px;
-    line-height: 1.85;
   }
 
   .stageClose {
@@ -1440,14 +1414,6 @@
     margin-top: 18px;
   }
 
-  /* 進め方 */
-  .band {
-    margin-top: 36px;
-    padding: 16px 18px;
-    font-size: 14px;
-    line-height: 1.95;
-  }
-
   /* 料金の目安 */
   .priceTable {
     margin-top: 28px;
@@ -1514,7 +1480,6 @@
   }
 
   .figRule,
-  .stageRail,
   .statFill,
   .priceFill {
     transform: none !important;

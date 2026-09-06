@@ -1,0 +1,199 @@
+/* =============================================================
+   三段の梯子（StepsLadder）— P12・2026-09-06
+   左右の縦桟（1px）＋各段の横桟（2px・DrawRule）。段の板は桟の上に載る。
+   PC では縦桟がスクロールに合わせて上から伸びる（scaleY）。SP・reduced-motion は伸びきり。
+   動かすのは transform / opacity のみ。角は丸めない。
+   ============================================================= */
+.ladder {
+  --rail-w: 1px;
+  --side: clamp(1.1rem, 3vw, 2.4rem);
+  position: relative;
+  list-style: none;
+  margin: clamp(2.6rem, 5vw, 3.8rem) 0 0;
+  padding: 0;
+}
+
+.rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--rail-w);
+  background: var(--rule);
+  transform-origin: center top;
+}
+
+.railL {
+  left: 0;
+}
+
+.railR {
+  right: 0;
+}
+
+.live .rail {
+  transform: scaleY(0);
+}
+
+.static .rail {
+  transform: none;
+}
+
+/* ---- 段 ---- */
+.rung {
+  position: relative;
+  padding: 0 var(--side) clamp(2.2rem, 4vw, 3.2rem);
+}
+
+.rung + .rung {
+  margin-top: clamp(0.6rem, 1.5vw, 1.2rem);
+}
+
+/* 横桟＝段の上の 2px（左から引かれる） */
+.rungLine {
+  display: block;
+  height: 2px;
+  background: var(--ink);
+  opacity: 0.55;
+  margin: 0 0 0 calc(-1 * var(--side));
+  width: calc(100% + 2 * var(--side));
+}
+
+/* 板＝番号・本文・（1段目のみ）数字の3列。PC で横並び、SP は縦積み */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.4rem clamp(1.2rem, 3vw, 2.6rem);
+  padding-top: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+@media (min-width: 861px) {
+  .board {
+    grid-template-columns: clamp(4.5rem, 9vw, 6.5rem) minmax(0, 1fr);
+  }
+
+  /* 1段目＝右に数字の列（「約8割」が3字で折れない幅を確保）。
+     ⚠ :first-child ではなく :first-of-type。ol の先頭 2 つは縦桟の span なので、
+       最初の li は 3 番目の子＝ :first-child では一致しない（実測で確認・2026-09-06） */
+  .rung:first-of-type .board {
+    grid-template-columns: clamp(4.5rem, 9vw, 6.5rem) minmax(0, 1fr) minmax(13rem, 0.5fr);
+  }
+}
+
+/* 大きな数字＝段の番号 */
+.numCell {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.num {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(2.8rem, 1.8rem + 4vw, 5rem);
+  line-height: 1;
+  color: var(--ink-deep);
+}
+
+.numUnit {
+  font-family: var(--font-display-washi, serif);
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  color: var(--neutral);
+}
+
+.body {
+  min-width: 0;
+}
+
+.tag {
+  margin: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  line-height: 1.9;
+  color: var(--neutral);
+}
+
+.name {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 1.05rem + 1.1vw, 1.95rem);
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 1;
+  color: var(--ink-deep);
+}
+
+.line {
+  margin-top: 0.9rem;
+  max-width: 38em;
+}
+
+.detail {
+  --disclose-dim: 0.55;
+  margin-top: 0.3rem;
+}
+
+/* ---- 数字（1段目だけ）＝根拠 ---- */
+.figure {
+  padding-top: 0.2rem;
+  border-top: 1px solid var(--rule-soft);
+}
+
+@media (min-width: 861px) {
+  .figure {
+    border-top: 0;
+    border-left: 1px solid var(--rule-soft);
+    padding: 0.2rem 0 0 clamp(1.2rem, 2.5vw, 2rem);
+  }
+
+  /* 3列のときは番号列を飛ばして右端へ（DOM 順は本文のあと） */
+  .rung:first-of-type .figure {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+.figureTag {
+  margin: 0.8rem 0 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  line-height: 1.8;
+  color: var(--neutral);
+}
+
+.figureNum {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-display-washi, serif);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 1.4rem + 2.6vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-deep);
+  white-space: nowrap; /* 「約8割」を縦に折らない */
+}
+
+.figureLabel {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+.figureRatio {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    transform: none !important;
+  }
+}
